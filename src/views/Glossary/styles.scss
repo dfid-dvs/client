@@ -1,0 +1,9 @@
+.glossary {
+    background-color: var(--color-background-alt);
+    height: var(--height-content);
+
+    .message {
+        display: flex;
+        flex-direction: column;
+    }
+}

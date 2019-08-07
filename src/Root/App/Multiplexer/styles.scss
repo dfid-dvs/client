@@ -1,0 +1,113 @@
+* {
+    box-sizing: border-box;
+}
+
+:global {
+    .portal-child-shown {
+        overflow: hidden;
+
+        #root {
+            filter: brightness(50%);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .focus-trap-wrapper {
+            .focus-trap {
+                .modal:not([data-last-modal="true"]) {
+                    filter: brightness(50%);
+                    pointer-events: none;
+                }
+            }
+        }
+    }
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    color: var(--color-text);
+    font-family: var(--font-family-sans-serif);
+    font-size: var(--font-size-default);
+    font-weight: var(--font-weight-default);
+
+    a {
+        outline: none;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        margin: 0;
+        text-transform: uppercase;
+        color: var(--color-primary);
+        font-family: var(--font-family-heading);
+        font-weight: var(--font-weight-heading);
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: var(--color-background-scrollbar);
+    }
+
+    ::-webkit-scrollbar {
+        background-color: var(--color-background-scrollbar);
+        width: var(--width-scrollbar);
+        height: var(--width-scrollbar);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: var(--color-foreground-scrollbar);
+    }
+
+    .multiplexer {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+
+        .navbar {
+            flex-shrink: 0;
+        }
+
+        .app-main-content {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            background-color: var(--color-foreground);
+
+            .loading {
+                flex-grow: 1;
+                color: var(--root-preload-text-color);
+                font-size: var(--root-text-font-size);
+            }
+
+            .router {
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+
+                .page-error,
+                .retryable-page-error {
+                    display: flex;
+                    align-items: center;
+                    flex-direction: column;
+                    flex-grow: 1;
+                    justify-content: center;
+
+                    .message {
+                        padding: var(--spacing-small);
+                        text-align: center;
+                    }
+
+                    .reload-button {
+                        margin: var(--spacing-small);
+                    }
+                }
+            }
+        }
+    }
+}

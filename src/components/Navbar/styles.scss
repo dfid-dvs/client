@@ -1,0 +1,18 @@
+.navbar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    background-color: var(--color-foreground);
+
+    .menu {
+        display: flex;
+        flex-direction: row;
+        overflow-y: auto;
+
+        .menu-items {
+            display: flex;
+            flex-direction: row;
+            flex-grow: 1;
+        }
+    }
+}
