@@ -6,14 +6,15 @@
     border-bottom: var(--width-separator-medium) solid transparent;
     background-color: var(--color-foreground);
     cursor: pointer;
-    padding: var(--spacing-medium) var(--spacing-small);
+    padding: var(--spacing-medium-alt) var(--spacing-medium-alt);
+    margin-right: var(--spacing-medium);
     text-decoration: none;
     color: var(--color-text-label);
 
     .menu-title {
         text-align: center;
         font-size: var(--font-size-large);
-        font-weight: var(--font-weight-bold);
+        text-transform: capitalize;
     }
 
     &:hover {

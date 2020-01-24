@@ -66,45 +66,58 @@ body {
 
     .multiplexer {
         display: flex;
-        flex-direction: column;
+        justify-content: stretch;
         height: 100vh;
 
-        .navbar {
+        .left-panel {
+            display: flex;
+            flex-direction: column;
             flex-shrink: 0;
+            width: 300px;
         }
 
-        .app-main-content {
+        .right-panel {
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            background-color: var(--color-foreground);
 
-            .loading {
-                flex-grow: 1;
-                color: var(--root-preload-text-color);
-                font-size: var(--root-text-font-size);
+            .navbar {
+                flex-shrink: 0;
             }
 
-            .router {
+            .app-main-content {
                 display: flex;
                 flex-direction: column;
                 flex-grow: 1;
+                background-color: var(--color-foreground);
 
-                .page-error,
-                .retryable-page-error {
+                .loading {
+                    flex-grow: 1;
+                    color: var(--root-preload-text-color);
+                    font-size: var(--root-text-font-size);
+                }
+
+                .router {
                     display: flex;
-                    align-items: center;
                     flex-direction: column;
                     flex-grow: 1;
-                    justify-content: center;
 
-                    .message {
-                        padding: var(--spacing-small);
-                        text-align: center;
-                    }
+                    .page-error,
+                    .retryable-page-error {
+                        display: flex;
+                        align-items: center;
+                        flex-direction: column;
+                        flex-grow: 1;
+                        justify-content: center;
 
-                    .reload-button {
-                        margin: var(--spacing-small);
+                        .message {
+                            padding: var(--spacing-small);
+                            text-align: center;
+                        }
+
+                        .reload-button {
+                            margin: var(--spacing-small);
+                        }
                     }
                 }
             }

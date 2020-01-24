@@ -1,9 +1,18 @@
 .dashboard {
+    display: flex;
     background-color: var(--color-background-alt);
     height: var(--height-content);
+
+    .sidebar {
+        display: flex;
+        flex-direction: column;
+        width: 300px;
+        flex-shrink: 0;
+    }
 
     .message {
         display: flex;
         flex-direction: column;
+        width: calc(100% - 300px);
     }
 }

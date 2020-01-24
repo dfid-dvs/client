@@ -128,9 +128,14 @@ class Multiplexer extends React.PureComponent<Props, State> {
 
         return (
             <div className={_cs(styles.multiplexer, className, 'multiplexer')}>
-                <Navbar className={styles.navbar} />
-                <div className={_cs(styles.appMainContent, 'app-main-content')}>
-                    {this.renderRoutes()}
+                {/* <div className={styles.leftPanel}>
+                    Sidebar
+                    </div> */}
+                <div className={styles.rightPanel}>
+                    <Navbar className={styles.navbar} />
+                    <div className={_cs(styles.appMainContent, 'app-main-content')}>
+                        {this.renderRoutes()}
+                    </div>
                 </div>
             </div>
         );
