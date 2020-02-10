@@ -2,19 +2,22 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
+    margin-right: var(--spacing-medium);
     border-bottom: var(--width-separator-medium) solid transparent;
     background-color: var(--color-foreground);
     cursor: pointer;
-    padding: var(--spacing-medium-alt) var(--spacing-medium-alt);
-    margin-right: var(--spacing-medium);
+    padding: var(--spacing-extra-large-alt)
+        var(--spacing-medium-alt)
+        var(--spacing-large-alt);
     text-decoration: none;
     color: var(--color-text-label);
 
     .menu-title {
         text-align: center;
-        font-size: var(--font-size-large);
-        text-transform: capitalize;
+        text-transform: uppercase;
+        font-size: var(--font-size-medium);
+        font-weight: var(--font-weight-bold);
     }
 
     &:hover {
@@ -22,8 +25,7 @@
     }
 
     &.active {
-        border-bottom-color: var(--color-accent);
-        color: var(--color-accent);
+        color: var(--color-primary);
     }
 
     &.disabled {

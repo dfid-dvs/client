@@ -16,6 +16,7 @@ const styleProperties = {
     colorBackgroundNewItemHover: 'rgba(79, 195, 247, .2)',
     fontSizeUltraLarge: '32px',
     fontSizeUltraLargeAlt: '48px',
+    colorPrimary: '#1cbec9',
 };
 
 export default styleProperties;

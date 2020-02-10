@@ -1,7 +1,48 @@
 .sidebar {
-    background-color: var(--color-foreground-alt);
-    padding-top: var(--spacing-super-large-alt);
-    padding-right: var(--spacing-extra-large);
-    padding-left: var(--spacing-extra-large);
-    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    background-color: var(--color-foreground);
+    width: 320px;
+    overflow-y: auto;
+
+    .sidebar-content {
+        display: flex;
+        flex-direction: column;
+
+        .logo{
+            padding: var(--spacing-large);
+            max-width: 245px;
+        }
+
+        .data-category {
+            border-top: var(--width-separator-thin) solid var(--color-separator);
+            padding: var(--spacing-extra-large) var(--spacing-large-alt);
+
+            .title {
+                margin-bottom: var(--spacing-large);
+                font-size: var(--font-size-medium);
+                font-weight: var(--font-weight-bold);
+            }
+        }
+
+        .admin-levels {
+            .options {
+                margin-top: var(--spacing-medium-alt);
+            }
+
+            .select-options {
+                margin-top: var(--spacing-medium-alt);
+            }
+        }
+
+        .buttons-section {
+            display: flex;
+            justify-content: center;
+
+            .button {
+                margin: 0 var(--spacing-medium);
+            }
+        }
+    }
 }

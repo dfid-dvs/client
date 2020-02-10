@@ -12,9 +12,11 @@ class Home extends React.PureComponent<Props, State> {
     public render() {
         return (
             <div className={styles.home}>
-                <Message className={styles.message}>
-                    Home
-                </Message>
+                <div className={styles.mainContent}>
+                    <Message className={styles.message}>
+                        Home
+                    </Message>
+                </div>
             </div>
         );
     }

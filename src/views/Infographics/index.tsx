@@ -12,9 +12,11 @@ class Infographics extends React.PureComponent<Props, State> {
     public render() {
         return (
             <div className={styles.infographics}>
-                <Message className={styles.message}>
-                    Infographics
-                </Message>
+                <div className={styles.mainContent}>
+                    <Message className={styles.message}>
+                        Infographics
+                    </Message>
+                </div>
             </div>
         );
     }

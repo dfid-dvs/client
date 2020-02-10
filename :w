@@ -1,12 +1,11 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
-import Faram, { FaramInputElement } from '@togglecorp/faram';
+import Faram from '@togglecorp/faram';
 
 import RadioInput from '#rsci/RadioInput';
 import MultiSelectInputWithList from '#rsci/MultiSelectInputWithList';
 import Button from '#rsu/../v2/Action/Button';
 import { MultiResponse } from '#constants/types';
-import Tree from '#rsu/../v2/Input/TreeInput';
 
 import Logo from '#resources/img/logo-white-01.svg';
 import {
@@ -25,8 +24,6 @@ enum AdminLevel {
 
 interface FaramValues {
     adminLevel?: AdminLevel;
-    sector?: string[];
-    marker?: string[];
 }
 
 interface FaramErrors {
@@ -36,7 +33,6 @@ interface OwnProps {
     className?: string;
 }
 interface State {
-    // value: string[] | undefined;
     faramValues: FaramValues;
     faramErrors: FaramErrors;
 }
@@ -46,18 +42,6 @@ interface Options {
     key: number;
     name: string;
 }
-interface TreeItem {
-    key: string;
-    id: number;
-    parentKey: string | undefined;
-    parentId: number | undefined;
-    name: string;
-}
-
-const treeKeySelector = (item: TreeItem) => item.key;
-const treeParentSelector = (item: TreeItem) => item.parentKey;
-const treeLabelSelector = (item: TreeItem) => item.name;
-
 const adminLevelsList: Options[] = [
     {
         key: AdminLevel.Province,
@@ -72,8 +56,6 @@ const adminLevelsList: Options[] = [
         name: 'Municipality',
     },
 ];
-
-const TreeInput = FaramInputElement(Tree);
 
 interface Province {
     id: number;
@@ -186,7 +168,7 @@ const requestOptions: { [key: string]: ClientAttributes<OwnProps, Params> } = {
         onMount: true,
     },
     municipalityGetRequest: {
-        url: '/gapanapa/',
+        url: '/gapanapas/', /* change it to 'gapanapa' if it's ready to load. */
         method: methods.GET,
         onMount: true,
     },
@@ -234,6 +216,9 @@ const districtLabelSelector = (d: District) => d.name;
 const municipalityKeySelector = (d: Municipality) => d.id;
 const municipalityLabelSelector = (d: Municipality) => d.name;
 
+const sectorKeySelector = (d: Sector) => d.id;
+const sectorLabelSelector = (d: Sector) => d.name;
+
 const programKeySelector = (d: Program) => d.id;
 const programLabelSelector = (d: Program) => d.name;
 
@@ -259,6 +244,7 @@ class Sidebar extends React.PureComponent<Props, State> {
         fields: {
             adminLevel: [],
             adminArea: [],
+            sectorList: [],
             programList: [],
             indicatorList: [],
             layerList: [],
@@ -290,28 +276,14 @@ class Sidebar extends React.PureComponent<Props, State> {
         console.warn('Success', faramValues);
     }
 
-    /*
-    private setValue = (key: string[] | undefined) => {
-        console.warn('selectedKey', key);
-        this.setState({
-            value: key,
-        });
-    }
-    */
-
     public render() {
         const {
             className,
             requests: {
-                // Secondary data
                 indicatorGetRequest: {
                     pending: indicatorTitlePending,
                     response: indicatorResponse = {},
                 },
-                layerGetRequest: {
-                    response: layerResponse = {},
-                },
-                // Location data
                 provinceGetRequest: {
                     response: provinceResponse = {},
                 },
@@ -321,116 +293,43 @@ class Sidebar extends React.PureComponent<Props, State> {
                 municipalityGetRequest: {
                     response: municipalityResponse = {},
                 },
-                // Programme filters
                 sectorGetRequest: {
                     response: sectorResponse = {},
                 },
-                subSectorGetRequest: {
-                    response: subSectorResponse = {},
+                programGetRequest: {
+                    response: programResponse = {},
+                },
+                layerGetRequest: {
+                    response: layerResponse = {},
                 },
                 markerGetRequest: {
                     response: markerResponse = {},
-                },
-                subMarkerGetRequest: {
-                    response: subMarkerResponse = {},
-                },
-                // Programme data
-                programGetRequest: {
-                    response: programResponse = {},
                 },
             },
         } = this.props;
 
         const { results: indicatorList = [] } = indicatorResponse as MultiResponse<Indicator>;
+        console.warn('indicators', indicatorList);
         const { results: provinceList = [] } = provinceResponse as MultiResponse<Province>;
+        console.warn('provinces', provinceList);
         const { results: districtList = [] } = districtResponse as MultiResponse<District>;
-        // eslint-disable-next-line max-len
-        const { results: municipalityList = [] } = municipalityResponse as MultiResponse<Municipality>;
+        console.warn('district list', districtList);
+        const { results: municipalityList =
+        [] } = municipalityResponse as MultiResponse<Municipality>;
+        console.warn('municipality', municipalityList);
         const { results: sectorList = [] } = sectorResponse as MultiResponse<Sector>;
+        console.warn('sectors', sectorList);
         const { results: programList = [] } = programResponse as MultiResponse<Program>;
-        const { results: markerList = [] } = markerResponse as MultiResponse<Marker>;
-        const { results: subMarkerList = [] } = subMarkerResponse as MultiResponse<SubMarker>;
-        const { results: subSectorList = [] } = subSectorResponse as MultiResponse<SubSector>;
+        console.warn('programs', programList);
         const { results: layerList = [] } = layerResponse as MultiResponse<Layer>;
-
-
-        const markerOptions: TreeItem[] = markerList.map(({ id, name }) => ({
-            key: `marker-${id}`,
-            parentKey: undefined,
-            parentId: undefined,
-            name,
-            id,
-        }));
-        const subMarkerOptions: TreeItem[] = subMarkerList.map(
-            ({ id, markerCategoryId, value }) => ({
-                key: `submarker-${markerCategoryId}-${id}`,
-                parentKey: `marker-${markerCategoryId}`,
-                parentId: markerCategoryId,
-                name: value,
-                id,
-            }),
-        );
-        const combinedMarkerOptions = [...markerOptions, ...subMarkerOptions];
-
-        const sectorOptions: TreeItem[] = sectorList.map(({ id, name }) => ({
-            key: `sector-${id}`,
-            parentKey: undefined,
-            parentId: undefined,
-            name,
-            id,
-        }));
-        const subSectorOptions: TreeItem[] = subSectorList.map(
-            ({ id, sectorId, name }) => ({
-                key: `subsector-${sectorId}-${id}`,
-                parentKey: `sector-${sectorId}`,
-                parentId: sectorId,
-                name,
-                id,
-            }),
-        );
-        const combinedSectorOptions = [...sectorOptions, ...subSectorOptions];
+        console.warn('layers', layerList);
+        const { results: markerList = [] } = markerResponse as MultiResponse<Marker>;
+        console.warn('markers', markerList);
 
         const {
-            // value,
             faramErrors,
             faramValues,
         } = this.state;
-
-        // For Sectors
-
-        let selectedSectors: number[] = [];
-        let selectedSubSectors: number[] = [];
-
-        const { sector } = faramValues;
-        if (sector) {
-            selectedSectors = sectorOptions
-                .filter(option => sector.includes(option.key))
-                .map(s => s.id);
-
-            selectedSubSectors = subSectorOptions
-                .filter(option => sector.includes(option.key))
-                .map(s => s.id);
-        }
-
-        console.warn('selectedSectors', selectedSectors, selectedSubSectors);
-
-        // For Markers
-
-        let selectedMarkers: number [] = [];
-        let selectedSubMarkers: number [] = [];
-
-        const { marker } = faramValues;
-        if (marker) {
-            selectedMarkers = markerOptions
-                .filter(option => marker.includes(option.key))
-                .map(s => s.id);
-
-            selectedSubMarkers = subMarkerOptions
-                .filter(option => marker.includes(option.key))
-                .map(s => s.id);
-        }
-        console.warn('selecte Markers', selectedMarkers, selectedSubMarkers);
-
 
         return (
             <div className={_cs(className, styles.sidebar)}>
@@ -513,29 +412,15 @@ class Sidebar extends React.PureComponent<Props, State> {
                             <h3 className={styles.title}>
                                 DFID Data
                             </h3>
-                            <TreeInput
-                                className={styles.sectorTree}
-                                label="Sector"
-                                faramElementName="sector"
-                                keySelector={treeKeySelector}
-                                parentKeySelector={treeParentSelector}
-                                labelSelector={treeLabelSelector}
-                                options={combinedSectorOptions}
-                                // value={value}
-                                // onChange={this.setValue}
-                                defaultCollapseLevel={0}
-                            />
-                            <TreeInput
-                                className={styles.markerTree}
-                                label="Marker"
-                                faramElementName="marker"
-                                keySelector={treeKeySelector}
-                                parentKeySelector={treeParentSelector}
-                                labelSelector={treeLabelSelector}
-                                options={combinedMarkerOptions}
-                                // value={value}
-                                // onChange={this.setValue}
-                                defaultCollapseLevel={0}
+                            <MultiSelectInputWithList
+                                label="Sectors"
+                                placeholder=""
+                                faramElementName="sectorList"
+                                className={styles.sectorSelect}
+                                options={sectorList}
+                                keySelector={sectorKeySelector}
+                                labelSelector={sectorLabelSelector}
+                                emptyComponent={null}
                             />
                             <MultiSelectInputWithList
                                 label="Programs"

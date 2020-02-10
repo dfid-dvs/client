@@ -27,6 +27,7 @@ export const routeStateSelector = ({ route }: AppState) => (
     route.routeState || emptyObject
 );
 
+
 const createRouteSelector = (name: string) => createSelector(
     routeParamsSelector,
     propsSelector,

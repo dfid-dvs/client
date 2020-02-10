@@ -1,9 +1,15 @@
 .infographics {
+    display: flex;
     background-color: var(--color-background-alt);
     height: var(--height-content);
 
-    .message {
+    .main-content {
         display: flex;
-        flex-direction: column;
+        flex-grow: 1;
+
+        .message {
+            display: flex;
+            flex-direction: column;
+        }
     }
 }

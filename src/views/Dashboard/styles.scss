@@ -3,16 +3,12 @@
     background-color: var(--color-background-alt);
     height: var(--height-content);
 
-    .sidebar {
+    .main-content {
         display: flex;
-        flex-direction: column;
-        width: 300px;
-        flex-shrink: 0;
-    }
+        flex-grow: 1;
 
-    .message {
-        display: flex;
-        flex-direction: column;
-        width: calc(100% - 300px);
+        .map{
+            flex-grow: 1;
+        }
     }
 }
