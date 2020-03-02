@@ -5,7 +5,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const StylishPlugin = require('eslint/lib/cli-engine/formatters/stylish');
-// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const dotenv = require('dotenv').config({
     path: '.env',
 });
@@ -18,6 +17,10 @@ const appDist = path.resolve(appBase, 'build/');
 const appIndexJs = path.resolve(appBase, 'src/index.tsx');
 const appIndexHtml = path.resolve(appBase, 'public/index.html');
 const appFavicon = path.resolve(appBase, 'public/favicon.ico');
+
+const postcssNested = require('postcss-nested');
+const postcssNormalize = require('postcss-normalize');
+const postcssPresetEnv = require('postcss-preset-env');
 
 module.exports = (env) => {
     const ENV_VARS = { ...dotenv.pared, ...getEnvVariables(env) };
@@ -35,10 +38,6 @@ module.exports = (env) => {
 
         resolve: {
             extensions: ['.js', '.jsx', '.ts', '.tsx'],
-            alias: {
-                'base-scss': path.resolve(appBase, 'src/stylesheets/'),
-                'rs-scss': path.resolve(appBase, 'src/vendor/react-store/stylesheets/'),
-            },
             symlinks: false,
         },
 
@@ -104,8 +103,7 @@ module.exports = (env) => {
                     ],
                 },
                 {
-                    test: /\.scss$/,
-                    include: appSrc,
+                    test: /\.css$/,
                     use: [
                         'style-loader',
                         {
@@ -120,8 +118,14 @@ module.exports = (env) => {
                             },
                         },
                         {
-                            loader: require.resolve('sass-loader'),
+                            loader: require.resolve('postcss-loader'),
                             options: {
+                                ident: 'postcss',
+                                plugins: () => [
+                                    postcssPresetEnv(),
+                                    postcssNested(),
+                                    postcssNormalize(),
+                                ],
                                 sourceMap: true,
                             },
                         },
@@ -164,9 +168,6 @@ module.exports = (env) => {
                 chunkFilename: 'css/[id].css',
             }),
             new webpack.HotModuleReplacementPlugin(),
-            // new BundleAnalyzerPlugin(),
-            // NOTE: could try using react-hot-loader
-            // https://github.com/gaearon/react-hot-loader
         ],
     };
 };

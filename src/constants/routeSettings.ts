@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 export interface Route {
     path: string;
     name: string;
@@ -5,67 +7,57 @@ export interface Route {
     load: any;
 }
 export interface NavbarRoute extends Route {
-    navbar: true;
+    hideNavbar?: boolean;
     iconName: string;
     disabled?: boolean;
 }
 export interface FallbackRoute {
-    default: true;
+    default: false;
     title: string;
     name: string;
     load: any;
     path: undefined;
 }
 
-export function hasNavbar(route: SomeRoute): route is NavbarRoute {
-    return !!(route as NavbarRoute).navbar;
-}
-
 export type SomeRoute = Route | NavbarRoute | FallbackRoute;
 
 const routeSettings: SomeRoute[] = [
     {
-        path: '/',
-        name: 'home',
-        title: 'Home',
-        load: () => import('../views/Home'),
-        navbar: true,
-    },
-    {
         path: '/dashboard/',
         name: 'dashboard',
         title: 'Dashboard',
-        load: () => import('../views/Dashboard'),
-        navbar: true,
+        load: lazy(() => import('../views/Dashboard')),
     },
     {
         path: '/infographics/',
         name: 'infographics',
         title: 'Infographics',
-        load: () => import('../views/Infographics'),
-        navbar: true,
+        load: lazy(() => import('../views/Infographics')),
     },
     {
         path: '/glossary/',
         name: 'glossary',
         title: 'Glossary',
-        load: () => import('../views/Glossary'),
-        navbar: true,
+        load: lazy(() => import('../views/Glossary')),
     },
-
+    {
+        path: '/',
+        name: 'home',
+        title: 'Home',
+        load: lazy(() => import('../views/Home')),
+    },
     {
         path: '/403/',
         name: 'fourHundredThree',
         title: '403',
-        load: () => import('../views/FourHundredThree'),
+        load: lazy(() => import('../views/FourHundredThree')),
     },
-
     {
         path: undefined,
         name: 'fourHundredFour',
         title: '404',
-        load: () => import('../views/FourHundredFour'),
-        default: true,
+        load: lazy(() => import('../views/FourHundredFour')),
+        default: false,
     },
 ];
 

@@ -3,4 +3,5 @@ import ReactDOM from 'react-dom';
 
 import Root from './Root';
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+const rootElement = document.getElementById('dfid-dvs-root');
+ReactDOM.createRoot(rootElement).render(<Root />);

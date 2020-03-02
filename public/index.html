@@ -1,50 +1,36 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>
+            DFID DVS
+        </title>
+        <style>
+            :root {
+                --font-family-sans-serif: 'Spartan', sans-serif;
+                --font-family-monospace: 'Source Code Pro', monospace;
+            }
 
-    <title>
-        DFID DVS
-    </title>
-    <style>
-        :root {
-            --root-preload-background-color: #f5f5f5;
-            --root-preload-text-color: rgba(0, 0, 0, .5);
-            --root-preload-height: 100vh;
-            --root-text-font-size: 18px;
-            --font-family-sans-serif: sans-serif;
-        }
+            html, body {
+                margin: 0;
+                padding: 0;
+                font-family: var(--font-family-sans-serif);
+            }
 
-        html, body {
-            margin: 0;
-            padding: 0;
-        }
-
-        #root-preload {
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--root-preload-background-color);
-            height: var(--root-preload-height);
-            color: var(--root-preload-text-color);
-            font-family: var(--font-family-sans-serif);
-            font-size: var(--root-text-font-size);
-        }
-    </style>
-  </head>
-  <body style="background-color: #f5f5f5;">
-    <noscript>
-        DFID DVS needs Javascript.
-    </noscript>
-    <div id="root">
-        <div id="root-preload">
-            Initializing DFID DVS ...
+            * {
+                box-sizing: border-box;
+            }
+        </style>
+    </head>
+    <body style="background-color: #f5f5f5;">
+        <noscript>
+            DFID DVS needs Javascript.
+        </noscript>
+        <div id="dfid-dvs-root">
         </div>
-    </div>
 
-    <!-- External resources  -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.css" />
-  </body>
+        <!-- External resources  -->
+        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,700|Spartan:300,400,700&display=swap" rel="stylesheet">
+    </body>
 </html>

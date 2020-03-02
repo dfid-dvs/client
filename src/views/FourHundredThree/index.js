@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './styles.scss';
+import styles from './styles.css';
 
 // eslint-disable-next-line react/prefer-stateless-function
 export default class FourHundredThree extends React.PureComponent {

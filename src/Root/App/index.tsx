@@ -1,23 +1,14 @@
 import React from 'react';
-
 import Multiplexer from './Multiplexer';
+
+import './styles.css';
 
 interface State {}
 interface Params {}
 interface Props {}
 
-/* Loads required info from server */
-// eslint-disable-next-line react/prefer-stateless-function
-class App extends React.Component<Props, State> {
-    public render() {
-        const pending = false;
-
-        return (
-            <Multiplexer
-                pending={pending}
-            />
-        );
-    }
-}
+const App = (props: Props) => (
+    <Multiplexer />
+);
 
 export default App;

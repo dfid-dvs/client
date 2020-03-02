@@ -1,23 +1,20 @@
 import React from 'react';
+import { _cs } from '@togglecorp/fujs';
 
-import Message from '#rscv/Message';
+import styles from './styles.css';
 
-import styles from './styles.scss';
-
-interface State {}
-interface Props {}
-
-// eslint-disable-next-line react/prefer-stateless-function
-class Infographics extends React.PureComponent<Props, State> {
-    public render() {
-        return (
-            <div className={styles.infographics}>
-                <Message className={styles.message}>
-                    Infographics
-                </Message>
-            </div>
-        );
-    }
+interface Props {
+    className?: string;
 }
+
+const Infographics = (props: Props) => {
+    const { className } = props;
+
+    return (
+        <div className={_cs(className, styles.infographics)}>
+            Infographics
+        </div>
+    );
+};
 
 export default Infographics;

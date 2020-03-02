@@ -1,0 +1,14 @@
+:root {
+    --spacing-small: 6px;
+    --spacing-medium: 10px;
+    --spacing-large: 16px;
+
+    --color-accent: #18bc9c;
+
+    --font-size-medium: 16px;
+    --font-size-large: 20px;
+
+    --font-weight-light: 300;
+    --font-weight-medium: 400;
+    --font-weight-bold: 700;
+}
