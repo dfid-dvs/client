@@ -5,6 +5,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const StylishPlugin = require('eslint/lib/cli-engine/formatters/stylish');
+const postcssPresetEnv = require('postcss-preset-env');
+const postcssNested = require('postcss-nested');
+const postcssNormalize = require('postcss-normalize');
+
 const dotenv = require('dotenv').config({
     path: '.env',
 });
@@ -17,10 +21,6 @@ const appDist = path.resolve(appBase, 'build/');
 const appIndexJs = path.resolve(appBase, 'src/index.tsx');
 const appIndexHtml = path.resolve(appBase, 'public/index.html');
 const appFavicon = path.resolve(appBase, 'public/favicon.ico');
-
-const postcssNested = require('postcss-nested');
-const postcssNormalize = require('postcss-normalize');
-const postcssPresetEnv = require('postcss-preset-env');
 
 module.exports = (env) => {
     const ENV_VARS = { ...dotenv.pared, ...getEnvVariables(env) };

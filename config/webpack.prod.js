@@ -6,6 +6,9 @@ const CircularDependencyPlugin = require('circular-dependency-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const StylishPlugin = require('eslint/lib/cli-engine/formatters/stylish');
+const postcssPresetEnv = require('postcss-preset-env');
+const postcssNested = require('postcss-nested');
+const postcssNormalize = require('postcss-normalize');
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const dotenv = require('dotenv').config({
@@ -36,10 +39,6 @@ module.exports = (env) => {
 
         resolve: {
             extensions: ['.js', '.jsx', '.ts', '.tsx'],
-            alias: {
-                'base-scss': path.resolve(appBase, 'src/stylesheets/'),
-                'rs-scss': path.resolve(appBase, 'src/vendor/react-store/stylesheets/'),
-            },
             symlinks: false,
         },
 
@@ -118,7 +117,7 @@ module.exports = (env) => {
                     },
                 },
                 {
-                    test: /\.scss$/,
+                    test: /\.css$/,
                     include: appSrc,
                     use: [
                         MiniCssExtractPlugin.loader,
@@ -134,8 +133,14 @@ module.exports = (env) => {
                             },
                         },
                         {
-                            loader: require.resolve('sass-loader'),
+                            loader: require.resolve('postcss-loader'),
                             options: {
+                                ident: 'postcss',
+                                plugins: () => [
+                                    postcssPresetEnv(),
+                                    postcssNested(),
+                                    postcssNormalize(),
+                                ],
                                 sourceMap: true,
                             },
                         },
