@@ -1,20 +1,29 @@
-const path = require('path');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CircularDependencyPlugin = require('circular-dependency-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const StylishPlugin = require('eslint/lib/cli-engine/formatters/stylish');
-const postcssPresetEnv = require('postcss-preset-env');
-const postcssNested = require('postcss-nested');
-const postcssNormalize = require('postcss-normalize');
-// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
-const dotenv = require('dotenv').config({
+import ResourceHintWebpackPlugin from 'resource-hints-webpack-plugin';
+import CompressionPlugin from 'compression-webpack-plugin';
+import WorkboxPlugin from 'workbox-webpack-plugin';
+import WebpackPwaManifest from 'webpack-pwa-manifest';
+import path from 'path';
+import webpack from 'webpack';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import CircularDependencyPlugin from 'circular-dependency-plugin';
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import GitRevisionPlugin from 'git-revision-webpack-plugin';
+import StylishPlugin from 'eslint/lib/cli-engine/formatters/stylish';
+import postcssPresetEnv from 'postcss-preset-env';
+import postcssNested from 'postcss-nested';
+import postcssNormalize from 'postcss-normalize';
+import OptimizeCssAssetsPlugin from 'optimize-css-assets-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
+import { config } from 'dotenv';
+
+import getEnvVariables from './env.js';
+
+const dotenv = config({
     path: '.env',
 });
-const getEnvVariables = require('./env.js');
+
+const gitRevisionPlugin = new GitRevisionPlugin();
 
 const appBase = process.cwd();
 const eslintFile = path.resolve(appBase, '.eslintrc-loader.js');
@@ -23,18 +32,25 @@ const appDist = path.resolve(appBase, 'build/');
 const appIndexJs = path.resolve(appBase, 'src/index.tsx');
 const appIndexHtml = path.resolve(appBase, 'public/index.html');
 const appFavicon = path.resolve(appBase, 'public/favicon.ico');
+const appFaviconImage = path.resolve(appBase, 'public/favicon.png');
 
 module.exports = (env) => {
-    const ENV_VARS = { ...dotenv.pared, ...getEnvVariables(env) };
+    const ENV_VARS = {
+        ...dotenv.pared,
+        ...getEnvVariables(env),
+        REACT_APP_VERSION: JSON.stringify(gitRevisionPlugin.version()),
+        REACT_APP_COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
+        REACT_APP_BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
+    };
 
     return {
         entry: appIndexJs,
         output: {
             path: appDist,
             publicPath: '/',
+            sourceMapFilename: 'sourcemaps/[file].map',
             chunkFilename: 'js/[name].[chunkhash].js',
             filename: 'js/[name].[contenthash].js',
-            sourceMapFilename: 'sourcemaps/[file].map',
         },
 
         resolve: {
@@ -45,23 +61,14 @@ module.exports = (env) => {
         mode: 'production',
 
         devtool: 'source-map',
+
         node: {
             fs: 'empty',
         },
 
         optimization: {
             minimizer: [
-                /*
                 // NOTE: Using TerserPlugin instead of UglifyJsPlugin as es6 support deprecated
-                new UglifyJsPlugin({
-                    sourceMap: true,
-                    parallel: true,
-                    uglifyOptions: {
-                        mangle: true,
-                        compress: { typeofs: false },
-                    },
-                }),
-                */
                 new TerserPlugin({
                     parallel: true,
                     sourceMap: true,
@@ -95,9 +102,9 @@ module.exports = (env) => {
                     test: /\.(js|jsx|ts|tsx)$/,
                     include: appSrc,
                     use: [
-                        'babel-loader',
+                        require.resolve('babel-loader'),
                         {
-                            loader: 'eslint-loader',
+                            loader: require.resolve('eslint-loader'),
                             options: {
                                 configFile: eslintFile,
                                 // NOTE: adding this because eslint 6 cannot find this
@@ -109,12 +116,14 @@ module.exports = (env) => {
                 },
                 {
                     test: /\.(html)$/,
-                    use: {
-                        loader: 'html-loader',
-                        options: {
-                            attrs: [':data-src'],
+                    use: [
+                        {
+                            loader: require.resolve('html-loader'),
+                            options: {
+                                attrs: [':data-src'],
+                            },
                         },
-                    },
+                    ],
                 },
                 {
                     test: /\.css$/,
@@ -150,7 +159,7 @@ module.exports = (env) => {
                     test: /\.(png|jpg|gif|svg)$/,
                     use: [
                         {
-                            loader: 'file-loader',
+                            loader: require.resolve('file-loader'),
                             options: {
                                 name: 'assets/[hash].[ext]',
                             },
@@ -169,11 +178,12 @@ module.exports = (env) => {
                 allowAsyncCycles: false,
                 cwd: appBase,
             }),
+            // Remove build folder anyway
             new CleanWebpackPlugin(),
             new HtmlWebpackPlugin({
                 template: appIndexHtml,
                 filename: './index.html',
-                title: 'dfid-dvs',
+                title: 'DFID',
                 favicon: path.resolve(appFavicon),
                 chunksSortMode: 'none',
             }),
@@ -181,6 +191,42 @@ module.exports = (env) => {
                 filename: 'css/[name].css',
                 chunkFilename: 'css/[id].css',
             }),
+            new WorkboxPlugin.GenerateSW({
+                // these options encourage the ServiceWorkers to get in there fast
+                // and not allow any straggling "old" SWs to hang around
+                clientsClaim: true,
+                skipWaiting: true,
+                include: [/\.html$/, /\.js$/, /\.css$/],
+                navigateFallback: '/index.html',
+                navigateFallbackBlacklist: [/^\/assets/, /^\/admin/, /^\/api/],
+                cleanupOutdatedCaches: true,
+                runtimeCaching: [
+                    {
+                        urlPattern: /assets/,
+                        handler: 'cacheFirst',
+                    },
+                ],
+            }),
+            new WebpackPwaManifest({
+                name: 'dfid',
+                short_name: 'DFID',
+                description: 'DFID Data Visualization System',
+                background_color: '#ffffff',
+                orientation: 'portrait',
+                // theme_color: '#18bc9c',
+                display: 'standalone',
+                start_url: '/',
+                scope: '/',
+                icons: [
+                    {
+                        src: path.resolve(appFaviconImage),
+                        sizes: [96, 128, 192, 256, 384, 512],
+                        destination: path.join('assets', 'icons'),
+                    },
+                ],
+            }),
+            new CompressionPlugin(),
+            new ResourceHintWebpackPlugin(),
             new webpack.HashedModuleIdsPlugin(),
         ],
     };

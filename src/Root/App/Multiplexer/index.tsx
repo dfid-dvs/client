@@ -1,45 +1,74 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
 
 import Navbar from '#components/Navbar';
-import routeSettings from '#constants/routeSettings';
+import routes from './routes';
 
 import styles from './styles.css';
+
+interface TitleProps {
+    value: string;
+}
+const Title = ({ value }: TitleProps) => {
+    useEffect(
+        () => {
+            document.title = value;
+        },
+        [value],
+    );
+    return null;
+};
+
+interface LoadingProps {
+    message: string;
+}
+const Loading = ({ message }: LoadingProps) => (
+    <div className={styles.loading}>
+        {message}
+    </div>
+);
 
 interface Props {
     className?: string;
 }
-
-const Loading = () => <div className={styles.loading}>Loading...</div>;
-
 const Multiplexer = (props: Props) => {
     const { className } = props;
 
     return (
         <div className={_cs(className, styles.multiplexer)}>
-            <Suspense fallback={<Loading />}>
+            <Suspense
+                fallback={(
+                    <Loading message="Please wait..." />
+                )}
+            >
                 <Switch>
-                    { routeSettings.map(routeDetails => (
-                        <Route
-                            exact
-                            className={styles.route}
-                            key={routeDetails.name}
-                            path={routeDetails.path}
-                            render={() => {
-                                document.title = routeDetails.title;
-
-                                return (
+                    {routes.map((route) => {
+                        const {
+                            path,
+                            name,
+                            title,
+                            hideNavbar,
+                            load: Loader,
+                        } = route;
+                        return (
+                            <Route
+                                exact
+                                className={styles.route}
+                                key={name}
+                                path={path}
+                                render={() => (
                                     <>
-                                        { !routeDetails.hideNavbar && (
+                                        <Title value={title} />
+                                        { !hideNavbar && (
                                             <Navbar className={styles.navbar} />
                                         )}
-                                        <routeDetails.load className={styles.view} />
+                                        <Loader className={styles.view} />
                                     </>
-                                );
-                            }}
-                        />
-                    ))}
+                                )}
+                            />
+                        );
+                    })}
                 </Switch>
             </Suspense>
         </div>

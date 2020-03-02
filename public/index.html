@@ -3,9 +3,12 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="Description" content="DFID Data Visualization System">
+
         <title>
-            DFID DVS
+            DFID
         </title>
+
         <style>
             :root {
                 --font-family-sans-serif: 'Spartan', sans-serif;
@@ -21,16 +24,56 @@
             * {
                 box-sizing: border-box;
             }
+
         </style>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
     </head>
     <body style="background-color: #f5f5f5;">
         <noscript>
-            DFID DVS needs Javascript.
+            DFID needs Javascript.
         </noscript>
-        <div id="dfid-dvs-root">
+        <div id="dfid-root">
         </div>
 
         <!-- External resources  -->
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,700|Spartan:300,400,700&display=swap" rel="stylesheet">
+
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker
+                        .register('/service-worker.js')
+                        .then((registration) => {
+                            console.info('SW registered: ', registration);
+                            registration.onupdatefound = () => {
+                                const installingWorker = registration.installing;
+                                installingWorker.onstatechange = () => {
+                                    switch (installingWorker.state) {
+                                        case 'installed':
+                                            if (navigator.serviceWorker.controller) {
+                                                // New update is available
+                                                console.info('SW: New update is available!');
+                                                const shouldUpdate = window.confirm('New update is available. Do you want to update now?');
+                                                if (shouldUpdate) {
+                                                    window.location.reload(true);
+                                                }
+                                            } else {
+                                                // No new update
+                                                console.info('SW: No new updates!');
+                                            }
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                };
+                            };
+                        })
+                        .catch((registrationError) => {
+                            console.error('SW registration failed: ', registrationError);
+                        });
+                });
+            }
+        </script>
     </body>
 </html>

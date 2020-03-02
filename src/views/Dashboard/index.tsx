@@ -7,7 +7,6 @@ interface Props {
     className?: string;
 }
 
-// eslint-disable-next-line react/prefer-stateless-function
 const Dashboard = (props: Props) => {
     const { className } = props;
     return (

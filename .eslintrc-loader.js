@@ -1,6 +1,6 @@
 const eslintrc = require('./.eslintrc.js');
 
-eslintrcLoader = {
+var eslintrcLoader = {
     ...eslintrc,
     rules: {
         ...eslintrc.rules,

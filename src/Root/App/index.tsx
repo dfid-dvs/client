@@ -3,9 +3,8 @@ import Multiplexer from './Multiplexer';
 
 import './styles.css';
 
-interface State {}
-interface Params {}
-interface Props {}
+interface Props {
+}
 
 const App = (props: Props) => (
     <Multiplexer />
