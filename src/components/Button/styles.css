@@ -1,0 +1,35 @@
+.button {
+    font-family: inherit;
+
+    /*
+    &.transparent {
+        &.default {
+        }
+        &.accent {
+        }
+        &.danger {
+        }
+        &.primary {
+        }
+        &.success {
+        }
+        &.warning {
+        }
+    }
+
+    &:not(.transparent) {
+        &.default {
+        }
+        &.accent {
+        }
+        &.danger {
+        }
+        &.primary {
+        }
+        &.success {
+        }
+        &.warning {
+        }
+    }
+    */
+}

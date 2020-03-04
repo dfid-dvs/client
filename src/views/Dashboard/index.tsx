@@ -1,6 +1,8 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
+import Button from '#components/Button';
+
 import styles from './styles.css';
 
 interface Props {
@@ -16,6 +18,9 @@ const Dashboard = (props: Props) => {
         )}
         >
             Dashboard
+            <Button>
+                button
+            </Button>
         </div>
     );
 };
