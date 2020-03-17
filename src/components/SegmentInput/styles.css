@@ -1,0 +1,19 @@
+.switch {
+    display: flex;
+
+    .input-label {
+        padding: var(--spacing-small);
+    }
+
+    .input-container {
+        display: flex;
+    }
+}
+
+.option {
+    padding: var(--spacing-small);
+
+    &.active {
+        color: var(--color-accent);
+    }
+}

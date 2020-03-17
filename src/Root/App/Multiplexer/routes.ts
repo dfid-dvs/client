@@ -8,6 +8,7 @@ export interface Route {
     load: any;
 
     hideNavbar?: boolean;
+    hideOnNavbar?: boolean;
 }
 
 export interface FallbackRoute {
@@ -21,13 +22,14 @@ export interface FallbackRoute {
 }
 
 export type SomeRoute = Route | FallbackRoute;
+const Dashboard = lazy(() => import('../../../views/Dashboard'));
 
 const routeSettings: SomeRoute[] = [
     {
         path: '/dashboard/',
         name: 'dashboard',
         title: 'Dashboard',
-        load: lazy(() => import('../../../views/Dashboard')),
+        load: Dashboard,
     },
     {
         path: '/infographics/',
@@ -36,16 +38,11 @@ const routeSettings: SomeRoute[] = [
         load: lazy(() => import('../../../views/Infographics')),
     },
     {
-        path: '/glossary/',
-        name: 'glossary',
-        title: 'Glossary',
-        load: lazy(() => import('../../../views/Glossary')),
-    },
-    {
         path: '/',
-        name: 'home',
-        title: 'Home',
-        load: lazy(() => import('../../../views/Home')),
+        name: 'dashboard',
+        title: 'Dashboard',
+        load: Dashboard,
+        hideOnNavbar: true,
     },
     {
         path: '/403/',

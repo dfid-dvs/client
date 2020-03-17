@@ -51,6 +51,7 @@ const Multiplexer = (props: Props) => {
                             hideNavbar,
                             load: Loader,
                         } = route;
+
                         return (
                             <Route
                                 exact

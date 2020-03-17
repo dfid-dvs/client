@@ -3,12 +3,18 @@
     --spacing-medium: 10px;
     --spacing-large: 16px;
 
-    --color-accent: #18bc9c;
 
-    --font-size-medium: 16px;
-    --font-size-large: 20px;
+    --font-size-small: 11px;
+    --font-size-medium: 14px;
+    --font-size-large: 18px;
 
     --font-weight-light: 300;
     --font-weight-medium: 400;
     --font-weight-bold: 700;
+
+
+    --color-primary: #05367d;
+    --color-accent: #18cc9c;
+    --color-text-on-primary: rgba(255, 255, 255, .9);
+    --color-text-light-on-primary: rgba(255, 255, 255, .5);
 }

@@ -1,7 +1,9 @@
 .navbar {
     display: flex;
     align-items: center;
+    background-color: var(--color-primary);
     padding: calc(var(--spacing-large) - var(--spacing-small)) calc(var(--spacing-large) - var(--spacing-medium));
+    color: var(--color-text-on-primary);
 
     .app-brand {
         flex-shrink: 0;
@@ -12,15 +14,19 @@
     .nav-links {
         display: flex;
         flex-grow: 1;
-        justify-content: center;
+        justify-content: flex-start;
         padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
+        text-transform: uppercase;
+        font-size: var(--font-size-small);
+
 
         .link {
             display: block;
             outline: none;
             padding: var(--spacing-small) var(--spacing-medium);
             text-decoration: none;
-            color: rgba(0, 0, 0, .3);
+            color: var(--color-text-light-on-primary-light);
+            font-weight: var(--font-weight-bold);
 
             &.active {
                 color: var(--color-accent);
