@@ -1,8 +1,12 @@
 .switch {
     display: flex;
+    align-items: baseline;
+    padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
 
     .input-label {
+        opacity: .6;
         padding: var(--spacing-small);
+        font-size: var(--font-size-small);
     }
 
     .input-container {
@@ -11,7 +15,13 @@
 }
 
 .option {
+    cursor: pointer;
     padding: var(--spacing-small);
+    font-weight: var(--font-weight-bold);
+
+    &.disabled {
+        color: var(--color-text-disabled);
+    }
 
     &.active {
         color: var(--color-accent);

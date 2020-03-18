@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
 
@@ -10,8 +10,11 @@ interface Props {
     className?: string;
 }
 
+type ExploreOptions = 'programs' | 'regions';
+
 const Navbar = (props: Props) => {
     const { className } = props;
+    const [exploreType, setExploreType] = useState('programs');
 
     return (
         <nav className={_cs(className, styles.navbar)}>
@@ -47,14 +50,15 @@ const Navbar = (props: Props) => {
                 </div>
                 <div className={styles.filters}>
                     <SegmentInput
-                        label="Explore"
+                        label="Explore by"
                         options={[
                             { key: 'programs', label: 'Programs' },
                             { key: 'regions', label: 'Regions' },
                         ]}
                         optionKeySelector={d => d.key}
                         optionLabelSelector={d => d.label}
-                        value="regions"
+                        value={exploreType}
+                        onChange={setExploreType}
                     />
                 </div>
             </div>

@@ -13,12 +13,11 @@
 
     .nav-links {
         display: flex;
+        align-items: flex-end;
         flex-grow: 1;
         justify-content: flex-start;
-        padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
-        text-transform: uppercase;
+        padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
         font-size: var(--font-size-small);
-
 
         .link {
             display: block;
@@ -32,5 +31,9 @@
                 color: var(--color-accent);
             }
         }
+    }
+
+    .filters {
+        padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
     }
 }

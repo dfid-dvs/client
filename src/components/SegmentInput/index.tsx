@@ -11,6 +11,15 @@ interface Props<T = {}> {
     renderer?: React.ReactNode;
     label?: React.ReactNode;
     value?: T;
+    onChange?: (key: string | undefined) => void;
+}
+
+interface OptionProps {
+    onClick?: () => void;
+    label?: string;
+    isActive?: boolean;
+    className?: string;
+    disabled?: boolean;
 }
 
 const Option = ({
@@ -18,8 +27,18 @@ const Option = ({
     label,
     isActive,
     className,
-}) => (
-    <div className={_cs(className, styles.option, isActive && styles.active)}>
+    disabled,
+}: OptionProps) => (
+    <div
+        role="presentation"
+        onClick={disabled ? undefined : onClick}
+        className={_cs(
+            className,
+            styles.option,
+            isActive && styles.active,
+            disabled && styles.disabled,
+        )}
+    >
         { label }
     </div>
 );
@@ -33,6 +52,7 @@ const SegmentInput = (props: Props) => {
         renderer,
         label,
         value,
+        onChange,
     } = props;
 
     return (
@@ -56,6 +76,8 @@ const SegmentInput = (props: Props) => {
 
                     return (
                         <RenderOption
+                            key={key}
+                            onClick={onChange ? (() => onChange(key)) : undefined}
                             isActive={isActive}
                             label={optionLabel}
                         />
