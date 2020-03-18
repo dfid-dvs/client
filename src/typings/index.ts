@@ -3,3 +3,8 @@ export interface InputChangeEvent<T=string|undefined> {
     name: string | undefined;
     originalEvent?: React.FormEvent<HTMLInputElement>;
 }
+
+export interface ButtonClickEvent {
+    name: string | undefined;
+    originalEvent: React.MouseEvent<HTMLButtonElement>;
+}

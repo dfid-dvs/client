@@ -5,6 +5,7 @@ import { IoIosSearch } from 'react-icons/io';
 
 import SegmentInput from '#components/SegmentInput';
 import TextInput from '#components/TextInput';
+import DropdownMenu from '#components/DropdownMenu';
 import { useForm } from '#hooks';
 
 import styles from './styles.css';
@@ -74,6 +75,12 @@ const Navbar = (props: Props) => {
                         className={styles.programSearch}
                         {...formElement('searchProgram')}
                     />
+                    <DropdownMenu label="Sectors">
+                        Choose sectors
+                    </DropdownMenu>
+                    <DropdownMenu label="Markers">
+                        Select markers
+                    </DropdownMenu>
                 </div>
             </div>
         </nav>

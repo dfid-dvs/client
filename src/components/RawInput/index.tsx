@@ -9,7 +9,7 @@ export interface Props extends Omit<React.HTMLProps<HTMLInputElement>, 'onChange
     onChange: (e: InputChangeEvent) => void;
 }
 
-const Input = (props: Props) => {
+function RawInput(props: Props) {
     const {
         className,
         onChange,
@@ -34,10 +34,10 @@ const Input = (props: Props) => {
     return (
         <input
             onChange={handleChange}
-            className={_cs(className, styles.input)}
+            className={_cs(className, styles.rawInput)}
             {...otherProps}
         />
     );
-};
+}
 
-export default Input;
+export default RawInput;
