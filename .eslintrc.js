@@ -29,6 +29,8 @@ module.exports = {
                     '#ts': './src/ts',
                     '#utils': './src/utils',
                     '#views': './src/views',
+                    '#types': './src/typings',
+                    '#hooks': './src/hooks',
                 },
             },
         },

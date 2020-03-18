@@ -1,6 +1,8 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
+import { InputChangeEvent } from '#types';
+import Option from './Option';
 import styles from './styles.css';
 
 interface Props<T = {}> {
@@ -11,37 +13,10 @@ interface Props<T = {}> {
     renderer?: React.ReactNode;
     label?: React.ReactNode;
     value?: T;
-    onChange?: (key: string | undefined) => void;
+    onChange?: (e: InputChangeEvent) => void;
+    name?: string;
 }
 
-interface OptionProps {
-    onClick?: () => void;
-    label?: string;
-    isActive?: boolean;
-    className?: string;
-    disabled?: boolean;
-}
-
-const Option = ({
-    onClick,
-    label,
-    isActive,
-    className,
-    disabled,
-}: OptionProps) => (
-    <div
-        role="presentation"
-        onClick={disabled ? undefined : onClick}
-        className={_cs(
-            className,
-            styles.option,
-            isActive && styles.active,
-            disabled && styles.disabled,
-        )}
-    >
-        { label }
-    </div>
-);
 
 const SegmentInput = (props: Props) => {
     const {
@@ -53,10 +28,11 @@ const SegmentInput = (props: Props) => {
         label,
         value,
         onChange,
+        name,
     } = props;
 
     return (
-        <div className={_cs(className, styles.switch)}>
+        <div className={_cs(className, styles.segmentInput)}>
             <div className={styles.inputLabel}>
                 { label }
             </div>
@@ -77,7 +53,7 @@ const SegmentInput = (props: Props) => {
                     return (
                         <RenderOption
                             key={key}
-                            onClick={onChange ? (() => onChange(key)) : undefined}
+                            onClick={onChange ? (() => onChange({ name, value: key })) : undefined}
                             isActive={isActive}
                             label={optionLabel}
                         />

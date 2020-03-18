@@ -1,0 +1,13 @@
+.option {
+    cursor: pointer;
+    padding: var(--spacing-small);
+    font-weight: var(--font-weight-bold);
+
+    &.disabled {
+        color: var(--color-text-disabled);
+    }
+
+    &.active {
+        color: var(--color-accent);
+    }
+}

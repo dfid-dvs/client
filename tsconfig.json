@@ -22,7 +22,9 @@
         "#schema": ["./src/schema"],
         "#ts": ["./src/ts"],
         "#utils/*": ["./src/utils/*"],
-        "#views/*": ["./src/views/*"]
+        "#views/*": ["./src/views/*"],
+        "#types": ["./src/typings"],
+        "#hooks": ["./src/hooks"]
     }
   },
   "include": [

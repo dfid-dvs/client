@@ -1,4 +1,4 @@
-.switch {
+.segment-input {
     display: flex;
     align-items: baseline;
     padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
@@ -11,19 +11,5 @@
 
     .input-container {
         display: flex;
-    }
-}
-
-.option {
-    cursor: pointer;
-    padding: var(--spacing-small);
-    font-weight: var(--font-weight-bold);
-
-    &.disabled {
-        color: var(--color-text-disabled);
-    }
-
-    &.active {
-        color: var(--color-accent);
     }
 }

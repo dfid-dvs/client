@@ -3,8 +3,10 @@ import { NavLink } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
 
 import SegmentInput from '#components/SegmentInput';
+import { useForm } from '#hooks';
 
 import styles from './styles.css';
+
 
 interface Props {
     className?: string;
@@ -12,9 +14,11 @@ interface Props {
 
 type ExploreOptions = 'programs' | 'regions';
 
+
 const Navbar = (props: Props) => {
     const { className } = props;
-    const [exploreType, setExploreType] = useState('programs');
+    const [values, setValues] = useState({ exploreBy: 'programs' });
+    const { formElement } = useForm(values, setValues);
 
     return (
         <nav className={_cs(className, styles.navbar)}>
@@ -57,8 +61,7 @@ const Navbar = (props: Props) => {
                         ]}
                         optionKeySelector={d => d.key}
                         optionLabelSelector={d => d.label}
-                        value={exploreType}
-                        onChange={setExploreType}
+                        {...formElement('exploreBy')}
                     />
                 </div>
             </div>
