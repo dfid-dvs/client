@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
+import { IoIosSearch } from 'react-icons/io';
 
 import SegmentInput from '#components/SegmentInput';
+import TextInput from '#components/TextInput';
 import { useForm } from '#hooks';
 
 import styles from './styles.css';
@@ -17,7 +19,10 @@ type ExploreOptions = 'programs' | 'regions';
 
 const Navbar = (props: Props) => {
     const { className } = props;
-    const [values, setValues] = useState({ exploreBy: 'programs' });
+    const [values, setValues] = useState({
+        exploreBy: 'programs',
+        searchProgram: '',
+    });
     const { formElement } = useForm(values, setValues);
 
     return (
@@ -54,6 +59,7 @@ const Navbar = (props: Props) => {
                 </div>
                 <div className={styles.filters}>
                     <SegmentInput
+                        className={styles.exploreBySelection}
                         label="Explore by"
                         options={[
                             { key: 'programs', label: 'Programs' },
@@ -62,6 +68,11 @@ const Navbar = (props: Props) => {
                         optionKeySelector={d => d.key}
                         optionLabelSelector={d => d.label}
                         {...formElement('exploreBy')}
+                    />
+                    <TextInput
+                        icons={<IoIosSearch />}
+                        className={styles.programSearch}
+                        {...formElement('searchProgram')}
                     />
                 </div>
             </div>

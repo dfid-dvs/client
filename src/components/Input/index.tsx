@@ -1,43 +1,54 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import { InputChangeEvent } from '#types';
+import RawInput, { Props as RawInputProps } from '../RawInput';
 import styles from './styles.css';
 
-interface Props {
+export interface Props extends RawInputProps {
     className?: string;
-    onChange: (e: InputChangeEvent) => void;
+    icons?: React.ReactNode;
+    actions?: React.ReactNode;
 }
 
-const Input = (props: Props) => {
+function Input(props: Props) {
     const {
         className,
-        onChange,
+        label,
+        icons,
+        actions,
         ...otherProps
     } = props;
 
-    const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
-        const {
-            currentTarget: {
-                value,
-                name,
-            },
-        } = e;
-
-        onChange({
-            value,
-            name,
-            originalEvent: e,
-        });
-    };
-
     return (
-        <input
-            onChange={handleChange}
-            className={_cs(className, styles.input)}
-            {...otherProps}
-        />
+        <div className={_cs(styles.inputContainer, className)}>
+            { label && (
+                <div className={styles.label}>
+                    { label }
+                </div>
+            )}
+            <div className={styles.main}>
+                { icons && (
+                    <div className={styles.icons}>
+                        { icons }
+                    </div>
+                )}
+                <RawInput
+                    className={_cs(styles.input, className)}
+                    {...otherProps}
+                />
+                { actions && (
+                    <div className={styles.actions}>
+                        { actions }
+                    </div>
+                )}
+            </div>
+            {/*
+            <div className={styles.extra}>
+                extra
+            </div>
+            */}
+        </div>
     );
-};
+}
 
 export default Input;

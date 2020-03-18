@@ -1,9 +1,9 @@
+// eslint-disable-next-line import/prefer-default-export
 export function useForm(
     values: {},
     setValues,
     // errors: {} = {},
 ) {
-    // const [fieldErrors, setFieldErrors] = useState(initialErrors);
     const handleChange = (e: InputChangeEvent) => {
         const {
             value,
