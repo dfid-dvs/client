@@ -10,7 +10,8 @@ interface Props<T = {}> {
     options?: T[];
     optionKeySelector?: (d: T) => string;
     optionLabelSelector?: (d: T) => string;
-    renderer?: React.ReactNode;
+    renderer?: typeof Option;
+    // renderer?: React.ReactNode;
     label?: React.ReactNode;
     value?: T;
     onChange?: (e: InputChangeEvent) => void;
@@ -40,11 +41,8 @@ const SegmentInput = (props: Props) => {
                 { options.map((option) => {
                     const key = optionKeySelector ? optionKeySelector(option) : undefined;
                     const isActive = key === value;
-                    let RenderOption = Option;
 
-                    if (renderer) {
-                        RenderOption = renderer;
-                    }
+                    const RenderOption = renderer || Option;
 
                     const optionLabel = optionLabelSelector
                         ? optionLabelSelector(option)

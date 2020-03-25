@@ -6,4 +6,8 @@ import Root from './Root';
 console.info('React version', React.version);
 
 const rootElement = document.getElementById('dfid-root');
-ReactDOM.createRoot(rootElement).render(<Root />);
+if (rootElement) {
+    ReactDOM.createRoot(rootElement).render(<Root />);
+} else {
+    console.error('Root element was not found');
+}

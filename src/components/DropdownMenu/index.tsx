@@ -6,10 +6,6 @@ import RawButton from '../RawButton';
 
 import styles from './styles.css';
 
-interface Props {
-    className?: string;
-}
-
 interface DropdownProps {
     parentRef: React.RefObject<HTMLElement>;
     children: React.ReactNode;
@@ -32,9 +28,15 @@ function Dropdown(props: DropdownProps) {
     );
 }
 
+interface Props {
+    // className?: string;
+    children: React.ReactNode;
+    label: string | undefined;
+}
+
 function DropdownMenu(props: Props) {
     const {
-        className,
+        // className,
         children,
         label,
     } = props;
