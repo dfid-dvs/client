@@ -9,6 +9,7 @@ export interface Props extends Omit<React.HTMLProps<HTMLButtonElement>, 'onClick
     className?: string;
     onClick: (e: ButtonClickEvent) => void;
     elementRef: React.RefObject<HTMLButtonElement>;
+    type?: 'button' | 'submit' | 'reset';
 }
 
 function RawButton(props: Props) {
@@ -19,18 +20,21 @@ function RawButton(props: Props) {
         ...otherProps
     } = props;
 
-    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-        const {
-            currentTarget: {
-                name,
-            },
-        } = e;
+    const handleClick = React.useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            const {
+                currentTarget: {
+                    name,
+                },
+            } = e;
 
-        onClick({
-            name,
-            originalEvent: e,
-        });
-    };
+            onClick({
+                name,
+                originalEvent: e,
+            });
+        },
+        [onClick],
+    );
 
     return (
         <button
@@ -44,3 +48,6 @@ function RawButton(props: Props) {
 }
 
 export default RawButton;
+RawButton.defaultProps = {
+    type: 'button',
+};

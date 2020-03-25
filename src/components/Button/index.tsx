@@ -1,5 +1,7 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { _cs } from '@togglecorp/fujs';
+
+import RawButton, { Props as RawButtonProps } from '../RawButton';
 
 /*
 eslint css-modules/no-unused-class: [
@@ -28,22 +30,17 @@ export type ButtonVariant = (
     | 'warning'
 );
 
-type ButtonType = 'button' | 'submit' | 'reset';
-
-export interface Props extends Omit<React.HTMLProps<HTMLButtonElement>, 'onClick' | 'ref'> {
+export interface Props extends RawButtonProps {
     variant: ButtonVariant;
     children?: React.ReactNode;
     className?: string;
     disabled?: boolean;
-    onClick?: (event: React.MouseEvent) => void;
     transparent: boolean;
-    type?: ButtonType;
 }
 
 function Button(props: Props) {
     const {
         variant,
-        children,
         className: classNameFromProps,
         disabled,
         transparent,
@@ -51,15 +48,6 @@ function Button(props: Props) {
         onClick,
         ...otherProps
     } = props;
-
-    const handleClick = useCallback(
-        (e: React.MouseEvent) => {
-            if (onClick) {
-                onClick(e);
-            }
-        },
-        [onClick],
-    );
 
     const buttonClassName = _cs(
         classNameFromProps,
@@ -79,26 +67,22 @@ function Button(props: Props) {
 
     return (
         // eslint-disable-next-line react/button-has-type
-        <button
+        <RawButton
             className={buttonClassName}
             disabled={disabled || !onClick}
-            onClick={handleClick}
+            onClick={onClick}
             type={type}
             {...otherProps}
-        >
-            { children }
-        </button>
+        />
     );
 }
 
 const defaultVariant: ButtonVariant = 'default';
-const defaultType: ButtonType = 'button';
 Button.defaultProps = {
     variant: defaultVariant,
     disabled: false,
     pending: false,
     transparent: false,
-    type: defaultType,
 };
 
 export default Button;

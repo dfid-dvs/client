@@ -1,4 +1,5 @@
 .button {
+    position: relative;
     font-family: inherit;
 
     /*
@@ -44,14 +45,12 @@
             transition-property: transform;
             */
 
-            /*
             &:hover {
-                filter: brightness(70%)
+                filter: brightness(117%)
             }
-            */
 
             &:active {
-                transform: translateY(1px);
+                filter: brightness(133%)
             }
 
             &.default {
@@ -59,26 +58,31 @@
                 background-color: snow;
                 color: gray;
             }
+
             &.accent {
                 border: 1px solid darkcyan;
                 background-color: darkcyan;
                 color: white;
             }
+
             &.danger {
                 border: 1px solid firebrick;
                 background-color: firebrick;
                 color: white;
             }
+
             &.primary {
                 border: 1px solid slateblue;
                 background-color: slateblue;
                 color: white;
             }
+
             &.success {
                 border: 1px solid forestgreen;
                 background-color: forestgreen;
                 color: white;
             }
+
             &.warning {
                 border: 1px solid tomato;
                 background-color: tomato;
