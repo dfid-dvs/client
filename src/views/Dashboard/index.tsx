@@ -17,8 +17,8 @@ const Dashboard = (props: Props) => {
             className,
         )}
         >
-            <div>
-                Dashboard
+            <div className={styles.mapContainer}>
+                The awesome map goes here
             </div>
             <div className={styles.buttons}>
                 <Button
@@ -31,6 +31,7 @@ const Dashboard = (props: Props) => {
                 </Button>
                 <Button
                     variant="primary"
+                    pending
                     className={styles.button}
                     onClick={() => {
                         console.warn('clicked');

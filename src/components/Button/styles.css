@@ -1,23 +1,8 @@
 .button {
     position: relative;
+    overflow: hidden;
     font-family: inherit;
 
-    /*
-    &.transparent {
-        &.default {
-        }
-        &.accent {
-        }
-        &.danger {
-        }
-        &.primary {
-        }
-        &.success {
-        }
-        &.warning {
-        }
-    }
-    */
     &::-moz-focus-inner {
         border:0;
     }
@@ -30,20 +15,48 @@
         border-radius: 4px;
         padding: 6px 8px;
 
-        &:disabled {
-            border: 1px solid snow;
+        &.default {
+            border: 1px solid darkgray;
             background-color: snow;
-            color: lightgray;
+            color: gray;
+        }
+
+        &.accent {
+            border: 1px solid darkcyan;
+            background-color: darkcyan;
+            color: white;
+        }
+
+        &.danger {
+            border: 1px solid firebrick;
+            background-color: firebrick;
+            color: white;
+        }
+
+        &.primary {
+            border: 1px solid slateblue;
+            background-color: slateblue;
+            color: white;
+        }
+
+        &.success {
+            border: 1px solid forestgreen;
+            background-color: forestgreen;
+            color: white;
+        }
+
+        &.warning {
+            border: 1px solid tomato;
+            background-color: tomato;
+            color: white;
+        }
+
+        &:disabled {
+            filter: saturate(20%);
         }
 
         &:not(:disabled) {
             cursor: pointer;
-
-            /*
-            transition-delay: 0s;
-            transition-duration: 0.1s;
-            transition-property: transform;
-            */
 
             &:hover {
                 filter: brightness(117%)
@@ -52,42 +65,19 @@
             &:active {
                 filter: brightness(133%)
             }
-
-            &.default {
-                border: 1px solid darkgray;
-                background-color: snow;
-                color: gray;
-            }
-
-            &.accent {
-                border: 1px solid darkcyan;
-                background-color: darkcyan;
-                color: white;
-            }
-
-            &.danger {
-                border: 1px solid firebrick;
-                background-color: firebrick;
-                color: white;
-            }
-
-            &.primary {
-                border: 1px solid slateblue;
-                background-color: slateblue;
-                color: white;
-            }
-
-            &.success {
-                border: 1px solid forestgreen;
-                background-color: forestgreen;
-                color: white;
-            }
-
-            &.warning {
-                border: 1px solid tomato;
-                background-color: tomato;
-                color: white;
-            }
         }
+    }
+
+    .loading-backdrop {
+        display: flex;
+        position: absolute;
+        top: 0;
+        left: 0;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, .7);
+        width: 100%;
+        height: 100%;
+        color: #000;
     }
 }

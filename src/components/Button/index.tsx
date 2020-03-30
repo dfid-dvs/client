@@ -2,6 +2,7 @@ import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import RawButton, { Props as RawButtonProps } from '../RawButton';
+import LoadingAnimation from '../LoadingAnimation';
 
 /*
 eslint css-modules/no-unused-class: [
@@ -46,6 +47,8 @@ function Button(props: Props) {
         transparent,
         type,
         onClick,
+        pending,
+        children,
         ...otherProps
     } = props;
 
@@ -66,14 +69,24 @@ function Button(props: Props) {
     // 4. implement outline button
 
     return (
-        // eslint-disable-next-line react/button-has-type
         <RawButton
             className={buttonClassName}
-            disabled={disabled || !onClick}
+            disabled={pending || disabled || !onClick}
             onClick={onClick}
             type={type}
             {...otherProps}
-        />
+        >
+            { pending && (
+                <div className={styles.loadingBackdrop}>
+                    <LoadingAnimation />
+                </div>
+            )}
+            <div>
+                icons
+            </div>
+            { children }
+        </RawButton>
+
     );
 }
 
