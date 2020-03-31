@@ -72,3 +72,36 @@ export function useRequest<T>(
 
     return [pending, response];
 }
+
+export function useBlurEffect(
+    shouldWatch: boolean,
+    callback: (clickedInside: boolean, e: MouseEvent) => void,
+    elementRef: React.RefObject<HTMLElement>,
+    parentRef: React.RefObject<HTMLElement>,
+    deps?: React.DependencyList,
+) {
+    React.useEffect(() => {
+        const handleDocumentClick = (e: MouseEvent) => {
+            const { current: element } = elementRef;
+            const { current: parent } = parentRef;
+
+            const isElementOrContainedInElement = element
+                ? element === e.target || element.contains(e.target as HTMLElement)
+                : false;
+            const isParentOrContainedInParent = parent
+                ? parent === e.target || parent.contains(e.target as HTMLElement)
+                : false;
+
+            const clickedInside = isElementOrContainedInElement || isParentOrContainedInParent;
+            callback(clickedInside, e);
+        };
+
+        if (shouldWatch) {
+            document.addEventListener('click', handleDocumentClick);
+        } else {
+            document.removeEventListener('click', handleDocumentClick);
+        }
+
+        return () => { document.removeEventListener('click', handleDocumentClick); };
+    }, deps);
+}

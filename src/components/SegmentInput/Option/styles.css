@@ -1,6 +1,6 @@
 .option {
     cursor: pointer;
-    padding: var(--spacing-small);
+    padding: 0 var(--spacing-medium);
     font-weight: var(--font-weight-bold);
 
     &.disabled {

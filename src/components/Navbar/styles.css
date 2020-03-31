@@ -19,7 +19,7 @@
             align-items: flex-end;
             flex-grow: 1;
             justify-content: flex-start;
-            padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
+            padding: var(--spacing-small) calc(var(--spacing-large) - var(--spacing-small));
             font-size: var(--font-size-small);
 
             .link {
@@ -38,7 +38,7 @@
 
         .filters {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
 
             .explore-by-selection {
@@ -46,7 +46,7 @@
             }
 
             .program-search {
-                flex-grow: 1;
+                margin: 0 var(--spacing-medium);
             }
         }
     }

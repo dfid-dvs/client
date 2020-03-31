@@ -1,11 +1,9 @@
 .segment-input {
-    display: flex;
-    align-items: baseline;
-    padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
+    padding: 0 calc(var(--spacing-large) - var(--spacing-medium));
 
     .input-label {
         opacity: .6;
-        padding: var(--spacing-small);
+        padding: 0 var(--spacing-medium);
         font-size: var(--font-size-small);
     }
 

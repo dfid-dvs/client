@@ -6,7 +6,7 @@ import styles from './styles.css';
 export interface Props extends Omit<React.HTMLProps<HTMLButtonElement>, 'onClick'>{
     className?: string;
     onClick: (name: string | undefined, e: React.MouseEvent<HTMLButtonElement>) => void;
-    elementRef: React.RefObject<HTMLButtonElement>;
+    elementRef?: React.RefObject<HTMLButtonElement>;
     type?: 'button' | 'submit' | 'reset';
 }
 

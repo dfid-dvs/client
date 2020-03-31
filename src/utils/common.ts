@@ -73,7 +73,7 @@ export const generateMapPaint = (colorDomain: string[], minValue: number, maxVal
     const range = maxValue - minValue;
     const colors: (string | number)[] = [];
 
-    if (!Number.isNaN(range) && range !== Infinity) {
+    if (!Number.isNaN(range) && range !== Infinity && range !== -Infinity) {
         const gap = range / colorDomain.length;
 
         if (maxValue <= 1 || gap < 1) {
@@ -103,7 +103,7 @@ export const generateMapPaint = (colorDomain: string[], minValue: number, maxVal
         'fill-color': string | any[];
         'fill-opacity': number | any[];
     } = {
-        'fill-color': 'white',
+        'fill-color': '#18bc9c',
         'fill-opacity': 0.1,
     };
 
@@ -117,7 +117,7 @@ export const generateMapPaint = (colorDomain: string[], minValue: number, maxVal
         const fillOpacity = [
             'case',
             ['==', ['feature-state', 'value'], null],
-            0,
+            0.1,
             ['==', ['feature-state', 'hovered'], true],
             0.5,
             1,
@@ -130,21 +130,4 @@ export const generateMapPaint = (colorDomain: string[], minValue: number, maxVal
     }
 
     return paint;
-};
-
-export const mapStyles = {
-    nepal: {
-        url: 'mapbox://adityakhatri.9xb2vnfb',
-        layers: {
-            province: 'provincegeo',
-            district: 'districtgeo',
-            municipality: 'palikageo',
-            ward: 'wardgeo',
-
-            provinceLabel: 'provincecentroidgeo',
-            districtLabel: 'districtcentroidgeo',
-            municipalityLabel: 'palikacentroidgeo',
-            wardLabel: 'wardcentroidgeo',
-        },
-    },
 };

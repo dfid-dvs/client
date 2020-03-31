@@ -10,6 +10,7 @@ import NavbarContext from '#components/NavbarContext';
 import {
     ExploreOption,
     RegionLevelOption,
+    NavbarContextProps,
 } from '#types';
 
 import styles from './styles.css';
@@ -53,12 +54,13 @@ const Navbar = (props: Props) => {
         exploreBy: 'programs',
         searchProgram: '',
     });
+
     const {
         exploreBy,
         setExploreBy,
         regionLevel,
         setRegionLevel,
-    } = React.useContext(NavbarContext);
+    } = React.useContext<NavbarContextProps>(NavbarContext);
 
     return (
         <nav className={_cs(className, styles.navbar)}>
@@ -93,9 +95,6 @@ const Navbar = (props: Props) => {
                     </NavLink>
                 </div>
                 <div className={styles.filters}>
-                    <DropdownMenu label="Sectors">
-                        Choose sectors
-                    </DropdownMenu>
                     <SegmentInput
                         className={styles.exploreBySelection}
                         label="Explore by"
@@ -105,6 +104,16 @@ const Navbar = (props: Props) => {
                         value={exploreBy}
                         onChange={setExploreBy}
                     />
+                    {exploreBy === 'programs' && (
+                        <>
+                            <DropdownMenu label="Sectors">
+                                Choose sectors
+                            </DropdownMenu>
+                            <DropdownMenu label="Markers">
+                                Select markers
+                            </DropdownMenu>
+                        </>
+                    )}
                     {exploreBy === 'regions' && (
                         <SegmentInput
                             className={styles.regionLevelSelection}
@@ -116,15 +125,10 @@ const Navbar = (props: Props) => {
                             onChange={setRegionLevel}
                         />
                     )}
-                    {/*
                     <TextInput
                         icons={<IoIosSearch />}
                         className={styles.programSearch}
                     />
-                    */}
-                    <DropdownMenu label="Markers">
-                        Select markers
-                    </DropdownMenu>
                 </div>
             </div>
         </nav>

@@ -4,23 +4,29 @@ import { _cs } from '@togglecorp/fujs';
 import RawInput, { Props as RawInputProps } from '../RawInput';
 import styles from './styles.css';
 
-export interface Props extends RawInputProps {
+export interface Props<T> extends RawInputProps<T> {
     className?: string;
     icons?: React.ReactNode;
     actions?: React.ReactNode;
+    inputRef?: React.RefObject<HTMLInputElement>;
 }
 
-function Input(props: Props) {
+function Input<T>(props: Props<T>) {
     const {
+        elementRef,
         className,
         label,
         icons,
         actions,
+        inputRef,
         ...otherProps
     } = props;
 
     return (
-        <div className={_cs(styles.inputContainer, className)}>
+        <div
+            ref={elementRef}
+            className={_cs(styles.inputContainer, className)}
+        >
             { label && (
                 <div className={styles.label}>
                     { label }
@@ -33,6 +39,7 @@ function Input(props: Props) {
                     </div>
                 )}
                 <RawInput
+                    elementRef={inputRef}
                     className={_cs(styles.input, className)}
                     {...otherProps}
                 />

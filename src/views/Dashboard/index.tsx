@@ -9,13 +9,9 @@ import MapState from '#remap/MapSource/MapState';
 
 import { useRequest } from '#hooks';
 import NavbarContext from '#components/NavbarContext';
-import DropdownMenu from '#components/DropdownMenu';
-import RawButton from '#components/RawButton';
+import SelectInput from '#components/SelectInput';
 import { RegionLevelOption } from '#types';
-import {
-    generateMapPaint,
-    mapStyles,
-} from '#utils/common';
+import { generateMapPaint } from '#utils/common';
 
 
 import styles from './styles.css';
@@ -82,7 +78,7 @@ const layerOptions = {
     },
     paint: {
         'line-opacity': 0.6,
-        'line-color': 'red',
+        'line-color': '#18bc9c',
         'line-width': 1,
     },
 };
@@ -133,6 +129,13 @@ const Dashboard = (props: Props) => {
     const mapState = React.useMemo(() => {
         let state: MapState[] = [];
 
+        if (regionLevel === 'province' && !provinceIndicatorListPending) {
+            state = provinceIndicatorListResponse.data.map(d => ({
+                id: d.provinceId,
+                value: d.value,
+            }));
+        }
+
         if (regionLevel === 'district' && !districtIndicatorListPending) {
             state = districtIndicatorListResponse.data.map(d => ({
                 id: d.districtId,
@@ -140,15 +143,28 @@ const Dashboard = (props: Props) => {
             }));
         }
 
+        if (regionLevel === 'municipality' && !municipalityIndicatorListPending) {
+            state = municipalityIndicatorListResponse.data.map(d => ({
+                id: d.municipalityId,
+                value: d.value,
+            }));
+        }
+
         return state;
-    }, [regionLevel, districtIndicatorListPending, districtIndicatorListResponse]);
+    }, [
+        regionLevel,
+        provinceIndicatorListPending,
+        provinceIndicatorListResponse,
+        districtIndicatorListPending,
+        districtIndicatorListResponse,
+        municipalityIndicatorListPending,
+        municipalityIndicatorListResponse,
+    ]);
 
     const mapPaint = React.useMemo(() => {
         const valueList = mapState.map(d => d.value);
         const min = Math.min(...valueList);
         const max = Math.max(...valueList);
-
-        console.warn(valueList, min, max);
 
         const colorDomain = [
             '#31ad5c',
@@ -171,8 +187,6 @@ const Dashboard = (props: Props) => {
         tiles: tiles[regionLevel],
     };
 
-    console.warn(mapState, mapPaint);
-
     return (
         <div className={_cs(
             styles.dashboard,
@@ -180,7 +194,6 @@ const Dashboard = (props: Props) => {
         )}
         >
             <Map
-                key={regionLevel}
                 mapStyle="mapbox://styles/mapbox/light-v10"
                 mapOptions={mapOptions}
                 scaleControlShown
@@ -192,6 +205,7 @@ const Dashboard = (props: Props) => {
                 <MapSource
                     sourceKey={regionLevel}
                     sourceOptions={sourceOptions}
+                    key={regionLevel}
                 >
                     <MapLayer
                         layerKey="line"
@@ -213,22 +227,17 @@ const Dashboard = (props: Props) => {
                 </MapSource>
             </Map>
             <div className={styles.mapStyleConfigContainer}>
-                <DropdownMenu label="Select indicator">
-                    <div className={styles.indicators}>
-                        { indicatorListPending ? 'Loading...' : (
-                            indicatorListResponse.results.map(indicator => (
-                                <RawButton
-                                    className={styles.selectIndicatorButton}
-                                    key={indicator.id}
-                                    onClick={setSelectedIndicator}
-                                    name={indicator.id}
-                                >
-                                    { indicator.fullTitle }
-                                </RawButton>
-                            ))
-                        )}
-                    </div>
-                </DropdownMenu>
+                <h4 className={styles.heading}>
+                    Indicator
+                </h4>
+                <SelectInput
+                    pending={indicatorListPending}
+                    options={indicatorListResponse.results}
+                    onChange={setSelectedIndicator}
+                    value={selectedIndicator}
+                    optionLabelSelector={d => d.fullTitle}
+                    optionKeySelector={d => d.id}
+                />
             </div>
         </div>
     );
