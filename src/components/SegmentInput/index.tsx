@@ -1,25 +1,24 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import { InputChangeEvent } from '#types';
 import Option from './Option';
 import styles from './styles.css';
 
-interface Props<T = {}> {
+interface Props<T> {
     className?: string;
     options?: T[];
-    optionKeySelector?: (d: T) => string;
-    optionLabelSelector?: (d: T) => string;
+    optionKeySelector: (d: T) => string;
+    optionLabelSelector: (d: T) => string;
     renderer?: typeof Option;
     // renderer?: React.ReactNode;
     label?: React.ReactNode;
     value?: T;
-    onChange?: (e: InputChangeEvent) => void;
+    onChange?: (value: string | undefined, name: string | undefined) => void;
     name?: string;
 }
 
 
-const SegmentInput = (props: Props) => {
+function SegmentInput<T>(props: Props<T>) {
     const {
         className,
         options = [],
@@ -51,7 +50,7 @@ const SegmentInput = (props: Props) => {
                     return (
                         <RenderOption
                             key={key}
-                            onClick={onChange ? (() => onChange({ name, value: key })) : undefined}
+                            onClick={onChange ? (() => onChange(key, name)) : undefined}
                             isActive={isActive}
                             label={optionLabel}
                         />
@@ -60,6 +59,6 @@ const SegmentInput = (props: Props) => {
             </div>
         </div>
     );
-};
+}
 
 export default SegmentInput;

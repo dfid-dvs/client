@@ -6,7 +6,11 @@ import { IoIosSearch } from 'react-icons/io';
 import SegmentInput from '#components/SegmentInput';
 import TextInput from '#components/TextInput';
 import DropdownMenu from '#components/DropdownMenu';
-import { useForm } from '#hooks';
+import NavbarContext from '#components/NavbarContext';
+import {
+    ExploreOption,
+    RegionLevelOption,
+} from '#types';
 
 import styles from './styles.css';
 
@@ -15,7 +19,32 @@ interface Props {
     className?: string;
 }
 
-type ExploreOptions = 'programs' | 'regions';
+interface ExploreOptionListItem {
+    key: ExploreOption;
+    label: string;
+}
+
+interface RegionLevelOptionListItem {
+    key: RegionLevelOption;
+    label: string;
+}
+
+const exploreOptionList: ExploreOptionListItem[] = [
+    { key: 'programs', label: 'Programs' },
+    { key: 'regions', label: 'Regions' },
+];
+
+const exploreOptionListKeySelector = (d: ExploreOptionListItem) => d.key;
+const exploreOptionListLabelSelector = (d: ExploreOptionListItem) => d.label;
+
+const regionLevelOptionList: RegionLevelOptionListItem[] = [
+    { key: 'province', label: 'Province' },
+    { key: 'district', label: 'District' },
+    { key: 'municipality', label: 'Municipality' },
+];
+
+const regionLevelOptionListKeySelector = (d: RegionLevelOptionListItem) => d.key;
+const regionLevelOptionListLabelSelector = (d: RegionLevelOptionListItem) => d.label;
 
 
 const Navbar = (props: Props) => {
@@ -24,7 +53,12 @@ const Navbar = (props: Props) => {
         exploreBy: 'programs',
         searchProgram: '',
     });
-    const { formElement } = useForm(values, setValues);
+    const {
+        exploreBy,
+        setExploreBy,
+        regionLevel,
+        setRegionLevel,
+    } = React.useContext(NavbarContext);
 
     return (
         <nav className={_cs(className, styles.navbar)}>
@@ -62,18 +96,27 @@ const Navbar = (props: Props) => {
                     <SegmentInput
                         className={styles.exploreBySelection}
                         label="Explore by"
-                        options={[
-                            { key: 'programs', label: 'Programs' },
-                            { key: 'regions', label: 'Regions' },
-                        ]}
-                        optionKeySelector={d => d.key}
-                        optionLabelSelector={d => d.label}
-                        {...formElement('exploreBy')}
+                        options={exploreOptionList}
+                        optionKeySelector={exploreOptionListKeySelector}
+                        optionLabelSelector={exploreOptionListLabelSelector}
+                        value={exploreBy}
+                        onChange={setExploreBy}
                     />
+                    {exploreBy === 'regions' && (
+                        <SegmentInput
+                            className={styles.regionLevelSelection}
+                            label="Level"
+                            options={regionLevelOptionList}
+                            optionKeySelector={regionLevelOptionListKeySelector}
+                            optionLabelSelector={regionLevelOptionListLabelSelector}
+                            value={regionLevel}
+                            onChange={setRegionLevel}
+                        />
+                    )}
+                    {/*
                     <TextInput
                         icons={<IoIosSearch />}
                         className={styles.programSearch}
-                        {...formElement('searchProgram')}
                     />
                     <DropdownMenu label="Sectors">
                         Choose sectors
@@ -81,6 +124,7 @@ const Navbar = (props: Props) => {
                     <DropdownMenu label="Markers">
                         Select markers
                     </DropdownMenu>
+                    */}
                 </div>
             </div>
         </nav>

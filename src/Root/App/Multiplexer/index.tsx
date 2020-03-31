@@ -3,8 +3,14 @@ import { Switch, Route } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
 
 import Navbar from '#components/Navbar';
-import routes from './routes';
+import NavbarContext from '#components/NavbarContext';
+import {
+    ExploreOption,
+    RegionLevelOption,
+    NavbarContextProps,
+} from '#types';
 
+import routes from './routes';
 import styles from './styles.css';
 
 interface TitleProps {
@@ -34,6 +40,15 @@ interface Props {
 }
 const Multiplexer = (props: Props) => {
     const { className } = props;
+    const [exploreBy, setExploreBy] = React.useState<ExploreOption>('regions');
+    const [regionLevel, setRegionLevel] = React.useState<RegionLevelOption>('district');
+
+    const navbarContextProvider: NavbarContextProps = {
+        exploreBy,
+        setExploreBy,
+        regionLevel,
+        setRegionLevel,
+    };
 
     return (
         <div className={_cs(className, styles.multiplexer)}>
@@ -59,13 +74,13 @@ const Multiplexer = (props: Props) => {
                                 key={name}
                                 path={path}
                                 render={() => (
-                                    <>
+                                    <NavbarContext.Provider value={navbarContextProvider}>
                                         <Title value={title} />
                                         { !hideNavbar && (
                                             <Navbar className={styles.navbar} />
                                         )}
                                         <Loader className={styles.view} />
-                                    </>
+                                    </NavbarContext.Provider>
                                 )}
                             />
                         );

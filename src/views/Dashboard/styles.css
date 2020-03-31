@@ -5,13 +5,10 @@
 
     .map-container {
         flex-grow: 1;
-        border: 1px solid red;
     }
 
-    .buttons {
-        flex-shrink: 0;
-        .button {
-            margin: var(--spacing-small);
-        }
+    .indicators {
+        height: 200px;
+        font-size: 9px;
     }
 }

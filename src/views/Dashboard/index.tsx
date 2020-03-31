@@ -1,11 +1,17 @@
 import React, { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
+
 import Map from '#remap';
 import MapContainer from '#remap/MapContainer';
 import MapSource from '#remap/MapSource';
 import MapLayer from '#remap/MapSource/MapLayer';
 
-import Button from '#components/Button';
+import { useRequest } from '#hooks';
+import NavbarContext from '#components/NavbarContext';
+import {
+    RegionLevelOption,
+} from '#types';
+
 
 import styles from './styles.css';
 
@@ -17,20 +23,68 @@ const defaultBounds: [number, number, number, number] = [
 ];
 
 const palikaTiles = ['http://139.59.67.104:8060/api/v1/core/palika-tile/{z}/{x}/{y}'];
+const districtTiles = ['http://139.59.67.104:8060/api/v1/core/district-tile/{z}/{x}/{y}'];
+const provinceTiles = ['http://139.59.67.104:8060/api/v1/core/province-tile/{z}/{x}/{y}'];
+
+const tiles: {
+    [key in RegionLevelOption]: string[];
+} = {
+    municipality: palikaTiles,
+    district: districtTiles,
+    province: provinceTiles,
+};
 
 interface Props {
     className?: string;
 }
 
+const requestOption = {
+    headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
+    },
+};
+
+const mapOptions = {
+    logoPosition: 'top-left',
+    minZoom: 5,
+    zoom: 3,
+    center: defaultCenter,
+    bounds: defaultBounds,
+};
+
 const Dashboard = (props: Props) => {
     const { className } = props;
 
+    const { regionLevel } = React.useContext(NavbarContext);
+    const [pending, response] = useRequest('http://139.59.67.104:8060/api/v1/core/indicator-list/', requestOption);
     const onClick = useCallback(
         (name: string) => {
             console.warn('Button clicked', name);
         },
         [],
     );
+
+    const sourceOptions = {
+        type: 'vector',
+        tiles: tiles[regionLevel],
+    };
+
+    const layerOptions = {
+        type: 'line',
+        'source-layer': 'default',
+        layout: {
+            'line-cap': 'round',
+            'line-join': 'round',
+        },
+        paint: {
+            'line-opacity': 0.6,
+            'line-color': 'red',
+            'line-width': 1,
+        },
+    };
+
+    console.warn('source options', regionLevel, sourceOptions);
 
     return (
         <div className={_cs(
@@ -40,135 +94,29 @@ const Dashboard = (props: Props) => {
         >
             <Map
                 mapStyle="mapbox://styles/mapbox/light-v10"
-                mapOptions={{
-                    logoPosition: 'top-left',
-                    minZoom: 5,
-
-                    zoom: 3,
-                    center: defaultCenter,
-                    bounds: defaultBounds,
-                }}
+                mapOptions={mapOptions}
                 scaleControlShown
                 scaleControlPosition="bottom-right"
-
                 navControlShown
                 navControlPosition="bottom-right"
             >
-                <MapContainer
-                    className={styles.mapContainer}
-                />
+                <MapContainer className={styles.mapContainer} />
                 <MapSource
-                    sourceKey="palika"
-                    sourceOptions={{
-                        type: 'vector',
-                        tiles: palikaTiles,
-                    }}
+                    sourceKey={regionLevel}
+                    sourceOptions={sourceOptions}
                 >
                     <MapLayer
-                        layerKey="palika-line"
-                        layerOptions={{
-                            type: 'line',
-                            'source-layer': 'default',
-                            layout: {
-                                'line-cap': 'round',
-                                'line-join': 'round',
-                            },
-                            paint: {
-                                'line-opacity': 0.6,
-                                'line-color': 'red',
-                                'line-width': 1,
-                            },
-                        }}
+                        layerKey="line"
+                        layerOptions={layerOptions}
                     />
                 </MapSource>
-
             </Map>
-            <div className={styles.buttons}>
-                <Button
-                    className={styles.button}
-                    onClick={onClick}
-                    name="default"
-                >
-                    default
-                </Button>
-                <Button
-                    variant="primary"
-                    pending
-                    className={styles.button}
-                    onClick={onClick}
-                    name="primary"
-                >
-                    primary
-                </Button>
-                <Button
-                    variant="accent"
-                    className={styles.button}
-                    onClick={onClick}
-                    name="accent"
-                >
-                    accent
-                </Button>
-                <Button
-                    variant="warning"
-                    className={styles.button}
-                    onClick={onClick}
-                    name="warning"
-                >
-                    warning
-                </Button>
-                <Button
-                    variant="danger"
-                    className={styles.button}
-                    onClick={onClick}
-                    name="danger"
-                >
-                    danger
-                </Button>
-                <Button
-                    variant="success"
-                    className={styles.button}
-                    onClick={onClick}
-                    name="success"
-                >
-                    success
-                </Button>
-            </div>
-            <div className={styles.buttons}>
-                <Button
-                    className={styles.button}
-                >
-                    default
-                </Button>
-                <Button
-                    variant="primary"
-                    className={styles.button}
-                >
-                    primary
-                </Button>
-                <Button
-                    variant="accent"
-                    className={styles.button}
-                >
-                    accent
-                </Button>
-                <Button
-                    variant="warning"
-                    className={styles.button}
-                >
-                    warning
-                </Button>
-                <Button
-                    variant="danger"
-                    className={styles.button}
-                >
-                    danger
-                </Button>
-                <Button
-                    variant="success"
-                    className={styles.button}
-                >
-                    success
-                </Button>
+            <div className={styles.indicators}>
+                { pending ? 'Loading...' : (
+                    response.results.map(indicator => (
+                        <div key={indicator.id}>{ indicator.fullTitle }</div>
+                    ))
+                )}
             </div>
         </div>
     );

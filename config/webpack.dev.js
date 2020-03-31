@@ -124,7 +124,7 @@ module.exports = (env) => {
                     ],
                 },
                 {
-                    test: /\.css$/,
+                    test: /\.(css|scss)$/,
                     include: appSrc,
                     use: [
                         require.resolve('style-loader'),
