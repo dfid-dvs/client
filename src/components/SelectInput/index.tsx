@@ -43,19 +43,21 @@ function Dropdown(props: DropdownProps) {
     );
 }
 
-interface Props<T> {
+interface Props<T, K> {
     className?: string;
     dropdownContainerClassName?: string;
-    children: React.ReactNode;
-    label: string | undefined;
+    // children: React.ReactNode;
+    label?: string;
     options: T[];
     optionLabelSelector: (d: T) => string;
-    optionKeySelector: (d: T) => string;
-    value: string;
-    onChange: (d: string) => void;
+    optionKeySelector: (d: T) => K;
+    // FIXME: value shouldn't be string
+    value: K | undefined;
+    onChange: (d: K | undefined) => void;
+    disabled?: boolean;
 }
 
-function SelectInput<T>(props: Props<T>) {
+function SelectInput<T, K extends string | number>(props: Props<T, K>) {
     const {
         className,
         dropdownContainerClassName,
@@ -64,6 +66,7 @@ function SelectInput<T>(props: Props<T>) {
         optionKeySelector,
         value,
         onChange,
+        disabled,
     } = props;
 
     const inputContainerRef = React.useRef(null);
@@ -109,8 +112,9 @@ function SelectInput<T>(props: Props<T>) {
     const handleInputClick = React.useCallback(() => {
         setShowDropdown(true);
 
-        if (inputElementRef.current) {
-            inputElementRef.current.select();
+        const { current: inputContainer } = inputElementRef;
+        if (inputContainer) {
+            inputContainer.select();
         }
     }, [setShowDropdown]);
 
@@ -124,6 +128,7 @@ function SelectInput<T>(props: Props<T>) {
                 value={inputValue}
                 onChange={setInputValue}
                 placeholder="Select an option"
+                disabled={disabled}
             />
             { showDropdown && (
                 <Portal>
@@ -139,8 +144,9 @@ function SelectInput<T>(props: Props<T>) {
                                 <RawButton
                                     key={key}
                                     className={styles.option}
-                                    name={key}
+                                    name={String(key)}
                                     onClick={handleOptionClick}
+                                    disabled={disabled}
                                 >
                                     {optionLabelSelector(d)}
                                 </RawButton>

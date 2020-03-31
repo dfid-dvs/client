@@ -90,7 +90,7 @@ const Dashboard = (props: Props) => {
     const [
         selectedIndicator,
         setSelectedIndicator,
-    ] = React.useState<string | undefined>(undefined);
+    ] = React.useState<number | undefined>(undefined);
 
     const { regionLevel } = React.useContext(NavbarContext);
     const [
@@ -231,7 +231,8 @@ const Dashboard = (props: Props) => {
                     Indicator
                 </h4>
                 <SelectInput
-                    pending={indicatorListPending}
+                    disabled={indicatorListPending}
+                    // pending ={indicatorListPending}
                     options={indicatorListResponse.results}
                     onChange={setSelectedIndicator}
                     value={selectedIndicator}
