@@ -7,52 +7,26 @@ import MapSource from '#remap/MapSource';
 import MapLayer from '#remap/MapSource/MapLayer';
 import MapState from '#remap/MapSource/MapState';
 
-import { useRequest } from '#hooks';
 import NavbarContext from '#components/NavbarContext';
 import SelectInput from '#components/SelectInput';
-import { RegionLevelOption } from '#types';
-import { generateMapPaint } from '#utils/common';
 
+import { useRequest } from '#hooks';
+
+import { generateMapPaint } from '#utils/common';
 
 import styles from './styles.css';
 
-const defaultCenter: [number, number] = [84.1240, 28.3949];
 
-const defaultBounds: [number, number, number, number] = [
-    80.05858661752784, 26.347836996368667,
-    88.20166918432409, 30.44702867091792,
-];
-
-const palikaTiles = ['http://139.59.67.104:8060/api/v1/core/palika-tile/{z}/{x}/{y}'];
-const districtTiles = ['http://139.59.67.104:8060/api/v1/core/district-tile/{z}/{x}/{y}'];
-const provinceTiles = ['http://139.59.67.104:8060/api/v1/core/province-tile/{z}/{x}/{y}'];
-
-const tiles: {
-    [key in RegionLevelOption]: string[];
-} = {
-    municipality: palikaTiles,
-    district: districtTiles,
-    province: provinceTiles,
-};
-
-interface Props {
-    className?: string;
-}
-
-const requestOption = {
-    headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json; charset=utf-8',
-    },
-};
-
-const mapOptions = {
-    logoPosition: 'top-left',
-    minZoom: 5,
-    zoom: 3,
-    center: defaultCenter,
-    bounds: defaultBounds,
-};
+/*
+// TODO:
+1. Handle hover
+2. Handle tooltip
+3. Show indicators grouped by type
+4. Show recent indicators
+5. Show legend for indicators
+6. Wait for municipality-indicator api fix
+7. Bug where map-paint expects 4 but gets 2 argument
+*/
 
 interface MapState {
     id: number;
@@ -64,128 +38,174 @@ interface Indicator {
     fullTitle: string;
 }
 
-interface DistrictIndicator {
-    districtId: number;
+interface IndicatorValue {
+    id: number;
+    code: number;
+    indicatorId: number;
     value: number;
 }
-
-const layerOptions = {
-    type: 'line',
-    'source-layer': 'default',
-    layout: {
-        'line-cap': 'round',
-        'line-join': 'round',
-    },
-    paint: {
-        'line-opacity': 0.6,
-        'line-color': '#18bc9c',
-        'line-width': 1,
+const requestOption = {
+    headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
     },
 };
 
+const defaultCenter: [number, number] = [
+    84.1240, 28.3949,
+];
+const defaultBounds: [number, number, number, number] = [
+    80.05858661752784, 26.347836996368667,
+    88.20166918432409, 30.44702867091792,
+];
+const mapOptions = {
+    logoPosition: 'top-left',
+    minZoom: 5,
+    zoom: 3,
+    center: defaultCenter,
+    bounds: defaultBounds,
+};
+
+interface Props {
+    className?: string;
+}
 
 const Dashboard = (props: Props) => {
     const { className } = props;
+
+    const { regionLevel } = React.useContext(NavbarContext);
+    const showProvince = regionLevel === 'province';
+    const showDistrict = regionLevel === 'district';
+    const showMunicipality = regionLevel === 'municipality';
 
     const [
         selectedIndicator,
         setSelectedIndicator,
     ] = React.useState<number | undefined>(undefined);
 
-    const { regionLevel } = React.useContext(NavbarContext);
-    const [
-        indicatorListPending,
-        indicatorListResponse,
-    ] = useRequest<Indicator>('http://139.59.67.104:8060/api/v1/core/indicator-list/', requestOption);
-
-    const provinceIndicatorListGetUrl = regionLevel === 'province' && selectedIndicator
+    const provinceIndicatorListGetUrl = showProvince && selectedIndicator
         ? `http://139.59.67.104:8060/api/v1/core/province-indicator/${selectedIndicator}`
         : undefined;
 
-    const districtIndicatorListGetUrl = regionLevel === 'district' && selectedIndicator
+    const districtIndicatorListGetUrl = showDistrict && selectedIndicator
         ? `http://139.59.67.104:8060/api/v1/core/district-indicator/${selectedIndicator}`
         : undefined;
 
-    const municipalityIndicatorListGetUrl = regionLevel === 'municipality' && selectedIndicator
+    const municipalityIndicatorListGetUrl = showMunicipality && selectedIndicator
         ? `http://139.59.67.104:8060/api/v1/core/municipality-indicator/${selectedIndicator}`
         : undefined;
 
+    const indicatorListGetUrl = 'http://139.59.67.104:8060/api/v1/core/indicator-list/';
+
+    const [
+        indicatorListPending,
+        indicatorListResponse,
+    ] = useRequest<Indicator>(indicatorListGetUrl, requestOption);
 
     const [
         provinceIndicatorListPending,
         provinceIndicatorListResponse,
-    ] = useRequest(provinceIndicatorListGetUrl, requestOption);
+    ] = useRequest<IndicatorValue>(provinceIndicatorListGetUrl, requestOption);
 
     const [
         districtIndicatorListPending,
         districtIndicatorListResponse,
-    ] = useRequest<DistrictIndicator>(districtIndicatorListGetUrl, requestOption);
+    ] = useRequest<IndicatorValue>(districtIndicatorListGetUrl, requestOption);
 
     const [
         municipalityIndicatorListPending,
         municipalityIndicatorListResponse,
-    ] = useRequest(municipalityIndicatorListGetUrl, requestOption);
+    ] = useRequest<IndicatorValue>(municipalityIndicatorListGetUrl, requestOption);
 
-    const mapState = React.useMemo(() => {
-        let state: MapState[] = [];
-
-        if (regionLevel === 'province' && !provinceIndicatorListPending) {
-            state = provinceIndicatorListResponse.data.map(d => ({
-                id: d.provinceId,
+    const provinceMapState = React.useMemo(
+        () => {
+            let state: MapState[] = [];
+            if (provinceIndicatorListPending) {
+                return state;
+            }
+            state = provinceIndicatorListResponse.results.map(d => ({
+                id: d.code,
                 value: d.value,
             }));
-        }
+            return state;
+        },
+        [provinceIndicatorListPending, provinceIndicatorListResponse],
+    );
 
-        if (regionLevel === 'district' && !districtIndicatorListPending) {
-            state = districtIndicatorListResponse.data.map(d => ({
-                id: d.districtId,
+    const districtMapState = React.useMemo(
+        () => {
+            let state: MapState[] = [];
+            if (districtIndicatorListPending) {
+                return state;
+            }
+            console.warn(districtIndicatorListResponse);
+            state = districtIndicatorListResponse.results.map(d => ({
+                id: d.code,
                 value: d.value,
             }));
-        }
+            return state;
+        },
+        [districtIndicatorListPending, districtIndicatorListResponse],
+    );
 
-        if (regionLevel === 'municipality' && !municipalityIndicatorListPending) {
-            state = municipalityIndicatorListResponse.data.map(d => ({
-                id: d.municipalityId,
+    const municipalityMapState = React.useMemo(
+        () => {
+            let state: MapState[] = [];
+            if (municipalityIndicatorListPending) {
+                return state;
+            }
+            state = municipalityIndicatorListResponse.results.map(d => ({
+                id: d.code,
                 value: d.value,
             }));
-        }
+            return state;
+        },
+        [municipalityIndicatorListPending, municipalityIndicatorListResponse],
+    );
 
-        return state;
-    }, [
-        regionLevel,
-        provinceIndicatorListPending,
-        provinceIndicatorListResponse,
-        districtIndicatorListPending,
-        districtIndicatorListResponse,
-        municipalityIndicatorListPending,
-        municipalityIndicatorListResponse,
-    ]);
+    const mapPaint = React.useMemo(
+        () => {
+            let mapState: MapState[] = [];
+            switch (regionLevel) {
+                case 'municipality':
+                    mapState = municipalityMapState;
+                    break;
+                case 'district':
+                    mapState = districtMapState;
+                    break;
+                case 'province':
+                    mapState = provinceMapState;
+                    break;
+                default:
+                    break;
+            }
 
-    const mapPaint = React.useMemo(() => {
-        const valueList = mapState.map(d => d.value);
-        const min = Math.min(...valueList);
-        const max = Math.max(...valueList);
+            const valueList = mapState.map(d => d.value);
 
-        const colorDomain = [
-            '#31ad5c',
-            '#94c475',
-            '#d3dba0',
-            '#fff5d8',
-            '#e9bf8c',
-            '#d98452',
-            '#c73c32',
-        ];
+            const min = Math.min(...valueList);
+            const max = Math.max(...valueList);
 
-        const paint = generateMapPaint(colorDomain, min, max);
+            const colorDomain = [
+                '#31ad5c',
+                '#94c475',
+                '#d3dba0',
+                '#fff5d8',
+                '#e9bf8c',
+                '#d98452',
+                '#c73c32',
+            ];
 
-        return paint;
-    }, [mapState]);
+            const paint = generateMapPaint(colorDomain, min, max);
 
-
-    const sourceOptions = {
-        type: 'vector',
-        tiles: tiles[regionLevel],
-    };
+            return paint;
+        },
+        [
+            provinceMapState,
+            districtMapState,
+            municipalityMapState,
+            regionLevel,
+        ],
+    );
 
     return (
         <div className={_cs(
@@ -203,27 +223,106 @@ const Dashboard = (props: Props) => {
             >
                 <MapContainer className={styles.mapContainer} />
                 <MapSource
-                    sourceKey={regionLevel}
-                    sourceOptions={sourceOptions}
-                    key={regionLevel}
+                    sourceKey="nepal"
+                    sourceOptions={{
+                        type: 'vector',
+                        url: 'mapbox://adityakhatri.4p8awf71',
+                    }}
                 >
-                    <MapLayer
-                        layerKey="line"
-                        layerOptions={layerOptions}
-                    />
-                    <MapLayer
-                        layerKey="fill"
-                        layerOptions={{
-                            type: 'fill',
-                            paint: mapPaint,
-                            'source-layer': 'default',
-                        }}
-                    />
-                    <MapState
-                        attributes={mapState}
-                        attributeKey="value"
-                        sourceLayer="default"
-                    />
+                    {showMunicipality && (
+                        <>
+                            <MapLayer
+                                layerKey="palika-fill"
+                                layerOptions={{
+                                    type: 'fill',
+                                    'source-layer': 'palikageo',
+                                    paint: mapPaint,
+                                }}
+                            />
+                            <MapLayer
+                                layerKey="palika-line"
+                                layerOptions={{
+                                    type: 'line',
+                                    'source-layer': 'palikageo',
+                                    // layout: showMunicipality ? visibleLayout : noneLayout,
+                                    paint: {
+                                        'line-color': '#000000',
+                                        'line-width': 0.8,
+                                    },
+                                }}
+                            />
+                        </>
+                    )}
+                    {showDistrict && (
+                        <>
+                            <MapLayer
+                                layerKey="district-fill"
+                                layerOptions={{
+                                    type: 'fill',
+                                    'source-layer': 'districtgeo',
+                                    paint: mapPaint,
+                                }}
+                            />
+                            <MapLayer
+                                layerKey="district-line"
+                                layerOptions={{
+                                    type: 'line',
+                                    'source-layer': 'districtgeo',
+                                    // layout: showDistrict ? visibleLayout : noneLayout,
+                                    paint: {
+                                        'line-color': '#000000',
+                                        'line-width': 1.2,
+                                    },
+                                }}
+                            />
+                        </>
+                    )}
+                    {showProvince && (
+                        <>
+                            <MapLayer
+                                layerKey="province-fill"
+                                layerOptions={{
+                                    type: 'fill',
+                                    'source-layer': 'provincegeo',
+                                    paint: mapPaint,
+                                }}
+                            />
+                            <MapLayer
+                                layerKey="province-line"
+                                layerOptions={{
+                                    type: 'line',
+                                    'source-layer': 'provincegeo',
+                                    // layout: showProvince ? visibleLayout : noneLayout,
+                                    paint: {
+                                        'line-color': '#000000',
+                                        'line-width': 2,
+                                    },
+                                }}
+                            />
+                        </>
+                    )}
+
+                    {showProvince && (
+                        <MapState
+                            attributes={provinceMapState}
+                            attributeKey="value"
+                            sourceLayer="provincegeo"
+                        />
+                    )}
+                    {showDistrict && (
+                        <MapState
+                            attributes={districtMapState}
+                            attributeKey="value"
+                            sourceLayer="districtgeo"
+                        />
+                    )}
+                    {showMunicipality && (
+                        <MapState
+                            attributes={municipalityMapState}
+                            attributeKey="value"
+                            sourceLayer="palikageo"
+                        />
+                    )}
                 </MapSource>
             </Map>
             <div className={styles.mapStyleConfigContainer}>
@@ -232,7 +331,6 @@ const Dashboard = (props: Props) => {
                 </h4>
                 <SelectInput
                     disabled={indicatorListPending}
-                    // pending ={indicatorListPending}
                     options={indicatorListResponse.results}
                     onChange={setSelectedIndicator}
                     value={selectedIndicator}

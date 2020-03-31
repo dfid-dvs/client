@@ -6,7 +6,7 @@ const noOp = () => {};
 const navbarContext = React.createContext<NavbarContextProps>({
     exploreBy: 'regions',
     setExploreBy: noOp,
-    regionLevel: 'province',
+    regionLevel: 'municipality',
     setRegionLevel: noOp,
 });
 
