@@ -8,7 +8,7 @@ import styles from './styles.css';
 export interface Props extends Omit<React.HTMLProps<HTMLButtonElement>, 'onClick'>{
     className?: string;
     onClick: (e: ButtonClickEvent) => void;
-    elementRef: React.RefObject<HTMLButtonElement>;
+    // elementRef: React.RefObject<HTMLButtonElement>;
     type?: 'button' | 'submit' | 'reset';
 }
 
@@ -16,7 +16,7 @@ function RawButton(props: Props) {
     const {
         className,
         onClick,
-        elementRef,
+        // elementRef,
         ...otherProps
     } = props;
 
@@ -38,7 +38,7 @@ function RawButton(props: Props) {
 
     return (
         <button
-            ref={elementRef}
+            // ref={elementRef}
             type="button"
             className={_cs(className, styles.rawButton)}
             onClick={onClick ? handleClick : undefined}

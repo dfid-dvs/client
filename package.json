@@ -80,6 +80,7 @@
         "@babel/runtime-corejs3": "^7.5.5",
         "@types/file-saver": "^2.0.1",
         "@types/hoist-non-react-statics": "^3.3.1",
+        "@types/mapbox-gl": "^1.8.1",
         "@types/memoize-one": "^4.1.1",
         "@types/reach__router": "^1.2.4",
         "@types/react": "^16.9.25",
@@ -153,11 +154,13 @@
         "@togglecorp/ravl": "^1.2.3",
         "@togglecorp/react-rest-request": "^2.4.5",
         "core-js": "3",
-        "immer": "^3.2.0",
+        "immer": "^6.0.2",
+        "mapbox-gl": "^1.9.0",
         "memoize-one": "^5.0.5",
         "react": "^0.0.0-experimental-d28bd2994",
         "react-dom": "^0.0.0-experimental-d28bd2994",
         "react-icons": "^3.9.0",
-        "react-router-dom": "^5.0.1"
+        "react-router-dom": "^5.0.1",
+        "resize-observer-polyfill": "^1.5.1"
     }
 }

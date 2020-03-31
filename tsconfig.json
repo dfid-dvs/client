@@ -25,7 +25,9 @@
         "#utils/*": ["./src/utils/*"],
         "#views/*": ["./src/views/*"],
         "#types": ["./src/typings"],
-        "#hooks": ["./src/hooks"]
+        "#hooks": ["./src/hooks"],
+        "#remap": ["./src/vendor/re-map"],
+        "#remap/*": ["./src/vendor/re-map/*"]
     }
   },
   "include": [

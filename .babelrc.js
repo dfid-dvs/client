@@ -58,6 +58,7 @@ module.exports = (api) => {
                         '#views': './src/views',
                         '#types': './src/typings',
                         '#hooks': './src/hooks',
+                        '#remap': './src/vendor/re-map',
                     },
                 },
             ],
