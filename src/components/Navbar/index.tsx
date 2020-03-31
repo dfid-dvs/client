@@ -93,6 +93,9 @@ const Navbar = (props: Props) => {
                     </NavLink>
                 </div>
                 <div className={styles.filters}>
+                    <DropdownMenu label="Sectors">
+                        Choose sectors
+                    </DropdownMenu>
                     <SegmentInput
                         className={styles.exploreBySelection}
                         label="Explore by"
@@ -118,13 +121,10 @@ const Navbar = (props: Props) => {
                         icons={<IoIosSearch />}
                         className={styles.programSearch}
                     />
-                    <DropdownMenu label="Sectors">
-                        Choose sectors
-                    </DropdownMenu>
+                    */}
                     <DropdownMenu label="Markers">
                         Select markers
                     </DropdownMenu>
-                    */}
                 </div>
             </div>
         </nav>

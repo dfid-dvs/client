@@ -1,12 +1,15 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import Portal from '../Portal';
-import RawButton from '../RawButton';
+import { getFloatPlacement } from '#utils/common';
+
+import Portal from '#components/Portal';
+import RawButton from '#components/RawButton';
 
 import styles from './styles.css';
 
 interface DropdownProps {
+    className?: string;
     parentRef: React.RefObject<HTMLElement>;
     children: React.ReactNode;
 }
@@ -15,28 +18,32 @@ function Dropdown(props: DropdownProps) {
     const {
         parentRef,
         children,
+        className,
     } = props;
 
-    if (parentRef.current !== null) {
-        const parentBCR = parentRef.current.getBoundingClientRect();
-    }
+    const style = getFloatPlacement(parentRef);
 
     return (
-        <div className={styles.dropdown}>
+        <div
+            style={style}
+            className={_cs(styles.dropdownContainer, className)}
+        >
             { children }
         </div>
     );
 }
 
 interface Props {
-    // className?: string;
+    className?: string;
+    dropdownContainerClassName?: string;
     children: React.ReactNode;
     label: string | undefined;
 }
 
 function DropdownMenu(props: Props) {
     const {
-        // className,
+        className,
+        dropdownContainerClassName,
         children,
         label,
     } = props;
@@ -47,6 +54,7 @@ function DropdownMenu(props: Props) {
     return (
         <>
             <RawButton
+                className={_cs(className, styles.dropdownMenu)}
                 elementRef={buttonRef}
                 onClick={() => { setShowDropdown(!showDropdown); }}
             >
@@ -54,7 +62,10 @@ function DropdownMenu(props: Props) {
             </RawButton>
             { showDropdown && (
                 <Portal>
-                    <Dropdown parentRef={buttonRef}>
+                    <Dropdown
+                        className={dropdownContainerClassName}
+                        parentRef={buttonRef}
+                    >
                         { children }
                     </Dropdown>
                 </Portal>

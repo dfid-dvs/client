@@ -1,5 +1,6 @@
 .dashboard {
     display: flex;
+    position: relative;
     flex-direction: column;
     background-color: var(--color-background-alt);
 
@@ -7,8 +8,29 @@
         flex-grow: 1;
     }
 
-    .indicators {
+    .map-style-config-container {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
         height: 200px;
-        font-size: 9px;
+        overflow: auto;
+
+    }
+}
+
+.indicators {
+    font-size: 9px;
+
+    .select-indicator-button {
+        display: block;
+        padding: 6px;
+        width: 100%;
+        text-align: left;
+        color: rgba(0, 0, 0, .5);
+
+        &:hover {
+            background-color: rgba(0, 0, 0, .05);
+            color: rgba(0, 0, 0, .9);
+        }
     }
 }

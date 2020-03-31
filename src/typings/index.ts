@@ -19,3 +19,9 @@ export interface NavbarContextProps {
     regionLevel: RegionLevelOption;
     setRegionLevel: (v: RegionLevelOption) => void;
 }
+
+export interface Response<T> {
+    count: number;
+    results: T[];
+    data: T[]; // whut? -_-
+}

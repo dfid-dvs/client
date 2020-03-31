@@ -1,16 +1,21 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import Map from '#remap';
 import MapContainer from '#remap/MapContainer';
 import MapSource from '#remap/MapSource';
 import MapLayer from '#remap/MapSource/MapLayer';
+import MapState from '#remap/MapSource/MapState';
 
 import { useRequest } from '#hooks';
 import NavbarContext from '#components/NavbarContext';
+import DropdownMenu from '#components/DropdownMenu';
+import RawButton from '#components/RawButton';
+import { RegionLevelOption } from '#types';
 import {
-    RegionLevelOption,
-} from '#types';
+    generateMapPaint,
+    mapStyles,
+} from '#utils/common';
 
 
 import styles from './styles.css';
@@ -53,38 +58,120 @@ const mapOptions = {
     bounds: defaultBounds,
 };
 
+interface MapState {
+    id: number;
+    value: number;
+}
+
+interface Indicator {
+    id: number;
+    fullTitle: string;
+}
+
+interface DistrictIndicator {
+    districtId: number;
+    value: number;
+}
+
+const layerOptions = {
+    type: 'line',
+    'source-layer': 'default',
+    layout: {
+        'line-cap': 'round',
+        'line-join': 'round',
+    },
+    paint: {
+        'line-opacity': 0.6,
+        'line-color': 'red',
+        'line-width': 1,
+    },
+};
+
+
 const Dashboard = (props: Props) => {
     const { className } = props;
 
+    const [
+        selectedIndicator,
+        setSelectedIndicator,
+    ] = React.useState<string | undefined>(undefined);
+
     const { regionLevel } = React.useContext(NavbarContext);
-    const [pending, response] = useRequest('http://139.59.67.104:8060/api/v1/core/indicator-list/', requestOption);
-    const onClick = useCallback(
-        (name: string) => {
-            console.warn('Button clicked', name);
-        },
-        [],
-    );
+    const [
+        indicatorListPending,
+        indicatorListResponse,
+    ] = useRequest<Indicator>('http://139.59.67.104:8060/api/v1/core/indicator-list/', requestOption);
+
+    const provinceIndicatorListGetUrl = regionLevel === 'province' && selectedIndicator
+        ? `http://139.59.67.104:8060/api/v1/core/province-indicator/${selectedIndicator}`
+        : undefined;
+
+    const districtIndicatorListGetUrl = regionLevel === 'district' && selectedIndicator
+        ? `http://139.59.67.104:8060/api/v1/core/district-indicator/${selectedIndicator}`
+        : undefined;
+
+    const municipalityIndicatorListGetUrl = regionLevel === 'municipality' && selectedIndicator
+        ? `http://139.59.67.104:8060/api/v1/core/municipality-indicator/${selectedIndicator}`
+        : undefined;
+
+
+    const [
+        provinceIndicatorListPending,
+        provinceIndicatorListResponse,
+    ] = useRequest(provinceIndicatorListGetUrl, requestOption);
+
+    const [
+        districtIndicatorListPending,
+        districtIndicatorListResponse,
+    ] = useRequest<DistrictIndicator>(districtIndicatorListGetUrl, requestOption);
+
+    const [
+        municipalityIndicatorListPending,
+        municipalityIndicatorListResponse,
+    ] = useRequest(municipalityIndicatorListGetUrl, requestOption);
+
+    const mapState = React.useMemo(() => {
+        let state: MapState[] = [];
+
+        if (regionLevel === 'district' && !districtIndicatorListPending) {
+            state = districtIndicatorListResponse.data.map(d => ({
+                id: d.districtId,
+                value: d.value,
+            }));
+        }
+
+        return state;
+    }, [regionLevel, districtIndicatorListPending, districtIndicatorListResponse]);
+
+    const mapPaint = React.useMemo(() => {
+        const valueList = mapState.map(d => d.value);
+        const min = Math.min(...valueList);
+        const max = Math.max(...valueList);
+
+        console.warn(valueList, min, max);
+
+        const colorDomain = [
+            '#31ad5c',
+            '#94c475',
+            '#d3dba0',
+            '#fff5d8',
+            '#e9bf8c',
+            '#d98452',
+            '#c73c32',
+        ];
+
+        const paint = generateMapPaint(colorDomain, min, max);
+
+        return paint;
+    }, [mapState]);
+
 
     const sourceOptions = {
         type: 'vector',
         tiles: tiles[regionLevel],
     };
 
-    const layerOptions = {
-        type: 'line',
-        'source-layer': 'default',
-        layout: {
-            'line-cap': 'round',
-            'line-join': 'round',
-        },
-        paint: {
-            'line-opacity': 0.6,
-            'line-color': 'red',
-            'line-width': 1,
-        },
-    };
-
-    console.warn('source options', regionLevel, sourceOptions);
+    console.warn(mapState, mapPaint);
 
     return (
         <div className={_cs(
@@ -93,6 +180,7 @@ const Dashboard = (props: Props) => {
         )}
         >
             <Map
+                key={regionLevel}
                 mapStyle="mapbox://styles/mapbox/light-v10"
                 mapOptions={mapOptions}
                 scaleControlShown
@@ -109,14 +197,38 @@ const Dashboard = (props: Props) => {
                         layerKey="line"
                         layerOptions={layerOptions}
                     />
+                    <MapLayer
+                        layerKey="fill"
+                        layerOptions={{
+                            type: 'fill',
+                            paint: mapPaint,
+                            'source-layer': 'default',
+                        }}
+                    />
+                    <MapState
+                        attributes={mapState}
+                        attributeKey="value"
+                        sourceLayer="default"
+                    />
                 </MapSource>
             </Map>
-            <div className={styles.indicators}>
-                { pending ? 'Loading...' : (
-                    response.results.map(indicator => (
-                        <div key={indicator.id}>{ indicator.fullTitle }</div>
-                    ))
-                )}
+            <div className={styles.mapStyleConfigContainer}>
+                <DropdownMenu label="Select indicator">
+                    <div className={styles.indicators}>
+                        { indicatorListPending ? 'Loading...' : (
+                            indicatorListResponse.results.map(indicator => (
+                                <RawButton
+                                    className={styles.selectIndicatorButton}
+                                    key={indicator.id}
+                                    onClick={setSelectedIndicator}
+                                    name={indicator.id}
+                                >
+                                    { indicator.fullTitle }
+                                </RawButton>
+                            ))
+                        )}
+                    </div>
+                </DropdownMenu>
             </div>
         </div>
     );

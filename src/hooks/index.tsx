@@ -1,9 +1,11 @@
 import React from 'react';
 
+import { Response } from '#types';
+
 // eslint-disable-next-line import/prefer-default-export
-export function useForm(
-    values: {},
-    setValues,
+export function useForm<T>(
+    values: T,
+    setValues: (value: T) => void,
     // errors: {} = {},
 ) {
     const handleChange = (e: InputChangeEvent) => {
@@ -37,34 +39,35 @@ export function useForm(
     };
 }
 
-const schema = {
-    results: [{
-        id: 'number',
-        fullTitle: 'string',
-    }],
+const defaultResponse = {
+    count: 0,
+    results: [],
+    data: [],
 };
 
 export function useRequest<T>(
-    url: string,
+    url?: string,
     options?: {},
     deps: React.DependencyList = [],
-) {
-    const [response, setResponse] = React.useState();
-    const [pending, setPending] = React.useState(true);
+): [boolean, Response<T>] {
+    const [response, setResponse] = React.useState<Response<T>>(defaultResponse);
+    const [pending, setPending] = React.useState(!!url);
 
     React.useEffect(() => {
-        fetch(url, options).then((responseFromRequest) => {
-            try {
-                responseFromRequest.json().then((data) => {
-                    setResponse(data);
+        if (url) {
+            fetch(url, options).then((responseFromRequest) => {
+                try {
+                    responseFromRequest.json().then((data) => {
+                        setResponse(data);
+                        setPending(false);
+                        console.warn(data);
+                    });
+                } catch (e) {
                     setPending(false);
-                    console.warn(data);
-                });
-            } catch (e) {
-                setPending(false);
-                console.error(e);
-            }
-        });
+                    console.error(e);
+                }
+            });
+        }
     }, [url, options]);
 
     return [pending, response];
