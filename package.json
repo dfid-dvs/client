@@ -43,6 +43,9 @@
             "<rootDir>/src/**/__tests__/**/*.ts?(x)",
             "<rootDir>/src/**/?(*.)(spec|test).ts?(x)"
         ],
+        "testPathIgnorePatterns" : [
+            "<rootDir>/src/vendor/"
+        ],
         "testEnvironment": "jsdom",
         "testURL": "http://localhost",
         "transform": {
