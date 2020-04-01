@@ -1,5 +1,5 @@
-import { lazy } from 'react';
-import { isDefined } from '@togglecorp/fujs';
+import React, { lazy } from 'react';
+import { Redirect } from 'react-router-dom';
 
 export interface Route {
     path: string;
@@ -22,14 +22,19 @@ export interface FallbackRoute {
 }
 
 export type SomeRoute = Route | FallbackRoute;
-const Dashboard = lazy(() => import('../../../views/Dashboard'));
 
 const routeSettings: SomeRoute[] = [
     {
         path: '/dashboard/',
         name: 'dashboard',
         title: 'Dashboard',
-        load: Dashboard,
+        load: lazy(() => import('../../../views/Dashboard')),
+    },
+    {
+        path: '/covid19/',
+        name: 'covid19',
+        title: 'COVID-19',
+        load: lazy(() => import('../../../views/Covid19')),
     },
     {
         path: '/infographics/',
@@ -41,7 +46,7 @@ const routeSettings: SomeRoute[] = [
         path: '/',
         name: 'dashboard',
         title: 'Dashboard',
-        load: Dashboard,
+        load: () => <Redirect to="/dashboard/" />,
         hideOnNavbar: true,
     },
     {

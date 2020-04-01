@@ -19,17 +19,6 @@ import { colorDomain } from '#utils/constants';
 
 import styles from './styles.css';
 
-/*
-// TODO:
-1. Handle hover
-2. Handle tooltip
-3. Show indicators grouped by type
-4. Show recent indicators
-5. Show legend for indicators
-6. Wait for municipality-indicator api fix
-7. Bug where map-paint expects 4 but gets 2 argument
-*/
-
 interface MapState {
     id: number;
     value: number;
@@ -53,7 +42,7 @@ const Dashboard = (props: Props) => {
         setSelectedIndicator,
     ] = React.useState<number | undefined>(undefined);
 
-    const indicatorListGetUrl = 'http://139.59.67.104:8060/api/v1/core/indicator-list/';
+    const indicatorListGetUrl = 'http://139.59.67.104:8060/api/v1/core/indicator-list/?is_covid=1';
     const [
         indicatorListPending,
         indicatorListResponse,
@@ -84,7 +73,7 @@ const Dashboard = (props: Props) => {
 
     return (
         <div className={_cs(
-            styles.dashboard,
+            styles.covid19,
             className,
         )}
         >

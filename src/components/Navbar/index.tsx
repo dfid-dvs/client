@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import {
+    NavLink,
+    useLocation,
+} from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
 import { IoIosSearch } from 'react-icons/io';
 
@@ -15,7 +18,6 @@ import {
 
 import dfidLogo from './DfID-logo.svg';
 import styles from './styles.css';
-
 
 interface Props {
     className?: string;
@@ -63,6 +65,9 @@ const Navbar = (props: Props) => {
         setRegionLevel,
     } = React.useContext<NavbarContextProps>(NavbarContext);
 
+    const location = useLocation();
+    const isCovidPage = location.pathname === '/covid19/';
+
     return (
         <nav className={_cs(className, styles.navbar)}>
             <div className={styles.appBrand}>
@@ -84,6 +89,15 @@ const Navbar = (props: Props) => {
                     </NavLink>
                     <NavLink
                         exact
+                        className={styles.link}
+                        activeClassName={styles.active}
+                        to="/covid19/"
+                    >
+                        COVID-19
+                    </NavLink>
+                    {/*
+                    <NavLink
+                        exact
                         to="/infographics/"
                         className={styles.link}
                         activeClassName={styles.active}
@@ -98,17 +112,20 @@ const Navbar = (props: Props) => {
                     >
                         Analytical tools
                     </NavLink>
+                    */}
                 </div>
                 <div className={styles.filters}>
-                    <SegmentInput
-                        className={styles.exploreBySelection}
-                        label="Explore by"
-                        options={exploreOptionList}
-                        optionKeySelector={exploreOptionListKeySelector}
-                        optionLabelSelector={exploreOptionListLabelSelector}
-                        value={exploreBy}
-                        onChange={setExploreBy}
-                    />
+                    { !isCovidPage && (
+                        <SegmentInput
+                            className={styles.exploreBySelection}
+                            label="Explore by"
+                            options={exploreOptionList}
+                            optionKeySelector={exploreOptionListKeySelector}
+                            optionLabelSelector={exploreOptionListLabelSelector}
+                            value={exploreBy}
+                            onChange={setExploreBy}
+                        />
+                    )}
                     {exploreBy === 'regions' && (
                         <SegmentInput
                             className={styles.regionLevelSelection}
@@ -124,7 +141,7 @@ const Navbar = (props: Props) => {
                         icons={<IoIosSearch />}
                         className={styles.programSearch}
                     />
-                    {exploreBy === 'programs' && (
+                    {(!isCovidPage && exploreBy === 'programs') && (
                         <>
                             <DropdownMenu label="Sectors">
                                 Choose sectors

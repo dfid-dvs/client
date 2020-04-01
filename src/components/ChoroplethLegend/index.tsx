@@ -12,7 +12,7 @@ function Numeral({
     precision?: number | undefined;
     className?: string;
 }) {
-    if (!value) {
+    if (!isDefined(value)) {
         return null;
     }
 
