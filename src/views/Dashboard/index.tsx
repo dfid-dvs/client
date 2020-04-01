@@ -1,6 +1,5 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
-
 import Map from '#remap';
 import MapContainer from '#remap/MapContainer';
 import MapSource from '#remap/MapSource';
@@ -316,7 +315,6 @@ const Dashboard = (props: Props) => {
                                 layerOptions={{
                                     type: 'line',
                                     'source-layer': 'palikageo',
-                                    // layout: showMunicipality ? visibleLayout : noneLayout,
                                     paint: {
                                         'line-color': '#000000',
                                         'line-width': 1,
@@ -340,13 +338,14 @@ const Dashboard = (props: Props) => {
                                     'source-layer': 'districtgeo',
                                     paint: mapPaint,
                                 }}
+                                onMouseEnter={handleMapRegionMouseEnter}
+                                onMouseLeave={handleMapRegionMouseLeave}
                             />
                             <MapLayer
                                 layerKey="district-line"
                                 layerOptions={{
                                     type: 'line',
                                     'source-layer': 'districtgeo',
-                                    // layout: showDistrict ? visibleLayout : noneLayout,
                                     paint: {
                                         'line-color': '#000000',
                                         'line-width': 1,
@@ -365,13 +364,14 @@ const Dashboard = (props: Props) => {
                                     'source-layer': 'provincegeo',
                                     paint: mapPaint,
                                 }}
+                                onMouseEnter={handleMapRegionMouseEnter}
+                                onMouseLeave={handleMapRegionMouseLeave}
                             />
                             <MapLayer
                                 layerKey="province-line"
                                 layerOptions={{
                                     type: 'line',
                                     'source-layer': 'provincegeo',
-                                    // layout: showProvince ? visibleLayout : noneLayout,
                                     paint: {
                                         'line-color': '#000000',
                                         'line-width': 1,
