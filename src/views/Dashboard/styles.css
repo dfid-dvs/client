@@ -4,8 +4,17 @@
     flex-direction: column;
     background-color: var(--color-background-alt);
 
+    .backdrop {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 11111;
+        background-color: rgba(255, 255, 255, .7);
+    }
+
     .map-container {
         flex-grow: 1;
+        font-family: inherit;
     }
 
     .map-style-config-container {

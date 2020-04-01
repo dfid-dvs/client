@@ -129,8 +129,8 @@ export const generateChoroplethMapPaintAndLegend = (
             ['==', ['feature-state', 'value'], null],
             0.1,
             ['==', ['feature-state', 'hovered'], true],
-            0.5,
-            0.8,
+            0.97,
+            0.77,
         ];
 
         paint = {

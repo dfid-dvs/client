@@ -4,12 +4,15 @@ import { _cs } from '@togglecorp/fujs';
 import Map from '#remap';
 import MapContainer from '#remap/MapContainer';
 import MapSource from '#remap/MapSource';
+import MapTooltip from '#remap/MapTooltip';
 import MapLayer from '#remap/MapSource/MapLayer';
 import MapState from '#remap/MapSource/MapState';
 
 import NavbarContext from '#components/NavbarContext';
 import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
+import Backdrop from '#components/Backdrop';
+import LoadingAnimation from '#components/LoadingAnimation';
 
 import { useRequest } from '#hooks';
 
@@ -66,10 +69,47 @@ const mapOptions = {
     center: defaultCenter,
     bounds: defaultBounds,
 };
+const tooltipOptions = {
+    closeOnClick: false,
+    closeButton: false,
+    offset: 8,
+};
+
 
 interface Props {
     className?: string;
 }
+
+interface HoveredRegion {
+    feature: {} | undefined;
+    lngLat: number[] | undefined;
+}
+
+const undefinedHoveredRegion: HoveredRegion = {
+    feature: undefined,
+    lngLat: undefined,
+};
+
+const Tooltip = ({
+    feature,
+}: { feature: HoveredRegion }) => {
+    if (!feature) {
+        return null;
+    }
+
+    return (
+        <div className={styles.tooltip}>
+            <div className={styles.regionTitle}>
+                { feature.properties.name }
+            </div>
+            { feature.state && (
+                <div className={styles.value}>
+                    { feature.state.value }
+                </div>
+            )}
+        </div>
+    );
+};
 
 const Dashboard = (props: Props) => {
     const { className } = props;
@@ -83,6 +123,11 @@ const Dashboard = (props: Props) => {
         selectedIndicator,
         setSelectedIndicator,
     ] = React.useState<number | undefined>(undefined);
+
+    const [
+        hoveredRegionProperties,
+        setHoveredRegionProperties,
+    ] = React.useState<HoveredRegion>(undefinedHoveredRegion);
 
     const provinceIndicatorListGetUrl = showProvince && selectedIndicator
         ? `http://139.59.67.104:8060/api/v1/core/province-indicator/${selectedIndicator}`
@@ -163,6 +208,17 @@ const Dashboard = (props: Props) => {
         [municipalityIndicatorListPending, municipalityIndicatorListResponse],
     );
 
+    const handleMapRegionMouseEnter = React.useCallback((feature, lngLat) => {
+        setHoveredRegionProperties({
+            feature,
+            lngLat,
+        });
+    }, [setHoveredRegionProperties]);
+
+    const handleMapRegionMouseLeave = React.useCallback(() => {
+        setHoveredRegionProperties(undefinedHoveredRegion);
+    }, [setHoveredRegionProperties]);
+
     const {
         paint: mapPaint,
         legend: mapLegend,
@@ -211,12 +267,22 @@ const Dashboard = (props: Props) => {
         ],
     );
 
+    const anyRequestPending = municipalityIndicatorListPending
+        || districtIndicatorListPending
+        || provinceIndicatorListPending
+        || indicatorListPending;
+
     return (
         <div className={_cs(
             styles.dashboard,
             className,
         )}
         >
+            { anyRequestPending && (
+                <Backdrop className={styles.backdrop}>
+                    <LoadingAnimation />
+                </Backdrop>
+            )}
             <Map
                 mapStyle="mapbox://styles/mapbox/light-v10"
                 mapOptions={mapOptions}
@@ -242,6 +308,8 @@ const Dashboard = (props: Props) => {
                                     'source-layer': 'palikageo',
                                     paint: mapPaint,
                                 }}
+                                onMouseEnter={handleMapRegionMouseEnter}
+                                onMouseLeave={handleMapRegionMouseLeave}
                             />
                             <MapLayer
                                 layerKey="palika-line"
@@ -252,7 +320,12 @@ const Dashboard = (props: Props) => {
                                     paint: {
                                         'line-color': '#000000',
                                         'line-width': 1,
-                                        'line-opacity': 0.2,
+                                        'line-opacity': [
+                                            'case',
+                                            ['==', ['feature-state', 'hovered'], true],
+                                            0.8,
+                                            0.1,
+                                        ],
                                     },
                                 }}
                             />
@@ -308,7 +381,6 @@ const Dashboard = (props: Props) => {
                             />
                         </>
                     )}
-
                     {showProvince && (
                         <MapState
                             attributes={provinceMapState}
@@ -329,6 +401,15 @@ const Dashboard = (props: Props) => {
                             attributeKey="value"
                             sourceLayer="palikageo"
                         />
+                    )}
+                    {hoveredRegionProperties.lngLat && (
+                        <MapTooltip
+                            coordinates={hoveredRegionProperties.lngLat}
+                            tooltipOptions={tooltipOptions}
+                            trackPointer
+                        >
+                            <Tooltip feature={hoveredRegionProperties.feature} />
+                        </MapTooltip>
                     )}
                 </MapSource>
             </Map>

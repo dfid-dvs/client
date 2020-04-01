@@ -6,6 +6,7 @@ import styles from './styles.css';
 export interface Props {
     className?: string;
     parentRef?: React.RefObject<HTMLButtonElement>;
+    children?: React.ReactNode;
 }
 
 
@@ -13,6 +14,7 @@ function Backdrop(props: Props) {
     const {
         className,
         parentRef,
+        children,
     } = props;
 
     const ref = React.useRef(null);
@@ -31,7 +33,9 @@ function Backdrop(props: Props) {
         <div
             ref={ref}
             className={_cs(className, styles.backdrop)}
-        />
+        >
+            { children }
+        </div>
     );
 }
 

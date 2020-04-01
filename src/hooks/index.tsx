@@ -55,12 +55,13 @@ export function useRequest<T>(
 
     React.useEffect(() => {
         if (url) {
+            setPending(true);
             fetch(url, options).then((responseFromRequest) => {
                 try {
                     responseFromRequest.json().then((data) => {
                         setResponse(data);
                         setPending(false);
-                        console.warn(data);
+                        // console.warn(data);
                     });
                 } catch (e) {
                     setPending(false);
