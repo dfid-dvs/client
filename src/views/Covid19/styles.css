@@ -19,8 +19,8 @@
 
     .map-style-config-container {
         position: absolute;
-        bottom: 10px;
-        left: 10px;
+        bottom: var(--spacing-medium);
+        left: var(--spacing-medium);
         border: 1px solid rgba(0, 0, 0, .1);
         background-color: #fff;
         padding: var(--spacing-medium);
@@ -39,5 +39,70 @@
         .legend {
             margin: var(--spacing-medium);
         }
+    }
+
+    .status-container {
+        position: absolute;
+        top: var(--spacing-medium);
+        right: var(--spacing-medium);
+        border: 1px solid rgba(0, 0, 0, .1);
+        background-color: #fff;
+        padding: var(--spacing-medium);
+        width: 300px;
+
+        .heading {
+            padding: var(--spacing-medium);
+            color: var(--color-accent);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+
+            >div {
+                flex-basis: 50%;
+            }
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+}
+
+.stat-output {
+    padding: calc(var(--spacing-medium) - var(--spacing-extra-small)) calc(var(--spacing-medium) - var(--spacing-small));
+
+    .label {
+        padding: var(--spacing-extra-small) var(--spacing-small);
+        text-transform: uppercase;
+        font-size: var(--font-size-extra-small);
+    }
+
+    .value {
+        padding: var(--spacing-extra-small) var(--spacing-small);
+        color: rgba(0, 0, 0, .5);
+        font-size: var(--font-size-extra-large);
+        font-weight: var(--font-weight-bold);
+    }
+}
+
+.external-link {
+    display: flex;
+    padding: calc(var(--spacing-medium) - var(--spacing-small));
+    text-decoration: none;
+    color: var(--color-primary);
+    font-size: var(--font-size-extra-small);
+    font-weight: var(--font-weight-bold);
+
+    .icon {
+        margin: var(--spacing-extra-small) var(--spacing-small);
+    }
+
+    .label {
+        padding: var(--spacing-extra-small) var(--spacing-small);
+        text-transform: uppercase;
     }
 }

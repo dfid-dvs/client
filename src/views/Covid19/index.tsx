@@ -1,5 +1,6 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
+import { GoLinkExternal } from 'react-icons/go';
 
 import NavbarContext from '#components/NavbarContext';
 import SelectInput from '#components/SelectInput';
@@ -33,7 +34,38 @@ interface Props {
     className?: string;
 }
 
-const Dashboard = (props: Props) => {
+const StatOutput = ({
+    label,
+    value,
+}) => (
+    <div className={styles.statOutput}>
+        <div className={styles.value}>
+            { value }
+        </div>
+        <div className={styles.label}>
+            { label }
+        </div>
+    </div>
+);
+
+const ExternalLink = ({
+    link,
+    label,
+}) => (
+    <a
+        href={link}
+        className={styles.externalLink}
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+        <GoLinkExternal className={styles.icon} />
+        <div className={styles.label}>
+            { label }
+        </div>
+    </a>
+);
+
+const Covid19 = (props: Props) => {
     const { className } = props;
     const { regionLevel } = React.useContext(NavbarContext);
 
@@ -47,6 +79,11 @@ const Dashboard = (props: Props) => {
         indicatorListPending,
         indicatorListResponse,
     ] = useRequest<Indicator>(indicatorListGetUrl);
+
+    const [
+        statusPending,
+        status,
+    ] = useRequest('https://nepalcorona.info/api/v1/data/nepal');
 
     const [mapStatePending, mapState] = useMapState(regionLevel, selectedIndicator);
 
@@ -69,7 +106,7 @@ const Dashboard = (props: Props) => {
         [mapState],
     );
 
-    const pending = mapStatePending || indicatorListPending;
+    const pending = mapStatePending || indicatorListPending || statusPending;
 
     return (
         <div className={_cs(
@@ -88,6 +125,50 @@ const Dashboard = (props: Props) => {
                 mapState={mapState}
                 mapPaint={mapPaint}
             />
+            <div className={styles.statusContainer}>
+                <h4 className={styles.heading}>
+                    Overall status
+                </h4>
+                {status && (
+                    <>
+                        <div className={styles.content}>
+                            <StatOutput
+                                label="Tests performed"
+                                value={status.tested_total}
+                            />
+                            <StatOutput
+                                label="Tested positive"
+                                value={status.tested_positive}
+                            />
+                            <StatOutput
+                                label="Tested negative"
+                                value={status.tested_negative}
+                            />
+                            <StatOutput
+                                label="In isolation"
+                                value={status.in_isolation}
+                            />
+                            <StatOutput
+                                label="Deaths"
+                                value={status.deaths}
+                            />
+                        </div>
+                        <div className={styles.footer}>
+                            <ExternalLink
+                                link={status.source}
+                                label="Source"
+                            />
+                            <ExternalLink
+                                link={status.latest_sit_report
+                                    ? status.latest_sit_report.url
+                                    : undefined
+                                }
+                                label="Latest situation report"
+                            />
+                        </div>
+                    </>
+                )}
+            </div>
             <div className={styles.mapStyleConfigContainer}>
                 <h4 className={styles.heading}>
                     Indicator
@@ -113,4 +194,4 @@ const Dashboard = (props: Props) => {
     );
 };
 
-export default Dashboard;
+export default Covid19;
