@@ -1,10 +1,15 @@
 .segment-input {
-    padding: 0 calc(var(--spacing-large) - var(--spacing-medium));
+    display: flex;
+    align-items: center;
+    padding: 0 calc(var(--spacing-large) - var(--spacing-small));
 
     .input-label {
         opacity: .6;
-        padding: 0 var(--spacing-medium);
-        font-size: var(--font-size-small);
+        padding: 0 var(--spacing-small);
+
+        &:after {
+            content: ': ';
+        }
     }
 
     .input-container {

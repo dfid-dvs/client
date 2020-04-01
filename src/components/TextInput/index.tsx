@@ -4,11 +4,11 @@ import { _cs } from '@togglecorp/fujs';
 import Input, { Props as InputProps } from '../Input';
 import styles from './styles.css';
 
-export interface Props extends InputProps {
+export interface Props<T> extends InputProps<T> {
     className?: string;
 }
 
-function TextInput(props: Props) {
+function TextInput<T>(props: Props<T>) {
     const {
         className,
         ...otherProps

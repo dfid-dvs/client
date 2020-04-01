@@ -69,9 +69,17 @@ export const getFloatPlacement = (parentRef: React.RefObject<HTMLElement>) => {
     return placement;
 };
 
-export const generateMapPaint = (colorDomain: string[], minValue: number, maxValue: number) => {
+export const generateChoroplethMapPaintAndLegend = (
+    colorDomain: string[],
+    minValue: number,
+    maxValue: number,
+) => {
     const range = maxValue - minValue;
     const colors: (string | number)[] = [];
+    const legend: {
+        [key: string]: number;
+    } = {};
+
 
     if (!Number.isNaN(range) && range !== Infinity && range !== -Infinity) {
         const gap = range / colorDomain.length;
@@ -85,6 +93,7 @@ export const generateMapPaint = (colorDomain: string[], minValue: number, maxVal
                 }
                 colors.push(color);
                 colors.push(val);
+                legend[color] = val;
             });
         } else {
             colorDomain.forEach((color, i) => {
@@ -95,6 +104,7 @@ export const generateMapPaint = (colorDomain: string[], minValue: number, maxVal
                 }
                 colors.push(color);
                 colors.push(val);
+                legend[color] = val;
             });
         }
     }
@@ -103,7 +113,7 @@ export const generateMapPaint = (colorDomain: string[], minValue: number, maxVal
         'fill-color': string | any[];
         'fill-opacity': number | any[];
     } = {
-        'fill-color': '#18bc9c',
+        'fill-color': '#08467d',
         'fill-opacity': 0.1,
     };
 
@@ -120,7 +130,7 @@ export const generateMapPaint = (colorDomain: string[], minValue: number, maxVal
             0.1,
             ['==', ['feature-state', 'hovered'], true],
             0.5,
-            1,
+            0.8,
         ];
 
         paint = {
@@ -129,5 +139,5 @@ export const generateMapPaint = (colorDomain: string[], minValue: number, maxVal
         };
     }
 
-    return paint;
+    return { paint, legend };
 };

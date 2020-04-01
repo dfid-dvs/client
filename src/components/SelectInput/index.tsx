@@ -1,4 +1,5 @@
 import React from 'react';
+import { IoIosSearch } from 'react-icons/io';
 import {
     _cs,
     caseInsensitiveSubmatch,
@@ -69,11 +70,12 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         disabled,
     } = props;
 
-    const inputContainerRef = React.useRef(null);
-    const inputElementRef = React.useRef(null);
-    const dropdownRef = React.useRef(null);
+    const inputContainerRef = React.useRef<HTMLDivElement>(null);
+    const inputElementRef = React.useRef<HTMLInputElement>(null);
+    const dropdownRef = React.useRef<HTMLDivElement>(null);
     const [showDropdown, setShowDropdown] = React.useState(false);
     const [inputValue, setInputValue] = React.useState('');
+    const [searchValue, setSearchValue] = React.useState('');
 
     const hideDropdownOnBlur = React.useCallback((isInsideClick) => {
         if (!isInsideClick) {
@@ -89,15 +91,15 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         }
 
         const newOptions = options
-            .filter(option => caseInsensitiveSubmatch(optionLabelSelector(option), inputValue))
+            .filter(option => caseInsensitiveSubmatch(optionLabelSelector(option), searchValue))
             .sort((a, b) => compareStringSearch(
                 optionLabelSelector(a),
                 optionLabelSelector(b),
-                inputValue,
+                searchValue,
             ));
 
         return newOptions;
-    }, [showDropdown, options, optionLabelSelector, inputValue]);
+    }, [showDropdown, options, optionLabelSelector, searchValue]);
 
     const optionMap = React.useMemo(() => (
         listToMap(options, optionKeySelector, optionLabelSelector)
@@ -107,7 +109,8 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         setInputValue(optionMap[optionKey]);
         setShowDropdown(false);
         onChange(optionKey);
-    }, [onChange, setShowDropdown, setInputValue, optionMap]);
+        setSearchValue('');
+    }, [onChange, setShowDropdown, setSearchValue, optionMap]);
 
     const handleInputClick = React.useCallback(() => {
         setShowDropdown(true);
@@ -118,17 +121,23 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         }
     }, [setShowDropdown]);
 
+    const handleInputValueChange = React.useCallback((newInputValue) => {
+        setInputValue(newInputValue);
+        setSearchValue(newInputValue);
+    }, [setInputValue, setSearchValue]);
+
     return (
-        <>
+        <div className={_cs(className, styles.selectInput)}>
             <TextInput
-                className={_cs(className, styles.selectInput)}
+                className={styles.textInput}
                 elementRef={inputContainerRef}
                 inputRef={inputElementRef}
                 onClick={handleInputClick}
                 value={inputValue}
-                onChange={setInputValue}
+                onChange={handleInputValueChange}
                 placeholder="Select an option"
                 disabled={disabled}
+                icons={<IoIosSearch />}
             />
             { showDropdown && (
                 <Portal>
@@ -155,7 +164,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                     </Dropdown>
                 </Portal>
             )}
-        </>
+        </div>
     );
 }
 

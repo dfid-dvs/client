@@ -6,7 +6,7 @@ import styles from './styles.css';
 export interface Props<T> extends Omit<React.HTMLProps<HTMLInputElement>, 'onChange'>{
     className?: string;
     onChange: (value: string, name: string, e: React.FormEvent<HTMLInputElement>) => void;
-    elementRef: React.RefObject<HTMLInputElement>;
+    elementRef?: React.RefObject<HTMLInputElement>;
 }
 
 function RawInput<T=string>(props: Props<T>) {

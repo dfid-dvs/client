@@ -13,13 +13,22 @@
         bottom: 10px;
         left: 10px;
         border: 1px solid rgba(0, 0, 0, .1);
-        background-color: #f0f0f0;
-        width: 300px;
-        overflow: auto;
+        background-color: #fff;
+        padding: var(--spacing-medium);
+        width: 400px;
 
         .heading {
             padding: var(--spacing-medium);
             color: var(--color-accent);
+        }
+
+        .indicator-select-input {
+            margin: var(--spacing-medium);
+            margin-top: 0;
+        }
+
+        .legend {
+            margin: var(--spacing-medium);
         }
     }
 }

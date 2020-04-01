@@ -9,6 +9,10 @@
         flex-shrink: 0;
         padding: var(--spacing-small) var(--spacing-medium);
         font-size: var(--font-size-large);
+
+        .logo {
+            height: 68px;
+        }
     }
 
     .actions {
@@ -38,14 +42,19 @@
 
         .filters {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
+
+            .region-level-selection {
+                font-size: var(--font-size-small);
+            }
 
             .explore-by-selection {
                 flex-shrink: 0;
             }
 
             .program-search {
+                flex-grow: 1;
                 margin: 0 var(--spacing-medium);
             }
         }

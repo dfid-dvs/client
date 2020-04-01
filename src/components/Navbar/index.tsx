@@ -13,6 +13,7 @@ import {
     NavbarContextProps,
 } from '#types';
 
+import dfidLogo from './DfID-logo.svg';
 import styles from './styles.css';
 
 
@@ -65,7 +66,11 @@ const Navbar = (props: Props) => {
     return (
         <nav className={_cs(className, styles.navbar)}>
             <div className={styles.appBrand}>
-                DFID
+                <img
+                    className={styles.logo}
+                    src={dfidLogo}
+                    alt="DfID"
+                />
             </div>
             <div className={styles.actions}>
                 <div className={styles.navLinks}>
@@ -104,16 +109,6 @@ const Navbar = (props: Props) => {
                         value={exploreBy}
                         onChange={setExploreBy}
                     />
-                    {exploreBy === 'programs' && (
-                        <>
-                            <DropdownMenu label="Sectors">
-                                Choose sectors
-                            </DropdownMenu>
-                            <DropdownMenu label="Markers">
-                                Select markers
-                            </DropdownMenu>
-                        </>
-                    )}
                     {exploreBy === 'regions' && (
                         <SegmentInput
                             className={styles.regionLevelSelection}
@@ -129,6 +124,16 @@ const Navbar = (props: Props) => {
                         icons={<IoIosSearch />}
                         className={styles.programSearch}
                     />
+                    {exploreBy === 'programs' && (
+                        <>
+                            <DropdownMenu label="Sectors">
+                                Choose sectors
+                            </DropdownMenu>
+                            <DropdownMenu label="Markers">
+                                Select markers
+                            </DropdownMenu>
+                        </>
+                    )}
                 </div>
             </div>
         </nav>

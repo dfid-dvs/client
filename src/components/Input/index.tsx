@@ -4,11 +4,12 @@ import { _cs } from '@togglecorp/fujs';
 import RawInput, { Props as RawInputProps } from '../RawInput';
 import styles from './styles.css';
 
-export interface Props<T> extends RawInputProps<T> {
+export interface Props<T> extends Omit<RawInputProps<T>, 'elementRef'> {
     className?: string;
     icons?: React.ReactNode;
     actions?: React.ReactNode;
     inputRef?: React.RefObject<HTMLInputElement>;
+    elementRef?: React.RefObject<HTMLDivElement>;
 }
 
 function Input<T>(props: Props<T>) {

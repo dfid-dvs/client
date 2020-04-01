@@ -9,10 +9,11 @@ import MapState from '#remap/MapSource/MapState';
 
 import NavbarContext from '#components/NavbarContext';
 import SelectInput from '#components/SelectInput';
+import ChoroplethLegend from '#components/ChoroplethLegend';
 
 import { useRequest } from '#hooks';
 
-import { generateMapPaint } from '#utils/common';
+import { generateChoroplethMapPaintAndLegend } from '#utils/common';
 
 import styles from './styles.css';
 
@@ -92,7 +93,7 @@ const Dashboard = (props: Props) => {
         : undefined;
 
     const municipalityIndicatorListGetUrl = showMunicipality && selectedIndicator
-        ? `http://139.59.67.104:8060/api/v1/core/municipality-indicator/${selectedIndicator}`
+        ? `http://139.59.67.104:8060/api/v1/core/municipality-indicator/?indicator_id=${selectedIndicator}`
         : undefined;
 
     const indicatorListGetUrl = 'http://139.59.67.104:8060/api/v1/core/indicator-list/';
@@ -138,7 +139,6 @@ const Dashboard = (props: Props) => {
             if (districtIndicatorListPending) {
                 return state;
             }
-            console.warn(districtIndicatorListResponse);
             state = districtIndicatorListResponse.results.map(d => ({
                 id: d.code,
                 value: d.value,
@@ -163,7 +163,11 @@ const Dashboard = (props: Props) => {
         [municipalityIndicatorListPending, municipalityIndicatorListResponse],
     );
 
-    const mapPaint = React.useMemo(
+    const {
+        paint: mapPaint,
+        legend: mapLegend,
+        min: dataMinValue,
+    } = React.useMemo(
         () => {
             let mapState: MapState[] = [];
             switch (regionLevel) {
@@ -186,18 +190,18 @@ const Dashboard = (props: Props) => {
             const max = Math.max(...valueList);
 
             const colorDomain = [
-                '#31ad5c',
-                '#94c475',
-                '#d3dba0',
-                '#fff5d8',
-                '#e9bf8c',
-                '#d98452',
-                '#c73c32',
+                '#004c7d',
+                '#316291',
+                '#5078a6',
+                '#6e90bb',
+                '#8ba8d1',
+                '#a8c1e7',
             ];
 
-            const paint = generateMapPaint(colorDomain, min, max);
-
-            return paint;
+            return {
+                min,
+                ...generateChoroplethMapPaintAndLegend(colorDomain, min, max),
+            };
         },
         [
             provinceMapState,
@@ -247,7 +251,8 @@ const Dashboard = (props: Props) => {
                                     // layout: showMunicipality ? visibleLayout : noneLayout,
                                     paint: {
                                         'line-color': '#000000',
-                                        'line-width': 0.8,
+                                        'line-width': 1,
+                                        'line-opacity': 0.2,
                                     },
                                 }}
                             />
@@ -271,7 +276,8 @@ const Dashboard = (props: Props) => {
                                     // layout: showDistrict ? visibleLayout : noneLayout,
                                     paint: {
                                         'line-color': '#000000',
-                                        'line-width': 1.2,
+                                        'line-width': 1,
+                                        'line-opacity': 0.3,
                                     },
                                 }}
                             />
@@ -295,7 +301,8 @@ const Dashboard = (props: Props) => {
                                     // layout: showProvince ? visibleLayout : noneLayout,
                                     paint: {
                                         'line-color': '#000000',
-                                        'line-width': 2,
+                                        'line-width': 1,
+                                        'line-opacity': 0.4,
                                     },
                                 }}
                             />
@@ -330,6 +337,7 @@ const Dashboard = (props: Props) => {
                     Indicator
                 </h4>
                 <SelectInput
+                    className={styles.indicatorSelectInput}
                     disabled={indicatorListPending}
                     options={indicatorListResponse.results}
                     onChange={setSelectedIndicator}
@@ -337,6 +345,13 @@ const Dashboard = (props: Props) => {
                     optionLabelSelector={d => d.fullTitle}
                     optionKeySelector={d => d.id}
                 />
+                { Object.keys(mapLegend).length > 0 && (
+                    <ChoroplethLegend
+                        className={styles.legend}
+                        minValue={dataMinValue}
+                        legend={mapLegend}
+                    />
+                )}
             </div>
         </div>
     );
