@@ -1,4 +1,5 @@
 import React from 'react';
+import { _cs } from '@togglecorp/fujs';
 
 import Map from '#remap';
 import MapContainer from '#remap/MapContainer';
@@ -57,6 +58,8 @@ function IndicatorMap(props: Props) {
         regionLevel,
         mapState,
         mapPaint,
+        children,
+        hideTooltip,
     } = props;
 
     const [
@@ -84,7 +87,7 @@ function IndicatorMap(props: Props) {
             navControlShown
             navControlPosition="bottom-right"
         >
-            <MapContainer className={className} />
+            <MapContainer className={_cs(styles.mapContainer, className)} />
             <MapSource
                 sourceKey="nepal"
                 sourceOptions={{
@@ -116,16 +119,19 @@ function IndicatorMap(props: Props) {
                         mapPaint={mapPaint}
                     />
                 )}
-                {hoveredRegionProperties.lngLat && (
+                {!hideTooltip && hoveredRegionProperties.lngLat && (
                     <MapTooltip
                         coordinates={hoveredRegionProperties.lngLat}
                         tooltipOptions={tooltipOptions}
                         trackPointer
                     >
-                        <Tooltip feature={hoveredRegionProperties.feature} />
+                        <Tooltip
+                            feature={hoveredRegionProperties.feature}
+                        />
                     </MapTooltip>
                 )}
             </MapSource>
+            { children }
         </Map>
     );
 }

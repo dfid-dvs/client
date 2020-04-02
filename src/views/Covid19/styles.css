@@ -36,6 +36,11 @@
             margin-top: 0;
         }
 
+        .abstract {
+            padding: var(--spacing-medium);
+            font-size: var(--font-size-small);
+        }
+
         .legend {
             margin: var(--spacing-medium);
         }
@@ -104,5 +109,36 @@
     .label {
         padding: var(--spacing-extra-small) var(--spacing-small);
         text-transform: uppercase;
+    }
+}
+
+.tooltip {
+    .title {
+        padding: var(--spacing-small);
+        color: var(--color-accent);
+        font-size: var(--font-size-medium);
+        font-weight: var(--font-weight-bold);
+    }
+}
+
+.text-output {
+    display: table-row;
+
+    .label {
+        display: table-cell;
+        padding: 0 var(--spacing-small);
+        font-size: var(--font-size-small);
+    }
+
+    .value {
+        display: table-cell;
+        padding: 0 var(--spacing-small);
+    }
+
+    .null-value {
+        display: table-cell;
+        padding: 0 var(--spacing-small);
+        color: rgba(0, 0, 0, .4);
+        font-size: var(--font-size-small);
     }
 }

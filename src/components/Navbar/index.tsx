@@ -137,11 +137,13 @@ const Navbar = (props: Props) => {
                             onChange={setRegionLevel}
                         />
                     )}
+                    {/*
                     <TextInput
                         icons={<IoIosSearch />}
                         className={styles.programSearch}
                     />
-                    {(!isCovidPage && exploreBy === 'programs') && (
+                    */}
+                    {/* (!isCovidPage && exploreBy === 'programs') && (
                         <>
                             <DropdownMenu label="Sectors">
                                 Choose sectors
@@ -150,7 +152,7 @@ const Navbar = (props: Props) => {
                                 Select markers
                             </DropdownMenu>
                         </>
-                    )}
+                    ) */}
                 </div>
             </div>
         </nav>

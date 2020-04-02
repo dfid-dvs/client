@@ -59,7 +59,7 @@ const Dashboard = (props: Props) => {
         indicatorListResponse,
     ] = useRequest<Indicator>(indicatorListGetUrl);
 
-    const [mapStatePending, mapState] = useMapState(regionLevel, selectedIndicator);
+    const [mapStatePending, mapState, indicatorData] = useMapState(regionLevel, selectedIndicator);
 
     const {
         paint: mapPaint,
@@ -98,6 +98,7 @@ const Dashboard = (props: Props) => {
                 regionLevel={regionLevel}
                 mapState={mapState}
                 mapPaint={mapPaint}
+                indicatorData={indicatorData}
             />
             <div className={styles.mapStyleConfigContainer}>
                 <h4 className={styles.heading}>

@@ -19,6 +19,7 @@ export const tooltipOptions = {
     closeOnClick: false,
     closeButton: false,
     offset: 8,
+    maxWidth: '480px',
 };
 
 export const colorDomain = [

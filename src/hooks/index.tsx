@@ -2,7 +2,6 @@ import React from 'react';
 
 import { Response } from '#types';
 
-// eslint-disable-next-line import/prefer-default-export
 export function useForm<T>(
     values: T,
     setValues: (value: T) => void,
@@ -199,6 +198,7 @@ export function useMapState(regionLevel, selectedIndicator) {
     );
 
     let mapState: MapState[] = [];
+
     switch (regionLevel) {
         case 'municipality':
             mapState = municipalityMapState;
@@ -216,6 +216,7 @@ export function useMapState(regionLevel, selectedIndicator) {
     const pending = municipalityIndicatorListPending
         || districtIndicatorListPending
         || provinceIndicatorListPending;
+
 
     return [pending, mapState];
 }
