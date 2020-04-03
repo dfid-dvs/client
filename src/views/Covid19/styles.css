@@ -27,18 +27,29 @@
             color: var(--color-accent);
         }
 
-        .indicator-select-input {
-            margin: var(--spacing-medium);
-            margin-top: 0;
+        .layer-by-selection {
+            padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
         }
 
-        .abstract {
-            padding: var(--spacing-medium);
-            font-size: var(--font-size-small);
-        }
+        .layer-selection {
+            margin-top: var(--spacing-medium);
 
-        .legend {
-            margin: var(--spacing-medium);
+            .indicator-select-input {
+                margin: var(--spacing-medium);
+            }
+
+            .age-group-select-input {
+                margin: var(--spacing-medium);
+            }
+
+            .abstract {
+                padding: var(--spacing-medium);
+                font-size: var(--font-size-small);
+            }
+
+            .legend {
+                margin: var(--spacing-medium);
+            }
         }
     }
 

@@ -23,10 +23,12 @@ export const tooltipOptions = {
 };
 
 export const colorDomain = [
-    '#004c7d',
-    '#316291',
-    '#5078a6',
-    '#6e90bb',
-    '#8ba8d1',
     '#a8c1e7',
+    '#8ba8d1',
+    '#6e90bb',
+    '#5078a6',
+    '#316291',
+    '#004c7d',
 ];
+
+export const apiEndPoint = 'https://dvsnaxa.naxa.com.np/api/v1/core';

@@ -86,7 +86,7 @@ export const generateChoroplethMapPaintAndLegend = (
 
         if (maxValue <= 1 || gap < 1) {
             colorDomain.forEach((color, i) => {
-                const val = +(minValue + (i + 1) * gap).toFixed(1);
+                const val = +(minValue + (i + 1) * gap).toFixed(4);
                 // NOTE: avoid duplicates
                 if (colors.length > 0 && colors[colors.length - 1] === val) {
                     return;

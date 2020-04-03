@@ -12,6 +12,7 @@ export interface ButtonClickEvent {
 export type ExploreOption = 'programs' | 'regions';
 export type RegionLevelOption = 'province' | 'district' | 'municipality';
 
+export type AgeGroupOption = 'belowFourteen' | 'fifteenToFourtyNine' | 'aboveFifty';
 
 export interface NavbarContextProps {
     exploreBy: ExploreOption;
@@ -24,4 +25,11 @@ export interface Response<T> {
     count: number;
     results: T[];
     data: T[]; // whut? -_-
+}
+
+export type ListResponse<T> = T[];
+
+export interface MapState {
+    id: number;
+    value: number;
 }

@@ -4,21 +4,21 @@ import { _cs } from '@togglecorp/fujs';
 import Option from './Option';
 import styles from './styles.css';
 
-interface Props<T> {
+interface Props<T, V> {
     className?: string;
     options?: T[];
-    optionKeySelector: (d: T) => string;
+    optionKeySelector: (d: T) => V;
     optionLabelSelector: (d: T) => string;
     renderer?: typeof Option;
     // renderer?: React.ReactNode;
     label?: React.ReactNode;
-    value?: T;
-    onChange?: (value: string | undefined, name: string | undefined) => void;
+    value?: V;
+    onChange?: (value: V, name: string | undefined) => void;
     name?: string;
 }
 
 
-function SegmentInput<T>(props: Props<T>) {
+function SegmentInput<T, V>(props: Props<T, V>) {
     const {
         className,
         options = [],
@@ -38,7 +38,7 @@ function SegmentInput<T>(props: Props<T>) {
             </div>
             <div className={styles.inputContainer}>
                 { options.map((option) => {
-                    const key = optionKeySelector ? optionKeySelector(option) : undefined;
+                    const key = optionKeySelector(option);
                     const isActive = key === value;
 
                     const RenderOption = renderer || Option;

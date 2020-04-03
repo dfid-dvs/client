@@ -55,7 +55,7 @@ function Stats(props: Props) {
     return (
         <div className={_cs(className, styles.stats)}>
             <h4 className={styles.heading}>
-                Overall status
+                COVID-19 summary
             </h4>
             { statusPending && (
                 <Backdrop>

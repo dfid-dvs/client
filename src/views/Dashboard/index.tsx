@@ -11,11 +11,14 @@ import IndicatorMap from '#components/IndicatorMap';
 
 import {
     useRequest,
-    useMapState,
+    useMapStateForIndicator,
 } from '#hooks';
 
 import { generateChoroplethMapPaintAndLegend } from '#utils/common';
-import { colorDomain } from '#utils/constants';
+import {
+    colorDomain,
+    apiEndPoint,
+} from '#utils/constants';
 
 import styles from './styles.css';
 
@@ -53,13 +56,16 @@ const Dashboard = (props: Props) => {
         setSelectedIndicator,
     ] = React.useState<number | undefined>(undefined);
 
-    const indicatorListGetUrl = 'http://139.59.67.104:8060/api/v1/core/indicator-list/';
+    const indicatorListGetUrl = `${apiEndPoint}/indicator-list/`;
     const [
         indicatorListPending,
         indicatorListResponse,
     ] = useRequest<Indicator>(indicatorListGetUrl);
 
-    const [mapStatePending, mapState, indicatorData] = useMapState(regionLevel, selectedIndicator);
+    const [
+        mapStatePending,
+        mapState,
+    ] = useMapStateForIndicator(regionLevel, selectedIndicator);
 
     const {
         paint: mapPaint,
@@ -98,7 +104,6 @@ const Dashboard = (props: Props) => {
                 regionLevel={regionLevel}
                 mapState={mapState}
                 mapPaint={mapPaint}
-                indicatorData={indicatorData}
             />
             <div className={styles.mapStyleConfigContainer}>
                 <h4 className={styles.heading}>

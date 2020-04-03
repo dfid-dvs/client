@@ -1,11 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { _cs, isDefined } from '@togglecorp/fujs';
 
 import styles from './styles.css';
 
+const getPrecision = (value: number | undefined) => {
+    if (!value) {
+        return 0;
+    }
+
+    if (value < 0.1) {
+        return 4;
+    }
+
+    if (value < 1) {
+        return 3;
+    }
+
+    return 2;
+};
+
 function Numeral({
     value,
-    precision = 2,
+    precision = getPrecision(value),
     className,
 }: {
     value: number | undefined;
@@ -33,10 +49,12 @@ const ChoroplethLegend = (
         minValue,
         legend,
         className,
+        zeroPrecision,
     }: {
         minValue: number;
         legend: {[key: string]: number};
         className?: string;
+        zeroPrecision?: boolean;
     },
 ) => (
     <div className={_cs(className, styles.choroplethLegend)}>
@@ -44,7 +62,7 @@ const ChoroplethLegend = (
             <Numeral
                 className={styles.min}
                 value={minValue}
-                precision={2}
+                precision={zeroPrecision ? 0 : undefined}
             />
         )}
         { Object.keys(legend).map((color) => {
@@ -61,7 +79,7 @@ const ChoroplethLegend = (
                     <div className={styles.value}>
                         <Numeral
                             value={value}
-                            precision={2}
+                            precision={zeroPrecision ? 0 : undefined}
                         />
                     </div>
                 </div>

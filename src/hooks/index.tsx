@@ -1,6 +1,13 @@
 import React from 'react';
 
-import { Response } from '#types';
+import {
+    Response,
+    RegionLevelOption,
+    AgeGroupOption,
+    MapState,
+} from '#types';
+
+import { apiEndPoint } from '#utils/constants';
 
 export function useForm<T>(
     values: T,
@@ -68,9 +75,16 @@ export function useRequest<T>(
                     if (Math.floor(responseFromRequest.status / 100) === 2) {
                         try {
                             responseFromRequest.json().then((data) => {
-                                setResponse(data);
+                                if (Array.isArray(data)) {
+                                    setResponse({
+                                        count: 1,
+                                        results: data,
+                                        data,
+                                    });
+                                } else {
+                                    setResponse(data);
+                                }
                                 setPending(false);
-                                // console.warn(data);
                             });
                         } catch (e) {
                             setPending(false);
@@ -81,6 +95,10 @@ export function useRequest<T>(
                         console.error(`An error occured while fetching ${url}`);
                         window.alert('Cannot fetch data');
                     }
+                }, (e) => {
+                    setPending(false);
+                    console.error(`An error occured while fetching ${url}`, e);
+                    window.alert('Cannot fetch data');
                 });
             } catch (e) {
                 setPending(false);
@@ -126,21 +144,29 @@ export function useBlurEffect(
     }, deps);
 }
 
-export function useMapState(regionLevel, selectedIndicator) {
+interface IndicatorValue {
+    code: number;
+    value: number;
+}
+
+export function useMapStateForIndicator(
+    regionLevel: RegionLevelOption,
+    selectedIndicator: number | undefined,
+): [boolean, MapState[]] {
     const showProvince = regionLevel === 'province';
     const showDistrict = regionLevel === 'district';
     const showMunicipality = regionLevel === 'municipality';
 
     const provinceIndicatorListGetUrl = showProvince && selectedIndicator
-        ? `http://139.59.67.104:8060/api/v1/core/province-indicator/${selectedIndicator}`
+        ? `${apiEndPoint}/province-indicator/${selectedIndicator}`
         : undefined;
 
     const districtIndicatorListGetUrl = showDistrict && selectedIndicator
-        ? `http://139.59.67.104:8060/api/v1/core/district-indicator/${selectedIndicator}`
+        ? `${apiEndPoint}/district-indicator/${selectedIndicator}`
         : undefined;
 
     const municipalityIndicatorListGetUrl = showMunicipality && selectedIndicator
-        ? `http://139.59.67.104:8060/api/v1/core/municipality-indicator/?indicator_id=${selectedIndicator}`
+        ? `${apiEndPoint}/municipality-indicator/?indicator_id=${selectedIndicator}`
         : undefined;
 
     const [
@@ -225,4 +251,48 @@ export function useMapState(regionLevel, selectedIndicator) {
 
 
     return [pending, mapState];
+}
+
+export function useMapStateForAgeGroup(
+    shouldUse: boolean,
+    ageGroup: AgeGroupOption,
+    regionLevel: RegionLevelOption,
+): [boolean, MapState[]] {
+    const ageGroupListUrl = shouldUse ? 'https://covidapi.naxa.com.np/api/v1/age-data/' : undefined;
+    const [
+        ageGroupListPending,
+        ageGroupListResponse,
+    ] = useRequest(ageGroupListUrl);
+
+    const mapState = React.useMemo(
+        () => {
+            let state: MapState[] = [];
+
+            if (ageGroupListPending) {
+                return state;
+            }
+
+            const regionIdByRegionLevel = {
+                province: 'provinceId',
+                district: 'districtId',
+                municipality: 'munid',
+            };
+
+            const valueByAgeGroup = {
+                belowFourteen: 'l0_14',
+                fifteenToFourtyNine: 'l15_49',
+                aboveFifty: 'l50plus',
+            };
+
+            state = ageGroupListResponse.results.map(d => ({
+                id: d[regionIdByRegionLevel[regionLevel]],
+                value: d[valueByAgeGroup[ageGroup]],
+            }));
+
+            return state;
+        },
+        [ageGroupListPending, ageGroupListResponse, ageGroup, regionLevel],
+    );
+
+    return [ageGroupListPending, mapState];
 }

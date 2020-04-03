@@ -9,25 +9,31 @@ import MapSource from '#remap/MapSource';
 import MapLayer from '#remap/MapSource/MapLayer';
 import MapTooltip from '#remap/MapTooltip';
 
+import SegmentInput from '#components/SegmentInput';
 import NavbarContext from '#components/NavbarContext';
 import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
 import ToggleButton from '#components/ToggleButton';
+import Checkbox from '#components/Checkbox';
 
 import IndicatorMap from '#components/IndicatorMap';
 import Stats from './Stats';
 
 import {
     useRequest,
-    useMapState,
+    useMapStateForIndicator,
+    useMapStateForAgeGroup,
 } from '#hooks';
+
+import { AgeGroupOption } from '#types';
 
 import { generateChoroplethMapPaintAndLegend } from '#utils/common';
 import {
     colorDomain,
     tooltipOptions,
+    apiEndPoint,
 } from '#utils/constants';
 
 import styles from './styles.css';
@@ -46,6 +52,17 @@ interface Props {
     className?: string;
 }
 
+type ShowLayerOption = 'indicator' | 'ageGroup';
+interface LayerOption {
+    key: ShowLayerOption;
+    label: string;
+}
+
+const showLayerByOptions: LayerOption[] = [
+    { key: 'indicator', label: 'Indicator' },
+    { key: 'ageGroup', label: 'Age group' },
+];
+
 interface HealthResource {
     id: number;
     title: string;
@@ -56,6 +73,17 @@ interface HealthResource {
         coordinates: [number, number];
     };
 }
+
+interface AgeGroup {
+    key: AgeGroupOption;
+    label: string;
+}
+
+const ageGroupOptions: AgeGroup[] = [
+    { key: 'belowFourteen', label: 'Below 14' },
+    { key: 'fifteenToFourtyNine', label: '15 to 49' },
+    { key: 'aboveFifty', label: 'Above 50' },
+];
 
 const TextOutput = ({
     label,
@@ -167,8 +195,58 @@ const Tooltip = ({ feature }) => {
     );
 };
 
+const CovidReadyTooltip = ({ feature }) => {
+    const {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        ownership_display,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        category_name,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        type_name,
+        name,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        contact_num,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        used_for_corona_response,
+    } = feature.properties;
+
+    return (
+        <div className={styles.tooltip}>
+            <div className={styles.title}>
+                { name }
+            </div>
+            <TextOutput
+                label="Category"
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                value={category_name}
+            />
+            <TextOutput
+                label="Ownership type"
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                value={ownership_display}
+            />
+            <TextOutput
+                label="Type"
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                value={type_name}
+            />
+            <TextOutput
+                label="Used for COVID-19"
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                value={used_for_corona_response ? 'Yes' : 'No'}
+            />
+            <TextOutput
+                label="Contact number"
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                value={contact_num}
+            />
+        </div>
+    );
+};
+
 function HealthResourcePoints(props) {
     const {
+        covidReady,
         data: healthResourcePointCollection,
         sourceKey,
     } = props;
@@ -257,7 +335,11 @@ function HealthResourcePoints(props) {
                     tooltipOptions={tooltipOptions}
                     trackPointer
                 >
-                    <Tooltip feature={hoveredPointProperties.feature} />
+                    { covidReady ? (
+                        <CovidReadyTooltip feature={hoveredPointProperties.feature} />
+                    ) : (
+                        <Tooltip feature={hoveredPointProperties.feature} />
+                    )}
                 </MapTooltip>
             )}
         </MapSource>
@@ -274,22 +356,69 @@ const Covid19 = (props: Props) => {
     ] = React.useState<number | undefined>(undefined);
 
     const [
+        selectedAgeGroup,
+        setSelectedAgeGroup,
+    ] = React.useState<AgeGroupOption>('belowFourteen');
+
+    const [
         showHealthResource,
-        setShowHealthResources,
+        setShowHealthResource,
     ] = React.useState<boolean>(false);
 
-    const indicatorListGetUrl = 'http://139.59.67.104:8060/api/v1/core/indicator-list/?is_covid=1';
+    const [
+        showCovidReadyHealthResourceOnly,
+        setShowCovidReadyHealthResourceOnly,
+    ] = React.useState<boolean>(true);
+
+    const [
+        showLayerBy,
+        setShowLayerBy,
+    ] = React.useState<ShowLayerOption>('indicator');
+
+    const indicatorListGetUrl = `${apiEndPoint}/indicator-list/?is_covid=1`;
     const [
         indicatorListPending,
         indicatorListResponse,
     ] = useRequest<Indicator>(indicatorListGetUrl);
 
+    const covidReadyHealthResourcesUrl = showHealthResource && showCovidReadyHealthResourceOnly
+        ? 'https://covidapi.naxa.com.np/api/v1/health-facility/'
+        : undefined;
+    const [
+        covidReadyHealthResourceListPending,
+        covidReadyHealthResourceList,
+    ] = useRequest<HealthResource>(covidReadyHealthResourcesUrl);
 
     const healthResourcesUrl = 'http://bipad.staging.nepware.com/api/v1/resource/?resource_type=health&meta=true&limit=-1';
     const [
         healthResourceListPending,
         healthResourceList,
-    ] = useRequest<HealthResource>(showHealthResource ? healthResourcesUrl : undefined);
+    ] = useRequest<HealthResource>(healthResourcesUrl);
+
+    const covidReadyHealthResourcePointCollection = React.useMemo(() => {
+        const geojson = {
+            type: 'FeatureCollection',
+            features: covidReadyHealthResourceList.results.map((h) => {
+                const {
+                    lat,
+                    long,
+                    ...otherProperties
+                } = h;
+
+                return {
+                    id: h.id,
+                    type: 'Feature',
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [long, lat],
+                    },
+                    properties: { ...otherProperties },
+                };
+            }),
+        };
+
+        return geojson;
+    }, [covidReadyHealthResourceList]);
 
     const healthResourcePointCollection = React.useMemo(() => {
         const geojson = {
@@ -312,7 +441,16 @@ const Covid19 = (props: Props) => {
         return geojson;
     }, [healthResourceList]);
 
-    const [mapStatePending, mapState] = useMapState(regionLevel, selectedIndicator);
+    const [
+        mapStateForAgeGroupPending,
+        mapStateForAgeGroup,
+    ] = useMapStateForAgeGroup(showLayerBy === 'ageGroup', selectedAgeGroup, regionLevel);
+
+    const [
+        mapStateForIndicatorPending,
+        mapStateForIndicator,
+    ] = useMapStateForIndicator(regionLevel, selectedIndicator);
+
 
     const {
         paint: mapPaint,
@@ -320,7 +458,9 @@ const Covid19 = (props: Props) => {
         min: dataMinValue,
     } = React.useMemo(
         () => {
-            const valueList = mapState.map(d => d.value);
+            const valueList = showLayerBy === 'indicator'
+                ? mapStateForIndicator.map(d => d.value)
+                : mapStateForAgeGroup.map(d => d.value);
             const min = Math.min(...valueList);
             const max = Math.max(...valueList);
 
@@ -329,11 +469,14 @@ const Covid19 = (props: Props) => {
                 ...generateChoroplethMapPaintAndLegend(colorDomain, min, max),
             };
         },
-        [mapState],
+        [showLayerBy, mapStateForAgeGroup, mapStateForIndicator],
     );
 
-    const pending = mapStatePending
-        || indicatorListPending || healthResourceListPending;
+    const pending = mapStateForIndicatorPending
+        || mapStateForAgeGroupPending
+        || indicatorListPending
+        || covidReadyHealthResourceListPending
+        || healthResourceListPending;
 
     const selectedIndicatorDetails = React.useMemo(() => {
         if (selectedIndicator) {
@@ -359,13 +502,17 @@ const Covid19 = (props: Props) => {
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
-                mapState={mapState}
+                mapState={showLayerBy === 'indicator' ? mapStateForIndicator : mapStateForAgeGroup}
                 mapPaint={mapPaint}
             >
                 { showHealthResource && (
                     <HealthResourcePoints
+                        covidReady={showCovidReadyHealthResourceOnly}
                         sourceKey={regionLevel}
-                        data={healthResourcePointCollection}
+                        data={showCovidReadyHealthResourceOnly
+                            ? covidReadyHealthResourcePointCollection
+                            : healthResourcePointCollection
+                        }
                     />
                 )}
             </IndicatorMap>
@@ -373,34 +520,74 @@ const Covid19 = (props: Props) => {
             <div className={styles.mapStyleConfigContainer}>
                 <ToggleButton
                     value={showHealthResource}
-                    label="Show health resources"
-                    onChange={setShowHealthResources}
+                    label="Show health facilities"
+                    onChange={setShowHealthResource}
                 />
-                <h4 className={styles.heading}>
-                    Indicator
-                </h4>
-                <SelectInput
-                    placeholder="Select an indicator"
-                    className={styles.indicatorSelectInput}
-                    disabled={indicatorListPending}
-                    options={indicatorListResponse.results}
-                    onChange={setSelectedIndicator}
-                    value={selectedIndicator}
-                    optionLabelSelector={d => d.fullTitle}
-                    optionKeySelector={d => d.id}
-                />
-                { selectedIndicatorDetails && (
-                    <div className={styles.abstract}>
-                        { selectedIndicatorDetails.abstract }
-                    </div>
-                )}
-                { Object.keys(mapLegend).length > 0 && (
-                    <ChoroplethLegend
-                        className={styles.legend}
-                        minValue={dataMinValue}
-                        legend={mapLegend}
+                { showHealthResource && (
+                    <Checkbox
+                        label="Show COVID ready health facilities only"
+                        value={showCovidReadyHealthResourceOnly}
+                        onChange={setShowCovidReadyHealthResourceOnly}
                     />
                 )}
+                <div className={styles.layerSelection}>
+                    <SegmentInput
+                        className={styles.layerBySelection}
+                        label="Show layer by"
+                        options={showLayerByOptions}
+                        value={showLayerBy}
+                        optionKeySelector={d => d.key}
+                        optionLabelSelector={d => d.label}
+                        onChange={setShowLayerBy}
+                    />
+                    { showLayerBy === 'indicator' && (
+                        <>
+                            <SelectInput
+                                placeholder="Select an indicator"
+                                className={styles.indicatorSelectInput}
+                                disabled={indicatorListPending}
+                                options={indicatorListResponse.results}
+                                onChange={setSelectedIndicator}
+                                value={selectedIndicator}
+                                optionLabelSelector={d => d.fullTitle}
+                                optionKeySelector={d => d.id}
+                            />
+                            { selectedIndicatorDetails && (
+                                <div className={styles.abstract}>
+                                    { selectedIndicatorDetails.abstract }
+                                </div>
+                            )}
+                            { Object.keys(mapLegend).length > 0 && (
+                                <ChoroplethLegend
+                                    className={styles.legend}
+                                    minValue={dataMinValue}
+                                    legend={mapLegend}
+                                />
+                            )}
+                        </>
+                    )}
+                    { showLayerBy === 'ageGroup' && (
+                        <>
+                            <SelectInput
+                                placeholder="Select an age group"
+                                className={styles.ageGroupSelectInput}
+                                options={ageGroupOptions}
+                                onChange={setSelectedAgeGroup}
+                                value={selectedAgeGroup}
+                                optionLabelSelector={d => d.label}
+                                optionKeySelector={d => d.key}
+                            />
+                            { Object.keys(mapLegend).length > 0 && (
+                                <ChoroplethLegend
+                                    className={styles.legend}
+                                    minValue={dataMinValue}
+                                    legend={mapLegend}
+                                    zeroPrecision
+                                />
+                            )}
+                        </>
+                    )}
+                </div>
             </div>
         </div>
     );
