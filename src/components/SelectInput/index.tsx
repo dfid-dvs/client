@@ -56,6 +56,7 @@ interface Props<T, K> {
     value: K | undefined;
     onChange: (d: K | undefined) => void;
     disabled?: boolean;
+    placeholder?: string;
 }
 
 function SelectInput<T, K extends string | number>(props: Props<T, K>) {

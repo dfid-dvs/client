@@ -30,6 +30,7 @@
                 display: block;
                 outline: none;
                 padding: var(--spacing-small) var(--spacing-medium);
+                text-transform: uppercase;
                 text-decoration: none;
                 color: var(--color-text-light-on-primary-light);
                 font-weight: var(--font-weight-bold);
