@@ -1,6 +1,10 @@
 import React from 'react';
 
 import {
+    listToGroupList,
+    isDefined,
+} from '@togglecorp/fujs';
+import {
     Response,
     RegionLevelOption,
     AgeGroupOption,
@@ -144,6 +148,87 @@ export function useBlurEffect(
     }, deps);
 }
 
+function useAgeGroupList(
+    shouldUse: boolean,
+    regionLevel: RegionLevelOption,
+): [boolean, any[]] {
+    const ageGroupListUrl = shouldUse ? 'https://covidapi.naxa.com.np/api/v1/age-data/' : undefined;
+    const [
+        ageGroupListPending,
+        ageGroupListResponse,
+    ] = useRequest(ageGroupListUrl);
+
+    const sanitizedAgeGroupList = ageGroupListResponse.results.filter(
+        d => d.munid !== 38,
+    );
+
+    const ageGroupListByProvince = React.useMemo(() => {
+        const provinceGroupedList = listToGroupList(
+            sanitizedAgeGroupList,
+            d => d.provinceId,
+        );
+
+        const ageGroupList = Object.keys(provinceGroupedList).map(d => ({
+            code: d,
+            belowFourteen: provinceGroupedList[d].reduce((acc, val) => acc + val.l0_14, 0),
+            fifteenToFourtyNine: provinceGroupedList[d].reduce((acc, val) => acc + val.l15_49, 0),
+            aboveFifty: provinceGroupedList[d].reduce((acc, val) => acc + val.l50plus, 0),
+            total: provinceGroupedList[d].reduce((acc, val) => acc + val.ltotal, 0),
+        }));
+
+        return ageGroupList;
+    }, [ageGroupListResponse]);
+
+    const ageGroupListByDistrict = React.useMemo(() => {
+        const districtGroupedList = listToGroupList(
+            sanitizedAgeGroupList,
+            d => d.districtId,
+        );
+
+        const ageGroupList = Object.keys(districtGroupedList).map(d => ({
+            code: d,
+            belowFourteen: districtGroupedList[d].reduce((acc, val) => acc + val.l0_14, 0),
+            fifteenToFourtyNine: districtGroupedList[d].reduce((acc, val) => acc + val.l15_49, 0),
+            aboveFifty: districtGroupedList[d].reduce((acc, val) => acc + val.l50plus, 0),
+            total: districtGroupedList[d].reduce((acc, val) => acc + val.ltotal, 0),
+        }));
+
+        return ageGroupList;
+    }, [ageGroupListResponse]);
+
+    const ageGroupListByMunicipality = React.useMemo(() => {
+        const ageGroupList = sanitizedAgeGroupList.map(d => ({
+            code: d.munid,
+            belowFourteen: d.l0_14,
+            fifteenToFourtyNine: d.l15_49,
+            aboveFifty: d.l50plus,
+            total: d.ltotal,
+        }));
+
+        return ageGroupList;
+    }, [ageGroupListResponse]);
+
+    let ageGroupList = [];
+    switch (regionLevel) {
+        case 'province':
+            ageGroupList = ageGroupListByProvince;
+            break;
+        case 'district':
+            ageGroupList = ageGroupListByDistrict;
+            break;
+        case 'municipality':
+            ageGroupList = ageGroupListByMunicipality;
+            break;
+        default:
+            break;
+    }
+
+    return [
+        ageGroupListPending,
+        ageGroupList,
+    ];
+}
+
 interface IndicatorValue {
     code: number;
     value: number;
@@ -152,147 +237,51 @@ interface IndicatorValue {
 export function useMapStateForIndicator(
     regionLevel: RegionLevelOption,
     selectedIndicator: number | undefined,
+    selectedAgeGroup: AgeGroupOption | undefined,
 ): [boolean, MapState[]] {
-    const showProvince = regionLevel === 'province';
-    const showDistrict = regionLevel === 'district';
-    const showMunicipality = regionLevel === 'municipality';
+    let regionIndicatorUrl;
 
-    const provinceIndicatorListGetUrl = showProvince && selectedIndicator
-        ? `${apiEndPoint}/province-indicator/${selectedIndicator}`
-        : undefined;
+    if (isDefined(selectedIndicator) && String(selectedIndicator) !== '-1') {
+        console.warn(selectedIndicator);
 
-    const districtIndicatorListGetUrl = showDistrict && selectedIndicator
-        ? `${apiEndPoint}/district-indicator/${selectedIndicator}`
-        : undefined;
-
-    const municipalityIndicatorListGetUrl = showMunicipality && selectedIndicator
-        ? `${apiEndPoint}/municipality-indicator/?indicator_id=${selectedIndicator}`
-        : undefined;
-
-    const [
-        provinceIndicatorListPending,
-        provinceIndicatorListResponse,
-    ] = useRequest<IndicatorValue>(provinceIndicatorListGetUrl);
-
-    const [
-        districtIndicatorListPending,
-        districtIndicatorListResponse,
-    ] = useRequest<IndicatorValue>(districtIndicatorListGetUrl);
-
-    const [
-        municipalityIndicatorListPending,
-        municipalityIndicatorListResponse,
-    ] = useRequest<IndicatorValue>(municipalityIndicatorListGetUrl);
-
-    const provinceMapState = React.useMemo(
-        () => {
-            let state: MapState[] = [];
-            if (provinceIndicatorListPending) {
-                return state;
-            }
-            state = provinceIndicatorListResponse.results.map(d => ({
-                id: d.code,
-                value: d.value,
-            }));
-            return state;
-        },
-        [provinceIndicatorListPending, provinceIndicatorListResponse],
-    );
-
-    const districtMapState = React.useMemo(
-        () => {
-            let state: MapState[] = [];
-            if (districtIndicatorListPending) {
-                return state;
-            }
-            state = districtIndicatorListResponse.results.map(d => ({
-                id: d.code,
-                value: d.value,
-            }));
-            return state;
-        },
-        [districtIndicatorListPending, districtIndicatorListResponse],
-    );
-
-    const municipalityMapState = React.useMemo(
-        () => {
-            let state: MapState[] = [];
-            if (municipalityIndicatorListPending) {
-                return state;
-            }
-            state = municipalityIndicatorListResponse.results.map(d => ({
-                id: d.code,
-                value: d.value,
-            }));
-            return state;
-        },
-        [municipalityIndicatorListPending, municipalityIndicatorListResponse],
-    );
-
-    let mapState: MapState[] = [];
-
-    switch (regionLevel) {
-        case 'municipality':
-            mapState = municipalityMapState;
-            break;
-        case 'district':
-            mapState = districtMapState;
-            break;
-        case 'province':
-            mapState = provinceMapState;
-            break;
-        default:
-            break;
+        switch (regionLevel) {
+            case 'municipality':
+                regionIndicatorUrl = `${apiEndPoint}/municipality-indicator/?indicator_id=${selectedIndicator}`;
+                break;
+            case 'district':
+                regionIndicatorUrl = `${apiEndPoint}/district-indicator/${selectedIndicator}`;
+                break;
+            case 'province':
+                regionIndicatorUrl = `${apiEndPoint}/province-indicator/${selectedIndicator}`;
+                break;
+            default:
+                break;
+        }
     }
 
-    const pending = municipalityIndicatorListPending
-        || districtIndicatorListPending
-        || provinceIndicatorListPending;
+    const [
+        regionIndicatorListPending,
+        regionIndicatorListResponse,
+    ] = useRequest<IndicatorValue>(regionIndicatorUrl);
 
-
-    return [pending, mapState];
-}
-
-export function useMapStateForAgeGroup(
-    shouldUse: boolean,
-    ageGroup: AgeGroupOption,
-    regionLevel: RegionLevelOption,
-): [boolean, MapState[]] {
-    const ageGroupListUrl = shouldUse ? 'https://covidapi.naxa.com.np/api/v1/age-data/' : undefined;
     const [
         ageGroupListPending,
-        ageGroupListResponse,
-    ] = useRequest(ageGroupListUrl);
+        ageGroupList,
+    ] = useAgeGroupList(String(selectedIndicator) === '-1', regionLevel);
 
-    const mapState = React.useMemo(
-        () => {
-            let state: MapState[] = [];
+    let mapState: MapState[] = [];
+    if (String(selectedIndicator) === '-1' && selectedAgeGroup) {
+        mapState = ageGroupList.map(d => ({
+            id: d.code,
+            value: d[selectedAgeGroup],
+        }));
+    } else {
+        mapState = regionIndicatorListResponse.results.map(d => ({
+            id: d.code,
+            value: d.value,
+        }));
+    }
 
-            if (ageGroupListPending) {
-                return state;
-            }
-
-            const regionIdByRegionLevel = {
-                province: 'provinceId',
-                district: 'districtId',
-                municipality: 'munid',
-            };
-
-            const valueByAgeGroup = {
-                belowFourteen: 'l0_14',
-                fifteenToFourtyNine: 'l15_49',
-                aboveFifty: 'l50plus',
-            };
-
-            state = ageGroupListResponse.results.map(d => ({
-                id: d[regionIdByRegionLevel[regionLevel]],
-                value: d[valueByAgeGroup[ageGroup]],
-            }));
-
-            return state;
-        },
-        [ageGroupListPending, ageGroupListResponse, ageGroup, regionLevel],
-    );
-
-    return [ageGroupListPending, mapState];
+    const pending = regionIndicatorListPending || ageGroupListPending;
+    return [pending, mapState];
 }

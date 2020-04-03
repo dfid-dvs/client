@@ -24,7 +24,6 @@ import Stats from './Stats';
 import {
     useRequest,
     useMapStateForIndicator,
-    useMapStateForAgeGroup,
 } from '#hooks';
 
 import { AgeGroupOption } from '#types';
@@ -389,7 +388,7 @@ const Covid19 = (props: Props) => {
         covidReadyHealthResourceList,
     ] = useRequest<HealthResource>(covidReadyHealthResourcesUrl);
 
-    const healthResourcesUrl = 'http://bipad.staging.nepware.com/api/v1/resource/?resource_type=health&meta=true&limit=-1';
+    const healthResourcesUrl = 'https://bipad.staging.nepware.com/api/v1/resource/?resource_type=health&meta=true&limit=-1';
     const [
         healthResourceListPending,
         healthResourceList,
@@ -442,14 +441,9 @@ const Covid19 = (props: Props) => {
     }, [healthResourceList]);
 
     const [
-        mapStateForAgeGroupPending,
-        mapStateForAgeGroup,
-    ] = useMapStateForAgeGroup(showLayerBy === 'ageGroup', selectedAgeGroup, regionLevel);
-
-    const [
         mapStateForIndicatorPending,
         mapStateForIndicator,
-    ] = useMapStateForIndicator(regionLevel, selectedIndicator);
+    ] = useMapStateForIndicator(regionLevel, selectedIndicator, selectedAgeGroup);
 
 
     const {
@@ -458,9 +452,7 @@ const Covid19 = (props: Props) => {
         min: dataMinValue,
     } = React.useMemo(
         () => {
-            const valueList = showLayerBy === 'indicator'
-                ? mapStateForIndicator.map(d => d.value)
-                : mapStateForAgeGroup.map(d => d.value);
+            const valueList = mapStateForIndicator.map(d => d.value);
             const min = Math.min(...valueList);
             const max = Math.max(...valueList);
 
@@ -469,11 +461,10 @@ const Covid19 = (props: Props) => {
                 ...generateChoroplethMapPaintAndLegend(colorDomain, min, max),
             };
         },
-        [showLayerBy, mapStateForAgeGroup, mapStateForIndicator],
+        [showLayerBy, mapStateForIndicator],
     );
 
     const pending = mapStateForIndicatorPending
-        || mapStateForAgeGroupPending
         || indicatorListPending
         || covidReadyHealthResourceListPending
         || healthResourceListPending;
@@ -487,6 +478,14 @@ const Covid19 = (props: Props) => {
 
         return undefined;
     }, [selectedIndicator, indicatorListResponse]);
+
+    const indicatorOptions = React.useMemo(() => {
+        const options = [
+            ...indicatorListResponse.results,
+        ];
+        options.push({ id: -1, fullTitle: 'Age group' });
+        return options;
+    }, [indicatorListResponse]);
 
     return (
         <div className={_cs(
@@ -502,7 +501,7 @@ const Covid19 = (props: Props) => {
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
-                mapState={showLayerBy === 'indicator' ? mapStateForIndicator : mapStateForAgeGroup}
+                mapState={mapStateForIndicator}
                 mapPaint={mapPaint}
             >
                 { showHealthResource && (
@@ -519,73 +518,54 @@ const Covid19 = (props: Props) => {
             <Stats className={styles.stats} />
             <div className={styles.mapStyleConfigContainer}>
                 <ToggleButton
-                    value={showHealthResource}
                     label="Show health facilities"
+                    value={showHealthResource}
                     onChange={setShowHealthResource}
                 />
                 { showHealthResource && (
-                    <Checkbox
+                    <ToggleButton
                         label="Show COVID ready health facilities only"
                         value={showCovidReadyHealthResourceOnly}
                         onChange={setShowCovidReadyHealthResourceOnly}
                     />
                 )}
                 <div className={styles.layerSelection}>
-                    <SegmentInput
-                        className={styles.layerBySelection}
-                        label="Show layer by"
-                        options={showLayerByOptions}
-                        value={showLayerBy}
-                        optionKeySelector={d => d.key}
-                        optionLabelSelector={d => d.label}
-                        onChange={setShowLayerBy}
+                    <h4 className={styles.heading}>
+                        Indicator
+                    </h4>
+                    <SelectInput
+                        placeholder="Select an indicator"
+                        className={styles.indicatorSelectInput}
+                        disabled={indicatorListPending}
+                        options={indicatorOptions}
+                        onChange={setSelectedIndicator}
+                        value={selectedIndicator}
+                        optionLabelSelector={d => d.fullTitle}
+                        optionKeySelector={d => d.id}
                     />
-                    { showLayerBy === 'indicator' && (
-                        <>
-                            <SelectInput
-                                placeholder="Select an indicator"
-                                className={styles.indicatorSelectInput}
-                                disabled={indicatorListPending}
-                                options={indicatorListResponse.results}
-                                onChange={setSelectedIndicator}
-                                value={selectedIndicator}
-                                optionLabelSelector={d => d.fullTitle}
-                                optionKeySelector={d => d.id}
-                            />
-                            { selectedIndicatorDetails && (
-                                <div className={styles.abstract}>
-                                    { selectedIndicatorDetails.abstract }
-                                </div>
-                            )}
-                            { Object.keys(mapLegend).length > 0 && (
-                                <ChoroplethLegend
-                                    className={styles.legend}
-                                    minValue={dataMinValue}
-                                    legend={mapLegend}
-                                />
-                            )}
-                        </>
+                    { selectedIndicatorDetails && (
+                        <div className={styles.abstract}>
+                            { selectedIndicatorDetails.abstract }
+                        </div>
                     )}
-                    { showLayerBy === 'ageGroup' && (
-                        <>
-                            <SelectInput
-                                placeholder="Select an age group"
-                                className={styles.ageGroupSelectInput}
-                                options={ageGroupOptions}
-                                onChange={setSelectedAgeGroup}
-                                value={selectedAgeGroup}
-                                optionLabelSelector={d => d.label}
-                                optionKeySelector={d => d.key}
-                            />
-                            { Object.keys(mapLegend).length > 0 && (
-                                <ChoroplethLegend
-                                    className={styles.legend}
-                                    minValue={dataMinValue}
-                                    legend={mapLegend}
-                                    zeroPrecision
-                                />
-                            )}
-                        </>
+                    { String(selectedIndicator) === '-1' && (
+                        <SegmentInput
+                            label="Selected range"
+                            className={styles.ageGroupSelectInput}
+                            options={ageGroupOptions}
+                            onChange={setSelectedAgeGroup}
+                            value={selectedAgeGroup}
+                            optionLabelSelector={d => d.label}
+                            optionKeySelector={d => d.key}
+                        />
+                    )}
+                    { Object.keys(mapLegend).length > 0 && (
+                        <ChoroplethLegend
+                            className={styles.legend}
+                            minValue={dataMinValue}
+                            legend={mapLegend}
+                            zeroPrecision={String(selectedIndicator) === '-1'}
+                        />
                     )}
                 </div>
             </div>

@@ -39,7 +39,7 @@
             }
 
             .age-group-select-input {
-                margin: var(--spacing-medium);
+                padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
             }
 
             .abstract {

@@ -137,6 +137,11 @@ const Navbar = (props: Props) => {
                             onChange={setRegionLevel}
                         />
                     )}
+                    { isCovidPage && (
+                        <div className={styles.ggwp}>
+                            Analysis of Covid-19 situation in Nepal
+                        </div>
+                    )}
                     {/*
                     <TextInput
                         icons={<IoIosSearch />}

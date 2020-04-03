@@ -61,3 +61,9 @@
         }
     }
 }
+
+.ggwp {
+    flex-grow: 1;
+    padding: 0 var(--spacing-medium);
+    text-align: right;
+}
