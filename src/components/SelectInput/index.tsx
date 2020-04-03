@@ -5,6 +5,7 @@ import {
     caseInsensitiveSubmatch,
     compareStringSearch,
     listToMap,
+    isDefined,
 } from '@togglecorp/fujs';
 
 import { getFloatPlacement } from '#utils/common';
@@ -47,12 +48,10 @@ function Dropdown(props: DropdownProps) {
 interface Props<T, K> {
     className?: string;
     dropdownContainerClassName?: string;
-    // children: React.ReactNode;
     label?: string;
     options: T[];
     optionLabelSelector: (d: T) => string;
     optionKeySelector: (d: T) => K;
-    // FIXME: value shouldn't be string
     value: K | undefined;
     onChange: (d: K | undefined) => void;
     disabled?: boolean;
@@ -69,13 +68,18 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         value,
         onChange,
         disabled,
+        placeholder = 'Select an option',
     } = props;
+
+    const optionMap = React.useMemo(() => (
+        listToMap(options, optionKeySelector, optionLabelSelector)
+    ), [options, optionKeySelector, optionLabelSelector]);
 
     const inputContainerRef = React.useRef<HTMLDivElement>(null);
     const inputElementRef = React.useRef<HTMLInputElement>(null);
     const dropdownRef = React.useRef<HTMLDivElement>(null);
     const [showDropdown, setShowDropdown] = React.useState(false);
-    const [inputValue, setInputValue] = React.useState('');
+    const [inputValue, setInputValue] = React.useState(isDefined(value) ? optionMap[value] : '');
     const [searchValue, setSearchValue] = React.useState('');
 
     const hideDropdownOnBlur = React.useCallback((isInsideClick) => {
@@ -101,10 +105,6 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
 
         return newOptions;
     }, [showDropdown, options, optionLabelSelector, searchValue]);
-
-    const optionMap = React.useMemo(() => (
-        listToMap(options, optionKeySelector, optionLabelSelector)
-    ), [options, optionKeySelector, optionLabelSelector]);
 
     const handleOptionClick = React.useCallback((optionKey) => {
         setInputValue(optionMap[optionKey]);
@@ -136,7 +136,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                 onClick={handleInputClick}
                 value={inputValue}
                 onChange={handleInputValueChange}
-                placeholder="Select an option"
+                placeholder={placeholder}
                 disabled={disabled}
                 icons={<IoIosSearch />}
             />

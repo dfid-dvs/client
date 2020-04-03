@@ -1,4 +1,5 @@
 .button {
+    display: flex;
     position: relative;
     overflow: hidden;
     font-family: inherit;

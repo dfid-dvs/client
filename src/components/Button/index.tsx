@@ -2,7 +2,8 @@ import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import RawButton, { Props as RawButtonProps } from '../RawButton';
-import LoadingAnimation from '../LoadingAnimation';
+import LoadingAnimation from '#components/LoadingAnimation';
+import Backdrop from '#components/Backdrop';
 
 /*
 eslint css-modules/no-unused-class: [
@@ -49,6 +50,7 @@ function Button(props: Props) {
         onClick,
         pending,
         children,
+        icons,
         ...otherProps
     } = props;
 
@@ -77,14 +79,18 @@ function Button(props: Props) {
             {...otherProps}
         >
             { pending && (
-                <div className={styles.loadingBackdrop}>
+                <Backdrop className={styles.loadingBackdrop}>
                     <LoadingAnimation />
+                </Backdrop>
+            )}
+            { icons && (
+                <div className={styles.icons}>
+                    { icons }
                 </div>
             )}
-            <div>
-                icons
+            <div className={styles.children}>
+                { children }
             </div>
-            { children }
         </RawButton>
 
     );

@@ -63,24 +63,30 @@ export function useRequest<T>(
     React.useEffect(() => {
         if (url) {
             setPending(true);
-            fetch(url, options).then((responseFromRequest) => {
-                if (Math.floor(responseFromRequest.status / 100) === 2) {
-                    try {
-                        responseFromRequest.json().then((data) => {
-                            setResponse(data);
+            try {
+                fetch(url, options).then((responseFromRequest) => {
+                    if (Math.floor(responseFromRequest.status / 100) === 2) {
+                        try {
+                            responseFromRequest.json().then((data) => {
+                                setResponse(data);
+                                setPending(false);
+                                // console.warn(data);
+                            });
+                        } catch (e) {
                             setPending(false);
-                            // console.warn(data);
-                        });
-                    } catch (e) {
+                            console.error(e);
+                        }
+                    } else {
                         setPending(false);
-                        console.error(e);
+                        console.error(`An error occured while fetching ${url}`);
+                        window.alert('Cannot fetch data');
                     }
-                } else {
-                    setPending(false);
-                    console.error(`An error occured while fetching ${url}`);
-                    window.alert('Cannot fetch data');
-                }
-            });
+                });
+            } catch (e) {
+                setPending(false);
+                console.error(`An error occured while fetching ${url}`, e);
+                window.alert('Cannot fetch data');
+            }
         }
     }, [url, options, ...deps]);
 

@@ -4,7 +4,6 @@ import {
     isDefined,
 } from '@togglecorp/fujs';
 
-import { GoLinkExternal } from 'react-icons/go';
 
 import MapSource from '#remap/MapSource';
 import MapLayer from '#remap/MapSource/MapLayer';
@@ -15,8 +14,10 @@ import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
+import ToggleButton from '#components/ToggleButton';
 
 import IndicatorMap from '#components/IndicatorMap';
+import Stats from './Stats';
 
 import {
     useRequest,
@@ -55,37 +56,6 @@ interface HealthResource {
         coordinates: [number, number];
     };
 }
-
-const StatOutput = ({
-    label,
-    value,
-}) => (
-    <div className={styles.statOutput}>
-        <div className={styles.value}>
-            { value }
-        </div>
-        <div className={styles.label}>
-            { label }
-        </div>
-    </div>
-);
-
-const ExternalLink = ({
-    link,
-    label,
-}) => (
-    <a
-        href={link}
-        className={styles.externalLink}
-        target="_blank"
-        rel="noopener noreferrer"
-    >
-        <GoLinkExternal className={styles.icon} />
-        <div className={styles.label}>
-            { label }
-        </div>
-    </a>
-);
 
 const TextOutput = ({
     label,
@@ -197,6 +167,103 @@ const Tooltip = ({ feature }) => {
     );
 };
 
+function HealthResourcePoints(props) {
+    const {
+        data: healthResourcePointCollection,
+        sourceKey,
+    } = props;
+    const [hoveredPointProperties, setHoveredPointProperties] = React.useState({});
+
+    return (
+        <MapSource
+            sourceKey={`${sourceKey}-health-resource-points`}
+            sourceOptions={{
+                type: 'geojson',
+                cluster: true,
+            }}
+            geoJson={healthResourcePointCollection}
+        >
+            <MapLayer
+                layerKey="cluster"
+                layerOptions={{
+                    type: 'circle',
+                    paint: {
+                        'circle-color': '#ff8484',
+                        'circle-opacity': 0.7,
+                        'circle-radius': [
+                            'interpolate',
+                            ['linear'],
+                            ['get', 'point_count'],
+                            2,
+                            12,
+                            100,
+                            30,
+                        ],
+                    },
+                    filter: ['has', 'point_count'],
+                }}
+            />
+            <MapLayer
+                layerKey="cluster-count"
+                layerOptions={{
+                    type: 'symbol',
+                    filter: ['has', 'point_count'],
+                    layout: {
+                        'text-field': '{point_count_abbreviated}',
+                        'text-size': 12,
+                    },
+                }}
+            />
+            <MapLayer
+                layerKey="circle-fill"
+                layerOptions={{
+                    type: 'circle',
+                    paint: {
+                        'circle-radius': 9,
+                        'circle-color': '#fff',
+                        'circle-stroke-color': '#a72828',
+                        'circle-stroke-width': 2,
+                        'circle-opacity': 0.9,
+                    },
+                    filter: ['!', ['has', 'point_count']],
+                }}
+                onMouseEnter={(feature, lngLat) => {
+                    setHoveredPointProperties({ feature, lngLat });
+                }}
+                onMouseLeave={() => {
+                    setHoveredPointProperties({
+                        feature: undefined,
+                        lngLat: undefined,
+                    });
+                }}
+            />
+            <MapLayer
+                layerKey="hospital-symbol"
+                layerOptions={{
+                    type: 'symbol',
+                    paint: {
+                        'icon-color': 'red',
+                    },
+                    layout: {
+                        'icon-image': 'hospital-11',
+                        'icon-allow-overlap': true,
+                    },
+                    filter: ['!', ['has', 'point_count']],
+                }}
+            />
+            {hoveredPointProperties.lngLat && (
+                <MapTooltip
+                    coordinates={hoveredPointProperties.lngLat}
+                    tooltipOptions={tooltipOptions}
+                    trackPointer
+                >
+                    <Tooltip feature={hoveredPointProperties.feature} />
+                </MapTooltip>
+            )}
+        </MapSource>
+    );
+}
+
 const Covid19 = (props: Props) => {
     const { className } = props;
     const { regionLevel } = React.useContext(NavbarContext);
@@ -206,26 +273,28 @@ const Covid19 = (props: Props) => {
         setSelectedIndicator,
     ] = React.useState<number | undefined>(undefined);
 
+    const [
+        showHealthResource,
+        setShowHealthResources,
+    ] = React.useState<boolean>(false);
+
     const indicatorListGetUrl = 'http://139.59.67.104:8060/api/v1/core/indicator-list/?is_covid=1';
     const [
         indicatorListPending,
         indicatorListResponse,
     ] = useRequest<Indicator>(indicatorListGetUrl);
 
-    const [
-        statusPending,
-        status,
-    ] = useRequest('https://nepalcorona.info/api/v1/data/nepal');
 
+    const healthResourcesUrl = 'http://bipad.staging.nepware.com/api/v1/resource/?resource_type=health&meta=true&limit=-1';
     const [
-        hospitalListPending,
-        hospitalList,
-    ] = useRequest<HealthResource>('http://bipad.staging.nepware.com/api/v1/resource/?resource_type=health&meta=true&limit=-1');
+        healthResourceListPending,
+        healthResourceList,
+    ] = useRequest<HealthResource>(showHealthResource ? healthResourcesUrl : undefined);
 
-    const hospitalPointCollection = React.useMemo(() => {
+    const healthResourcePointCollection = React.useMemo(() => {
         const geojson = {
             type: 'FeatureCollection',
-            features: hospitalList.results.map((h) => {
+            features: healthResourceList.results.map((h) => {
                 const {
                     point,
                     ...otherProperties
@@ -241,10 +310,9 @@ const Covid19 = (props: Props) => {
         };
 
         return geojson;
-    }, [hospitalList]);
+    }, [healthResourceList]);
 
     const [mapStatePending, mapState] = useMapState(regionLevel, selectedIndicator);
-    const [hoveredPointProperties, setHoveredPointProperties] = React.useState({});
 
     const {
         paint: mapPaint,
@@ -253,7 +321,6 @@ const Covid19 = (props: Props) => {
     } = React.useMemo(
         () => {
             const valueList = mapState.map(d => d.value);
-
             const min = Math.min(...valueList);
             const max = Math.max(...valueList);
 
@@ -265,7 +332,8 @@ const Covid19 = (props: Props) => {
         [mapState],
     );
 
-    const pending = mapStatePending || indicatorListPending || statusPending || hospitalListPending;
+    const pending = mapStatePending
+        || indicatorListPending || healthResourceListPending;
 
     const selectedIndicatorDetails = React.useMemo(() => {
         if (selectedIndicator) {
@@ -293,145 +361,26 @@ const Covid19 = (props: Props) => {
                 regionLevel={regionLevel}
                 mapState={mapState}
                 mapPaint={mapPaint}
-                hideTooltip={!!hoveredPointProperties.lngLat}
             >
-                <MapSource
-                    sourceKey="hospitals-point"
-                    sourceOptions={{
-                        type: 'geojson',
-                        cluster: true,
-                    }}
-                    geoJson={hospitalPointCollection}
-                >
-                    <MapLayer
-                        layerKey="cluster"
-                        layerOptions={{
-                            type: 'circle',
-                            paint: {
-                                'circle-color': '#ff8484',
-                                'circle-opacity': 0.7,
-                                'circle-radius': [
-                                    'interpolate',
-                                    ['linear'],
-                                    ['get', 'point_count'],
-                                    2,
-                                    12,
-                                    100,
-                                    30,
-                                ],
-                            },
-                            filter: ['has', 'point_count'],
-                        }}
+                { showHealthResource && (
+                    <HealthResourcePoints
+                        sourceKey={regionLevel}
+                        data={healthResourcePointCollection}
                     />
-                    <MapLayer
-                        layerKey="cluster-count"
-                        layerOptions={{
-                            type: 'symbol',
-                            filter: ['has', 'point_count'],
-                            layout: {
-                                'text-field': '{point_count_abbreviated}',
-                                'text-size': 12,
-                            },
-                        }}
-                    />
-                    <MapLayer
-                        layerKey="circle-fill"
-                        layerOptions={{
-                            type: 'circle',
-                            paint: {
-                                'circle-radius': 9,
-                                'circle-color': '#fff',
-                                'circle-stroke-color': '#a72828',
-                                'circle-stroke-width': 2,
-                                'circle-opacity': 0.9,
-                            },
-                            filter: ['!', ['has', 'point_count']],
-                        }}
-                        onMouseEnter={(feature, lngLat) => {
-                            setHoveredPointProperties({ feature, lngLat });
-                        }}
-                        onMouseLeave={() => {
-                            setHoveredPointProperties({
-                                feature: undefined,
-                                lngLat: undefined,
-                            });
-                        }}
-                    />
-                    <MapLayer
-                        layerKey="hospital-symbol"
-                        layerOptions={{
-                            type: 'symbol',
-                            paint: {
-                                'icon-color': 'red',
-                            },
-                            layout: {
-                                'icon-image': 'hospital-11',
-                                'icon-allow-overlap': true,
-                            },
-                            filter: ['!', ['has', 'point_count']],
-                        }}
-                    />
-                    {hoveredPointProperties.lngLat && (
-                        <MapTooltip
-                            coordinates={hoveredPointProperties.lngLat}
-                            tooltipOptions={tooltipOptions}
-                            trackPointer
-                        >
-                            <Tooltip feature={hoveredPointProperties.feature} />
-                        </MapTooltip>
-                    )}
-                </MapSource>
-
-            </IndicatorMap>
-            <div className={styles.statusContainer}>
-                <h4 className={styles.heading}>
-                    Overall status
-                </h4>
-                {status && (
-                    <>
-                        <div className={styles.content}>
-                            <StatOutput
-                                label="Tests performed"
-                                value={status.tested_total}
-                            />
-                            <StatOutput
-                                label="Tested positive"
-                                value={status.tested_positive}
-                            />
-                            <StatOutput
-                                label="Tested negative"
-                                value={status.tested_negative}
-                            />
-                            <StatOutput
-                                label="In isolation"
-                                value={status.in_isolation}
-                            />
-                            <StatOutput
-                                label="Deaths"
-                                value={status.deaths}
-                            />
-                        </div>
-                        <div className={styles.footer}>
-                            <ExternalLink
-                                link={status.source}
-                                label="Source"
-                            />
-                            <ExternalLink
-                                link={status.latest_sit_report
-                                    ? status.latest_sit_report.url
-                                    : undefined
-                                }
-                                label="Latest situation report"
-                            />
-                        </div>
-                    </>
                 )}
-            </div>
+            </IndicatorMap>
+            <Stats className={styles.stats} />
             <div className={styles.mapStyleConfigContainer}>
+                <ToggleButton
+                    value={showHealthResource}
+                    label="Show health resources"
+                    onChange={setShowHealthResources}
+                />
                 <h4 className={styles.heading}>
                     Indicator
                 </h4>
                 <SelectInput
+                    placeholder="Select an indicator"
                     className={styles.indicatorSelectInput}
                     disabled={indicatorListPending}
                     options={indicatorListResponse.results}
