@@ -388,7 +388,9 @@ const Covid19 = (props: Props) => {
         covidReadyHealthResourceList,
     ] = useRequest<HealthResource>(covidReadyHealthResourcesUrl);
 
-    const healthResourcesUrl = 'https://bipad.staging.nepware.com/api/v1/resource/?resource_type=health&meta=true&limit=-1';
+    const healthResourcesUrl = showHealthResource && !showCovidReadyHealthResourceOnly
+        ? 'https://bipad.staging.nepware.com/api/v1/resource/?resource_type=health&meta=true&limit=-1'
+        : undefined;
     const [
         healthResourceListPending,
         healthResourceList,
