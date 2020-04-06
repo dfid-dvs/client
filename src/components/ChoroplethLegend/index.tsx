@@ -1,5 +1,5 @@
 import React from 'react';
-import { _cs, isDefined } from '@togglecorp/fujs';
+import { _cs, isDefined, formattedNormalize, Lang } from '@togglecorp/fujs';
 
 import styles from './styles.css';
 
@@ -23,10 +23,12 @@ function Numeral({
     value,
     precision = getPrecision(value),
     className,
+    normalize,
 }: {
     value: number | undefined;
     precision?: number | undefined;
     className?: string;
+    normalize?: boolean;
 }) {
     if (!isDefined(value)) {
         return null;
@@ -35,6 +37,16 @@ function Numeral({
     const sanitizedValue = Number.parseFloat(String(value));
     if (Number.isNaN(sanitizedValue)) {
         return null;
+    }
+
+    if (normalize) {
+        const { number, normalizeSuffix = '' } = formattedNormalize(sanitizedValue, Lang.en);
+
+        return (
+            <div className={className}>
+                {`${number.toFixed(1)}${normalizeSuffix}`}
+            </div>
+        );
     }
 
     return (
@@ -63,6 +75,7 @@ const ChoroplethLegend = (
                 className={styles.min}
                 value={minValue}
                 precision={zeroPrecision ? 0 : undefined}
+                normalize
             />
         )}
         { Object.keys(legend).map((color) => {
@@ -80,6 +93,7 @@ const ChoroplethLegend = (
                         <Numeral
                             value={value}
                             precision={zeroPrecision ? 0 : undefined}
+                            normalize
                         />
                     </div>
                 </div>
