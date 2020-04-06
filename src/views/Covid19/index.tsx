@@ -256,6 +256,8 @@ function HealthResourcePoints(props) {
             sourceOptions={{
                 type: 'geojson',
                 cluster: true,
+                clusterRadius: 20,
+                clusterMaxZoom: 10,
             }}
             geoJson={healthResourcePointCollection}
         >
