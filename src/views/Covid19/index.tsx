@@ -16,7 +16,6 @@ import ChoroplethLegend from '#components/ChoroplethLegend';
 import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
 import ToggleButton from '#components/ToggleButton';
-import Checkbox from '#components/Checkbox';
 
 import IndicatorMap from '#components/IndicatorMap';
 import Stats from './Stats';
@@ -381,7 +380,7 @@ const Covid19 = (props: Props) => {
     ] = useRequest<Indicator>(indicatorListGetUrl);
 
     const covidReadyHealthResourcesUrl = showHealthResource && showCovidReadyHealthResourceOnly
-        ? 'https://covidapi.naxa.com.np/api/v1/health-facility/'
+        ? 'https://covidapi.naxa.com.np/api/v1/health-facility2/'
         : undefined;
     const [
         covidReadyHealthResourceListPending,
