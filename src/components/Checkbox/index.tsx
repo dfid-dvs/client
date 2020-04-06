@@ -8,6 +8,10 @@ import styles from './styles.css';
 
 interface Props {
     className?: string;
+    value?: boolean;
+    label?: string;
+    onChange: (val: boolean) => void;
+    disabled?: boolean;
 }
 
 function Checkbox(props: Props) {
