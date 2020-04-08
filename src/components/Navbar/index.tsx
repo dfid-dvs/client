@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import {
     NavLink,
     useLocation,
 } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
-import { IoIosSearch } from 'react-icons/io';
+// import { IoIosSearch } from 'react-icons/io';
 
 import SegmentInput from '#components/SegmentInput';
 import SelectInput from '#components/SelectInput';
@@ -16,17 +16,29 @@ import {
     ExploreOption,
     RegionLevelOption,
     NavbarContextProps,
+    MultiResponse,
 } from '#types';
 import {
     useRequest,
 } from '#hooks';
 
-import {
-    apiEndPoint,
-} from '#utils/constants';
+import { apiEndPoint } from '#utils/constants';
 
 import dfidLogo from './DfID-logo.svg';
 import styles from './styles.css';
+
+function join<T>(foo: T[] | undefined, bar: T[] | undefined) {
+    if (!foo && !bar) {
+        return undefined;
+    }
+    if (!foo) {
+        return bar;
+    }
+    if (!bar) {
+        return foo;
+    }
+    return [...foo, ...bar];
+}
 
 interface Props {
     className?: string;
@@ -142,10 +154,7 @@ const treeLabelSelector = (item: TreeItem) => item.name;
 
 const Navbar = (props: Props) => {
     const { className } = props;
-    const [values, setValues] = useState({
-        exploreBy: 'programs',
-        searchProgram: '',
-    });
+
     const [
         selectedRegion,
         setSelectedRegion,
@@ -160,6 +169,7 @@ const Navbar = (props: Props) => {
         selectedSector,
         setSelectedSector,
     ] = React.useState<string[] | undefined>(undefined);
+
     const [
         selectedMarker,
         setSelectedMarker,
@@ -169,49 +179,49 @@ const Navbar = (props: Props) => {
     const [
         provinceListPending,
         provinceListResponse,
-    ] = useRequest<Province>(provinceGetRequest);
+    ] = useRequest<MultiResponse<Province>>(provinceGetRequest);
 
     const districtGetRequest = `${apiEndPoint}/district/`;
     const [
         districtListPending,
         districtListResponse,
-    ] = useRequest<District>(districtGetRequest);
+    ] = useRequest<MultiResponse<District>>(districtGetRequest);
 
     const municipalityGetRequest = `${apiEndPoint}/gapanapa/`;
     const [
         municipalityListPending,
         municipalityListResponse,
-    ] = useRequest<Municipality>(municipalityGetRequest);
+    ] = useRequest<MultiResponse<Municipality>>(municipalityGetRequest);
 
     const sectorGetRequest = `${apiEndPoint}/sector/`;
     const [
         sectorListPending,
         sectorListResponse,
-    ] = useRequest<Sector>(sectorGetRequest);
+    ] = useRequest<MultiResponse<Sector>>(sectorGetRequest);
 
     const subSectorGetRequest = `${apiEndPoint}/sub-sector/`;
     const [
         subSectorListPending,
         subSectorListResponse,
-    ] = useRequest<SubSector>(subSectorGetRequest);
+    ] = useRequest<MultiResponse<SubSector>>(subSectorGetRequest);
 
     const markerGetRequest = `${apiEndPoint}/marker-category/`;
     const [
         markerListPending,
         markerListResponse,
-    ] = useRequest<Marker>(markerGetRequest);
+    ] = useRequest<MultiResponse<Marker>>(markerGetRequest);
 
     const subMarkerGetRequest = `${apiEndPoint}/marker-value/`;
     const [
         subMarkerListPending,
         subMarkerListResponse,
-    ] = useRequest<SubMarker>(subMarkerGetRequest);
+    ] = useRequest<MultiResponse<SubMarker>>(subMarkerGetRequest);
 
     const programListGetUrl = `${apiEndPoint}/program/`;
     const [
         programListPending,
         programListResponse,
-    ] = useRequest<Program>(programListGetUrl);
+    ] = useRequest<MultiResponse<Program>>(programListGetUrl);
 
     const {
         exploreBy,
@@ -221,56 +231,84 @@ const Navbar = (props: Props) => {
     } = React.useContext<NavbarContextProps>(NavbarContext);
 
     const location = useLocation();
+
     const isCovidPage = location.pathname === '/covid19/';
     const regionLevelLabel = regionLevelOptionList.find(v => v.key === regionLevel)?.label;
 
-    const sectorOptions: TreeItem[] = sectorListResponse.results.map(({ id, name }) => ({
-        key: `sector-${id}`,
-        parentKey: undefined,
-        parentId: undefined,
-        name,
-        id,
-    }));
-    const subSectorOptions: TreeItem[] = subSectorListResponse.results.map(
-        ({ id, sectorId, name }) => ({
-            key: `subsector-${sectorId}-${id}`,
-            parentKey: `sector-${sectorId}`,
-            parentId: sectorId,
-            name,
-            id,
-        }),
+    const sectorOptions: TreeItem[] | undefined = useMemo(
+        () => (
+            sectorListResponse?.results
+                .map(({ id, name }) => ({
+                    key: `sector-${id}`,
+                    parentKey: undefined,
+                    parentId: undefined,
+                    name,
+                    id,
+                }))
+        ),
+        [sectorListResponse?.results],
     );
 
-    const combinedSectorOptions = [...sectorOptions, ...subSectorOptions];
-
-    const markerOptions: TreeItem[] = markerListResponse.results.map(({ id, name }) => ({
-        key: `marker-${id}`,
-        parentKey: undefined,
-        parentId: undefined,
-        name,
-        id,
-    }));
-
-    const subMarkerOptions: TreeItem[] = subMarkerListResponse.results.map(
-        ({ id, markerCategoryId, value }) => ({
-            key: `submarker-${markerCategoryId}-${id}`,
-            parentKey: `marker-${markerCategoryId}`,
-            parentId: markerCategoryId,
-            name: value,
-            id,
-        }),
+    const subSectorOptions: TreeItem[] | undefined = useMemo(
+        () => (
+            subSectorListResponse?.results.map(
+                ({ id, sectorId, name }) => ({
+                    key: `subsector-${sectorId}-${id}`,
+                    parentKey: `sector-${sectorId}`,
+                    parentId: sectorId,
+                    name,
+                    id,
+                }),
+            )
+        ),
+        [subSectorListResponse?.results],
     );
 
-    const combinedMarkerOptions = [...markerOptions, ...subMarkerOptions];
+    const markerOptions: TreeItem[] | undefined = useMemo(
+        () => (
+            markerListResponse?.results
+                .map(({ id, name }) => ({
+                    key: `marker-${id}`,
+                    parentKey: undefined,
+                    parentId: undefined,
+                    name,
+                    id,
+                }))
+        ),
+        [markerListResponse?.results],
+    );
+
+    const subMarkerOptions: TreeItem[] | undefined = useMemo(
+        () => (
+            subMarkerListResponse?.results
+                .map(({ id, markerCategoryId, value }) => ({
+                    key: `submarker-${markerCategoryId}-${id}`,
+                    parentKey: `marker-${markerCategoryId}`,
+                    parentId: markerCategoryId,
+                    name: value,
+                    id,
+                }))
+        ),
+        [subMarkerListResponse?.results],
+    );
+
+    const combinedSectorOptions = useMemo(
+        () => join(sectorOptions, subSectorOptions),
+        [sectorOptions, subSectorOptions],
+    );
+    const combinedMarkerOptions = useMemo(
+        () => join(markerOptions, subMarkerOptions),
+        [markerOptions, subMarkerOptions],
+    );
 
     const regionPending = provinceListPending || districtListPending || municipalityListPending;
 
-    let regionOptions: Region[] = provinceListResponse.results;
+    let regionOptions: Region[] | undefined = provinceListResponse?.results;
     if (regionLevel === 'district') {
-        regionOptions = districtListResponse.results;
+        regionOptions = districtListResponse?.results;
     }
     if (regionLevel === 'municipality') {
-        regionOptions = municipalityListResponse.results;
+        regionOptions = municipalityListResponse?.results;
     }
 
     return (
@@ -360,7 +398,7 @@ const Navbar = (props: Props) => {
                                 placeholder="Select an indicator"
                                 className={styles.indicatorSelectInput}
                                 disabled={programListPending}
-                                options={programListResponse.results}
+                                options={programListResponse?.results}
                                 onChange={setSelectedProgram}
                                 value={selectedProgram}
                                 optionLabelSelector={d => d.name}
@@ -389,7 +427,7 @@ const Navbar = (props: Props) => {
                                     options={combinedMarkerOptions}
                                     value={selectedMarker}
                                     onChange={setSelectedMarker}
-                                    defaultCollapseLevel={0}
+                                    defaultCollapseLevel={1}
                                 />
                             </DropdownMenu>
                         </>

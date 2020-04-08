@@ -109,22 +109,19 @@ export const generateChoroplethMapPaintAndLegend = (
         }
     }
 
-    let paint: {
-        'fill-color': string | any[];
-        'fill-opacity': number | any[];
-    } = {
+    let paint: mapboxgl.FillPaint = {
         'fill-color': '#08467d',
         'fill-opacity': 0.1,
     };
 
     if (colors.length !== 0) {
-        const fillColor = [
+        const fillColor: mapboxgl.FillPaint['fill-color'] = [
             'step',
             ['feature-state', 'value'],
             ...colors.slice(0, -1),
         ];
 
-        const fillOpacity = [
+        const fillOpacity: mapboxgl.FillPaint['fill-opacity'] = [
             'case',
             ['==', ['feature-state', 'value'], null],
             0.1,

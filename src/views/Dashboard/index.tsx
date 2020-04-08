@@ -15,6 +15,7 @@ import {
 } from '#hooks';
 
 import { generateChoroplethMapPaintAndLegend } from '#utils/common';
+import { MultiResponse } from '#types';
 import {
     colorDomain,
     apiEndPoint,
@@ -60,12 +61,12 @@ const Dashboard = (props: Props) => {
     const [
         indicatorListPending,
         indicatorListResponse,
-    ] = useRequest<Indicator>(indicatorListGetUrl);
+    ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl);
 
     const [
         mapStatePending,
         mapState,
-    ] = useMapStateForIndicator(regionLevel, selectedIndicator);
+    ] = useMapStateForIndicator(regionLevel, selectedIndicator, undefined);
 
     const {
         paint: mapPaint,
@@ -112,7 +113,7 @@ const Dashboard = (props: Props) => {
                 <SelectInput
                     className={styles.indicatorSelectInput}
                     disabled={indicatorListPending}
-                    options={indicatorListResponse.results}
+                    options={indicatorListResponse?.results}
                     onChange={setSelectedIndicator}
                     value={selectedIndicator}
                     optionLabelSelector={d => d.fullTitle}

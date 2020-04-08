@@ -5,14 +5,7 @@ import RawButton from '#components/RawButton';
 
 import styles from './styles.css';
 
-interface Props {
-    className?: string;
-    label?: React.ReactNode;
-    onChange?: (v: boolean) => void;
-    value: boolean;
-}
-
-function ToggleSwitch(props) {
+function ToggleSwitch(props: { className?: string; value?: boolean }) {
     const {
         className,
         value,
@@ -30,6 +23,13 @@ function ToggleSwitch(props) {
     );
 }
 
+interface Props {
+    className?: string;
+    label?: React.ReactNode;
+    onChange?: (v: boolean) => void;
+    value: boolean;
+}
+
 function ToggleButton(props: Props) {
     const {
         className,
@@ -38,11 +38,14 @@ function ToggleButton(props: Props) {
         onChange,
     } = props;
 
-    const handleClick = React.useCallback(() => {
-        if (onChange) {
-            onChange(!value);
-        }
-    }, [onChange, value]);
+    const handleClick = React.useCallback(
+        () => {
+            if (onChange) {
+                onChange(!value);
+            }
+        },
+        [onChange, value],
+    );
 
     return (
         <RawButton

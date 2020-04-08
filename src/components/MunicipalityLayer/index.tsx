@@ -1,9 +1,38 @@
 import React from 'react';
+/*
+interface HealthResource {
+    id: number;
+    title: string;
+    description: string | null;
+    ward: number;
+    point: {
+        type: 'Point';
+        coordinates: [number, number];
+    };
+
+    long: number;
+    lat: number;
+}
+*/
 
 import MapLayer from '#remap/MapSource/MapLayer';
 import MapState from '#remap/MapSource/MapState';
 
 interface Props {
+    onMouseLeave?: () => void;
+    onMouseEnter?: (
+        feature: mapboxgl.MapboxGeoJSONFeature,
+        lnglat: mapboxgl.LngLat,
+        point: mapboxgl.Point,
+    ) => void;
+    onClick?: (
+        feature: mapboxgl.MapboxGeoJSONFeature,
+        lnglat: mapboxgl.LngLat,
+        point: mapboxgl.Point,
+    ) => boolean | undefined;
+    // FIXME: use type from typings
+    mapState: { id: number; value: number }[];
+    mapPaint: mapboxgl.FillPaint;
 }
 
 function MunicipalityLayer(props: Props) {

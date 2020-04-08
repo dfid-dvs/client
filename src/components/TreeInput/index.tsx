@@ -24,7 +24,7 @@ interface TreeNodeProps<T, K extends OptionKey> {
     onChange: (keys: K[]) => void;
     value: K[];
     nodeKey: K;
-    nodeLabel: string;
+    nodeLabel: string | number;
 
     disabled: boolean;
     readOnly: boolean;

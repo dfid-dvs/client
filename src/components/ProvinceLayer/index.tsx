@@ -4,6 +4,20 @@ import MapLayer from '#remap/MapSource/MapLayer';
 import MapState from '#remap/MapSource/MapState';
 
 interface Props {
+    onMouseLeave?: () => void;
+    onMouseEnter?: (
+        feature: mapboxgl.MapboxGeoJSONFeature,
+        lnglat: mapboxgl.LngLat,
+        point: mapboxgl.Point,
+    ) => void;
+    onClick?: (
+        feature: mapboxgl.MapboxGeoJSONFeature,
+        lnglat: mapboxgl.LngLat,
+        point: mapboxgl.Point,
+    ) => boolean | undefined;
+    // FIXME: use type from typings
+    mapState: { id: number; value: number }[];
+    mapPaint: mapboxgl.FillPaint;
 }
 
 function ProvinceLayer(props: Props) {

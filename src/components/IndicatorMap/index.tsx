@@ -17,33 +17,26 @@ import {
     tooltipOptions,
 } from '#utils/constants';
 
-interface Props {
-    className?: string;
-}
-
 interface HoveredRegion {
-    feature: {} | undefined;
-    lngLat: number[] | undefined;
+    feature: mapboxgl.MapboxGeoJSONFeature;
+    lngLat: mapboxgl.LngLatLike;
 }
-
-const undefinedHoveredRegion: HoveredRegion = {
-    feature: undefined,
-    lngLat: undefined,
-};
 
 const Tooltip = ({
     feature,
-}: { feature: HoveredRegion }) => {
+}: { feature: mapboxgl.MapboxGeoJSONFeature }) => {
     if (!feature) {
         return null;
     }
 
     return (
         <div className={styles.tooltip}>
-            <div className={styles.regionTitle}>
-                { feature.properties.name }
-            </div>
-            { feature.state && (
+            {feature.properties && (
+                <div className={styles.regionTitle}>
+                    { feature.properties.name }
+                </div>
+            )}
+            {feature.state && (
                 <div className={styles.value}>
                     { feature.state.value }
                 </div>
@@ -51,6 +44,16 @@ const Tooltip = ({
         </div>
     );
 };
+
+interface Props {
+    className?: string;
+    regionLevel: 'municipality' | 'district' | 'province';
+    // FIXME: use type from typings
+    mapState: { id: number; value: number }[];
+    mapPaint: mapboxgl.FillPaint;
+    children?: React.ReactNode;
+    hideTooltip?: boolean;
+}
 
 function IndicatorMap(props: Props) {
     const {
@@ -65,17 +68,20 @@ function IndicatorMap(props: Props) {
     const [
         hoveredRegionProperties,
         setHoveredRegionProperties,
-    ] = React.useState<HoveredRegion>(undefinedHoveredRegion);
+    ] = React.useState<HoveredRegion | undefined>();
 
-    const handleMapRegionMouseEnter = React.useCallback((feature, lngLat) => {
-        setHoveredRegionProperties({
-            feature,
-            lngLat,
-        });
-    }, [setHoveredRegionProperties]);
+    const handleMapRegionMouseEnter = React.useCallback(
+        (feature: mapboxgl.MapboxGeoJSONFeature, lngLat: mapboxgl.LngLat) => {
+            setHoveredRegionProperties({
+                feature,
+                lngLat,
+            });
+        },
+        [setHoveredRegionProperties],
+    );
 
     const handleMapRegionMouseLeave = React.useCallback(() => {
-        setHoveredRegionProperties(undefinedHoveredRegion);
+        setHoveredRegionProperties(undefined);
     }, [setHoveredRegionProperties]);
 
     return (
@@ -119,7 +125,7 @@ function IndicatorMap(props: Props) {
                         mapPaint={mapPaint}
                     />
                 )}
-                {!hideTooltip && hoveredRegionProperties.lngLat && (
+                {!hideTooltip && hoveredRegionProperties && hoveredRegionProperties.lngLat && (
                     <MapTooltip
                         coordinates={hoveredRegionProperties.lngLat}
                         tooltipOptions={tooltipOptions}

@@ -3,9 +3,10 @@ import React from 'react';
 import {
     listToGroupList,
     isDefined,
+    sum,
 } from '@togglecorp/fujs';
 import {
-    Response,
+    MultiResponse,
     RegionLevelOption,
     AgeGroupOption,
     MapState,
@@ -13,14 +14,14 @@ import {
 
 import { apiEndPoint } from '#utils/constants';
 
-export function useForm<T>(
+export function useForm<T, K extends keyof T>(
     values: T,
     setValues: (value: T) => void,
     // errors: {} = {},
 ) {
-    const handleChange = (e: InputChangeEvent) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {
-            value,
+            currentTarget: { value },
             name,
         } = e;
 
@@ -32,7 +33,7 @@ export function useForm<T>(
         }
     };
 
-    const formElement = (name: string) => ({
+    const formElement = (name: K) => ({
         name,
         onChange: handleChange,
         value: values[name],
@@ -49,12 +50,6 @@ export function useForm<T>(
     };
 }
 
-const defaultResponse = {
-    count: 0,
-    results: [],
-    data: [],
-};
-
 const requestOption = {
     headers: {
         Accept: 'application/json',
@@ -67,8 +62,8 @@ export function useRequest<T>(
     url?: string,
     options: {} = requestOption,
     deps: React.DependencyList = [],
-): [boolean, Response<T>] {
-    const [response, setResponse] = React.useState<Response<T>>(defaultResponse);
+): [boolean, T | undefined] {
+    const [response, setResponse] = React.useState<T>();
     const [pending, setPending] = React.useState(!!url);
 
     React.useEffect(() => {
@@ -84,7 +79,7 @@ export function useRequest<T>(
                                         count: 1,
                                         results: data,
                                         data,
-                                    });
+                                    } as any);
                                 } else {
                                     setResponse(data);
                                 }
@@ -148,80 +143,97 @@ export function useBlurEffect(
     }, deps);
 }
 
+
+interface AgeGroup {
+    id: number;
+    munid: number;
+    provinceId: number;
+    districtId: number;
+    hlcit_code: string;
+    l0_14: number;
+    l15_49: number;
+    l50plus: number;
+    ltotal: number;
+    municipality: null;
+    district: number;
+}
+interface AggregatedAgeGroup {
+    code: number;
+    belowFourteen: number;
+    fifteenToFourtyNine: number;
+    aboveFifty: number;
+    total: number;
+}
 function useAgeGroupList(
     shouldUse: boolean,
     regionLevel: RegionLevelOption,
-): [boolean, any[]] {
-    const ageGroupListUrl = shouldUse ? 'https://covidapi.naxa.com.np/api/v1/age-data/' : undefined;
+): [boolean, AggregatedAgeGroup[]] {
+    const ageGroupListUrl = shouldUse
+        ? 'https://covidapi.naxa.com.np/api/v1/age-data/'
+        : undefined;
+
     const [
         ageGroupListPending,
         ageGroupListResponse,
-    ] = useRequest(ageGroupListUrl);
+    ] = useRequest<MultiResponse<AgeGroup>>(ageGroupListUrl);
 
-    const sanitizedAgeGroupList = ageGroupListResponse.results.filter(
+    const sanitizedAgeGroupList = ageGroupListResponse?.results.filter(
         d => d.munid !== 38,
     );
 
-    const ageGroupListByProvince = React.useMemo(() => {
-        const provinceGroupedList = listToGroupList(
-            sanitizedAgeGroupList,
-            d => d.provinceId,
-        );
+    const ageGroupList = React.useMemo(() => {
+        if (!sanitizedAgeGroupList) {
+            return [];
+        }
 
-        const ageGroupList = Object.keys(provinceGroupedList).map(d => ({
-            code: d,
-            belowFourteen: provinceGroupedList[d].reduce((acc, val) => acc + val.l0_14, 0),
-            fifteenToFourtyNine: provinceGroupedList[d].reduce((acc, val) => acc + val.l15_49, 0),
-            aboveFifty: provinceGroupedList[d].reduce((acc, val) => acc + val.l50plus, 0),
-            total: provinceGroupedList[d].reduce((acc, val) => acc + val.ltotal, 0),
-        }));
-
-        return ageGroupList;
-    }, [ageGroupListResponse]);
-
-    const ageGroupListByDistrict = React.useMemo(() => {
-        const districtGroupedList = listToGroupList(
-            sanitizedAgeGroupList,
-            d => d.districtId,
-        );
-
-        const ageGroupList = Object.keys(districtGroupedList).map(d => ({
-            code: d,
-            belowFourteen: districtGroupedList[d].reduce((acc, val) => acc + val.l0_14, 0),
-            fifteenToFourtyNine: districtGroupedList[d].reduce((acc, val) => acc + val.l15_49, 0),
-            aboveFifty: districtGroupedList[d].reduce((acc, val) => acc + val.l50plus, 0),
-            total: districtGroupedList[d].reduce((acc, val) => acc + val.ltotal, 0),
-        }));
-
-        return ageGroupList;
-    }, [ageGroupListResponse]);
-
-    const ageGroupListByMunicipality = React.useMemo(() => {
-        const ageGroupList = sanitizedAgeGroupList.map(d => ({
-            code: d.munid,
-            belowFourteen: d.l0_14,
-            fifteenToFourtyNine: d.l15_49,
-            aboveFifty: d.l50plus,
-            total: d.ltotal,
-        }));
-
-        return ageGroupList;
-    }, [ageGroupListResponse]);
-
-    let ageGroupList = [];
-    switch (regionLevel) {
-        case 'province':
-            ageGroupList = ageGroupListByProvince;
-            break;
-        case 'district':
-            ageGroupList = ageGroupListByDistrict;
-            break;
-        case 'municipality':
-            ageGroupList = ageGroupListByMunicipality;
-            break;
-        default:
-            break;
-    }
+        switch (regionLevel) {
+            case 'province': {
+                const groupedList = listToGroupList(
+                    sanitizedAgeGroupList,
+                    d => d.provinceId,
+                );
+                const ageGroupListForProvince: AggregatedAgeGroup[] = Object.keys(groupedList)
+                    .map(d => ({
+                        code: +d,
+                        belowFourteen: sum(groupedList[d].map(i => i.l0_14)),
+                        fifteenToFourtyNine: sum(groupedList[d].map(i => i.l15_49)),
+                        aboveFifty: sum(groupedList[d].map(i => i.l50plus)),
+                        total: sum(groupedList[d].map(i => i.ltotal)),
+                    }));
+                return ageGroupListForProvince;
+            }
+            case 'district': {
+                const groupedList = listToGroupList(
+                    sanitizedAgeGroupList,
+                    d => d.districtId,
+                );
+                const ageGroupListForDistrict: AggregatedAgeGroup[] = Object.keys(groupedList)
+                    .map(d => ({
+                        code: +d,
+                        belowFourteen: sum(groupedList[d].map(i => i.l0_14)),
+                        fifteenToFourtyNine: sum(groupedList[d].map(i => i.l15_49)),
+                        aboveFifty: sum(groupedList[d].map(i => i.l50plus)),
+                        total: sum(groupedList[d].map(i => i.ltotal)),
+                    }));
+                return ageGroupListForDistrict;
+            }
+            case 'municipality': {
+                const ageGroupListForMunicipality: AggregatedAgeGroup[] = sanitizedAgeGroupList
+                    .map(d => ({
+                        code: d.munid,
+                        belowFourteen: d.l0_14,
+                        fifteenToFourtyNine: d.l15_49,
+                        aboveFifty: d.l50plus,
+                        total: d.ltotal,
+                    }));
+                return ageGroupListForMunicipality;
+            }
+            default: {
+                const ageGroupListForNone: AggregatedAgeGroup[] = [];
+                return ageGroupListForNone;
+            }
+        }
+    }, [sanitizedAgeGroupList, regionLevel]);
 
     return [
         ageGroupListPending,
@@ -262,7 +274,7 @@ export function useMapStateForIndicator(
     const [
         regionIndicatorListPending,
         regionIndicatorListResponse,
-    ] = useRequest<IndicatorValue>(regionIndicatorUrl);
+    ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl);
 
     const [
         ageGroupListPending,
@@ -275,7 +287,7 @@ export function useMapStateForIndicator(
             id: d.code,
             value: d[selectedAgeGroup],
         }));
-    } else {
+    } else if (regionIndicatorListResponse) {
         mapState = regionIndicatorListResponse.results.map(d => ({
             id: d.code,
             value: d.value,

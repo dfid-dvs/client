@@ -4,9 +4,9 @@ import { NavbarContextProps } from '#types';
 const noOp = () => {};
 
 const navbarContext = React.createContext<NavbarContextProps>({
-    exploreBy: 'regions',
+    exploreBy: 'programs',
     setExploreBy: noOp,
-    regionLevel: 'municipality',
+    regionLevel: 'province',
     setRegionLevel: noOp,
 });
 

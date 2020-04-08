@@ -18,7 +18,7 @@ interface Props<T, V> {
 }
 
 
-function SegmentInput<T, V>(props: Props<T, V>) {
+function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
     const {
         className,
         options = [],

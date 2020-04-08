@@ -9,7 +9,7 @@ import styles from './styles.css';
 interface Props {
     className?: string;
     value?: boolean;
-    label?: string;
+    label?: string | number;
     onChange: (val: boolean) => void;
     disabled?: boolean;
 }

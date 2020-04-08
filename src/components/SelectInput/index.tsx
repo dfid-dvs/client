@@ -49,7 +49,7 @@ interface Props<T, K> {
     className?: string;
     dropdownContainerClassName?: string;
     label?: string;
-    options: T[];
+    options: T[] | undefined;
     optionLabelSelector: (d: T) => string;
     optionKeySelector: (d: T) => K;
     value: K | undefined;
@@ -96,7 +96,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         }
 
         const newOptions = options
-            .filter(option => caseInsensitiveSubmatch(optionLabelSelector(option), searchValue))
+            ?.filter(option => caseInsensitiveSubmatch(optionLabelSelector(option), searchValue))
             .sort((a, b) => compareStringSearch(
                 optionLabelSelector(a),
                 optionLabelSelector(b),
@@ -147,7 +147,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                         className={dropdownContainerClassName}
                         parentRef={inputContainerRef}
                     >
-                        { filteredOptions.map((d) => {
+                        { filteredOptions?.map((d) => {
                             const key = optionKeySelector(d);
 
                             return (

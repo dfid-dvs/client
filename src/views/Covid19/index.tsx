@@ -25,7 +25,7 @@ import {
     useMapStateForIndicator,
 } from '#hooks';
 
-import { AgeGroupOption } from '#types';
+import { AgeGroupOption, MultiResponse } from '#types';
 
 import { generateChoroplethMapPaintAndLegend } from '#utils/common';
 import {
@@ -44,49 +44,97 @@ interface MapState {
 interface Indicator {
     id: number;
     fullTitle: string;
+    abstract: string | undefined;
 }
 
 interface Props {
     className?: string;
 }
 
-type ShowLayerOption = 'indicator' | 'ageGroup';
-interface LayerOption {
-    key: ShowLayerOption;
-    label: string;
+interface NaxaHealthResource {
+    id: number;
+    ownership_display: string;
+    district_name: string;
+    province_name: string;
+    municipality_name: string;
+    category_name: string;
+    type_name: string;
+    distance: number;
+    name: string;
+    ownership: string;
+    contact_person: string;
+    contact_num: string;
+    used_for_corona_response: boolean;
+    num_of_bed: number;
+    num_of_icu_bed: number;
+    occupied_icu_bed: number;
+    num_of_ventilators: number;
+    occupied_ventilators: number;
+    num_of_isolation_bed: number;
+    occupied_isolation_bed: number;
+    total_tested: number;
+    total_positive: number;
+    total_death: number;
+    total_in_isolation: number;
+    hlcit_code: string;
+    remarks: string;
+    location: string;
+    lat: number;
+    long: number;
+    province: number;
+    district: number;
+    municipality: number;
+    category: number;
+    type: number;
 }
 
-const showLayerByOptions: LayerOption[] = [
-    { key: 'indicator', label: 'Indicator' },
-    { key: 'ageGroup', label: 'Age group' },
-];
-
-interface HealthResource {
+interface NepwareHealthResource {
     id: number;
     title: string;
     description: string | null;
+    point: GeoJSON.Point;
+    bedCount: number | null;
+    type: string;
+    cbsCode: number;
+    phoneNumber: string | null;
+    emailAddress: string | null;
+    emergencyService: string | null;
+    icu: string | number | null;
+    nicu: string | number | null;
+    operatingTheater: boolean | string | number | null;
+    xRay: boolean | string | number | null;
+    ambulanceService: boolean | string | number | null;
+    openingHours: string | null;
+    operatorType: string;
+    noOfStaffs: number | null;
+    noOfBeds: number | null;
+    specialization: string | number | null;
     ward: number;
-    point: {
-        type: 'Point';
-        coordinates: [number, number];
-    };
+    resourceType: string;
 }
+
+type TrimmedNaxaHealthResource = Omit<NaxaHealthResource, 'long' | 'lat'>;
+type TrimmedNepwareHealthResource = Omit<NepwareHealthResource, 'point'>;
 
 interface AgeGroup {
     key: AgeGroupOption;
     label: string;
 }
-
 const ageGroupOptions: AgeGroup[] = [
     { key: 'belowFourteen', label: 'Below 14' },
     { key: 'fifteenToFourtyNine', label: '15 to 49' },
     { key: 'aboveFifty', label: 'Above 50' },
 ];
 
+
+interface TextOutputProps {
+    label: string | number;
+    value: React.ReactNode | null;
+}
 const TextOutput = ({
     label,
     value,
-}) => (
+}: TextOutputProps) => (
     <div className={styles.textOutput}>
         <div className={styles.label}>
             { label }
@@ -103,7 +151,10 @@ const TextOutput = ({
     </div>
 );
 
-const Tooltip = ({ feature }) => {
+interface TooltipProps {
+    feature: GeoJSON.Feature<GeoJSON.Point, TrimmedNepwareHealthResource>;
+}
+const Tooltip = ({ feature }: TooltipProps) => {
     const {
         ambulanceService,
         bedCount,
@@ -193,7 +244,10 @@ const Tooltip = ({ feature }) => {
     );
 };
 
-const CovidReadyTooltip = ({ feature }) => {
+interface CovidReadyToolTipProps {
+    feature: GeoJSON.Feature<GeoJSON.Point, TrimmedNaxaHealthResource>;
+}
+const CovidReadyTooltip = ({ feature }: CovidReadyToolTipProps) => {
     const {
         // eslint-disable-next-line @typescript-eslint/camelcase
         ownership_display,
@@ -242,13 +296,34 @@ const CovidReadyTooltip = ({ feature }) => {
     );
 };
 
-function HealthResourcePoints(props) {
+interface HoveredPoint {
+    feature: mapboxgl.MapboxGeoJSONFeature;
+    lngLat: mapboxgl.LngLatLike;
+}
+
+type HealthResourcePointsProps = {
+    covidReady: true;
+    sourceKey: string;
+    data: GeoJSON.FeatureCollection<GeoJSON.Point, TrimmedNaxaHealthResource>;
+} | {
+    covidReady: false;
+    sourceKey: string;
+    data: GeoJSON.FeatureCollection<GeoJSON.Point, TrimmedNepwareHealthResource>;
+};
+function HealthResourcePoints(props: HealthResourcePointsProps) {
     const {
         covidReady,
         data: healthResourcePointCollection,
         sourceKey,
     } = props;
-    const [hoveredPointProperties, setHoveredPointProperties] = React.useState({});
+
+    // eslint-disable-next-line max-len
+    type HoveredFeature = GeoJSON.Feature<GeoJSON.Point, TrimmedNaxaHealthResource | TrimmedNepwareHealthResource>;
+
+    const [
+        hoveredPointProperties,
+        setHoveredPointProperties,
+    ] = React.useState<{ lngLat: mapboxgl.LngLatLike; feature: HoveredFeature }>();
 
     return (
         <MapSource
@@ -305,14 +380,12 @@ function HealthResourcePoints(props) {
                     },
                     filter: ['!', ['has', 'point_count']],
                 }}
-                onMouseEnter={(feature, lngLat) => {
+                onMouseEnter={(hoveredFeature, lngLat) => {
+                    const feature = hoveredFeature as unknown as HoveredFeature;
                     setHoveredPointProperties({ feature, lngLat });
                 }}
                 onMouseLeave={() => {
-                    setHoveredPointProperties({
-                        feature: undefined,
-                        lngLat: undefined,
-                    });
+                    setHoveredPointProperties(undefined);
                 }}
             />
             <MapLayer
@@ -329,16 +402,26 @@ function HealthResourcePoints(props) {
                     filter: ['!', ['has', 'point_count']],
                 }}
             />
-            {hoveredPointProperties.lngLat && (
+            {hoveredPointProperties && (
                 <MapTooltip
                     coordinates={hoveredPointProperties.lngLat}
                     tooltipOptions={tooltipOptions}
                     trackPointer
                 >
                     { covidReady ? (
-                        <CovidReadyTooltip feature={hoveredPointProperties.feature} />
+                        <CovidReadyTooltip
+                            feature={
+                                hoveredPointProperties.feature as
+                                GeoJSON.Feature<GeoJSON.Point, TrimmedNaxaHealthResource>
+                            }
+                        />
                     ) : (
-                        <Tooltip feature={hoveredPointProperties.feature} />
+                        <Tooltip
+                            feature={
+                                hoveredPointProperties.feature as
+                                GeoJSON.Feature<GeoJSON.Point, TrimmedNepwareHealthResource>
+                            }
+                        />
                     )}
                 </MapTooltip>
             )}
@@ -346,7 +429,7 @@ function HealthResourcePoints(props) {
     );
 }
 
-const Covid19 = (props: Props) => {
+function Covid19(props: Props) {
     const { className } = props;
     const { regionLevel } = React.useContext(NavbarContext);
 
@@ -370,16 +453,11 @@ const Covid19 = (props: Props) => {
         setShowCovidReadyHealthResourceOnly,
     ] = React.useState<boolean>(true);
 
-    const [
-        showLayerBy,
-        setShowLayerBy,
-    ] = React.useState<ShowLayerOption>('indicator');
-
     const indicatorListGetUrl = `${apiEndPoint}/indicator-list/?is_covid=1`;
     const [
         indicatorListPending,
         indicatorListResponse,
-    ] = useRequest<Indicator>(indicatorListGetUrl);
+    ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl);
 
     const covidReadyHealthResourcesUrl = showHealthResource && showCovidReadyHealthResourceOnly
         ? 'https://covidapi.naxa.com.np/api/v1/health-facility2/'
@@ -387,7 +465,7 @@ const Covid19 = (props: Props) => {
     const [
         covidReadyHealthResourceListPending,
         covidReadyHealthResourceList,
-    ] = useRequest<HealthResource>(covidReadyHealthResourcesUrl);
+    ] = useRequest<MultiResponse<NaxaHealthResource>>(covidReadyHealthResourcesUrl);
 
     const healthResourcesUrl = showHealthResource && !showCovidReadyHealthResourceOnly
         ? 'https://bipad.staging.nepware.com/api/v1/resource/?resource_type=health&meta=true&limit=-1'
@@ -395,49 +473,53 @@ const Covid19 = (props: Props) => {
     const [
         healthResourceListPending,
         healthResourceList,
-    ] = useRequest<HealthResource>(healthResourcesUrl);
+    ] = useRequest<MultiResponse<NepwareHealthResource>>(healthResourcesUrl);
 
     const covidReadyHealthResourcePointCollection = React.useMemo(() => {
-        const geojson = {
+        const geojson: GeoJSON.FeatureCollection<GeoJSON.Point, TrimmedNaxaHealthResource> = {
             type: 'FeatureCollection',
-            features: covidReadyHealthResourceList.results.map((h) => {
-                const {
-                    lat,
-                    long,
-                    ...otherProperties
-                } = h;
+            features: !covidReadyHealthResourceList
+                ? []
+                : covidReadyHealthResourceList.results.map((h) => {
+                    const {
+                        lat,
+                        long,
+                        ...otherProperties
+                    } = h;
 
-                return {
-                    id: h.id,
-                    type: 'Feature',
-                    geometry: {
-                        type: 'Point',
-                        coordinates: [long, lat],
-                    },
-                    properties: { ...otherProperties },
-                };
-            }),
+                    return {
+                        id: h.id,
+                        type: 'Feature',
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [long, lat],
+                        },
+                        properties: { ...otherProperties },
+                    };
+                }),
         };
 
         return geojson;
     }, [covidReadyHealthResourceList]);
 
     const healthResourcePointCollection = React.useMemo(() => {
-        const geojson = {
+        const geojson: GeoJSON.FeatureCollection<GeoJSON.Point, TrimmedNepwareHealthResource> = {
             type: 'FeatureCollection',
-            features: healthResourceList.results.map((h) => {
-                const {
-                    point,
-                    ...otherProperties
-                } = h;
+            features: !healthResourceList
+                ? []
+                : healthResourceList.results.map((h) => {
+                    const {
+                        point,
+                        ...otherProperties
+                    } = h;
 
-                return {
-                    id: h.id,
-                    type: 'Feature',
-                    geometry: { ...point },
-                    properties: { ...otherProperties },
-                };
-            }),
+                    return {
+                        id: h.id,
+                        type: 'Feature',
+                        geometry: { ...point },
+                        properties: { ...otherProperties },
+                    };
+                }),
         };
 
         return geojson;
@@ -447,7 +529,6 @@ const Covid19 = (props: Props) => {
         mapStateForIndicatorPending,
         mapStateForIndicator,
     ] = useMapStateForIndicator(regionLevel, selectedIndicator, selectedAgeGroup);
-
 
     const {
         paint: mapPaint,
@@ -464,7 +545,7 @@ const Covid19 = (props: Props) => {
                 ...generateChoroplethMapPaintAndLegend(colorDomain, min, max),
             };
         },
-        [showLayerBy, mapStateForIndicator],
+        [mapStateForIndicator],
     );
 
     const pending = mapStateForIndicatorPending
@@ -472,23 +553,31 @@ const Covid19 = (props: Props) => {
         || covidReadyHealthResourceListPending
         || healthResourceListPending;
 
-    const selectedIndicatorDetails = React.useMemo(() => {
-        if (selectedIndicator) {
-            return indicatorListResponse.results.find(
-                d => String(d.id) === String(selectedIndicator),
-            );
-        }
+    const selectedIndicatorDetails = React.useMemo(
+        () => {
+            if (selectedIndicator) {
+                return indicatorListResponse?.results.find(
+                    d => d.id === selectedIndicator,
+                );
+            }
+            return undefined;
+        },
+        [selectedIndicator, indicatorListResponse],
+    );
 
-        return undefined;
-    }, [selectedIndicator, indicatorListResponse]);
-
-    const indicatorOptions = React.useMemo(() => {
-        const options = [
-            ...indicatorListResponse.results,
-        ];
-        options.push({ id: -1, fullTitle: 'Age group' });
-        return options;
-    }, [indicatorListResponse]);
+    const indicatorOptions = React.useMemo(
+        () => {
+            if (!indicatorListResponse?.results) {
+                return undefined;
+            }
+            const options = [
+                ...indicatorListResponse?.results,
+            ];
+            options.push({ id: -1, fullTitle: 'Age group', abstract: undefined });
+            return options;
+        },
+        [indicatorListResponse],
+    );
 
     return (
         <div className={_cs(
@@ -507,14 +596,18 @@ const Covid19 = (props: Props) => {
                 mapState={mapStateForIndicator}
                 mapPaint={mapPaint}
             >
-                { showHealthResource && (
+                {showHealthResource && showCovidReadyHealthResourceOnly && (
                     <HealthResourcePoints
-                        covidReady={showCovidReadyHealthResourceOnly}
-                        sourceKey={regionLevel}
-                        data={showCovidReadyHealthResourceOnly
-                            ? covidReadyHealthResourcePointCollection
-                            : healthResourcePointCollection
-                        }
+                        covidReady
+                        sourceKey={`covid-ready-${regionLevel}`}
+                        data={covidReadyHealthResourcePointCollection}
+                    />
+                )}
+                {showHealthResource && !showCovidReadyHealthResourceOnly && (
+                    <HealthResourcePoints
+                        covidReady={false}
+                        sourceKey={`all-${regionLevel}`}
+                        data={healthResourcePointCollection}
                     />
                 )}
             </IndicatorMap>
@@ -546,12 +639,12 @@ const Covid19 = (props: Props) => {
                         optionLabelSelector={d => d.fullTitle}
                         optionKeySelector={d => d.id}
                     />
-                    { selectedIndicatorDetails && (
+                    { selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
                         <div className={styles.abstract}>
                             { selectedIndicatorDetails.abstract }
                         </div>
                     )}
-                    { String(selectedIndicator) === '-1' && (
+                    {selectedIndicator === -1 && (
                         <SegmentInput
                             label="Selected range"
                             className={styles.ageGroupSelectInput}
@@ -567,13 +660,13 @@ const Covid19 = (props: Props) => {
                             className={styles.legend}
                             minValue={dataMinValue}
                             legend={mapLegend}
-                            zeroPrecision={String(selectedIndicator) === '-1'}
+                            zeroPrecision={selectedIndicator === -1}
                         />
                     )}
                 </div>
             </div>
         </div>
     );
-};
+}
 
 export default Covid19;

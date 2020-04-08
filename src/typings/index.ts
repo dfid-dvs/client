@@ -1,3 +1,4 @@
+/*
 export interface InputChangeEvent<T=string|undefined> {
     value: T;
     name: string | undefined;
@@ -8,6 +9,7 @@ export interface ButtonClickEvent {
     name: string | undefined;
     originalEvent: React.MouseEvent<HTMLButtonElement>;
 }
+*/
 
 export type ExploreOption = 'programs' | 'regions';
 export type RegionLevelOption = 'province' | 'district' | 'municipality';
@@ -21,13 +23,13 @@ export interface NavbarContextProps {
     setRegionLevel: (v: RegionLevelOption) => void;
 }
 
-export interface Response<T> {
+export interface MultiResponse<T> {
     count: number;
     results: T[];
     data: T[]; // whut? -_-
 }
 
-export type ListResponse<T> = T[];
+// export type ListResponse<T> = T[];
 
 export interface MapState {
     id: number;

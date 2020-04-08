@@ -1,4 +1,4 @@
-export const defaultCenter: [number, number] = [
+export const defaultCenter: mapboxgl.LngLatLike = [
     84.1240, 28.3949,
 ];
 
@@ -7,7 +7,7 @@ export const defaultBounds: [number, number, number, number] = [
     88.20166918432409, 30.44702867091792,
 ];
 
-export const mapOptions = {
+export const mapOptions: Omit<mapboxgl.MapboxOptions, 'style' | 'container'> = {
     logoPosition: 'top-left',
     minZoom: 5,
     zoom: 3,
@@ -15,14 +15,14 @@ export const mapOptions = {
     bounds: defaultBounds,
 };
 
-export const tooltipOptions = {
+export const tooltipOptions: mapboxgl.PopupOptions = {
     closeOnClick: false,
     closeButton: false,
     offset: 8,
     maxWidth: '480px',
 };
 
-export const colorDomain = [
+export const colorDomain: string[] = [
     '#a8c1e7',
     '#8ba8d1',
     '#6e90bb',

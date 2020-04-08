@@ -37,7 +37,9 @@ export interface Props extends RawButtonProps {
     children?: React.ReactNode;
     className?: string;
     disabled?: boolean;
+    pending?: boolean;
     transparent: boolean;
+    icons?: React.ReactNode;
 }
 
 function Button(props: Props) {

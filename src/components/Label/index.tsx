@@ -1,7 +1,7 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import styles from './styles.scss';
+import styles from './styles.css';
 
 interface Props {
     active: boolean;

@@ -17,15 +17,15 @@ function Backdrop(props: Props) {
         children,
     } = props;
 
-    const ref = React.useRef(null);
+    const ref = React.useRef<HTMLDivElement>(null);
 
     React.useLayoutEffect(() => {
-        if (parentRef && parentRef.current && ref.current) {
+        const {
+            current: el,
+        } = ref;
+        if (parentRef && parentRef.current && el) {
             const parentBCR = parentRef.current.getBoundingClientRect();
-            const el = ref.current as HTMLElement;
-            if (el) {
-                el.style.width = `${parentBCR.width}px`;
-            }
+            el.style.width = `${parentBCR.width}px`;
         }
     }, [parentRef]);
 
