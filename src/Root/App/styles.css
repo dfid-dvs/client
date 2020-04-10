@@ -24,6 +24,8 @@
     --color-text-on-accent: rgba(255, 255, 255, .9);
     --color-text-light-on-accent: rgba(255, 255, 255, .5);
 
-    --width-separator-thin: 1px;
     --color-separator: rgba(0, 0, 0, .1);
+    --color-background-accent-hint: #18cc9c11;
+
+    --width-separator-thin: 1px;
 }

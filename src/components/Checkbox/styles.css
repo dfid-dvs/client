@@ -1,22 +1,49 @@
 .checkbox {
     display: flex;
-    align-items: center;
-    padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
+    cursor: pointer;
+    user-select: none;
 
-    .icon {
-        display: flex;
-        align-items: center;
-        margin: 0 var(--spacing-small);
-        font-size: 1.4em
+    .checkmark {
+        margin-right: var(--spacing-extra-small);
+        font-size: 1.4em;
+    }
+
+    .input {
+        display: none;
     }
 
     .label {
-        padding: 0 var(--spacing-small);
+        color: var(--color-text);
+        font-weight: var(--font-weight-normal);
+        &:hover {
+            background-color: var(--color-background-accent-hint);
+        }
     }
 
     &.checked {
-        .icon {
+        .checkmark {
             color: var(--color-accent);
+        }
+    }
+
+    &.disabled {
+        .checkmark {
+            color: var(--color-text-disabled);
+        }
+
+        .label {
+            color: var(--color-text-disabled);
+        }
+
+        .input {
+            border-bottom-color: var(--color-separator);
+            color: var(--color-text-disabled);
+        }
+    }
+
+    &.read-only {
+        .checkmark {
+            color: var(--color-text);
         }
     }
 }

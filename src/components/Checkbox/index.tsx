@@ -1,50 +1,130 @@
-import React from 'react';
-import { _cs } from '@togglecorp/fujs';
-import { MdCheckBoxOutlineBlank, MdCheckBox } from 'react-icons/md';
-
-import RawButton from '#components/RawButton';
+import React, { useMemo, useCallback } from 'react';
+import {
+    MdCheckBox,
+    MdCheckBoxOutlineBlank,
+    MdIndeterminateCheckBox,
+} from 'react-icons/md';
+import {
+    randomString,
+    _cs,
+} from '@togglecorp/fujs';
 
 import styles from './styles.css';
 
 interface Props {
     className?: string;
-    value?: boolean;
-    label?: string | number;
-    onChange: (val: boolean) => void;
+    labelClassName?: string;
+    checkIconClassName?: string;
+
     disabled?: boolean;
+    value: boolean;
+    onChange: (value: boolean) => void;
+    label?: string | number;
+    tooltip?: string;
+    readOnly?: boolean;
+
+    // NOTE: if value is false and indetermiate is true, show a filled checkbox
+    indeterminate?: boolean;
 }
 
-function Checkbox(props: Props) {
+const Checkbox = (props: Props) => {
     const {
-        className,
         label,
+        tooltip,
+        className: classNameFromProps,
         value,
+        disabled,
+        readOnly,
         onChange,
+        checkIconClassName,
+        labelClassName: labelClassNameFromProps,
+        indeterminate,
+        ...otherProps
     } = props;
 
-    const handleClick = React.useCallback(() => {
-        if (onChange) {
-            onChange(!value);
-        }
-    }, [value, onChange]);
+    const inputId = useMemo(
+        () => randomString(16),
+        [],
+    );
+
+    const handleChange = useCallback(
+        (e) => {
+            const v = e.target.checked;
+            onChange(v);
+        },
+        [onChange],
+    );
+
+    const className = _cs(
+        styles.checkbox,
+        'checkbox',
+        classNameFromProps,
+        (value || indeterminate) && styles.checked,
+        (value || indeterminate) && 'checked',
+        disabled && styles.disabled,
+        disabled && 'disabled',
+        readOnly && styles.readOnly,
+        readOnly && 'read-only',
+    );
+
+    const iconClassName = _cs(
+        styles.checkmark,
+        'checkmark',
+        checkIconClassName,
+    );
+
+    const inputClassName = _cs(
+        'input',
+        styles.input,
+    );
+
+    const labelClassName = _cs(
+        'label',
+        styles.label,
+        labelClassNameFromProps,
+    );
 
     return (
-        <RawButton
-            className={_cs(
-                className,
-                styles.checkbox,
-                value && styles.checked,
-            )}
-            onClick={handleClick}
+        <label
+            htmlFor={inputId}
+            className={className}
+            title={tooltip}
         >
-            <div className={styles.icon}>
-                { value ? <MdCheckBox /> : <MdCheckBoxOutlineBlank /> }
-            </div>
-            <div className={styles.label}>
+            {value && (
+                <MdCheckBox
+                    className={iconClassName}
+                />
+            )}
+            {!value && indeterminate && (
+                <MdIndeterminateCheckBox
+                    className={iconClassName}
+                />
+            )}
+            {!value && !indeterminate && (
+                <MdCheckBoxOutlineBlank
+                    className={iconClassName}
+                />
+            )}
+            <input
+                id={inputId}
+                onChange={handleChange}
+                className={inputClassName}
+                type="checkbox"
+                checked={value}
+                disabled={disabled || readOnly}
+                {...otherProps}
+            />
+            <div className={labelClassName}>
                 { label }
             </div>
-        </RawButton>
+        </label>
     );
-}
+};
+
+Checkbox.defaultProps = {
+    disabled: false,
+    readOnly: false,
+    value: false,
+};
 
 export default Checkbox;

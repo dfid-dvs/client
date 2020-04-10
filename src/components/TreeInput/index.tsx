@@ -3,6 +3,7 @@ import React, {
     useMemo,
     useState,
 } from 'react';
+import { IoMdArrowDropright } from 'react-icons/io';
 import { _cs, isNotDefined, Obj } from '@togglecorp/fujs';
 
 import { OptionKey } from '../types';
@@ -65,6 +66,16 @@ function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T, K>) {
     );
 
     const isLeaf = ownOptions && ownOptions.length <= 0;
+
+    const someSelected = useMemo(
+        () => ownOptions && ownOptions.some((option) => {
+            const key = keySelector(option);
+            // FIXME: create a mapping to optimize check
+            const selected = value.includes(key);
+            return selected;
+        }),
+        [value, keySelector, ownOptions],
+    );
 
     // FIXME: create a mapping to optimize check
     const checked = value.includes(nodeKey);
@@ -140,7 +151,9 @@ function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T, K>) {
                     disabled={isLeaf}
                     onClick={handleToggleCollapseOption}
                     transparent
-                />
+                >
+                    <IoMdArrowDropright />
+                </Button>
                 {!collapsed && !isLeaf && (
                     <div
                         className={styles.stem}
@@ -156,9 +169,14 @@ function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T, K>) {
             <div className={styles.right}>
                 <Checkbox
                     className={styles.checkbox}
+                    labelClassName={styles.label}
+                    checkIconClassName={styles.checkIcon}
                     value={checked}
                     label={nodeLabel}
+                    disabled={disabled}
+                    readOnly={readOnly}
                     onChange={handleCheckboxChange}
+                    indeterminate={someSelected}
                 />
                 { !isLeaf && (
                     <TreeNodeList

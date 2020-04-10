@@ -34,7 +34,7 @@
                 background-color: var(--color-background-accent-hint);
 
                 .line {
-                    border-right: var(--width-separator-medium) solid var(--color-accent);
+                    border-right: var(--width-separator-thin) solid var(--color-accent);
                 }
             }
         }
