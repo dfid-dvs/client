@@ -7,7 +7,7 @@ interface Props {
     className?: string;
 }
 
-const Glossary = (props: Props) => {
+function Glossary(props: Props) {
     const { className } = props;
 
     return (
@@ -15,6 +15,5 @@ const Glossary = (props: Props) => {
             Glossary
         </div>
     );
-};
-
+}
 export default Glossary;

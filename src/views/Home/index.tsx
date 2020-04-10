@@ -7,7 +7,7 @@ interface Props {
     className?: string;
 }
 
-const Home = (props: Props) => {
+function Home(props: Props) {
     const { className } = props;
 
     return (
@@ -15,6 +15,5 @@ const Home = (props: Props) => {
             Home
         </div>
     );
-};
-
+}
 export default Home;

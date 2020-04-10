@@ -38,7 +38,8 @@ const Loading = ({ message }: LoadingProps) => (
 interface Props {
     className?: string;
 }
-const Multiplexer = (props: Props) => {
+
+function Multiplexer(props: Props) {
     const { className } = props;
     const [exploreBy, setExploreBy] = React.useState<ExploreOption>('programs');
     const [regionLevel, setRegionLevel] = React.useState<RegionLevelOption>('province');
@@ -89,6 +90,5 @@ const Multiplexer = (props: Props) => {
             </Suspense>
         </div>
     );
-};
-
+}
 export default Multiplexer;

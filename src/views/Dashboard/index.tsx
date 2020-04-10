@@ -23,26 +23,21 @@ import {
 
 import styles from './styles.css';
 
-/*
-// TODO:
-1. Handle hover
-2. Handle tooltip
-3. Show indicators grouped by type
-4. Show recent indicators
-5. Show legend for indicators
-6. Wait for municipality-indicator api fix
-7. Bug where map-paint expects 4 but gets 2 argument
-*/
-
+// FIXME: use from typings
 interface MapState {
     id: number;
     value: number;
 }
 
+// FIXME: use from typings
 interface Indicator {
     id: number;
     fullTitle: string;
+    abstract: string | undefined;
 }
+
+const indicatorKeySelector = (indicator: Indicator) => indicator.id;
+const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
 
 interface Props {
     className?: string;
@@ -116,10 +111,10 @@ const Dashboard = (props: Props) => {
                     options={indicatorListResponse?.results}
                     onChange={setSelectedIndicator}
                     value={selectedIndicator}
-                    optionLabelSelector={d => d.fullTitle}
-                    optionKeySelector={d => d.id}
+                    optionLabelSelector={indicatorLabelSelector}
+                    optionKeySelector={indicatorKeySelector}
                 />
-                { Object.keys(mapLegend).length > 0 && (
+                {Object.keys(mapLegend).length > 0 && (
                     <ChoroplethLegend
                         className={styles.legend}
                         minValue={dataMinValue}

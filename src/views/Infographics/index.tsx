@@ -7,7 +7,7 @@ interface Props {
     className?: string;
 }
 
-const Infographics = (props: Props) => {
+function Infographics(props: Props) {
     const { className } = props;
 
     return (
@@ -15,6 +15,5 @@ const Infographics = (props: Props) => {
             Infographics
         </div>
     );
-};
-
+}
 export default Infographics;

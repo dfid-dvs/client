@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
     _cs,
     isDefined,
@@ -36,19 +36,58 @@ import {
 
 import styles from './styles.css';
 
+// FIXME: use from typings
 interface MapState {
     id: number;
     value: number;
 }
 
+// FIXME: use from typings
 interface Indicator {
     id: number;
     fullTitle: string;
     abstract: string | undefined;
 }
+const indicatorKeySelector = (indicator: Indicator) => indicator.id;
+const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
 
-interface Props {
-    className?: string;
+interface AgeGroup {
+    key: AgeGroupOption;
+    label: string;
+}
+const ageGroupOptions: AgeGroup[] = [
+    { key: 'belowFourteen', label: 'Below 14' },
+    { key: 'fifteenToFourtyNine', label: '15 to 49' },
+    { key: 'aboveFifty', label: 'Above 50' },
+];
+const ageGroupKeySelector = (ageGroup: AgeGroup) => ageGroup.key;
+const ageGroupLabelSelector = (ageGroup: AgeGroup) => ageGroup.label;
+
+interface TextOutputProps {
+    label: string | number;
+    value: React.ReactNode | null;
+}
+
+function TextOutput({
+    label,
+    value,
+}: TextOutputProps) {
+    return (
+        <div className={styles.textOutput}>
+            <div className={styles.label}>
+                { label }
+            </div>
+            { isDefined(value) && value !== 'null' ? (
+                <div className={styles.value}>
+                    { value }
+                </div>
+            ) : (
+                <div className={styles.nullValue}>
+                    Information not available
+                </div>
+            )}
+        </div>
+    );
 }
 
 interface NaxaHealthResource {
@@ -115,41 +154,6 @@ interface NepwareHealthResource {
 
 type TrimmedNaxaHealthResource = Omit<NaxaHealthResource, 'long' | 'lat'>;
 type TrimmedNepwareHealthResource = Omit<NepwareHealthResource, 'point'>;
-
-interface AgeGroup {
-    key: AgeGroupOption;
-    label: string;
-}
-const ageGroupOptions: AgeGroup[] = [
-    { key: 'belowFourteen', label: 'Below 14' },
-    { key: 'fifteenToFourtyNine', label: '15 to 49' },
-    { key: 'aboveFifty', label: 'Above 50' },
-];
-
-
-interface TextOutputProps {
-    label: string | number;
-    value: React.ReactNode | null;
-}
-const TextOutput = ({
-    label,
-    value,
-}: TextOutputProps) => (
-    <div className={styles.textOutput}>
-        <div className={styles.label}>
-            { label }
-        </div>
-        { isDefined(value) && value !== 'null' ? (
-            <div className={styles.value}>
-                { value }
-            </div>
-        ) : (
-            <div className={styles.nullValue}>
-                Information not available
-            </div>
-        )}
-    </div>
-);
 
 interface TooltipProps {
     feature: GeoJSON.Feature<GeoJSON.Point, TrimmedNepwareHealthResource>;
@@ -247,7 +251,7 @@ const Tooltip = ({ feature }: TooltipProps) => {
 interface CovidReadyToolTipProps {
     feature: GeoJSON.Feature<GeoJSON.Point, TrimmedNaxaHealthResource>;
 }
-const CovidReadyTooltip = ({ feature }: CovidReadyToolTipProps) => {
+function CovidReadyTooltip({ feature }: CovidReadyToolTipProps) {
     const {
         // eslint-disable-next-line @typescript-eslint/camelcase
         ownership_display,
@@ -294,7 +298,7 @@ const CovidReadyTooltip = ({ feature }: CovidReadyToolTipProps) => {
             />
         </div>
     );
-};
+}
 
 interface HoveredPoint {
     feature: mapboxgl.MapboxGeoJSONFeature;
@@ -324,6 +328,24 @@ function HealthResourcePoints(props: HealthResourcePointsProps) {
         hoveredPointProperties,
         setHoveredPointProperties,
     ] = React.useState<{ lngLat: mapboxgl.LngLatLike; feature: HoveredFeature }>();
+
+    const handleMouseEnter = useCallback(
+        (
+            hoveredFeature: mapboxgl.MapboxGeoJSONFeature,
+            lngLat: mapboxgl.LngLatLike,
+        ) => {
+            const feature = hoveredFeature as unknown as HoveredFeature;
+            setHoveredPointProperties({ feature, lngLat });
+        },
+        [],
+    );
+
+    const handleMouseLeave = useCallback(
+        () => {
+            setHoveredPointProperties(undefined);
+        },
+        [],
+    );
 
     return (
         <MapSource
@@ -380,13 +402,8 @@ function HealthResourcePoints(props: HealthResourcePointsProps) {
                     },
                     filter: ['!', ['has', 'point_count']],
                 }}
-                onMouseEnter={(hoveredFeature, lngLat) => {
-                    const feature = hoveredFeature as unknown as HoveredFeature;
-                    setHoveredPointProperties({ feature, lngLat });
-                }}
-                onMouseLeave={() => {
-                    setHoveredPointProperties(undefined);
-                }}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
             />
             <MapLayer
                 layerKey="hospital-symbol"
@@ -427,6 +444,10 @@ function HealthResourcePoints(props: HealthResourcePointsProps) {
             )}
         </MapSource>
     );
+}
+
+interface Props {
+    className?: string;
 }
 
 function Covid19(props: Props) {
@@ -636,8 +657,8 @@ function Covid19(props: Props) {
                         options={indicatorOptions}
                         onChange={setSelectedIndicator}
                         value={selectedIndicator}
-                        optionLabelSelector={d => d.fullTitle}
-                        optionKeySelector={d => d.id}
+                        optionLabelSelector={indicatorLabelSelector}
+                        optionKeySelector={indicatorKeySelector}
                     />
                     { selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
                         <div className={styles.abstract}>
@@ -651,8 +672,8 @@ function Covid19(props: Props) {
                             options={ageGroupOptions}
                             onChange={setSelectedAgeGroup}
                             value={selectedAgeGroup}
-                            optionLabelSelector={d => d.label}
-                            optionKeySelector={d => d.key}
+                            optionLabelSelector={ageGroupLabelSelector}
+                            optionKeySelector={ageGroupKeySelector}
                         />
                     )}
                     { Object.keys(mapLegend).length > 0 && (
