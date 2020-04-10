@@ -10,7 +10,7 @@ import {
 } from '@togglecorp/fujs';
 
 import { getFloatPlacement } from '#utils/common';
-import { useBlurEffect } from '#hooks';
+import useBlurEffect from '#hooks/useBlurEffect';
 
 import Portal from '#components/Portal';
 import TextInput from '#components/TextInput';

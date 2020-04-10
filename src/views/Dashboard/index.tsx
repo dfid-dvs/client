@@ -6,13 +6,10 @@ import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
-
 import IndicatorMap from '#components/IndicatorMap';
 
-import {
-    useRequest,
-    useMapStateForIndicator,
-} from '#hooks';
+import useRequest from '#hooks/useRequest';
+import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
 
 import { generateChoroplethMapPaintAndLegend } from '#utils/common';
 import { MultiResponse } from '#types';

@@ -2,7 +2,7 @@ import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import { getFloatPlacement } from '#utils/common';
-import { useBlurEffect } from '#hooks';
+import useBlurEffect from '#hooks/useBlurEffect';
 
 import Portal from '#components/Portal';
 import RawButton from '#components/RawButton';

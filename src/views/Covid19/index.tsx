@@ -20,10 +20,8 @@ import ToggleButton from '#components/ToggleButton';
 import IndicatorMap from '#components/IndicatorMap';
 import Stats from './Stats';
 
-import {
-    useRequest,
-    useMapStateForIndicator,
-} from '#hooks';
+import useRequest from '#hooks/useRequest';
+import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
 
 import { AgeGroupOption, MultiResponse } from '#types';
 

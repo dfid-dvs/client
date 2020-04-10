@@ -2,9 +2,10 @@ import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { GoLinkExternal } from 'react-icons/go';
 
-import { useRequest } from '#hooks';
 import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
+
+import useRequest from '#hooks/useRequest';
 
 import styles from './styles.css';
 

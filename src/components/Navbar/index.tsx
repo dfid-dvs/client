@@ -18,9 +18,7 @@ import {
     NavbarContextProps,
     MultiResponse,
 } from '#types';
-import {
-    useRequest,
-} from '#hooks';
+import useRequest from '#hooks/useRequest';
 
 import { apiEndPoint } from '#utils/constants';
 
