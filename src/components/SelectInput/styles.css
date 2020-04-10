@@ -17,11 +17,11 @@
         padding: 6px;
         width: 100%;
         text-align: left;
-        color: rgba(0, 0, 0, .5);
+        /* color: rgba(0, 0, 0, .5); */
 
         &:hover {
-            background-color: rgba(0, 0, 0, .05);
-            color: rgba(0, 0, 0, .9);
+            background-color: var(--color-background-accent-hint);
+            /* color: rgba(0, 0, 0, .9); */
         }
     }
 }

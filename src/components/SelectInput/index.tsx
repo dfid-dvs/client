@@ -6,6 +6,7 @@ import {
     compareStringSearch,
     listToMap,
     isDefined,
+    isNotDefined,
 } from '@togglecorp/fujs';
 
 import { getFloatPlacement } from '#utils/common';
@@ -71,61 +72,91 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         placeholder = 'Select an option',
     } = props;
 
-    const optionMap = React.useMemo(() => (
-        listToMap(options, optionKeySelector, optionLabelSelector)
-    ), [options, optionKeySelector, optionLabelSelector]);
-
     const inputContainerRef = React.useRef<HTMLDivElement>(null);
     const inputElementRef = React.useRef<HTMLInputElement>(null);
     const dropdownRef = React.useRef<HTMLDivElement>(null);
-    const [showDropdown, setShowDropdown] = React.useState(false);
-    const [inputValue, setInputValue] = React.useState(isDefined(value) ? optionMap[value] : '');
-    const [searchValue, setSearchValue] = React.useState('');
 
-    const hideDropdownOnBlur = React.useCallback((isInsideClick) => {
-        if (!isInsideClick) {
-            setShowDropdown(false);
+    const [showDropdown, setShowDropdown] = React.useState(false);
+    const [searchValue, setSearchValue] = React.useState('');
+    // FIXME: set inputValue on options change or value change
+    const [inputValue, setInputValue] = React.useState(() => {
+        if (isNotDefined(value)) {
+            return '';
         }
-    }, [setShowDropdown]);
+        const option = options?.find(o => optionKeySelector(o) === value);
+        if (isNotDefined(option)) {
+            return '';
+        }
+        return optionLabelSelector(option);
+    });
+
+    const hideDropdownOnBlur = React.useCallback(
+        (isInsideClick: boolean) => {
+            if (!isInsideClick) {
+                setShowDropdown(false);
+            }
+        },
+        [setShowDropdown],
+    );
 
     useBlurEffect(showDropdown, hideDropdownOnBlur, dropdownRef, inputContainerRef);
 
-    const filteredOptions = React.useMemo(() => {
-        if (!showDropdown) {
-            return [];
-        }
+    const filteredOptions = React.useMemo(
+        () => {
+            if (!showDropdown) {
+                return [];
+            }
 
-        const newOptions = options
-            ?.filter(option => caseInsensitiveSubmatch(optionLabelSelector(option), searchValue))
-            .sort((a, b) => compareStringSearch(
-                optionLabelSelector(a),
-                optionLabelSelector(b),
-                searchValue,
-            ));
+            const newOptions = options
+                ?.filter(option => (
+                    caseInsensitiveSubmatch(optionLabelSelector(option), searchValue)
+                ))
+                .sort((a, b) => compareStringSearch(
+                    optionLabelSelector(a),
+                    optionLabelSelector(b),
+                    searchValue,
+                ));
 
-        return newOptions;
-    }, [showDropdown, options, optionLabelSelector, searchValue]);
+            return newOptions;
+        },
+        [showDropdown, options, optionLabelSelector, searchValue],
+    );
 
-    const handleOptionClick = React.useCallback((optionKey) => {
-        setInputValue(optionMap[optionKey]);
-        setShowDropdown(false);
-        onChange(optionKey);
-        setSearchValue('');
-    }, [onChange, setShowDropdown, setSearchValue, optionMap]);
+    const handleOptionClick = React.useCallback(
+        (optionKey: string | undefined) => {
+            const option = options?.find(o => String(optionKeySelector(o)) === optionKey);
+            if (!option) {
+                console.error('There is some problem');
+                return;
+            }
 
-    const handleInputClick = React.useCallback(() => {
-        setShowDropdown(true);
+            setInputValue(optionLabelSelector(option));
+            setShowDropdown(false);
+            onChange(optionKeySelector(option));
+            setSearchValue('');
+        },
+        [onChange, options, optionKeySelector, optionLabelSelector],
+    );
 
-        const { current: inputContainer } = inputElementRef;
-        if (inputContainer) {
-            inputContainer.select();
-        }
-    }, [setShowDropdown]);
+    const handleInputClick = React.useCallback(
+        () => {
+            setShowDropdown(true);
 
-    const handleInputValueChange = React.useCallback((newInputValue) => {
-        setInputValue(newInputValue);
-        setSearchValue(newInputValue);
-    }, [setInputValue, setSearchValue]);
+            const { current: inputContainer } = inputElementRef;
+            if (inputContainer) {
+                inputContainer.select();
+            }
+        },
+        [],
+    );
+
+    const handleInputValueChange = React.useCallback(
+        (newInputValue) => {
+            setInputValue(newInputValue);
+            setSearchValue(newInputValue);
+        },
+        [],
+    );
 
     return (
         <div className={_cs(className, styles.selectInput)}>
@@ -149,6 +180,10 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                     >
                         { filteredOptions?.map((d) => {
                             const key = optionKeySelector(d);
+                            const selected = key === value;
+                            // FIXME: style disabled item differently
+                            // FIXME: rawbutton doesn't show difference between disabled
+                            // elements
 
                             return (
                                 <RawButton
@@ -156,7 +191,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                                     className={styles.option}
                                     name={String(key)}
                                     onClick={handleOptionClick}
-                                    disabled={disabled}
+                                    disabled={disabled || selected}
                                 >
                                     {optionLabelSelector(d)}
                                 </RawButton>

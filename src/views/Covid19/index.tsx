@@ -457,7 +457,7 @@ function Covid19(props: Props) {
     const [
         selectedIndicator,
         setSelectedIndicator,
-    ] = React.useState<number | undefined>(undefined);
+    ] = React.useState<number | undefined>();
 
     const [
         selectedAgeGroup,
@@ -606,11 +606,11 @@ function Covid19(props: Props) {
             className,
         )}
         >
-            { pending && (
+            {/* pending && (
                 <Backdrop className={styles.backdrop}>
                     <LoadingAnimation />
                 </Backdrop>
-            )}
+            ) */}
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}

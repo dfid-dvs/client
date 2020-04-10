@@ -1,4 +1,5 @@
 import React from 'react';
+import AbortController from 'abort-controller';
 
 import {
     listToGroupList,
@@ -14,6 +15,7 @@ import {
 
 import { apiEndPoint } from '#utils/constants';
 
+/*
 export function useForm<T, K extends keyof T>(
     values: T,
     setValues: (value: T) => void,
@@ -49,6 +51,7 @@ export function useForm<T, K extends keyof T>(
         // nonFieldErrors,
     };
 }
+*/
 
 const requestOption = {
     headers: {
@@ -57,55 +60,63 @@ const requestOption = {
     },
 };
 
-
 export function useRequest<T>(
     url?: string,
-    options: {} = requestOption,
-    deps: React.DependencyList = [],
+    options: object = requestOption,
+    // deps: React.DependencyList = [],
 ): [boolean, T | undefined] {
     const [response, setResponse] = React.useState<T>();
     const [pending, setPending] = React.useState(!!url);
 
-    React.useEffect(() => {
-        if (url) {
-            setPending(true);
-            try {
-                fetch(url, options).then((responseFromRequest) => {
-                    if (Math.floor(responseFromRequest.status / 100) === 2) {
-                        try {
-                            responseFromRequest.json().then((data) => {
-                                if (Array.isArray(data)) {
-                                    setResponse({
-                                        count: 1,
-                                        results: data,
-                                        data,
-                                    } as any);
-                                } else {
-                                    setResponse(data);
-                                }
-                                setPending(false);
-                            });
-                        } catch (e) {
-                            setPending(false);
-                            console.error(e);
-                        }
-                    } else {
-                        setPending(false);
-                        console.error(`An error occured while fetching ${url}`);
-                        window.alert('Cannot fetch data');
-                    }
-                }, (e) => {
-                    setPending(false);
-                    console.error(`An error occured while fetching ${url}`, e);
-                    window.alert('Cannot fetch data');
-                });
-            } catch (e) {
-                setPending(false);
-                console.error(`An error occured while fetching ${url}`, e);
-                window.alert('Cannot fetch data');
+    React.useEffect(
+        () => {
+            if (!url) {
+                return () => {};
             }
-        }
-    }, [url, options, ...deps]);
+
+            setPending(true);
+            const controller = new AbortController();
+
+            async function fetchResource(myUrl: string, myOptions: object | undefined) {
+                const { signal } = controller;
+
+                let res;
+                try {
+                    res = await fetch(myUrl, { ...myOptions, signal });
+                } catch (e) {
+                    setPending(false);
+                    if (!signal.aborted) {
+                        console.error(`An error occured while fetching ${myUrl}`, e);
+                    }
+                    return;
+                }
+
+                let resBody;
+                try {
+                    const resText = await res.text();
+                    if (resText.length > 0) {
+                        resBody = JSON.parse(resText);
+                    }
+                } catch (e) {
+                    setPending(false);
+                    console.error(`An error occured while parsing data from ${myUrl}`, e);
+                    return;
+                }
+
+                if (res.ok) {
+                    setResponse(resBody);
+                    setPending(false);
+                }
+            }
+
+            fetchResource(url, options);
+
+            return () => {
+                controller.abort();
+            };
+        },
+        [url, options],
+    );
 
     return [pending, response];
 }
@@ -115,34 +126,36 @@ export function useBlurEffect(
     callback: (clickedInside: boolean, e: MouseEvent) => void,
     elementRef: React.RefObject<HTMLElement>,
     parentRef: React.RefObject<HTMLElement>,
-    deps?: React.DependencyList,
 ) {
-    React.useEffect(() => {
-        const handleDocumentClick = (e: MouseEvent) => {
-            const { current: element } = elementRef;
-            const { current: parent } = parentRef;
+    React.useEffect(
+        () => {
+            if (!shouldWatch) {
+                return () => {};
+            }
 
-            const isElementOrContainedInElement = element
-                ? element === e.target || element.contains(e.target as HTMLElement)
-                : false;
-            const isParentOrContainedInParent = parent
-                ? parent === e.target || parent.contains(e.target as HTMLElement)
-                : false;
+            const handleDocumentClick = (e: MouseEvent) => {
+                const { current: element } = elementRef;
+                const { current: parent } = parentRef;
 
-            const clickedInside = isElementOrContainedInElement || isParentOrContainedInParent;
-            callback(clickedInside, e);
-        };
+                const isElementOrContainedInElement = element
+                    ? element === e.target || element.contains(e.target as HTMLElement)
+                    : false;
+                const isParentOrContainedInParent = parent
+                    ? parent === e.target || parent.contains(e.target as HTMLElement)
+                    : false;
 
-        if (shouldWatch) {
+                const clickedInside = isElementOrContainedInElement || isParentOrContainedInParent;
+
+                callback(clickedInside, e);
+            };
+
             document.addEventListener('click', handleDocumentClick);
-        } else {
-            document.removeEventListener('click', handleDocumentClick);
-        }
 
-        return () => { document.removeEventListener('click', handleDocumentClick); };
-    }, deps);
+            return () => { document.removeEventListener('click', handleDocumentClick); };
+        },
+        [shouldWatch, callback, elementRef, parentRef],
+    );
 }
-
 
 interface AgeGroup {
     id: number;
@@ -175,9 +188,9 @@ function useAgeGroupList(
     const [
         ageGroupListPending,
         ageGroupListResponse,
-    ] = useRequest<MultiResponse<AgeGroup>>(ageGroupListUrl);
+    ] = useRequest<AgeGroup[]>(ageGroupListUrl);
 
-    const sanitizedAgeGroupList = ageGroupListResponse?.results.filter(
+    const sanitizedAgeGroupList = ageGroupListResponse?.filter(
         d => d.munid !== 38,
     );
 
@@ -254,8 +267,6 @@ export function useMapStateForIndicator(
     let regionIndicatorUrl;
 
     if (isDefined(selectedIndicator) && String(selectedIndicator) !== '-1') {
-        console.warn(selectedIndicator);
-
         switch (regionLevel) {
             case 'municipality':
                 regionIndicatorUrl = `${apiEndPoint}/municipality-indicator/?indicator_id=${selectedIndicator}`;
