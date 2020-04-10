@@ -10,6 +10,7 @@ module.exports = {
     },
     'plugins': [
         'react',
+        'react-hooks',
         'import',
         'css-modules',
         '@typescript-eslint',
@@ -22,24 +23,15 @@ module.exports = {
                 'alias': {
                     '#components': './src/components',
                     '#config': './src/config',
-                    '#constants': './src/constants',
-                    '#notify': './src/notify',
-                    '#actionCreators': './src/store/actionCreators',
-                    '#selectors': './src/store/selectors',
                     '#request': './src/request',
                     '#resources': './src/resources',
                     '#schema': './src/schema',
-                    '#store': './src/store',
                     '#ts': './src/ts',
                     '#utils': './src/utils',
-                    '#rsca': './src/vendor/react-store/components/Action',
-                    '#rscg': './src/vendor/react-store/components/General',
-                    '#rsci': './src/vendor/react-store/components/Input',
-                    '#rscv': './src/vendor/react-store/components/View',
-                    '#rscz': './src/vendor/react-store/components/Visualization',
-                    '#rsk': './src/vendor/react-store/constants',
-                    '#rsu': './src/vendor/react-store/utils',
                     '#views': './src/views',
+                    '#types': './src/typings',
+                    '#hooks': './src/hooks',
+                    '#remap': './src/vendor/re-map',
                 },
             },
         },
@@ -108,5 +100,8 @@ module.exports = {
         'react/default-props-match-prop-types': ['warn', {
             'allowRequiredDefaults': true,
         }],
+
+        'react-hooks/rules-of-hooks': 'error',
+        'react-hooks/exhaustive-deps': 'warn'
     },
 };

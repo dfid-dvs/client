@@ -1,0 +1,23 @@
+.multiplexer {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+
+    .navbar {
+        flex-shrink: 0;
+    }
+
+    .view {
+        flex-grow: 1;
+        padding: var(--spacing-large);
+        overflow: auto;
+    }
+
+    .loading {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        justify-content: center;
+    }
+}

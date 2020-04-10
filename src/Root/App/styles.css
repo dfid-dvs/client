@@ -1,0 +1,33 @@
+:root {
+    --spacing-extra-small: 3px;
+    --spacing-small: 6px;
+    --spacing-medium: 10px;
+    --spacing-large: 16px;
+
+
+    --font-size-extra-small: 9px;
+    --font-size-small: 11px;
+    --font-size-medium: 14px;
+    --font-size-large: 18px;
+    --font-size-extra-large: 24px;
+
+    --font-weight-light: 400;
+    --font-weight-medium: 400;
+    --font-weight-bold: 700;
+
+
+    --color-primary: #05367d;
+    --color-text-on-primary: rgba(255, 255, 255, .9);
+    --color-text-light-on-primary: rgba(255, 255, 255, .5);
+
+    --color-accent: #18cc9c;
+    --color-text-on-accent: rgba(255, 255, 255, .9);
+    --color-text-light-on-accent: rgba(255, 255, 255, .5);
+
+    --color-text-disabled: rgba(0, 0, 0, .4);
+
+    --color-separator: rgba(0, 0, 0, .1);
+    --color-background-accent-hint: #18cc9c11;
+
+    --width-separator-thin: 1px;
+}

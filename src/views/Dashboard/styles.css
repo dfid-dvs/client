@@ -1,0 +1,43 @@
+.dashboard {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    background-color: var(--color-background-alt);
+
+    .backdrop {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 11111;
+        background-color: rgba(255, 255, 255, .7);
+    }
+
+    .map-container {
+        flex-grow: 1;
+        font-family: inherit;
+    }
+
+    .map-style-config-container {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        border: 1px solid rgba(0, 0, 0, .1);
+        background-color: #fff;
+        padding: var(--spacing-medium);
+        width: 400px;
+
+        .heading {
+            padding: var(--spacing-medium);
+            color: var(--color-accent);
+        }
+
+        .indicator-select-input {
+            margin: var(--spacing-medium);
+            margin-top: 0;
+        }
+
+        .legend {
+            margin: var(--spacing-medium);
+        }
+    }
+}

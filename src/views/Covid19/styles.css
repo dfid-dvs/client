@@ -1,0 +1,96 @@
+.covid19 {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    background-color: var(--color-background-alt);
+
+    .backdrop {
+        z-index: 11111;
+    }
+
+    .map-container {
+        flex-grow: 1;
+        font-family: inherit;
+    }
+
+    .map-style-config-container {
+        position: absolute;
+        bottom: var(--spacing-medium);
+        left: var(--spacing-medium);
+        border: 1px solid rgba(0, 0, 0, .1);
+        background-color: #fff;
+        padding: var(--spacing-medium);
+        width: 400px;
+
+        .heading {
+            padding: var(--spacing-medium);
+            color: var(--color-accent);
+        }
+
+        .layer-by-selection {
+            padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
+        }
+
+        .layer-selection {
+            margin-top: var(--spacing-medium);
+
+            .indicator-select-input {
+                margin: var(--spacing-medium);
+            }
+
+            .age-group-select-input {
+                padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
+            }
+
+            .abstract {
+                padding: var(--spacing-medium);
+                font-size: var(--font-size-small);
+            }
+
+            .legend {
+                margin: var(--spacing-medium);
+            }
+        }
+    }
+
+    .stats {
+        position: absolute;
+        top: var(--spacing-medium);
+        right: var(--spacing-medium);
+        border: 1px solid rgba(0, 0, 0, .1);
+        background-color: #fff;
+        padding: var(--spacing-medium);
+        width: 300px;
+    }
+}
+
+.tooltip {
+    .title {
+        padding: var(--spacing-small);
+        color: var(--color-accent);
+        font-size: var(--font-size-medium);
+        font-weight: var(--font-weight-bold);
+    }
+}
+
+.text-output {
+    display: table-row;
+
+    .label {
+        display: table-cell;
+        padding: 0 var(--spacing-small);
+        font-size: var(--font-size-small);
+    }
+
+    .value {
+        display: table-cell;
+        padding: 0 var(--spacing-small);
+    }
+
+    .null-value {
+        display: table-cell;
+        padding: 0 var(--spacing-small);
+        color: rgba(0, 0, 0, .4);
+        font-size: var(--font-size-small);
+    }
+}

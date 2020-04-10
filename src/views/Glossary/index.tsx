@@ -1,23 +1,19 @@
 import React from 'react';
+import { _cs } from '@togglecorp/fujs';
 
-import Message from '#rscv/Message';
+import styles from './styles.css';
 
-import styles from './styles.scss';
-
-interface State {}
-interface Props {}
-
-// eslint-disable-next-line react/prefer-stateless-function
-class Glossary extends React.PureComponent<Props, State> {
-    public render() {
-        return (
-            <div className={styles.glossary}>
-                <Message className={styles.message}>
-                    Glossary
-                </Message>
-            </div>
-        );
-    }
+interface Props {
+    className?: string;
 }
 
+function Glossary(props: Props) {
+    const { className } = props;
+
+    return (
+        <div className={_cs(className, styles.glossary)}>
+            Glossary
+        </div>
+    );
+}
 export default Glossary;

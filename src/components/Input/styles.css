@@ -1,0 +1,32 @@
+.input-container {
+
+    .main {
+        display: flex;
+        border-bottom: 1px solid transparent;
+        border-radius: 5px;
+        background-color: rgba(255, 255, 255, .1);
+        padding: var(--spacing-small);
+
+        .icons {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .input {
+            flex-grow: 1;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+    }
+
+    &:focus-within {
+        .main {
+            border-bottom-color: var(--color-accent);
+        }
+    }
+}

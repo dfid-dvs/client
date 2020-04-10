@@ -1,0 +1,22 @@
+.checkbox {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
+
+    .icon {
+        display: flex;
+        align-items: center;
+        margin: 0 var(--spacing-small);
+        font-size: 1.4em
+    }
+
+    .label {
+        padding: 0 var(--spacing-small);
+    }
+
+    &.checked {
+        .icon {
+            color: var(--color-accent);
+        }
+    }
+}

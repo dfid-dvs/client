@@ -3,4 +3,11 @@ import ReactDOM from 'react-dom';
 
 import Root from './Root';
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+console.info('React version', React.version);
+
+const rootElement = document.getElementById('dfid-root');
+if (rootElement) {
+    ReactDOM.createRoot(rootElement).render(<Root />);
+} else {
+    console.error('Root element was not found');
+}
