@@ -637,13 +637,12 @@ function Covid19(props: Props) {
                     value={showHealthResource}
                     onChange={setShowHealthResource}
                 />
-                { showHealthResource && (
-                    <ToggleButton
-                        label="Show COVID ready health facilities only"
-                        value={showCovidReadyHealthResourceOnly}
-                        onChange={setShowCovidReadyHealthResourceOnly}
-                    />
-                )}
+                <ToggleButton
+                    disabled={!showHealthResource}
+                    label="Show COVID ready health facilities only"
+                    value={showCovidReadyHealthResourceOnly}
+                    onChange={setShowCovidReadyHealthResourceOnly}
+                />
                 <div className={styles.layerSelection}>
                     <h4 className={styles.heading}>
                         Indicator

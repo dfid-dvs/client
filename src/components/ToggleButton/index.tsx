@@ -5,10 +5,11 @@ import RawButton from '#components/RawButton';
 
 import styles from './styles.css';
 
-function ToggleSwitch(props: { className?: string; value?: boolean }) {
+function ToggleSwitch(props: { className?: string; value?: boolean; disabled?: boolean }) {
     const {
         className,
         value,
+        disabled,
     } = props;
 
     return (
@@ -16,6 +17,7 @@ function ToggleSwitch(props: { className?: string; value?: boolean }) {
             styles.switch,
             className,
             value ? styles.on : styles.off,
+            disabled && styles.disabled,
         )}
         >
             <div className={styles.knob} />
@@ -28,6 +30,7 @@ interface Props {
     label?: React.ReactNode;
     onChange?: (v: boolean) => void;
     value: boolean;
+    disabled?: boolean;
 }
 
 function ToggleButton(props: Props) {
@@ -36,6 +39,7 @@ function ToggleButton(props: Props) {
         label,
         value,
         onChange,
+        disabled,
     } = props;
 
     const handleClick = React.useCallback(
@@ -51,9 +55,11 @@ function ToggleButton(props: Props) {
         <RawButton
             className={_cs(styles.toggleButton, className)}
             onClick={handleClick}
+            disabled={disabled}
         >
             <ToggleSwitch
                 value={value}
+                disabled={disabled}
             />
             <div className={styles.label}>
                 { label }
