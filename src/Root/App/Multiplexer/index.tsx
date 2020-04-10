@@ -40,8 +40,8 @@ interface Props {
 }
 const Multiplexer = (props: Props) => {
     const { className } = props;
-    const [exploreBy, setExploreBy] = React.useState<ExploreOption>('regions');
-    const [regionLevel, setRegionLevel] = React.useState<RegionLevelOption>('municipality');
+    const [exploreBy, setExploreBy] = React.useState<ExploreOption>('programs');
+    const [regionLevel, setRegionLevel] = React.useState<RegionLevelOption>('province');
 
     const navbarContextProvider: NavbarContextProps = {
         exploreBy,

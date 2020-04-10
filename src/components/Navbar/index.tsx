@@ -358,79 +358,94 @@ const Navbar = (props: Props) => {
                       */}
                 </div>
                 <div className={styles.filters}>
-                    { !isCovidPage && (
-                        <SegmentInput
-                            className={styles.exploreBySelection}
-                            label="Explore by"
-                            options={exploreOptionList}
-                            optionKeySelector={exploreOptionListKeySelector}
-                            optionLabelSelector={exploreOptionListLabelSelector}
-                            value={exploreBy}
-                            onChange={setExploreBy}
-                        />
-                    )}
-                    {exploreBy === 'regions' && (
+                    {!isCovidPage && (
                         <>
                             <SegmentInput
-                                className={styles.regionLevelSelection}
-                                label="Level"
-                                options={regionLevelOptionList}
-                                optionKeySelector={regionLevelOptionListKeySelector}
-                                optionLabelSelector={regionLevelOptionListLabelSelector}
-                                value={regionLevel}
-                                onChange={setRegionLevel}
+                                className={styles.exploreBySelection}
+                                label="Explore by"
+                                options={exploreOptionList}
+                                optionKeySelector={exploreOptionListKeySelector}
+                                optionLabelSelector={exploreOptionListLabelSelector}
+                                value={exploreBy}
+                                onChange={setExploreBy}
                             />
-                            <SelectInput
-                                placeholder={`Select ${regionLevelLabel}`}
-                                className={styles.regionSelectInput}
-                                disabled={regionPending}
-                                options={regionOptions}
-                                onChange={setSelectedRegion}
-                                value={selectedRegion}
-                                optionLabelSelector={d => d.name}
-                                optionKeySelector={d => d.id}
-                            />
+                            {exploreBy === 'regions' && (
+                                <>
+                                    <SegmentInput
+                                        className={styles.regionLevelSelection}
+                                        label="Level"
+                                        options={regionLevelOptionList}
+                                        optionKeySelector={regionLevelOptionListKeySelector}
+                                        optionLabelSelector={regionLevelOptionListLabelSelector}
+                                        value={regionLevel}
+                                        onChange={setRegionLevel}
+                                    />
+                                    {/* FIXME: this must be a multi-select input */}
+                                    <SelectInput
+                                        placeholder={`Select ${regionLevelLabel}`}
+                                        className={styles.regionSelectInput}
+                                        disabled={regionPending}
+                                        options={regionOptions}
+                                        onChange={setSelectedRegion}
+                                        value={selectedRegion}
+                                        optionLabelSelector={d => d.name}
+                                        optionKeySelector={d => d.id}
+                                    />
+                                </>
+                            )}
+                            {exploreBy === 'programs' && (
+                                <>
+                                    {/* FIXME: this must be a multi-select input */}
+                                    <SelectInput
+                                        placeholder="Select a programme"
+                                        className={styles.indicatorSelectInput}
+                                        disabled={programListPending}
+                                        options={programListResponse?.results}
+                                        onChange={setSelectedProgram}
+                                        value={selectedProgram}
+                                        optionLabelSelector={d => d.name}
+                                        optionKeySelector={d => d.id}
+                                    />
+                                    <DropdownMenu label="Sectors">
+                                        <TreeInput
+                                            className={styles.sectorTree}
+                                            label="Sector"
+                                            keySelector={treeKeySelector}
+                                            parentKeySelector={treeParentSelector}
+                                            labelSelector={treeLabelSelector}
+                                            options={combinedSectorOptions}
+                                            value={selectedSector}
+                                            onChange={setSelectedSector}
+                                            defaultCollapseLevel={0}
+                                        />
+                                    </DropdownMenu>
+                                    <DropdownMenu label="Markers">
+                                        <TreeInput
+                                            className={styles.markerTree}
+                                            label="Marker"
+                                            keySelector={treeKeySelector}
+                                            parentKeySelector={treeParentSelector}
+                                            labelSelector={treeLabelSelector}
+                                            options={combinedMarkerOptions}
+                                            value={selectedMarker}
+                                            onChange={setSelectedMarker}
+                                            defaultCollapseLevel={1}
+                                        />
+                                    </DropdownMenu>
+                                </>
+                            )}
                         </>
                     )}
-                    {(!isCovidPage && exploreBy === 'programs') && (
-                        <>
-                            <SelectInput
-                                placeholder="Select an indicator"
-                                className={styles.indicatorSelectInput}
-                                disabled={programListPending}
-                                options={programListResponse?.results}
-                                onChange={setSelectedProgram}
-                                value={selectedProgram}
-                                optionLabelSelector={d => d.name}
-                                optionKeySelector={d => d.id}
-                            />
-                            <DropdownMenu label="Sectors">
-                                <TreeInput
-                                    className={styles.sectorTree}
-                                    label="Sector"
-                                    keySelector={treeKeySelector}
-                                    parentKeySelector={treeParentSelector}
-                                    labelSelector={treeLabelSelector}
-                                    options={combinedSectorOptions}
-                                    value={selectedSector}
-                                    onChange={setSelectedSector}
-                                    defaultCollapseLevel={0}
-                                />
-                            </DropdownMenu>
-                            <DropdownMenu label="Markers">
-                                <TreeInput
-                                    className={styles.markerTree}
-                                    label="Marker"
-                                    keySelector={treeKeySelector}
-                                    parentKeySelector={treeParentSelector}
-                                    labelSelector={treeLabelSelector}
-                                    options={combinedMarkerOptions}
-                                    value={selectedMarker}
-                                    onChange={setSelectedMarker}
-                                    defaultCollapseLevel={1}
-                                />
-                            </DropdownMenu>
-                        </>
+                    {isCovidPage && (
+                        <SegmentInput
+                            className={styles.regionLevelSelection}
+                            label="Level"
+                            options={regionLevelOptionList}
+                            optionKeySelector={regionLevelOptionListKeySelector}
+                            optionLabelSelector={regionLevelOptionListLabelSelector}
+                            value={regionLevel}
+                            onChange={setRegionLevel}
+                        />
                     )}
                 </div>
             </div>
