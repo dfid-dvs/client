@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { isDefined } from '@togglecorp/fujs';
 import {
     MultiResponse,
@@ -36,13 +37,19 @@ function useMapStateForFiveW(
         regionFiveWListResponse,
     ] = useRequest<MultiResponse<FiveW>>(regionFiveWGetUrl);
 
-    let fiveWMapState: MapState[] = [];
-    if (regionFiveWListResponse && selectedFiveWOption) {
-        fiveWMapState = regionFiveWListResponse?.results.map(d => ({
-            id: d.code,
-            value: d[selectedFiveWOption],
-        }));
-    }
+    const fiveWMapState: MapState[] = useMemo(
+        () => {
+            if (!regionFiveWListResponse || !selectedFiveWOption) {
+                return [];
+            }
+
+            return regionFiveWListResponse?.results.map(d => ({
+                id: d.code,
+                value: d[selectedFiveWOption],
+            }));
+        },
+        [regionFiveWListResponse, selectedFiveWOption],
+    );
 
     return [regionFiveWPending, fiveWMapState];
 }
