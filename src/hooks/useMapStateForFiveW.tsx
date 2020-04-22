@@ -18,7 +18,7 @@ function useMapStateForFiveW(
     if (isDefined(selectedFiveWOption)) {
         switch (regionLevel) {
             case 'municipality':
-                regionFiveWGetUrl = `${apiEndPoint}/fivew-province/`;
+                regionFiveWGetUrl = `${apiEndPoint}/fivew-municipality/`;
                 break;
             case 'district':
                 regionFiveWGetUrl = `${apiEndPoint}/fivew-district/`;

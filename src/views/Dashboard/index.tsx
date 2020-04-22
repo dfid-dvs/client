@@ -155,7 +155,7 @@ const Dashboard = (props: Props) => {
             setSelectedIndicator(undefined);
         }
         if (value === 'fiveW') {
-            setFiveWOption(undefined);
+            setFiveWOption('allocatedBudget');
         }
         setAttribute(value);
     };
