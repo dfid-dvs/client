@@ -2,6 +2,7 @@ import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import NavbarContext from '#components/NavbarContext';
+import SegmentInput from '#components/SegmentInput';
 import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import Backdrop from '#components/Backdrop';
@@ -12,13 +13,18 @@ import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
 
 import { generateChoroplethMapPaintAndLegend } from '#utils/common';
-import { MultiResponse } from '#types';
+import {
+    MultiResponse,
+    FiveWOptionKey,
+} from '#types';
+
 import {
     colorDomain,
     apiEndPoint,
 } from '#utils/constants';
 
 import styles from './styles.css';
+import useMapStateForFiveW from '#hooks/useMapStateForFiveW';
 
 // FIXME: use from typings
 interface MapState {
@@ -33,8 +39,56 @@ interface Indicator {
     abstract: string | undefined;
 }
 
+interface FiveWOption {
+    key: FiveWOptionKey;
+    label: string;
+}
+
+const fiveWOptions: FiveWOption[] = [
+    {
+        key: 'allocatedBudget',
+        label: 'Allocated Budget',
+    },
+    {
+        key: 'maleBeneficiary',
+        label: 'Male Beneficiary',
+    },
+    {
+        key: 'femaleBeneficiary',
+        label: 'Female Beneficiary',
+    },
+    {
+        key: 'totalBeneficiary',
+        label: 'Total Beneficiary',
+    },
+];
+
+const fiveWKeySelector = (option: FiveWOption) => option.key;
+const fiveWLabelSelector = (option: FiveWOption) => option.label;
+
 const indicatorKeySelector = (indicator: Indicator) => indicator.id;
 const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
+
+type Attribute = 'indicator' | 'fiveW';
+
+interface AttributeOption {
+    key: Attribute;
+    label: string;
+}
+
+const attributeOptions: AttributeOption[] = [
+    {
+        key: 'indicator',
+        label: 'Indicator',
+    },
+    {
+        key: 'fiveW',
+        label: 'FiveW',
+    },
+];
+
+const attributeKeySelector = (option: AttributeOption) => option.key;
+const attributeLabelSelector = (option: AttributeOption) => option.label;
 
 interface Props {
     className?: string;
@@ -49,6 +103,16 @@ const Dashboard = (props: Props) => {
         setSelectedIndicator,
     ] = React.useState<number | undefined>(undefined);
 
+    const [
+        selectedFiveWOption,
+        setFiveWOption,
+    ] = React.useState<FiveWOptionKey | undefined>(undefined);
+
+    const [
+        selectedAttribute,
+        setAttribute,
+    ] = React.useState<'indicator' | 'fiveW'>('indicator');
+
     const indicatorListGetUrl = `${apiEndPoint}/indicator-list/`;
     const [
         indicatorListPending,
@@ -56,10 +120,17 @@ const Dashboard = (props: Props) => {
     ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl);
 
     const [
-        mapStatePending,
-        mapState,
+        indicatorMapStatePending,
+        indicatorMapState,
     ] = useMapStateForIndicator(regionLevel, selectedIndicator, undefined);
 
+    const [
+        fiveWMapStatePending,
+        fiveWMapState,
+    ] = useMapStateForFiveW(regionLevel, selectedFiveWOption);
+
+    const mapStatePending = indicatorMapStatePending || fiveWMapStatePending;
+    const mapState = selectedAttribute === 'indicator' ? indicatorMapState : fiveWMapState;
     const {
         paint: mapPaint,
         legend: mapLegend,
@@ -78,6 +149,16 @@ const Dashboard = (props: Props) => {
         },
         [mapState],
     );
+
+    const handleAttributeOption = (value: Attribute) => {
+        if (value === 'indicator') {
+            setSelectedIndicator(undefined);
+        }
+        if (value === 'fiveW') {
+            setFiveWOption('allocatedBudget');
+        }
+        setAttribute(value);
+    };
 
     const pending = mapStatePending || indicatorListPending;
 
@@ -99,18 +180,38 @@ const Dashboard = (props: Props) => {
                 mapPaint={mapPaint}
             />
             <div className={styles.mapStyleConfigContainer}>
-                <h4 className={styles.heading}>
-                    Indicator
-                </h4>
-                <SelectInput
-                    className={styles.indicatorSelectInput}
-                    disabled={indicatorListPending}
-                    options={indicatorListResponse?.results}
-                    onChange={setSelectedIndicator}
-                    value={selectedIndicator}
-                    optionLabelSelector={indicatorLabelSelector}
-                    optionKeySelector={indicatorKeySelector}
+                <SegmentInput
+                    options={attributeOptions}
+                    onChange={handleAttributeOption}
+                    value={selectedAttribute}
+                    optionLabelSelector={attributeLabelSelector}
+                    optionKeySelector={attributeKeySelector}
                 />
+                { selectedAttribute === 'indicator' ? (
+                    <>
+                        <SelectInput
+                            className={styles.indicatorSelectInput}
+                            disabled={indicatorListPending}
+                            options={indicatorListResponse?.results}
+                            onChange={setSelectedIndicator}
+                            value={selectedIndicator}
+                            optionLabelSelector={indicatorLabelSelector}
+                            optionKeySelector={indicatorKeySelector}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <SelectInput
+                            label="Selected attribute"
+                            className={styles.fiveWSegmentInput}
+                            options={fiveWOptions}
+                            onChange={setFiveWOption}
+                            value={selectedFiveWOption}
+                            optionLabelSelector={fiveWLabelSelector}
+                            optionKeySelector={fiveWKeySelector}
+                        />
+                    </>
+                )}
                 {Object.keys(mapLegend).length > 0 && (
                     <ChoroplethLegend
                         className={styles.legend}
