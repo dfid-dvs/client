@@ -151,19 +151,6 @@ const Dashboard = (props: Props) => {
         [mapState],
     );
 
-    /*
-    const handleAttributeOption = (value: Attribute) => {
-
-        if (value === 'indicator') {
-            setSelectedIndicator(undefined);
-        }
-        if (value === 'fiveW') {
-            setFiveWOption('allocatedBudget');
-        }
-        setAttribute(value);
-    };
-    */
-
     const pending = mapStatePending || indicatorListPending;
 
     return (
@@ -192,30 +179,27 @@ const Dashboard = (props: Props) => {
                     optionLabelSelector={attributeLabelSelector}
                     optionKeySelector={attributeKeySelector}
                 />
-                { selectedAttribute === 'indicator' ? (
-                    <>
-                        <SelectInput
-                            className={styles.indicatorSelectInput}
-                            disabled={indicatorListPending}
-                            options={indicatorListResponse?.results}
-                            onChange={setSelectedIndicator}
-                            value={selectedIndicator}
-                            optionLabelSelector={indicatorLabelSelector}
-                            optionKeySelector={indicatorKeySelector}
-                        />
-                    </>
-                ) : (
-                    <>
-                        <SelectInput
-                            label="Selected attribute"
-                            className={styles.fiveWSegmentInput}
-                            options={fiveWOptions}
-                            onChange={setFiveWOption}
-                            value={selectedFiveWOption}
-                            optionLabelSelector={fiveWLabelSelector}
-                            optionKeySelector={fiveWKeySelector}
-                        />
-                    </>
+                { selectedAttribute === 'indicator' && (
+                    <SelectInput
+                        className={styles.indicatorSelectInput}
+                        disabled={indicatorListPending}
+                        options={indicatorListResponse?.results}
+                        onChange={setSelectedIndicator}
+                        value={selectedIndicator}
+                        optionLabelSelector={indicatorLabelSelector}
+                        optionKeySelector={indicatorKeySelector}
+                    />
+                )}
+                { selectedAttribute === 'fiveW' && (
+                    <SelectInput
+                        label="Selected attribute"
+                        className={styles.fiveWSegmentInput}
+                        options={fiveWOptions}
+                        onChange={setFiveWOption}
+                        value={selectedFiveWOption}
+                        optionLabelSelector={fiveWLabelSelector}
+                        optionKeySelector={fiveWKeySelector}
+                    />
                 )}
                 {Object.keys(mapLegend).length > 0 && (
                     <ChoroplethLegend
