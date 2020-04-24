@@ -1043,6 +1043,20 @@ function Covid19(props: Props) {
                     value={showHealthTravelTime}
                     onChange={setShowHealthTravelTime}
                 />
+                {showHealthTravelTime && (
+                    <ChoroplethLegend
+                        className={styles.legend}
+                        minValue=""
+                        opacity={0.6}
+                        legend={{
+                            [fourHourColor]: '4hrs',
+                            [eightHourColor]: '8hrs',
+                            [twelveHourColor]: '12hrs',
+                            [uncoveredColor]: 'Uncovered',
+                        }}
+                        zeroPrecision={selectedIndicator === -1}
+                    />
+                )}
                 {/*
                 <ToggleButton
                     disabled={!showHealthResource}

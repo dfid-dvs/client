@@ -56,18 +56,21 @@ function Numeral({
     );
 }
 
+interface ChoroplethLegend {
+    minValue: number | string;
+    legend: {[key: string]: number | string};
+    className?: string;
+    zeroPrecision?: boolean;
+    opacity?: number;
+}
 function ChoroplethLegend(
     {
         minValue,
         legend,
         className,
         zeroPrecision,
-    }: {
-        minValue: number;
-        legend: {[key: string]: number};
-        className?: string;
-        zeroPrecision?: boolean;
-    },
+        opacity = 1,
+    }: ChoroplethLegend,
 ) {
     const colors = Object.keys(legend);
     if (colors.length <= 0) {
@@ -76,13 +79,16 @@ function ChoroplethLegend(
 
     return (
         <div className={_cs(className, styles.choroplethLegend)}>
-            { isDefined(minValue) && (
+            {isDefined(minValue) && typeof minValue === 'number' && (
                 <Numeral
                     className={styles.min}
                     value={minValue}
                     precision={zeroPrecision ? 0 : undefined}
                     normalize
                 />
+            )}
+            {isDefined(minValue) && typeof minValue === 'string' && (
+                minValue
             )}
             {colors.map((color) => {
                 const value = legend[color];
@@ -93,14 +99,19 @@ function ChoroplethLegend(
                     >
                         <div
                             className={styles.color}
-                            style={{ backgroundColor: color }}
+                            style={{ backgroundColor: color, opacity }}
                         />
                         <div className={styles.value}>
-                            <Numeral
-                                value={value}
-                                precision={zeroPrecision ? 0 : undefined}
-                                normalize
-                            />
+                            {typeof value === 'number' && (
+                                <Numeral
+                                    value={value}
+                                    precision={zeroPrecision ? 0 : undefined}
+                                    normalize
+                                />
+                            )}
+                            {typeof value === 'string' && (
+                                value
+                            )}
                         </div>
                     </div>
                 );
