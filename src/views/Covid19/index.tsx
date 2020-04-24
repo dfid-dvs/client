@@ -104,12 +104,12 @@ interface AttributeOption {
 
 const attributeOptions: AttributeOption[] = [
     {
-        key: 'indicator',
-        label: 'Indicator',
+        key: 'fiveW',
+        label: 'Dfid Data',
     },
     {
-        key: 'fiveW',
-        label: 'FiveW',
+        key: 'indicator',
+        label: 'Indicator',
     },
 ];
 
@@ -537,12 +537,12 @@ function Covid19(props: Props) {
     const [
         selectedAttribute,
         setAttribute,
-    ] = React.useState<Attribute>('indicator');
+    ] = React.useState<Attribute>('fiveW');
 
     const [
         selectedFiveWOption,
         setFiveWOption,
-    ] = React.useState<CovidFiveWOptionKey | undefined>(undefined);
+    ] = React.useState<CovidFiveWOptionKey | undefined>('project');
 
     const indicatorListGetUrl = `${apiEndPoint}/indicator-list/?is_covid=1`;
     const [
