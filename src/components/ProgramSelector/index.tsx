@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { _cs } from '@togglecorp/fujs';
+import { _cs, isFalsy } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -95,12 +95,12 @@ function ProgramSelector(props: Props) {
     const [
         selectedSector,
         setSelectedSector,
-    ] = React.useState<string[] | undefined>(undefined);
+    ] = React.useState<string[]>([]);
 
     const [
         selectedMarker,
         setSelectedMarker,
-    ] = React.useState<string[] | undefined>(undefined);
+    ] = React.useState<string[]>([]);
 
     const programListGetUrl = `${apiEndPoint}/program/`;
     const [
@@ -195,13 +195,75 @@ function ProgramSelector(props: Props) {
         [markerOptions, subMarkerOptions],
     );
 
+    const filterPrograms: Program[] | undefined = useMemo(
+        () => {
+            if (!programListResponse || !programListResponse.results) {
+                return undefined;
+            }
+            if (selectedSector.length === 0 && selectedMarker.length === 0) {
+                return programListResponse?.results;
+            }
+
+            const { results: programs } = programListResponse;
+
+            const sectorKeys = sectorOptions
+                ?.filter(sector => selectedSector?.includes(sector.key))
+                .map(sector => sector.id);
+
+            const subSectorKeys = subSectorOptions
+                ?.filter(subSector => selectedSector?.includes(subSector.key))
+                .map(subSector => subSector.id);
+
+            const filteredProgramsBySector = programs.filter(program => (
+                program.sector.some(sector => sectorKeys?.includes(sector))
+            ));
+
+            const filteredProgramsBySubSector = programs.filter(program => (
+                program.subSector.some(subSector => subSectorKeys?.includes(subSector))
+            ));
+
+            const markerKeys = markerOptions
+                ?.filter(marker => selectedMarker?.includes(marker.key))
+                .map(marker => marker.id);
+
+            const subMarkerKeys = subMarkerOptions
+                ?.filter(subMarker => selectedMarker?.includes(subMarker.key))
+                .map(subMarker => subMarker.id);
+
+            const filteredProgramsByMarker = programs.filter(program => (
+                program.markerCategory.some(marker => markerKeys?.includes(marker))
+            ));
+
+            const filteredProgramsBySubMarker = programs.filter(program => (
+                program.markerValue.some(subMarker => subMarkerKeys?.includes(subMarker))
+            ));
+
+            return [
+                ...filteredProgramsBySector,
+                ...filteredProgramsBySubSector,
+                ...filteredProgramsByMarker,
+                ...filteredProgramsBySubMarker,
+            ];
+        },
+        [
+            selectedMarker,
+            selectedSector,
+            sectorOptions,
+            subSectorOptions,
+            markerOptions,
+            subMarkerOptions,
+            programListResponse,
+
+        ],
+    );
+
     return (
         <div className={_cs(className, styles.programSelector)}>
             <SelectInput
                 placeholder="Select a programme"
                 className={styles.indicatorSelectInput}
                 disabled={programListPending}
-                options={programListResponse?.results}
+                options={filterPrograms}
                 onChange={setSelectedProgram}
                 value={selectedProgram}
                 optionLabelSelector={programLabelSelector}
