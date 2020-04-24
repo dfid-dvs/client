@@ -1,21 +1,21 @@
 import React, { useCallback } from 'react';
+import { FiX } from 'react-icons/fi';
 import {
     _cs,
     isDefined,
 } from '@togglecorp/fujs';
 
-
 import MapSource from '#remap/MapSource';
 import MapLayer from '#remap/MapSource/MapLayer';
 import MapTooltip from '#remap/MapTooltip';
 
+import RegionSelector from '#components/RegionSelector';
 import SegmentInput from '#components/SegmentInput';
 import NavbarContext from '#components/NavbarContext';
 import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
-import Backdrop from '#components/Backdrop';
-import LoadingAnimation from '#components/LoadingAnimation';
 import ToggleButton from '#components/ToggleButton';
+import Button from '#components/Button';
 
 import IndicatorMap from '#components/IndicatorMap';
 import Stats from './Stats';
@@ -33,6 +33,13 @@ import {
 } from '#utils/constants';
 
 import styles from './styles.css';
+
+interface DesignatedHospital {
+    name: string;
+    category__name: string;
+    type__name: string;
+    contact_num: string;
+}
 
 // FIXME: use from typings
 interface MapState {
@@ -88,6 +95,7 @@ function TextOutput({
     );
 }
 
+/*
 interface NaxaHealthResource {
     id: number;
     ownership_display: string;
@@ -298,11 +306,6 @@ function CovidReadyTooltip({ feature }: CovidReadyToolTipProps) {
     );
 }
 
-interface HoveredPoint {
-    feature: mapboxgl.MapboxGeoJSONFeature;
-    lngLat: mapboxgl.LngLatLike;
-}
-
 type HealthResourcePointsProps = {
     covidReady: true;
     sourceKey: string;
@@ -320,7 +323,9 @@ function HealthResourcePoints(props: HealthResourcePointsProps) {
     } = props;
 
     // eslint-disable-next-line max-len
-    type HoveredFeature = GeoJSON.Feature<GeoJSON.Point, TrimmedNaxaHealthResource | TrimmedNepwareHealthResource>;
+    type HoveredFeature = GeoJSON.Feature<
+        GeoJSON.Point, TrimmedNaxaHealthResource | TrimmedNepwareHealthResource
+        >;
 
     const [
         hoveredPointProperties,
@@ -407,9 +412,6 @@ function HealthResourcePoints(props: HealthResourcePointsProps) {
                 layerKey="hospital-symbol"
                 layerOptions={{
                     type: 'symbol',
-                    paint: {
-                        'icon-color': 'red',
-                    },
                     layout: {
                         'icon-image': 'hospital-11',
                         'icon-allow-overlap': true,
@@ -443,6 +445,7 @@ function HealthResourcePoints(props: HealthResourcePointsProps) {
         </MapSource>
     );
 }
+*/
 
 interface Props {
     className?: string;
@@ -465,12 +468,25 @@ function Covid19(props: Props) {
     const [
         showHealthResource,
         setShowHealthResource,
-    ] = React.useState<boolean>(false);
+    ] = React.useState<boolean>(true);
 
+    const [
+        showHealthTravelTime,
+        setShowHealthTravelTime,
+    ] = React.useState<boolean>(true);
+
+
+    const [
+        selectedHospitals,
+        setSelectedHospitals,
+    ] = React.useState<string[]>([]);
+
+    /*
     const [
         showCovidReadyHealthResourceOnly,
         setShowCovidReadyHealthResourceOnly,
     ] = React.useState<boolean>(true);
+    */
 
     const indicatorListGetUrl = `${apiEndPoint}/indicator-list/?is_covid=1`;
     const [
@@ -478,6 +494,7 @@ function Covid19(props: Props) {
         indicatorListResponse,
     ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl);
 
+    /*
     const covidReadyHealthResourcesUrl = showHealthResource && showCovidReadyHealthResourceOnly
         ? 'https://covidapi.naxa.com.np/api/v1/health-facility2/'
         : undefined;
@@ -543,6 +560,7 @@ function Covid19(props: Props) {
 
         return geojson;
     }, [healthResourceList]);
+   */
 
     const [
         mapStateForIndicatorPending,
@@ -567,10 +585,12 @@ function Covid19(props: Props) {
         [mapStateForIndicator],
     );
 
+    /*
     const pending = mapStateForIndicatorPending
         || indicatorListPending
         || covidReadyHealthResourceListPending
         || healthResourceListPending;
+    */
 
     const selectedIndicatorDetails = React.useMemo(
         () => {
@@ -598,6 +618,55 @@ function Covid19(props: Props) {
         [indicatorListResponse],
     );
 
+    type SelectedHospital = GeoJSON.Feature<GeoJSON.Point, DesignatedHospital>;
+    const [
+        designatedHospitalProperties,
+        setDesignatedHospitalProperties,
+    ] = React.useState<{ lngLat: mapboxgl.LngLatLike; feature: SelectedHospital }>();
+
+    const handleDesignatedHospitalTooltipOpen = useCallback(
+        (
+            feature: mapboxgl.MapboxGeoJSONFeature,
+            lngLat: mapboxgl.LngLat,
+        ) => {
+            setDesignatedHospitalProperties({
+                lngLat,
+                feature: feature as unknown as SelectedHospital,
+            });
+            return true;
+        },
+        [],
+    );
+
+    const handleDesignatedHospitalTooltipHide = () => {
+        setDesignatedHospitalProperties(undefined);
+    };
+
+    const handleHospitalToggle = (
+        name: string | undefined,
+    ) => {
+        if (!name) {
+            return;
+        }
+        setSelectedHospitals((hospitals) => {
+            const hospitalIndex = hospitals.findIndex(hospital => hospital === name);
+            if (hospitalIndex !== -1) {
+                const newHospitals = [...hospitals];
+                newHospitals.splice(hospitalIndex, 1);
+                return newHospitals;
+            }
+            return [...hospitals, name];
+        });
+    };
+
+    const handleHospitalClick = (
+        feature: mapboxgl.MapboxGeoJSONFeature,
+    ) => {
+        const { properties: { name } } = feature as unknown as SelectedHospital;
+        handleHospitalToggle(name);
+        return true;
+    };
+
     return (
         <div className={_cs(
             styles.covid19,
@@ -615,34 +684,257 @@ function Covid19(props: Props) {
                 mapState={mapStateForIndicator}
                 mapPaint={mapPaint}
             >
-                {showHealthResource && showCovidReadyHealthResourceOnly && (
+                {showHealthResource && (
+                    <>
+                        <MapSource
+                            sourceKey="dry-designated-hospitals"
+                            sourceOptions={{
+                                type: 'vector',
+                                url: 'mapbox://togglecorp.1scxncx4',
+                            }}
+                        >
+                            <MapLayer
+                                layerKey="dry-designated-hospital-12hr-fill"
+                                layerOptions={{
+                                    type: 'fill',
+                                    'source-layer': 'dry_deshosp_12hr_sumsgeo',
+                                    paint: {
+                                        'fill-color': 'red',
+                                        'fill-opacity': 0.3,
+                                    },
+                                    filter: selectedHospitals.length <= 0
+                                        ? undefined
+                                        : ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                                    layout: showHealthTravelTime
+                                        ? { visibility: 'visible' }
+                                        : { visibility: 'none' },
+                                }}
+                                // onMouseEnter={() => {}}
+                            />
+                            {/*
+                            <MapLayer
+                                layerKey="dry-designated-hospital-12hr-line"
+                                layerOptions={{
+                                    type: 'line',
+                                    'source-layer': 'dry_deshosp_12hr_sumsgeo',
+                                    paint: {
+                                        'line-color': 'black',
+                                        'line-opacity': [
+                                            'case',
+                                            ['==', ['feature-state', 'hovered'], true],
+                                            1,
+                                            0,
+                                        ],
+                                    },
+                                }}
+                            />
+                            */}
+                            <MapLayer
+                                layerKey="dry-designated-hospital-8hr-fill"
+                                layerOptions={{
+                                    type: 'fill',
+                                    'source-layer': 'dry_deshosp_8hr_sumsgeo',
+                                    paint: {
+                                        'fill-color': 'yellow',
+                                        'fill-opacity': 0.3,
+                                    },
+                                    filter: selectedHospitals.length <= 0
+                                        ? undefined
+                                        : ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                                    layout: showHealthTravelTime
+                                        ? { visibility: 'visible' }
+                                        : { visibility: 'none' },
+                                }}
+                                // onMouseEnter={() => {}}
+                            />
+                            {/*
+                            <MapLayer
+                                layerKey="dry-designated-hospital-8hr-line"
+                                layerOptions={{
+                                    type: 'line',
+                                    'source-layer': 'dry_deshosp_8hr_sumsgeo',
+                                    paint: {
+                                        'line-color': 'black',
+                                        'line-opacity': [
+                                            'case',
+                                            ['==', ['feature-state', 'hovered'], true],
+                                            1,
+                                            0,
+                                        ],
+                                    },
+                                }}
+                            />
+                            */}
+                            <MapLayer
+                                layerKey="dry-designated-hospital-4hr-fill"
+                                layerOptions={{
+                                    type: 'fill',
+                                    'source-layer': 'dry_deshosp_4hr_sumsgeo',
+                                    paint: {
+                                        'fill-color': 'green',
+                                        'fill-opacity': 0.3,
+                                    },
+                                    filter: selectedHospitals.length <= 0
+                                        ? undefined
+                                        : ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                                    layout: showHealthTravelTime
+                                        ? { visibility: 'visible' }
+                                        : { visibility: 'none' },
+                                }}
+                                // onMouseEnter={() => {}}
+                            />
+                            {/*
+                            <MapLayer
+                                layerKey="dry-designated-hospital-4hr-line"
+                                layerOptions={{
+                                    type: 'line',
+                                    'source-layer': 'dry_deshosp_4hr_sumsgeo',
+                                    paint: {
+                                        'line-color': 'black',
+                                        'line-opacity': [
+                                            'case',
+                                            ['==', ['feature-state', 'hovered'], true],
+                                            1,
+                                            0,
+                                        ],
+                                    },
+                                }}
+                            />
+                            */}
+                        </MapSource>
+                        <MapSource
+                            sourceKey="hospitals"
+                            sourceOptions={{
+                                type: 'vector',
+                                url: 'mapbox://togglecorp.7sfpl5br',
+                            }}
+                        >
+                            <MapLayer
+                                layerKey="covid-designated-hospitals-circle"
+                                layerOptions={{
+                                    type: 'circle',
+                                    'source-layer': 'coviddesignatedhospitalsgeo',
+                                    paint: {
+                                        'circle-radius': 9,
+                                        'circle-color': '#fff',
+                                        'circle-stroke-color': '#a72828',
+                                        'circle-stroke-width': [
+                                            'case',
+                                            ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                                            2,
+                                            0,
+                                        ],
+                                        'circle-opacity': [
+                                            'case',
+                                            ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                                            0.9,
+                                            0.7,
+                                        ],
+                                    },
+                                }}
+                                onMouseEnter={handleDesignatedHospitalTooltipOpen}
+                                onMouseLeave={handleDesignatedHospitalTooltipHide}
+                                onClick={handleHospitalClick}
+                            />
+                            <MapLayer
+                                layerKey="covid-designated-hospitals-symbol"
+                                layerOptions={{
+                                    type: 'symbol',
+                                    'source-layer': 'coviddesignatedhospitalsgeo',
+                                    paint: {
+                                        'icon-color': '#a72828',
+                                    },
+                                    layout: {
+                                        'icon-image': 'hospital-11',
+                                        'icon-allow-overlap': true,
+                                    },
+                                }}
+                            />
+                            {designatedHospitalProperties && (
+                                <MapTooltip
+                                    coordinates={designatedHospitalProperties.lngLat}
+                                    tooltipOptions={tooltipOptions}
+                                    trackPointer
+                                >
+                                    <>
+                                        <h3>
+                                            {designatedHospitalProperties.feature.properties.name}
+                                        </h3>
+                                        <TextOutput
+                                            label="Category"
+                                            // eslint-disable-next-line max-len
+                                            value={designatedHospitalProperties.feature.properties.category__name}
+                                        />
+                                        <TextOutput
+                                            label="Type"
+                                            // eslint-disable-next-line max-len
+                                            value={designatedHospitalProperties.feature.properties.type__name}
+                                        />
+                                        <TextOutput
+                                            label="Contact"
+                                            // eslint-disable-next-line max-len
+                                            value={designatedHospitalProperties.feature.properties.contact_num}
+                                        />
+                                    </>
+                                </MapTooltip>
+                            )}
+                        </MapSource>
+                    </>
+                )}
+                {/* showHealthResource && showCovidReadyHealthResourceOnly && (
                     <HealthResourcePoints
                         covidReady
                         sourceKey={`covid-ready-${regionLevel}`}
                         data={covidReadyHealthResourcePointCollection}
                     />
-                )}
-                {showHealthResource && !showCovidReadyHealthResourceOnly && (
+                ) */}
+                {/* showHealthResource && !showCovidReadyHealthResourceOnly && (
                     <HealthResourcePoints
                         covidReady={false}
                         sourceKey={`all-${regionLevel}`}
                         data={healthResourcePointCollection}
                     />
-                )}
+                ) */}
             </IndicatorMap>
             <Stats className={styles.stats} />
             <div className={styles.mapStyleConfigContainer}>
+                <RegionSelector searchHidden />
                 <ToggleButton
                     label="Show health facilities"
                     value={showHealthResource}
                     onChange={setShowHealthResource}
                 />
+                {selectedHospitals.length > 0 && (
+                    <div className={styles.hospitals}>
+                        {selectedHospitals.map(hospital => (
+                            <Button
+                                className={styles.button}
+                                key={hospital}
+                                name={hospital}
+                                onClick={handleHospitalToggle}
+                                icons={(
+                                    <FiX />
+                                )}
+                            >
+                                {hospital}
+                            </Button>
+                        ))}
+                    </div>
+                )}
+                <ToggleButton
+                    disabled={!showHealthResource}
+                    label="Show travel time"
+                    value={showHealthTravelTime}
+                    onChange={setShowHealthTravelTime}
+                />
+                {/*
                 <ToggleButton
                     disabled={!showHealthResource}
                     label="Show COVID ready health facilities only"
                     value={showCovidReadyHealthResourceOnly}
                     onChange={setShowCovidReadyHealthResourceOnly}
                 />
+                */}
                 <div className={styles.layerSelection}>
                     <h4 className={styles.heading}>
                         Indicator

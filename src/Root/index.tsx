@@ -5,10 +5,12 @@ import App from './App';
 interface Props {
 }
 
-const Root = (props: Props) => (
-    <BrowserRouter>
-        <App {...props} />
-    </BrowserRouter>
-);
+function Root(props: Props) {
+    return (
+        <BrowserRouter>
+            <App {...props} />
+        </BrowserRouter>
+    );
+}
 
 export default Root;

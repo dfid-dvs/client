@@ -8,7 +8,7 @@ export const defaultBounds: [number, number, number, number] = [
 ];
 
 export const mapOptions: Omit<mapboxgl.MapboxOptions, 'style' | 'container'> = {
-    logoPosition: 'top-left',
+    logoPosition: 'bottom-right',
     minZoom: 5,
     zoom: 3,
     center: defaultCenter,

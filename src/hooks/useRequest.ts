@@ -22,6 +22,8 @@ function useRequest<T>(
             }
 
             setPending(true);
+            setResponse(undefined);
+
             const controller = new AbortController();
 
             async function fetchResource(myUrl: string, myOptions: object | undefined) {

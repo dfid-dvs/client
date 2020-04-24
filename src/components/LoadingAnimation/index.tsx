@@ -7,7 +7,7 @@ export interface Props {
     className?: string;
 }
 
-function RawInput(props: Props) {
+function LoadingAnimation(props: Props) {
     const { className } = props;
 
     return (
@@ -19,4 +19,4 @@ function RawInput(props: Props) {
     );
 }
 
-export default RawInput;
+export default LoadingAnimation;

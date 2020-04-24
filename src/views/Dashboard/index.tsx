@@ -1,6 +1,7 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
+import RegionSelector from '#components/RegionSelector';
 import NavbarContext from '#components/NavbarContext';
 import SegmentInput from '#components/SegmentInput';
 import SelectInput from '#components/SelectInput';
@@ -78,12 +79,12 @@ interface AttributeOption {
 
 const attributeOptions: AttributeOption[] = [
     {
-        key: 'indicator',
-        label: 'Indicator',
+        key: 'fiveW',
+        label: 'DFID Data',
     },
     {
-        key: 'fiveW',
-        label: 'FiveW',
+        key: 'indicator',
+        label: 'Indicator',
     },
 ];
 
@@ -106,12 +107,12 @@ const Dashboard = (props: Props) => {
     const [
         selectedFiveWOption,
         setFiveWOption,
-    ] = React.useState<FiveWOptionKey | undefined>(undefined);
+    ] = React.useState<FiveWOptionKey | undefined>('allocatedBudget');
 
     const [
         selectedAttribute,
         setAttribute,
-    ] = React.useState<'indicator' | 'fiveW'>('indicator');
+    ] = React.useState<'indicator' | 'fiveW'>('fiveW');
 
     const indicatorListGetUrl = `${apiEndPoint}/indicator-list/`;
     const [
@@ -150,7 +151,9 @@ const Dashboard = (props: Props) => {
         [mapState],
     );
 
+    /*
     const handleAttributeOption = (value: Attribute) => {
+
         if (value === 'indicator') {
             setSelectedIndicator(undefined);
         }
@@ -159,6 +162,7 @@ const Dashboard = (props: Props) => {
         }
         setAttribute(value);
     };
+    */
 
     const pending = mapStatePending || indicatorListPending;
 
@@ -180,9 +184,10 @@ const Dashboard = (props: Props) => {
                 mapPaint={mapPaint}
             />
             <div className={styles.mapStyleConfigContainer}>
+                <RegionSelector />
                 <SegmentInput
                     options={attributeOptions}
-                    onChange={handleAttributeOption}
+                    onChange={setAttribute}
                     value={selectedAttribute}
                     optionLabelSelector={attributeLabelSelector}
                     optionKeySelector={attributeKeySelector}

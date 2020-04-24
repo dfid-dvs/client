@@ -35,6 +35,10 @@
             margin: var(--spacing-medium);
             margin-top: 0;
         }
+        .five-w-segment-input {
+            margin: var(--spacing-medium);
+            margin-top: 0;
+        }
 
         .legend {
             margin: var(--spacing-medium);

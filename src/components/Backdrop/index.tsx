@@ -9,7 +9,6 @@ export interface Props {
     children?: React.ReactNode;
 }
 
-
 function Backdrop(props: Props) {
     const {
         className,
@@ -19,15 +18,18 @@ function Backdrop(props: Props) {
 
     const ref = React.useRef<HTMLDivElement>(null);
 
-    React.useLayoutEffect(() => {
-        const {
-            current: el,
-        } = ref;
-        if (parentRef && parentRef.current && el) {
-            const parentBCR = parentRef.current.getBoundingClientRect();
-            el.style.width = `${parentBCR.width}px`;
-        }
-    }, [parentRef]);
+    React.useLayoutEffect(
+        () => {
+            const {
+                current: el,
+            } = ref;
+            if (parentRef && parentRef.current && el) {
+                const parentBCR = parentRef.current.getBoundingClientRect();
+                el.style.width = `${parentBCR.width}px`;
+            }
+        },
+        [parentRef],
+    );
 
     return (
         <div

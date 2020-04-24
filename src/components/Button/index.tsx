@@ -32,6 +32,9 @@ export type ButtonVariant = (
     | 'warning'
 );
 
+// TODO:
+// 1. implement small, medium, big sizes
+// 2. implement outline button
 export interface Props extends RawButtonProps {
     variant: ButtonVariant;
     children?: React.ReactNode;
@@ -65,12 +68,6 @@ function Button(props: Props) {
         transparent && 'transparent',
         transparent && styles.transparent,
     );
-
-    // TODO:
-    // 1. implement pending state
-    // 2. implement icon support
-    // 3. implement small, medium, big sizes
-    // 4. implement outline button
 
     return (
         <RawButton

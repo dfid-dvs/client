@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import { getFloatPlacement } from '#utils/common';
@@ -54,20 +54,28 @@ function DropdownMenu(props: Props) {
 
     const buttonRef = React.useRef(null);
     const dropdownRef = React.useRef(null);
+
     const [showDropdown, setShowDropdown] = React.useState(false);
 
     useBlurEffect(showDropdown, setShowDropdown, dropdownRef, buttonRef);
+
+    const handleShowDropdown = useCallback(
+        () => {
+            setShowDropdown(true);
+        },
+        [],
+    );
 
     return (
         <>
             <RawButton
                 className={_cs(className, styles.dropdownMenu)}
                 elementRef={buttonRef}
-                onClick={() => { setShowDropdown(true); }}
+                onClick={handleShowDropdown}
             >
                 { label }
             </RawButton>
-            { showDropdown && (
+            {showDropdown && (
                 <Portal>
                     <Dropdown
                         elementRef={dropdownRef}

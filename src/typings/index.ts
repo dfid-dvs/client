@@ -11,14 +11,11 @@ export interface ButtonClickEvent {
 }
 */
 
-export type ExploreOption = 'programs' | 'regions';
 export type RegionLevelOption = 'province' | 'district' | 'municipality';
 
 export type AgeGroupOption = 'belowFourteen' | 'fifteenToFourtyNine' | 'aboveFifty';
 
 export interface NavbarContextProps {
-    exploreBy: ExploreOption;
-    setExploreBy: (v: ExploreOption) => void;
     regionLevel: RegionLevelOption;
     setRegionLevel: (v: RegionLevelOption) => void;
 }
@@ -46,4 +43,4 @@ export interface FiveW {
     totalBeneficiary: number;
 }
 
-export type FiveWOptionKey = Extract<keyof FiveW, 'allocatedBudget' | 'maleBeneficiary' | 'femaleBeneficiary' | 'totalBeneficiary'>;
+export type FiveWOptionKey = 'allocatedBudget' | 'maleBeneficiary' | 'femaleBeneficiary' | 'totalBeneficiary';

@@ -33,9 +33,11 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
 
     return (
         <div className={_cs(className, styles.segmentInput)}>
-            <div className={styles.inputLabel}>
-                { label }
-            </div>
+            {label && (
+                <div className={styles.inputLabel}>
+                    { label }
+                </div>
+            )}
             <div className={styles.inputContainer}>
                 { options.map((option) => {
                     const key = optionKeySelector(option);
