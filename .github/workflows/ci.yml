@@ -49,8 +49,8 @@ jobs:
       - name: Run yarn build (also test)
         run: NODE_OPTIONS=--max_old_space_size=4096 yarn build
         env:
-          REACT_APP_API_SERVER_URL: http://139.59.67.104:8060
-          REACT_APP_MAPBOX_ACCESS_TOKEN: pk.eyJ1IjoiYWRpdHlha2hhdHJpIiwiYSI6ImNqbHh0eHRnZzAzN3YzdnBpeWtua3l0dHIifQ.YVzzJ9GDQKAXtW3MyqnfSQ
+          REACT_APP_API_SERVER_URL: ${{ secrets.API_SERVER_URL }}
+          REACT_APP_MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN  }}
 
       - name: Save build files as artifact
         uses: actions/upload-artifact@v1
