@@ -43,4 +43,46 @@ export interface FiveW {
     totalBeneficiary: number;
 }
 
-export type FiveWOptionKey = 'allocatedBudget' | 'maleBeneficiary' | 'femaleBeneficiary' | 'totalBeneficiary';
+export interface CovidFiveW {
+    id: number;
+    partner: string;
+    supplierCode: string;
+    program?: string;
+    projectName: string;
+    sector: string;
+    provinceCode: string;
+    districtCode: string;
+    municipalityCode: string;
+}
+
+export type FiveWOptionKey = Extract<keyof FiveW, 'allocatedBudget' | 'maleBeneficiary' | 'femaleBeneficiary' | 'totalBeneficiary'>;
+
+export type CovidFiveWOptionKey = Extract<keyof CovidFiveW, 'projectName' | 'sector'>;
+
+export type CovidFiveWRegionKey = Extract<keyof CovidFiveW, 'provinceCode' | 'districtCode' | 'municipalityCode'>;
+
+export interface Province {
+    id: number;
+    name: string;
+    code: string;
+    boundary: string;
+}
+export interface District {
+    id: number;
+    provinceId: number;
+    provinceName: string;
+    name: string;
+    code: string;
+    nCode: number;
+}
+
+export interface Municipality {
+    id: number;
+    name: string;
+    provinceId: number;
+    districtId: number;
+    hlcitCode: string;
+    gnTypeNp: string;
+    code: string;
+    population: number;
+}
