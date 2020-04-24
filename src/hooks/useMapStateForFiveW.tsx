@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { isDefined } from '@togglecorp/fujs';
 import {
     MultiResponse,
     RegionLevelOption,
@@ -15,22 +14,9 @@ function useMapStateForFiveW(
     regionLevel: RegionLevelOption,
     selectedFiveWOption: FiveWOptionKey | undefined,
 ): [boolean, MapState[]] {
-    let regionFiveWGetUrl;
-    if (isDefined(selectedFiveWOption)) {
-        switch (regionLevel) {
-            case 'municipality':
-                regionFiveWGetUrl = `${apiEndPoint}/fivew-municipality/`;
-                break;
-            case 'district':
-                regionFiveWGetUrl = `${apiEndPoint}/fivew-district/`;
-                break;
-            case 'province':
-                regionFiveWGetUrl = `${apiEndPoint}/fivew-province/`;
-                break;
-            default:
-                break;
-        }
-    }
+    const regionFiveWGetUrl = selectedFiveWOption
+        ? `${apiEndPoint}/fivew-${regionLevel}/`
+        : undefined;
 
     const [
         regionFiveWPending,

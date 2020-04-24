@@ -6,11 +6,17 @@
     position: fixed;
     top: 50%;
     left: 50%;
+    border: var(--width-separator-thin) solid var(--color-separator);
     background-color: #fff;
     padding: 10px;
     max-width: 90vw;
     max-height: 50vh;
     overflow: auto;
+
+    .message {
+        padding: 6px;
+        color: var(--color-text-disabled);
+    }
 
     .option {
         display: block;
@@ -18,6 +24,10 @@
         width: 100%;
         text-align: left;
         /* color: rgba(0, 0, 0, .5); */
+
+        &.selected {
+            background-color: var(--color-background-accent-hint);
+        }
 
         &:hover {
             background-color: var(--color-background-accent-hint);

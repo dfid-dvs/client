@@ -31,6 +31,18 @@
             padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
         }
 
+        .hospitals {
+            display: flex;
+            flex-wrap: wrap;
+            padding: var(--spacing-extra-small) var(--spacing-small);
+
+            .button {
+                margin: var(--spacing-extra-small);
+                padding: var(--spacing-extra-small);
+                font-size: var(--font-size-small);
+            }
+        }
+
         .layer-selection {
             margin-top: var(--spacing-medium);
 

@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { IoIosSearch } from 'react-icons/io';
 import {
     _cs,
     caseInsensitiveSubmatch,
     compareStringSearch,
-    listToMap,
-    isDefined,
     isNotDefined,
+    isFalsyString,
+    isDefined,
 } from '@togglecorp/fujs';
 
 import { getFloatPlacement } from '#utils/common';
@@ -77,23 +77,27 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
     const dropdownRef = React.useRef<HTMLDivElement>(null);
 
     const [showDropdown, setShowDropdown] = React.useState(false);
-    const [searchValue, setSearchValue] = React.useState('');
-    // FIXME: set inputValue on options change or value change
-    const [inputValue, setInputValue] = React.useState(() => {
-        if (isNotDefined(value)) {
-            return '';
-        }
-        const option = options?.find(o => optionKeySelector(o) === value);
-        if (isNotDefined(option)) {
-            return '';
-        }
-        return optionLabelSelector(option);
-    });
+    const [searchValue, setSearchValue] = React.useState<string | undefined>();
+
+    const inputValue = useMemo(
+        () => {
+            if (isNotDefined(value)) {
+                return '';
+            }
+            const option = options?.find(o => optionKeySelector(o) === value);
+            if (isNotDefined(option)) {
+                return '';
+            }
+            return optionLabelSelector(option);
+        },
+        [optionKeySelector, optionLabelSelector, options, value],
+    );
 
     const hideDropdownOnBlur = React.useCallback(
         (isInsideClick: boolean) => {
             if (!isInsideClick) {
                 setShowDropdown(false);
+                setSearchValue(undefined);
             }
         },
         [setShowDropdown],
@@ -104,7 +108,10 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
     const filteredOptions = React.useMemo(
         () => {
             if (!showDropdown) {
-                return [];
+                return undefined;
+            }
+            if (isFalsyString(searchValue)) {
+                return options;
             }
 
             const newOptions = options
@@ -130,12 +137,12 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                 return;
             }
 
-            setInputValue(optionLabelSelector(option));
             setShowDropdown(false);
+            setSearchValue(undefined);
+
             onChange(optionKeySelector(option));
-            setSearchValue('');
         },
-        [onChange, options, optionKeySelector, optionLabelSelector],
+        [onChange, options, optionKeySelector],
     );
 
     const handleInputClick = React.useCallback(
@@ -151,9 +158,10 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
     );
 
     const handleInputValueChange = React.useCallback(
-        (newInputValue) => {
-            setInputValue(newInputValue);
+        (newInputValue: string) => {
             setSearchValue(newInputValue);
+
+            setShowDropdown(true);
         },
         [],
     );
@@ -165,7 +173,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                 elementRef={inputContainerRef}
                 inputRef={inputElementRef}
                 onClick={handleInputClick}
-                value={inputValue}
+                value={isDefined(searchValue) ? searchValue : inputValue}
                 onChange={handleInputValueChange}
                 placeholder={placeholder}
                 disabled={disabled}
@@ -178,7 +186,12 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                         className={dropdownContainerClassName}
                         parentRef={inputContainerRef}
                     >
-                        { filteredOptions?.map((d) => {
+                        {(!filteredOptions || filteredOptions.length <= 0) && (
+                            <div className={styles.message}>
+                                No option available
+                            </div>
+                        )}
+                        {filteredOptions?.map((d) => {
                             const key = optionKeySelector(d);
                             const selected = key === value;
                             // FIXME: style disabled item differently
@@ -188,7 +201,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                             return (
                                 <RawButton
                                     key={key}
-                                    className={styles.option}
+                                    className={_cs(styles.option, selected && styles.selected)}
                                     name={String(key)}
                                     onClick={handleOptionClick}
                                     disabled={disabled || selected}

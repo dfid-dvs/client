@@ -30,6 +30,8 @@ interface Props {
         lnglat: mapboxgl.LngLat,
         point: mapboxgl.Point,
     ) => boolean | undefined;
+    visible?: boolean;
+
     // FIXME: use type from typings
     mapState: { id: number; value: number }[];
     mapPaint: mapboxgl.FillPaint;
@@ -42,6 +44,7 @@ function MunicipalityLayer(props: Props) {
         onClick,
         mapState,
         mapPaint,
+        visible,
     } = props;
 
     return (
@@ -52,6 +55,9 @@ function MunicipalityLayer(props: Props) {
                     type: 'fill',
                     'source-layer': 'palikageo',
                     paint: mapPaint,
+                    layout: visible
+                        ? { visibility: 'visible' }
+                        : { visibility: 'none' },
                 }}
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
@@ -72,6 +78,9 @@ function MunicipalityLayer(props: Props) {
                             0.1,
                         ],
                     },
+                    layout: visible
+                        ? { visibility: 'visible' }
+                        : { visibility: 'none' },
                 }}
             />
             <MapState

@@ -98,33 +98,30 @@ function IndicatorMap(props: Props) {
                 sourceKey="nepal"
                 sourceOptions={{
                     type: 'vector',
-                    url: 'mapbox://adityakhatri.4p8awf71',
+                    url: 'mapbox://togglecorp.8cq1z31t',
                 }}
             >
-                {regionLevel === 'municipality' && (
-                    <MunicipalityLayer
-                        onMouseEnter={handleMapRegionMouseEnter}
-                        onMouseLeave={handleMapRegionMouseLeave}
-                        mapState={mapState}
-                        mapPaint={mapPaint}
-                    />
-                )}
-                {regionLevel === 'district' && (
-                    <DistrictLayer
-                        onMouseEnter={handleMapRegionMouseEnter}
-                        onMouseLeave={handleMapRegionMouseLeave}
-                        mapState={mapState}
-                        mapPaint={mapPaint}
-                    />
-                )}
-                {regionLevel === 'province' && (
-                    <ProvinceLayer
-                        onMouseEnter={handleMapRegionMouseEnter}
-                        onMouseLeave={handleMapRegionMouseLeave}
-                        mapState={mapState}
-                        mapPaint={mapPaint}
-                    />
-                )}
+                <MunicipalityLayer
+                    visible={regionLevel === 'municipality'}
+                    onMouseEnter={handleMapRegionMouseEnter}
+                    onMouseLeave={handleMapRegionMouseLeave}
+                    mapState={mapState}
+                    mapPaint={mapPaint}
+                />
+                <DistrictLayer
+                    visible={regionLevel === 'district'}
+                    onMouseEnter={handleMapRegionMouseEnter}
+                    onMouseLeave={handleMapRegionMouseLeave}
+                    mapState={mapState}
+                    mapPaint={mapPaint}
+                />
+                <ProvinceLayer
+                    visible={regionLevel === 'province'}
+                    onMouseEnter={handleMapRegionMouseEnter}
+                    onMouseLeave={handleMapRegionMouseLeave}
+                    mapState={mapState}
+                    mapPaint={mapPaint}
+                />
                 {!hideTooltip && hoveredRegionProperties && hoveredRegionProperties.lngLat && (
                     <MapTooltip
                         coordinates={hoveredRegionProperties.lngLat}

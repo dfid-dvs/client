@@ -23,7 +23,7 @@ interface Props {
     tooltip?: string;
     readOnly?: boolean;
 
-    // NOTE: if value is false and indetermiate is true, show a filled checkbox
+    // NOTE: if value is false and indeterminate is true, show a filled checkbox
     indeterminate?: boolean;
 }
 

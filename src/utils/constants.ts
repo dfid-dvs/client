@@ -8,7 +8,7 @@ export const defaultBounds: [number, number, number, number] = [
 ];
 
 export const mapOptions: Omit<mapboxgl.MapboxOptions, 'style' | 'container'> = {
-    logoPosition: 'top-left',
+    logoPosition: 'bottom-right',
     minZoom: 5,
     zoom: 3,
     center: defaultCenter,
@@ -31,4 +31,4 @@ export const colorDomain: string[] = [
     '#004c7d',
 ];
 
-export const apiEndPoint = 'https://dvsnaxa.naxa.com.np/api/v1/core';
+export const apiEndPoint = process.env.REACT_APP_API_SERVER_URL || 'https://dvsnaxa.naxa.com.np/api/v1/core';

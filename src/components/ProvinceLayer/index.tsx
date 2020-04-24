@@ -15,6 +15,7 @@ interface Props {
         lnglat: mapboxgl.LngLat,
         point: mapboxgl.Point,
     ) => boolean | undefined;
+    visible?: boolean;
     // FIXME: use type from typings
     mapState: { id: number; value: number }[];
     mapPaint: mapboxgl.FillPaint;
@@ -27,6 +28,7 @@ function ProvinceLayer(props: Props) {
         onClick,
         mapState,
         mapPaint,
+        visible,
     } = props;
 
     return (
@@ -37,6 +39,9 @@ function ProvinceLayer(props: Props) {
                     type: 'fill',
                     'source-layer': 'provincegeo',
                     paint: mapPaint,
+                    layout: visible
+                        ? { visibility: 'visible' }
+                        : { visibility: 'none' },
                 }}
                 onMouseEnter={onMouseEnter}
                 onMouseLeave={onMouseLeave}
@@ -57,6 +62,9 @@ function ProvinceLayer(props: Props) {
                             0.3,
                         ],
                     },
+                    layout: visible
+                        ? { visibility: 'visible' }
+                        : { visibility: 'none' },
                 }}
             />
             <MapState

@@ -30,7 +30,9 @@ function useBlurEffect(
 
             document.addEventListener('click', handleDocumentClick);
 
-            return () => { document.removeEventListener('click', handleDocumentClick); };
+            return () => {
+                document.removeEventListener('click', handleDocumentClick);
+            };
         },
         [shouldWatch, callback, elementRef, parentRef],
     );

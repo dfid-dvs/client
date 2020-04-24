@@ -56,7 +56,7 @@ function Numeral({
     );
 }
 
-const ChoroplethLegend = (
+function ChoroplethLegend(
     {
         minValue,
         legend,
@@ -68,38 +68,45 @@ const ChoroplethLegend = (
         className?: string;
         zeroPrecision?: boolean;
     },
-) => (
-    <div className={_cs(className, styles.choroplethLegend)}>
-        { isDefined(minValue) && (
-            <Numeral
-                className={styles.min}
-                value={minValue}
-                precision={zeroPrecision ? 0 : undefined}
-                normalize
-            />
-        )}
-        { Object.keys(legend).map((color) => {
-            const value = legend[color];
-            return (
-                <div
-                    className={styles.legendElement}
-                    key={color}
-                >
+) {
+    const colors = Object.keys(legend);
+    if (colors.length <= 0) {
+        return null;
+    }
+
+    return (
+        <div className={_cs(className, styles.choroplethLegend)}>
+            { isDefined(minValue) && (
+                <Numeral
+                    className={styles.min}
+                    value={minValue}
+                    precision={zeroPrecision ? 0 : undefined}
+                    normalize
+                />
+            )}
+            {colors.map((color) => {
+                const value = legend[color];
+                return (
                     <div
-                        className={styles.color}
-                        style={{ backgroundColor: color }}
-                    />
-                    <div className={styles.value}>
-                        <Numeral
-                            value={value}
-                            precision={zeroPrecision ? 0 : undefined}
-                            normalize
+                        className={styles.legendElement}
+                        key={color}
+                    >
+                        <div
+                            className={styles.color}
+                            style={{ backgroundColor: color }}
                         />
+                        <div className={styles.value}>
+                            <Numeral
+                                value={value}
+                                precision={zeroPrecision ? 0 : undefined}
+                                normalize
+                            />
+                        </div>
                     </div>
-                </div>
-            );
-        })}
-    </div>
-);
+                );
+            })}
+        </div>
+    );
+}
 
 export default ChoroplethLegend;
