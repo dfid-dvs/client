@@ -22,8 +22,9 @@ import Stats from './Stats';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
+import useMapStateForCovidFiveW from '#hooks/useMapStateForCovidFiveW';
 
-import { AgeGroupOption, MultiResponse } from '#types';
+import { AgeGroupOption, MultiResponse, CovidFiveWOptionKey } from '#types';
 
 import { generateChoroplethMapPaintAndLegend } from '#utils/common';
 import {
@@ -94,6 +95,46 @@ function TextOutput({
         </div>
     );
 }
+type Attribute = 'indicator' | 'fiveW';
+
+interface AttributeOption {
+    key: Attribute;
+    label: string;
+}
+
+const attributeOptions: AttributeOption[] = [
+    {
+        key: 'fiveW',
+        label: 'Dfid Data',
+    },
+    {
+        key: 'indicator',
+        label: 'Indicator',
+    },
+];
+
+const attributeKeySelector = (option: AttributeOption) => option.key;
+const attributeLabelSelector = (option: AttributeOption) => option.label;
+
+interface FiveWOption {
+    key: CovidFiveWOptionKey;
+    label: string;
+}
+
+
+const fiveWOptions: FiveWOption[] = [
+    {
+        key: 'projectName',
+        label: 'Project',
+    },
+    {
+        key: 'sector',
+        label: 'Sector',
+    },
+];
+
+const fiveWKeySelector = (option: FiveWOption) => option.key;
+const fiveWLabelSelector = (option: FiveWOption) => option.label;
 
 /*
 interface NaxaHealthResource {
@@ -306,6 +347,11 @@ function CovidReadyTooltip({ feature }: CovidReadyToolTipProps) {
     );
 }
 
+interface HoveredPoint {
+    feature: mapboxgl.MapboxGeoJSONFeature;
+    lngLat: mapboxgl.LngLatLike;
+}
+
 type HealthResourcePointsProps = {
     covidReady: true;
     sourceKey: string;
@@ -488,6 +534,16 @@ function Covid19(props: Props) {
     ] = React.useState<boolean>(true);
     */
 
+    const [
+        selectedAttribute,
+        setAttribute,
+    ] = React.useState<Attribute>('fiveW');
+
+    const [
+        selectedFiveWOption,
+        setFiveWOption,
+    ] = React.useState<CovidFiveWOptionKey | undefined>('project');
+
     const indicatorListGetUrl = `${apiEndPoint}/indicator-list/?is_covid=1`;
     const [
         indicatorListPending,
@@ -567,13 +623,21 @@ function Covid19(props: Props) {
         mapStateForIndicator,
     ] = useMapStateForIndicator(regionLevel, selectedIndicator, selectedAgeGroup);
 
+    const [
+        mapStateForFiveWPending,
+        mapStateForFiveW,
+    ] = useMapStateForCovidFiveW(regionLevel, selectedFiveWOption);
+
+    const mapStatePending = mapStateForIndicatorPending || mapStateForFiveWPending;
+    const mapState = selectedAttribute === 'indicator' ? mapStateForIndicator : mapStateForFiveW;
+
     const {
         paint: mapPaint,
         legend: mapLegend,
         min: dataMinValue,
     } = React.useMemo(
         () => {
-            const valueList = mapStateForIndicator.map(d => d.value);
+            const valueList = mapState.map(d => d.value);
             const min = Math.min(...valueList);
             const max = Math.max(...valueList);
 
@@ -582,15 +646,11 @@ function Covid19(props: Props) {
                 ...generateChoroplethMapPaintAndLegend(colorDomain, min, max),
             };
         },
-        [mapStateForIndicator],
+        [mapState],
     );
 
-    /*
-    const pending = mapStateForIndicatorPending
-        || indicatorListPending
-        || covidReadyHealthResourceListPending
-        || healthResourceListPending;
-    */
+    const pending = mapStatePending
+        || indicatorListPending;
 
     const selectedIndicatorDetails = React.useMemo(
         () => {
@@ -675,13 +735,13 @@ function Covid19(props: Props) {
         >
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
-                    <LoadingAnimation />
+                <LoadingAnimation />
                 </Backdrop>
-            ) */}
+                ) */}
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
-                mapState={mapStateForIndicator}
+                mapState={mapState}
                 mapPaint={mapPaint}
             >
                 {showHealthResource && (
@@ -936,19 +996,36 @@ function Covid19(props: Props) {
                 />
                 */}
                 <div className={styles.layerSelection}>
-                    <h4 className={styles.heading}>
-                        Indicator
-                    </h4>
-                    <SelectInput
-                        placeholder="Select an indicator"
-                        className={styles.indicatorSelectInput}
-                        disabled={indicatorListPending}
-                        options={indicatorOptions}
-                        onChange={setSelectedIndicator}
-                        value={selectedIndicator}
-                        optionLabelSelector={indicatorLabelSelector}
-                        optionKeySelector={indicatorKeySelector}
+                    <SegmentInput
+                        options={attributeOptions}
+                        onChange={setAttribute}
+                        value={selectedAttribute}
+                        optionLabelSelector={attributeLabelSelector}
+                        optionKeySelector={attributeKeySelector}
                     />
+                    { selectedAttribute === 'indicator' && (
+                        <SelectInput
+                            placeholder="Select an indicator"
+                            className={styles.indicatorSelectInput}
+                            disabled={indicatorListPending}
+                            options={indicatorOptions}
+                            onChange={setSelectedIndicator}
+                            value={selectedIndicator}
+                            optionLabelSelector={indicatorLabelSelector}
+                            optionKeySelector={indicatorKeySelector}
+                        />
+                    )}
+                    { selectedAttribute === 'fiveW' && (
+                        <SelectInput
+                            label="Selected attribute"
+                            className={styles.fiveWSegmentInput}
+                            options={fiveWOptions}
+                            onChange={setFiveWOption}
+                            value={selectedFiveWOption}
+                            optionLabelSelector={fiveWLabelSelector}
+                            optionKeySelector={fiveWKeySelector}
+                        />
+                    )}
                     { selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
                         <div className={styles.abstract}>
                             { selectedIndicatorDetails.abstract }
