@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: toggle-corp/re-map
-          ref: develop
+          ref: develop-covid
           path: src/vendor/re-map
 
       - uses: actions/setup-node@v1

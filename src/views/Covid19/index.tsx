@@ -35,6 +35,18 @@ import {
 
 import styles from './styles.css';
 
+const fourHourColor = 'green';
+const fourHourDarkColor = '#387002';
+
+const eightHourColor = 'yellow';
+const eightHourDarkColor = '#c67100';
+
+const twelveHourColor = 'red';
+const twelveHourDarkColor = '#9a0007';
+
+const uncoveredColor = '#455a64';
+const uncoveredDarkColor = '#1c313a';
+
 interface DesignatedHospital {
     name: string;
     category__name: string;
@@ -120,7 +132,6 @@ interface FiveWOption {
     key: CovidFiveWOptionKey;
     label: string;
 }
-
 
 const fiveWOptions: FiveWOption[] = [
     {
@@ -497,6 +508,8 @@ interface Props {
     className?: string;
 }
 
+const noOp = () => {};
+
 function Covid19(props: Props) {
     const { className } = props;
     const { regionLevel } = React.useContext(NavbarContext);
@@ -759,8 +772,8 @@ function Covid19(props: Props) {
                                     type: 'fill',
                                     'source-layer': 'dry_deshosp_12hr_sumsgeo',
                                     paint: {
-                                        'fill-color': 'red',
-                                        'fill-opacity': 0.3,
+                                        'fill-color': twelveHourColor,
+                                        'fill-opacity': 0.4,
                                     },
                                     filter: selectedHospitals.length <= 0
                                         ? undefined
@@ -769,34 +782,16 @@ function Covid19(props: Props) {
                                         ? { visibility: 'visible' }
                                         : { visibility: 'none' },
                                 }}
-                                // onMouseEnter={() => {}}
+                                onMouseEnter={noOp}
                             />
-                            {/*
-                            <MapLayer
-                                layerKey="dry-designated-hospital-12hr-line"
-                                layerOptions={{
-                                    type: 'line',
-                                    'source-layer': 'dry_deshosp_12hr_sumsgeo',
-                                    paint: {
-                                        'line-color': 'black',
-                                        'line-opacity': [
-                                            'case',
-                                            ['==', ['feature-state', 'hovered'], true],
-                                            1,
-                                            0,
-                                        ],
-                                    },
-                                }}
-                            />
-                            */}
                             <MapLayer
                                 layerKey="dry-designated-hospital-8hr-fill"
                                 layerOptions={{
                                     type: 'fill',
                                     'source-layer': 'dry_deshosp_8hr_sumsgeo',
                                     paint: {
-                                        'fill-color': 'yellow',
-                                        'fill-opacity': 0.3,
+                                        'fill-color': eightHourColor,
+                                        'fill-opacity': 0.4,
                                     },
                                     filter: selectedHospitals.length <= 0
                                         ? undefined
@@ -805,34 +800,16 @@ function Covid19(props: Props) {
                                         ? { visibility: 'visible' }
                                         : { visibility: 'none' },
                                 }}
-                                // onMouseEnter={() => {}}
+                                onMouseEnter={noOp}
                             />
-                            {/*
-                            <MapLayer
-                                layerKey="dry-designated-hospital-8hr-line"
-                                layerOptions={{
-                                    type: 'line',
-                                    'source-layer': 'dry_deshosp_8hr_sumsgeo',
-                                    paint: {
-                                        'line-color': 'black',
-                                        'line-opacity': [
-                                            'case',
-                                            ['==', ['feature-state', 'hovered'], true],
-                                            1,
-                                            0,
-                                        ],
-                                    },
-                                }}
-                            />
-                            */}
                             <MapLayer
                                 layerKey="dry-designated-hospital-4hr-fill"
                                 layerOptions={{
                                     type: 'fill',
                                     'source-layer': 'dry_deshosp_4hr_sumsgeo',
                                     paint: {
-                                        'fill-color': 'green',
-                                        'fill-opacity': 0.3,
+                                        'fill-color': fourHourColor,
+                                        'fill-opacity': 0.4,
                                     },
                                     filter: selectedHospitals.length <= 0
                                         ? undefined
@@ -841,16 +818,32 @@ function Covid19(props: Props) {
                                         ? { visibility: 'visible' }
                                         : { visibility: 'none' },
                                 }}
-                                // onMouseEnter={() => {}}
+                                onMouseEnter={noOp}
                             />
-                            {/*
                             <MapLayer
-                                layerKey="dry-designated-hospital-4hr-line"
+                                layerKey="dry-designated-hospital-12hr-uncovered-admin2-fill"
+                                layerOptions={{
+                                    type: 'fill',
+                                    'source-layer': 'dry_deshosp_12hr_uncovered_zs_adm2geo',
+                                    paint: {
+                                        'fill-color': uncoveredColor,
+                                        'fill-opacity': 0.4,
+                                    },
+                                    layout: showHealthTravelTime && selectedHospitals.length <= 0
+                                        ? { visibility: 'visible' }
+                                        : { visibility: 'none' },
+                                }}
+                                onMouseEnter={noOp}
+                            />
+
+                            <MapLayer
+                                layerKey="dry-designated-hospital-12hr-line"
                                 layerOptions={{
                                     type: 'line',
-                                    'source-layer': 'dry_deshosp_4hr_sumsgeo',
+                                    'source-layer': 'dry_deshosp_12hr_sumsgeo',
                                     paint: {
-                                        'line-color': 'black',
+                                        'line-width': 2,
+                                        'line-color': twelveHourDarkColor,
                                         'line-opacity': [
                                             'case',
                                             ['==', ['feature-state', 'hovered'], true],
@@ -858,9 +851,71 @@ function Covid19(props: Props) {
                                             0,
                                         ],
                                     },
+                                    filter: selectedHospitals.length <= 0
+                                        ? undefined
+                                        : ['in', ['get', 'name'], ['literal', selectedHospitals]],
                                 }}
                             />
-                            */}
+                            <MapLayer
+                                layerKey="dry-designated-hospital-8hr-line"
+                                layerOptions={{
+                                    type: 'line',
+                                    'source-layer': 'dry_deshosp_8hr_sumsgeo',
+                                    paint: {
+                                        'line-width': 2,
+                                        'line-color': eightHourDarkColor,
+                                        'line-opacity': [
+                                            'case',
+                                            ['==', ['feature-state', 'hovered'], true],
+                                            1,
+                                            0,
+                                        ],
+                                    },
+                                    filter: selectedHospitals.length <= 0
+                                        ? undefined
+                                        : ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                                }}
+                            />
+                            <MapLayer
+                                layerKey="dry-designated-hospital-4hr-line"
+                                layerOptions={{
+                                    type: 'line',
+                                    'source-layer': 'dry_deshosp_4hr_sumsgeo',
+                                    paint: {
+                                        'line-width': 2,
+                                        'line-color': fourHourDarkColor,
+                                        'line-opacity': [
+                                            'case',
+                                            ['==', ['feature-state', 'hovered'], true],
+                                            1,
+                                            0,
+                                        ],
+                                    },
+                                    filter: selectedHospitals.length <= 0
+                                        ? undefined
+                                        : ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                                }}
+                            />
+                            <MapLayer
+                                layerKey="dry-designated-hospital-12hr-uncovered-admin2-line"
+                                layerOptions={{
+                                    type: 'line',
+                                    'source-layer': 'dry_deshosp_12hr_uncovered_zs_adm2geo',
+                                    paint: {
+                                        'line-width': 2,
+                                        'line-color': uncoveredDarkColor,
+                                        'line-opacity': [
+                                            'case',
+                                            ['==', ['feature-state', 'hovered'], true],
+                                            1,
+                                            0,
+                                        ],
+                                    },
+                                    layout: showHealthTravelTime && selectedHospitals.length <= 0
+                                        ? { visibility: 'visible' }
+                                        : { visibility: 'none' },
+                                }}
+                            />
                         </MapSource>
                         <MapSource
                             sourceKey="hospitals"
