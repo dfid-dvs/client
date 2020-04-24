@@ -555,7 +555,7 @@ function Covid19(props: Props) {
     const [
         selectedFiveWOption,
         setFiveWOption,
-    ] = React.useState<CovidFiveWOptionKey | undefined>('project');
+    ] = React.useState<CovidFiveWOptionKey | undefined>('projectName');
 
     const indicatorListGetUrl = `${apiEndPoint}/indicator-list/?is_covid=1`;
     const [
@@ -748,9 +748,10 @@ function Covid19(props: Props) {
         >
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
-                <LoadingAnimation />
+                    <LoadingAnimation />
                 </Backdrop>
-                ) */}
+                )
+            */}
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
@@ -767,10 +768,10 @@ function Covid19(props: Props) {
                             }}
                         >
                             <MapLayer
-                                layerKey="dry-designated-hospital-12hr-fill"
+                                layerKey="twelvehour-fill"
                                 layerOptions={{
                                     type: 'fill',
-                                    'source-layer': 'dry_deshosp_12hr_sumsgeo',
+                                    'source-layer': 'twelvehourgeo',
                                     paint: {
                                         'fill-color': twelveHourColor,
                                         'fill-opacity': 0.4,
@@ -785,10 +786,10 @@ function Covid19(props: Props) {
                                 onMouseEnter={noOp}
                             />
                             <MapLayer
-                                layerKey="dry-designated-hospital-8hr-fill"
+                                layerKey="eighthour-fill"
                                 layerOptions={{
                                     type: 'fill',
-                                    'source-layer': 'dry_deshosp_8hr_sumsgeo',
+                                    'source-layer': 'eighthourgeo',
                                     paint: {
                                         'fill-color': eightHourColor,
                                         'fill-opacity': 0.4,
@@ -803,10 +804,10 @@ function Covid19(props: Props) {
                                 onMouseEnter={noOp}
                             />
                             <MapLayer
-                                layerKey="dry-designated-hospital-4hr-fill"
+                                layerKey="fourhour-fill"
                                 layerOptions={{
                                     type: 'fill',
-                                    'source-layer': 'dry_deshosp_4hr_sumsgeo',
+                                    'source-layer': 'fourhourgeo',
                                     paint: {
                                         'fill-color': fourHourColor,
                                         'fill-opacity': 0.4,
@@ -821,10 +822,10 @@ function Covid19(props: Props) {
                                 onMouseEnter={noOp}
                             />
                             <MapLayer
-                                layerKey="dry-designated-hospital-12hr-uncovered-admin2-fill"
+                                layerKey="uncovered-fill"
                                 layerOptions={{
                                     type: 'fill',
-                                    'source-layer': 'dry_deshosp_12hr_uncovered_zs_adm2geo',
+                                    'source-layer': 'uncoveredgeo',
                                     paint: {
                                         'fill-color': uncoveredColor,
                                         'fill-opacity': 0.4,
@@ -837,10 +838,10 @@ function Covid19(props: Props) {
                             />
 
                             <MapLayer
-                                layerKey="dry-designated-hospital-12hr-line"
+                                layerKey="twelvehour-line"
                                 layerOptions={{
                                     type: 'line',
-                                    'source-layer': 'dry_deshosp_12hr_sumsgeo',
+                                    'source-layer': 'twelvehourgeo',
                                     paint: {
                                         'line-width': 2,
                                         'line-color': twelveHourDarkColor,
@@ -857,10 +858,10 @@ function Covid19(props: Props) {
                                 }}
                             />
                             <MapLayer
-                                layerKey="dry-designated-hospital-8hr-line"
+                                layerKey="eighthour-line"
                                 layerOptions={{
                                     type: 'line',
-                                    'source-layer': 'dry_deshosp_8hr_sumsgeo',
+                                    'source-layer': 'eighthourgeo',
                                     paint: {
                                         'line-width': 2,
                                         'line-color': eightHourDarkColor,
@@ -877,10 +878,10 @@ function Covid19(props: Props) {
                                 }}
                             />
                             <MapLayer
-                                layerKey="dry-designated-hospital-4hr-line"
+                                layerKey="fourhour-line"
                                 layerOptions={{
                                     type: 'line',
-                                    'source-layer': 'dry_deshosp_4hr_sumsgeo',
+                                    'source-layer': 'fourhourgeo',
                                     paint: {
                                         'line-width': 2,
                                         'line-color': fourHourDarkColor,
@@ -897,10 +898,10 @@ function Covid19(props: Props) {
                                 }}
                             />
                             <MapLayer
-                                layerKey="dry-designated-hospital-12hr-uncovered-admin2-line"
+                                layerKey="uncovered-line"
                                 layerOptions={{
                                     type: 'line',
-                                    'source-layer': 'dry_deshosp_12hr_uncovered_zs_adm2geo',
+                                    'source-layer': 'uncoveredgeo',
                                     paint: {
                                         'line-width': 2,
                                         'line-color': uncoveredDarkColor,
