@@ -75,34 +75,3 @@
         width: 300px;
     }
 }
-
-.tooltip {
-    .title {
-        padding: var(--spacing-small);
-        color: var(--color-accent);
-        font-size: var(--font-size-medium);
-        font-weight: var(--font-weight-bold);
-    }
-}
-
-.text-output {
-    display: table-row;
-
-    .label {
-        display: table-cell;
-        padding: 0 var(--spacing-small);
-        font-size: var(--font-size-small);
-    }
-
-    .value {
-        display: table-cell;
-        padding: 0 var(--spacing-small);
-    }
-
-    .null-value {
-        display: table-cell;
-        padding: 0 var(--spacing-small);
-        color: rgba(0, 0, 0, .4);
-        font-size: var(--font-size-small);
-    }
-}
