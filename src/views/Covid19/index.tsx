@@ -27,10 +27,12 @@ import {
 
 import TravelTimeLayer, {
     DesignatedHospital,
+} from './TravelTimeLayer';
+import {
     fourHourColor,
     eightHourColor,
     twelveHourColor,
-} from './TravelTimeLayer';
+} from './TravelTimeLayer/mapTheme';
 
 import {
     Attribute,

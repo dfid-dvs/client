@@ -8,14 +8,7 @@ import TextOutput from '#components/TextOutput';
 
 import { Season, HospitalType } from '../types';
 
-export const fourHourColor = 'green';
-export const fourHourDarkColor = '#387002';
-
-export const eightHourColor = 'yellow';
-export const eightHourDarkColor = '#c67100';
-
-export const twelveHourColor = 'red';
-export const twelveHourDarkColor = '#9a0007';
+import theme, { visibleLayout, noneLayout } from './mapTheme';
 
 // const uncoveredColor = '#455a64';
 // const uncoveredDarkColor = '#1c313a';
@@ -88,7 +81,7 @@ function TravelTimeLayer(props: Props) {
         || 'allhospitalsgeo'
     );
 
-    const travelTimeUrl = (
+    const catchmentUrl = (
         (hospitalType === 'deshosp' && season === 'dry' && 'mapbox://togglecorp.265cfnxb')
         || (hospitalType === 'deshosp' && season === 'msn' && 'mapbox://togglecorp.1blomcjm')
         || (hospitalType === 'allcovidhfs' && season === 'dry' && 'mapbox://togglecorp.0s4o7p46')
@@ -96,14 +89,21 @@ function TravelTimeLayer(props: Props) {
         || undefined
     );
 
+    const catchmentFilter = selectedHospitals.length <= 0
+        ? undefined
+        : ['in', ['get', 'name'], ['literal', selectedHospitals]];
+    const catchmentLayout = travelTimeShown
+        ? visibleLayout
+        : noneLayout;
+
     return (
         <>
-            {travelTimeUrl && (
+            {catchmentUrl && (
                 <MapSource
                     sourceKey={`${prefix}-travel-time`}
                     sourceOptions={{
                         type: 'vector',
-                        url: travelTimeUrl,
+                        url: catchmentUrl,
                     }}
                 >
                     <MapLayer
@@ -111,16 +111,9 @@ function TravelTimeLayer(props: Props) {
                         layerOptions={{
                             type: 'fill',
                             'source-layer': 'twelvehourgeo',
-                            paint: {
-                                'fill-color': twelveHourColor,
-                                'fill-opacity': 0.4,
-                            },
-                            filter: selectedHospitals.length <= 0
-                                ? undefined
-                                : ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                            layout: travelTimeShown
-                                ? { visibility: 'visible' }
-                                : { visibility: 'none' },
+                            paint: theme.catchment.twelvehour.fillPaint,
+                            filter: catchmentFilter,
+                            layout: catchmentLayout,
                         }}
                         onMouseEnter={noOp}
                     />
@@ -129,16 +122,9 @@ function TravelTimeLayer(props: Props) {
                         layerOptions={{
                             type: 'fill',
                             'source-layer': 'eighthourgeo',
-                            paint: {
-                                'fill-color': eightHourColor,
-                                'fill-opacity': 0.4,
-                            },
-                            filter: selectedHospitals.length <= 0
-                                ? undefined
-                                : ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                            layout: travelTimeShown
-                                ? { visibility: 'visible' }
-                                : { visibility: 'none' },
+                            paint: theme.catchment.eighthour.fillPaint,
+                            filter: catchmentFilter,
+                            layout: catchmentLayout,
                         }}
                         onMouseEnter={noOp}
                     />
@@ -147,18 +133,42 @@ function TravelTimeLayer(props: Props) {
                         layerOptions={{
                             type: 'fill',
                             'source-layer': 'fourhourgeo',
-                            paint: {
-                                'fill-color': fourHourColor,
-                                'fill-opacity': 0.4,
-                            },
-                            filter: selectedHospitals.length <= 0
-                                ? undefined
-                                : ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                            layout: travelTimeShown
-                                ? { visibility: 'visible' }
-                                : { visibility: 'none' },
+                            paint: theme.catchment.fourhour.fillPaint,
+                            filter: catchmentFilter,
+                            layout: catchmentLayout,
                         }}
                         onMouseEnter={noOp}
+                    />
+
+                    <MapLayer
+                        layerKey="twelvehour-line"
+                        layerOptions={{
+                            type: 'line',
+                            'source-layer': 'twelvehourgeo',
+                            paint: theme.catchment.twelvehour.linePaint,
+                            filter: catchmentFilter,
+                            layout: catchmentLayout,
+                        }}
+                    />
+                    <MapLayer
+                        layerKey="eighthour-line"
+                        layerOptions={{
+                            type: 'line',
+                            'source-layer': 'eighthourgeo',
+                            paint: theme.catchment.eighthour.linePaint,
+                            filter: catchmentFilter,
+                            layout: catchmentLayout,
+                        }}
+                    />
+                    <MapLayer
+                        layerKey="fourhour-line"
+                        layerOptions={{
+                            type: 'line',
+                            'source-layer': 'fourhourgeo',
+                            paint: theme.catchment.fourhour.linePaint,
+                            filter: catchmentFilter,
+                            layout: catchmentLayout,
+                        }}
                     />
                     {/*
                     <MapLayer
@@ -177,67 +187,6 @@ function TravelTimeLayer(props: Props) {
                         onMouseEnter={noOp}
                     />
                     */}
-
-                    <MapLayer
-                        layerKey="twelvehour-line"
-                        layerOptions={{
-                            type: 'line',
-                            'source-layer': 'twelvehourgeo',
-                            paint: {
-                                'line-width': 2,
-                                'line-color': twelveHourDarkColor,
-                                'line-opacity': [
-                                    'case',
-                                    ['==', ['feature-state', 'hovered'], true],
-                                    1,
-                                    0,
-                                ],
-                            },
-                            filter: selectedHospitals.length <= 0
-                                ? undefined
-                                : ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                        }}
-                    />
-                    <MapLayer
-                        layerKey="eighthour-line"
-                        layerOptions={{
-                            type: 'line',
-                            'source-layer': 'eighthourgeo',
-                            paint: {
-                                'line-width': 2,
-                                'line-color': eightHourDarkColor,
-                                'line-opacity': [
-                                    'case',
-                                    ['==', ['feature-state', 'hovered'], true],
-                                    1,
-                                    0,
-                                ],
-                            },
-                            filter: selectedHospitals.length <= 0
-                                ? undefined
-                                : ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                        }}
-                    />
-                    <MapLayer
-                        layerKey="fourhour-line"
-                        layerOptions={{
-                            type: 'line',
-                            'source-layer': 'fourhourgeo',
-                            paint: {
-                                'line-width': 2,
-                                'line-color': fourHourDarkColor,
-                                'line-opacity': [
-                                    'case',
-                                    ['==', ['feature-state', 'hovered'], true],
-                                    1,
-                                    0,
-                                ],
-                            },
-                            filter: selectedHospitals.length <= 0
-                                ? undefined
-                                : ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                        }}
-                    />
                     {/*
                     <MapLayer
                         layerKey="uncovered-line"
@@ -274,23 +223,8 @@ function TravelTimeLayer(props: Props) {
                     layerOptions={{
                         type: 'circle',
                         'source-layer': hospitalSourceLayer,
-                        paint: {
-                            'circle-radius': 9,
-                            'circle-color': '#fff',
-                            'circle-stroke-color': '#a72828',
-                            'circle-stroke-width': [
-                                'case',
-                                ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                                2,
-                                0,
-                            ],
-                            'circle-opacity': [
-                                'case',
-                                ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                                0.9,
-                                0.7,
-                            ],
-                        },
+                        // FIXME: memoize this
+                        paint: theme.hospital.circlePaint(selectedHospitals),
                     }}
                     onMouseEnter={handleDesignatedHospitalTooltipOpen}
                     onMouseLeave={handleDesignatedHospitalTooltipHide}
@@ -301,13 +235,8 @@ function TravelTimeLayer(props: Props) {
                     layerOptions={{
                         type: 'symbol',
                         'source-layer': hospitalSourceLayer,
-                        paint: {
-                            'icon-color': '#a72828',
-                        },
-                        layout: {
-                            'icon-image': 'hospital-11',
-                            'icon-allow-overlap': true,
-                        },
+                        paint: theme.hospital.symbolPaint,
+                        layout: theme.hospital.symbolLayout,
                     }}
                 />
                 {designatedHospitalProperties && (
