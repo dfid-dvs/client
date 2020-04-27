@@ -1,20 +1,24 @@
-import React from 'react';
-import { _cs } from '@togglecorp/fujs';
+import React, { useMemo, useContext, useState } from 'react';
+import {
+    _cs,
+    isDefined,
+} from '@togglecorp/fujs';
 
 import RegionSelector from '#components/RegionSelector';
 import NavbarContext from '#components/NavbarContext';
-import SegmentInput from '#components/SegmentInput';
+import ToggleButton from '#components/ToggleButton';
 import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
-import Backdrop from '#components/Backdrop';
-import LoadingAnimation from '#components/LoadingAnimation';
 import IndicatorMap from '#components/IndicatorMap';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
 import useMapStateForFiveW from '#hooks/useMapStateForFiveW';
 
-import { generateChoroplethMapPaintAndLegend } from '#utils/common';
+import {
+    generateChoroplethMapPaintAndLegend,
+    generateBubbleMapPaintAndLegend,
+} from '#utils/common';
 import {
     MultiResponse,
     FiveWOptionKey,
@@ -72,49 +76,25 @@ const indicatorKeySelector = (indicator: Indicator) => indicator.id;
 const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
 const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 
-type Attribute = 'indicator' | 'fiveW';
-
-interface AttributeOption {
-    key: Attribute;
-    label: string;
-}
-
-const attributeOptions: AttributeOption[] = [
-    {
-        key: 'fiveW',
-        label: 'DFID Data',
-    },
-    {
-        key: 'indicator',
-        label: 'Indicator',
-    },
-];
-
-const attributeKeySelector = (option: AttributeOption) => option.key;
-const attributeLabelSelector = (option: AttributeOption) => option.label;
-
 interface Props {
     className?: string;
 }
 
 const Dashboard = (props: Props) => {
     const { className } = props;
-    const { regionLevel } = React.useContext(NavbarContext);
+    const { regionLevel } = useContext(NavbarContext);
 
     const [
         selectedIndicator,
         setSelectedIndicator,
-    ] = React.useState<number | undefined>(undefined);
+    ] = useState<number | undefined>(undefined);
 
     const [
         selectedFiveWOption,
         setFiveWOption,
-    ] = React.useState<FiveWOptionKey | undefined>('allocatedBudget');
+    ] = useState<FiveWOptionKey | undefined>('allocatedBudget');
 
-    const [
-        selectedAttribute,
-        setAttribute,
-    ] = React.useState<'indicator' | 'fiveW'>('fiveW');
+    const [invertMapStyle, setInvertMapStyle] = useState(false);
 
     const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/`;
     const [
@@ -133,27 +113,59 @@ const Dashboard = (props: Props) => {
     ] = useMapStateForFiveW(regionLevel, selectedFiveWOption);
 
     // const mapStatePending = indicatorMapStatePending || fiveWMapStatePending;
-    const mapState = selectedAttribute === 'indicator' ? indicatorMapState : fiveWMapState;
+
+    const {
+        choroplethMapState,
+        bubbleMapState,
+    } = useMemo(() => {
+        if (invertMapStyle) {
+            return {
+                choroplethMapState: indicatorMapState,
+                bubbleMapState: fiveWMapState,
+            };
+        }
+        return {
+            choroplethMapState: fiveWMapState,
+            bubbleMapState: indicatorMapState,
+        };
+    }, [invertMapStyle, indicatorMapState, fiveWMapState]);
+
     const {
         paint: mapPaint,
         legend: mapLegend,
         min: dataMinValue,
-    } = React.useMemo(
+    } = useMemo(
         () => {
-            const valueList = mapState.map(d => d.value);
+            const valueList = choroplethMapState.filter(d => isDefined(d.value)).map(d => d.value);
 
             const min = Math.min(...valueList);
             const max = Math.max(...valueList);
 
-            return {
-                min,
-                ...generateChoroplethMapPaintAndLegend(colorDomain, min, max),
-            };
+            return generateChoroplethMapPaintAndLegend(colorDomain, min, max);
         },
-        [mapState],
+        [choroplethMapState],
     );
 
     // const pending = mapStatePending || indicatorListPending;
+    const {
+        mapPaint: bubblePaint,
+        mapLegend: bubbleLegend,
+    } = useMemo(() => {
+        const valueList = bubbleMapState
+            .filter(d => isDefined(d.value)).map(d => Math.abs(d.value));
+
+        const min = valueList.length > 0 ? Math.min(...valueList) : undefined;
+        const max = valueList.length > 0 ? Math.max(...valueList) : undefined;
+
+        let maxRadius = 50;
+        if (regionLevel === 'district') {
+            maxRadius = 40;
+        } else if (regionLevel === 'municipality') {
+            maxRadius = 30;
+        }
+
+        return generateBubbleMapPaintAndLegend(min, max, maxRadius);
+    }, [bubbleMapState, regionLevel]);
 
     return (
         <div className={_cs(
@@ -169,49 +181,47 @@ const Dashboard = (props: Props) => {
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
-                mapState={mapState}
-                mapPaint={mapPaint}
+                choroplethMapState={choroplethMapState}
+                choroplethMapPaint={mapPaint}
+                bubbleMapState={bubbleMapState}
+                bubbleMapPaint={bubblePaint}
             />
             <div className={styles.mapStyleConfigContainer}>
-                <RegionSelector
-                    searchHidden
+                <RegionSelector searchHidden />
+                <h4>DFID Data</h4>
+                <SelectInput
+                    className={styles.indicatorSelectInput}
+                    disabled={indicatorListPending}
+                    options={indicatorListResponse?.results}
+                    onChange={setSelectedIndicator}
+                    value={selectedIndicator}
+                    optionLabelSelector={indicatorLabelSelector}
+                    optionKeySelector={indicatorKeySelector}
+                    groupKeySelector={indicatorGroupKeySelector}
                 />
-                <SegmentInput
-                    options={attributeOptions}
-                    onChange={setAttribute}
-                    value={selectedAttribute}
-                    optionLabelSelector={attributeLabelSelector}
-                    optionKeySelector={attributeKeySelector}
+                <h4>Indicator</h4>
+                <SelectInput
+                    className={styles.fiveWSegmentInput}
+                    options={fiveWOptions}
+                    onChange={setFiveWOption}
+                    value={selectedFiveWOption}
+                    optionLabelSelector={fiveWLabelSelector}
+                    optionKeySelector={fiveWKeySelector}
                 />
-                { selectedAttribute === 'indicator' && (
-                    <SelectInput
-                        className={styles.indicatorSelectInput}
-                        disabled={indicatorListPending}
-                        options={indicatorListResponse?.results}
-                        onChange={setSelectedIndicator}
-                        value={selectedIndicator}
-                        optionLabelSelector={indicatorLabelSelector}
-                        optionKeySelector={indicatorKeySelector}
-                        groupKeySelector={indicatorGroupKeySelector}
-                    />
-                )}
-                { selectedAttribute === 'fiveW' && (
-                    <SelectInput
-                        label="Selected attribute"
-                        className={styles.fiveWSegmentInput}
-                        options={fiveWOptions}
-                        onChange={setFiveWOption}
-                        value={selectedFiveWOption}
-                        optionLabelSelector={fiveWLabelSelector}
-                        optionKeySelector={fiveWKeySelector}
-                    />
-                )}
+                <ToggleButton
+                    label="Toggle Choropleth/Bubble"
+                    value={invertMapStyle}
+                    onChange={setInvertMapStyle}
+                />
                 {Object.keys(mapLegend).length > 0 && (
-                    <ChoroplethLegend
-                        className={styles.legend}
-                        minValue={dataMinValue}
-                        legend={mapLegend}
-                    />
+                    <div className={styles.stats}>
+                        <h4>Legend</h4>
+                        <ChoroplethLegend
+                            className={styles.legend}
+                            minValue={dataMinValue}
+                            legend={mapLegend}
+                        />
+                    </div>
                 )}
             </div>
         </div>

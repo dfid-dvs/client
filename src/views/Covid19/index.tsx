@@ -157,10 +157,7 @@ function Covid19(props: Props) {
             const min = Math.min(...valueList);
             const max = Math.max(...valueList);
 
-            return {
-                min,
-                ...generateChoroplethMapPaintAndLegend(colorDomain, min, max),
-            };
+            return generateChoroplethMapPaintAndLegend(colorDomain, min, max);
         },
         [mapState],
     );
@@ -241,8 +238,9 @@ function Covid19(props: Props) {
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
-                mapState={mapState}
-                mapPaint={mapPaint}
+                choroplethMapState={mapState}
+                choroplethMapPaint={mapPaint}
+                hideBubble
             >
                 {showHealthResource && (
                     <TravelTimeLayer

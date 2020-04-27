@@ -144,3 +144,50 @@ export const generateChoroplethMapPaintAndLegend = (
 
     return { min: minValue, paint: emptyPaint, legend: emptyLegend };
 };
+
+export const generateBubbleMapPaintAndLegend = (
+    minValue: number = 0,
+    maxValue: number = 1,
+    maxRadius: number = 50,
+) => {
+    const quarterPoint = minValue + ((minValue + maxValue) / 8);
+    const array = [
+        minValue, 0,
+        quarterPoint, maxRadius / 5,
+        maxValue, maxRadius,
+    ];
+
+    const mapPaint: mapboxgl.CirclePaint = ({
+        'circle-radius': [
+            'interpolate', ['linear'],
+            ['abs', ['number', ['feature-state', 'value'], 0]],
+            ...array,
+        ],
+        'circle-color': [
+            'case',
+            ['>', ['number', ['feature-state', 'value'], 0], 0],
+            '#01665e',
+            '#de2d26',
+        ],
+        'circle-opacity': 0.6,
+        'circle-stroke-color': '#fff',
+        'circle-stroke-width': 1,
+        'circle-stroke-opacity': 0.2,
+    });
+
+    const mapLegend = [
+        {
+            label: `0 - ${Math.round(quarterPoint * 100) / 100}`,
+            radius: Math.round((maxRadius / 5 * 100) / 100),
+        },
+        {
+            label: `${Math.round(quarterPoint * 100) / 100} - ${Math.round(maxValue * 100) / 100}`,
+            radius: maxRadius,
+        },
+    ];
+
+    return ({
+        mapPaint,
+        mapLegend,
+    });
+};
