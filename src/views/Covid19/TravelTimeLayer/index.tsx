@@ -6,6 +6,8 @@ import MapTooltip from '#remap/MapTooltip';
 
 import TextOutput from '#components/TextOutput';
 
+import { Season, HospitalType } from '../types';
+
 export const fourHourColor = 'green';
 export const fourHourDarkColor = '#387002';
 
@@ -38,6 +40,10 @@ interface Props {
     selectedHospitals: string[];
     onHospitalClick: (feature: mapboxgl.MapboxGeoJSONFeature) => boolean;
     travelTimeShown?: boolean;
+
+    prefix?: string;
+    season?: Season['key'];
+    hospitalType?: HospitalType['key'];
 }
 
 function TravelTimeLayer(props: Props) {
@@ -46,6 +52,10 @@ function TravelTimeLayer(props: Props) {
         onHospitalClick,
 
         travelTimeShown,
+        prefix,
+
+        hospitalType,
+        season,
     } = props;
 
     type SelectedHospital = GeoJSON.Feature<GeoJSON.Point, DesignatedHospital>;
@@ -72,182 +82,198 @@ function TravelTimeLayer(props: Props) {
         setDesignatedHospitalProperties(undefined);
     };
 
+    const hospitalSourceLayer = (
+        (hospitalType === 'deshosp' && 'coviddesignatedhospitalsgeo')
+        || (hospitalType === 'allcovidhfs' && 'covidhospitalsgeo')
+        || 'allhospitalsgeo'
+    );
+
+    const travelTimeUrl = (
+        (hospitalType === 'deshosp' && season === 'dry' && 'mapbox://togglecorp.265cfnxb')
+        || (hospitalType === 'deshosp' && season === 'msn' && 'mapbox://togglecorp.1blomcjm')
+        || (hospitalType === 'allcovidhfs' && season === 'dry' && 'mapbox://togglecorp.0s4o7p46')
+        || (hospitalType === 'allcovidhfs' && season === 'msn' && 'mapbox://togglecorp.b26l1lz5')
+        || undefined
+    );
+
     return (
         <>
-            <MapSource
-                sourceKey="dry-designated-hospitals"
-                sourceOptions={{
-                    type: 'vector',
-                    url: 'mapbox://togglecorp.1scxncx4',
-                }}
-            >
-                <MapLayer
-                    layerKey="twelvehour-fill"
-                    layerOptions={{
-                        type: 'fill',
-                        'source-layer': 'twelvehourgeo',
-                        paint: {
-                            'fill-color': twelveHourColor,
-                            'fill-opacity': 0.4,
-                        },
-                        filter: selectedHospitals.length <= 0
-                            ? undefined
-                            : ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                        layout: travelTimeShown
-                            ? { visibility: 'visible' }
-                            : { visibility: 'none' },
+            {travelTimeUrl && (
+                <MapSource
+                    sourceKey={`${prefix}-travel-time`}
+                    sourceOptions={{
+                        type: 'vector',
+                        url: travelTimeUrl,
                     }}
-                    onMouseEnter={noOp}
-                />
-                <MapLayer
-                    layerKey="eighthour-fill"
-                    layerOptions={{
-                        type: 'fill',
-                        'source-layer': 'eighthourgeo',
-                        paint: {
-                            'fill-color': eightHourColor,
-                            'fill-opacity': 0.4,
-                        },
-                        filter: selectedHospitals.length <= 0
-                            ? undefined
-                            : ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                        layout: travelTimeShown
-                            ? { visibility: 'visible' }
-                            : { visibility: 'none' },
-                    }}
-                    onMouseEnter={noOp}
-                />
-                <MapLayer
-                    layerKey="fourhour-fill"
-                    layerOptions={{
-                        type: 'fill',
-                        'source-layer': 'fourhourgeo',
-                        paint: {
-                            'fill-color': fourHourColor,
-                            'fill-opacity': 0.4,
-                        },
-                        filter: selectedHospitals.length <= 0
-                            ? undefined
-                            : ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                        layout: travelTimeShown
-                            ? { visibility: 'visible' }
-                            : { visibility: 'none' },
-                    }}
-                    onMouseEnter={noOp}
-                />
-                {/*
-                <MapLayer
-                    layerKey="uncovered-fill"
-                    layerOptions={{
-                        type: 'fill',
-                        'source-layer': 'uncoveredgeo',
-                        paint: {
-                            'fill-color': uncoveredColor,
-                            'fill-opacity': 0.4,
-                        },
-                        layout: travelTimeShow && selectedHospitals.length <= 0
-                            ? { visibility: 'visible' }
-                            : { visibility: 'none' },
-                    }}
-                    onMouseEnter={noOp}
-                />
-                */}
+                >
+                    <MapLayer
+                        layerKey="twelvehour-fill"
+                        layerOptions={{
+                            type: 'fill',
+                            'source-layer': 'twelvehourgeo',
+                            paint: {
+                                'fill-color': twelveHourColor,
+                                'fill-opacity': 0.4,
+                            },
+                            filter: selectedHospitals.length <= 0
+                                ? undefined
+                                : ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                            layout: travelTimeShown
+                                ? { visibility: 'visible' }
+                                : { visibility: 'none' },
+                        }}
+                        onMouseEnter={noOp}
+                    />
+                    <MapLayer
+                        layerKey="eighthour-fill"
+                        layerOptions={{
+                            type: 'fill',
+                            'source-layer': 'eighthourgeo',
+                            paint: {
+                                'fill-color': eightHourColor,
+                                'fill-opacity': 0.4,
+                            },
+                            filter: selectedHospitals.length <= 0
+                                ? undefined
+                                : ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                            layout: travelTimeShown
+                                ? { visibility: 'visible' }
+                                : { visibility: 'none' },
+                        }}
+                        onMouseEnter={noOp}
+                    />
+                    <MapLayer
+                        layerKey="fourhour-fill"
+                        layerOptions={{
+                            type: 'fill',
+                            'source-layer': 'fourhourgeo',
+                            paint: {
+                                'fill-color': fourHourColor,
+                                'fill-opacity': 0.4,
+                            },
+                            filter: selectedHospitals.length <= 0
+                                ? undefined
+                                : ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                            layout: travelTimeShown
+                                ? { visibility: 'visible' }
+                                : { visibility: 'none' },
+                        }}
+                        onMouseEnter={noOp}
+                    />
+                    {/*
+                    <MapLayer
+                        layerKey="uncovered-fill"
+                        layerOptions={{
+                            type: 'fill',
+                            'source-layer': 'uncoveredgeo',
+                            paint: {
+                                'fill-color': uncoveredColor,
+                                'fill-opacity': 0.4,
+                            },
+                            layout: travelTimeShow && selectedHospitals.length <= 0
+                                ? { visibility: 'visible' }
+                                : { visibility: 'none' },
+                        }}
+                        onMouseEnter={noOp}
+                    />
+                    */}
 
-                <MapLayer
-                    layerKey="twelvehour-line"
-                    layerOptions={{
-                        type: 'line',
-                        'source-layer': 'twelvehourgeo',
-                        paint: {
-                            'line-width': 2,
-                            'line-color': twelveHourDarkColor,
-                            'line-opacity': [
-                                'case',
-                                ['==', ['feature-state', 'hovered'], true],
-                                1,
-                                0,
-                            ],
-                        },
-                        filter: selectedHospitals.length <= 0
-                            ? undefined
-                            : ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                    }}
-                />
-                <MapLayer
-                    layerKey="eighthour-line"
-                    layerOptions={{
-                        type: 'line',
-                        'source-layer': 'eighthourgeo',
-                        paint: {
-                            'line-width': 2,
-                            'line-color': eightHourDarkColor,
-                            'line-opacity': [
-                                'case',
-                                ['==', ['feature-state', 'hovered'], true],
-                                1,
-                                0,
-                            ],
-                        },
-                        filter: selectedHospitals.length <= 0
-                            ? undefined
-                            : ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                    }}
-                />
-                <MapLayer
-                    layerKey="fourhour-line"
-                    layerOptions={{
-                        type: 'line',
-                        'source-layer': 'fourhourgeo',
-                        paint: {
-                            'line-width': 2,
-                            'line-color': fourHourDarkColor,
-                            'line-opacity': [
-                                'case',
-                                ['==', ['feature-state', 'hovered'], true],
-                                1,
-                                0,
-                            ],
-                        },
-                        filter: selectedHospitals.length <= 0
-                            ? undefined
-                            : ['in', ['get', 'name'], ['literal', selectedHospitals]],
-                    }}
-                />
-                {/*
-                <MapLayer
-                    layerKey="uncovered-line"
-                    layerOptions={{
-                        type: 'line',
-                        'source-layer': 'uncoveredgeo',
-                        paint: {
-                            'line-width': 2,
-                            'line-color': uncoveredDarkColor,
-                            'line-opacity': [
-                                'case',
-                                ['==', ['feature-state', 'hovered'], true],
-                                1,
-                                0,
-                            ],
-                        },
-                        layout: travelTimeShow && selectedHospitals.length <= 0
-                            ? { visibility: 'visible' }
-                            : { visibility: 'none' },
-                    }}
-                />
-                */}
-            </MapSource>
+                    <MapLayer
+                        layerKey="twelvehour-line"
+                        layerOptions={{
+                            type: 'line',
+                            'source-layer': 'twelvehourgeo',
+                            paint: {
+                                'line-width': 2,
+                                'line-color': twelveHourDarkColor,
+                                'line-opacity': [
+                                    'case',
+                                    ['==', ['feature-state', 'hovered'], true],
+                                    1,
+                                    0,
+                                ],
+                            },
+                            filter: selectedHospitals.length <= 0
+                                ? undefined
+                                : ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                        }}
+                    />
+                    <MapLayer
+                        layerKey="eighthour-line"
+                        layerOptions={{
+                            type: 'line',
+                            'source-layer': 'eighthourgeo',
+                            paint: {
+                                'line-width': 2,
+                                'line-color': eightHourDarkColor,
+                                'line-opacity': [
+                                    'case',
+                                    ['==', ['feature-state', 'hovered'], true],
+                                    1,
+                                    0,
+                                ],
+                            },
+                            filter: selectedHospitals.length <= 0
+                                ? undefined
+                                : ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                        }}
+                    />
+                    <MapLayer
+                        layerKey="fourhour-line"
+                        layerOptions={{
+                            type: 'line',
+                            'source-layer': 'fourhourgeo',
+                            paint: {
+                                'line-width': 2,
+                                'line-color': fourHourDarkColor,
+                                'line-opacity': [
+                                    'case',
+                                    ['==', ['feature-state', 'hovered'], true],
+                                    1,
+                                    0,
+                                ],
+                            },
+                            filter: selectedHospitals.length <= 0
+                                ? undefined
+                                : ['in', ['get', 'name'], ['literal', selectedHospitals]],
+                        }}
+                    />
+                    {/*
+                    <MapLayer
+                        layerKey="uncovered-line"
+                        layerOptions={{
+                            type: 'line',
+                            'source-layer': 'uncoveredgeo',
+                            paint: {
+                                'line-width': 2,
+                                'line-color': uncoveredDarkColor,
+                                'line-opacity': [
+                                    'case',
+                                    ['==', ['feature-state', 'hovered'], true],
+                                    1,
+                                    0,
+                                ],
+                            },
+                            layout: travelTimeShow && selectedHospitals.length <= 0
+                                ? { visibility: 'visible' }
+                                : { visibility: 'none' },
+                        }}
+                    />
+                    */}
+                </MapSource>
+            )}
             <MapSource
-                sourceKey="hospitals"
+                sourceKey={`${prefix}-hospitals`}
                 sourceOptions={{
                     type: 'vector',
                     url: 'mapbox://togglecorp.7sfpl5br',
                 }}
             >
                 <MapLayer
-                    layerKey="covid-designated-hospitals-circle"
+                    layerKey="hospital-circle"
                     layerOptions={{
                         type: 'circle',
-                        'source-layer': 'coviddesignatedhospitalsgeo',
+                        'source-layer': hospitalSourceLayer,
                         paint: {
                             'circle-radius': 9,
                             'circle-color': '#fff',
@@ -271,10 +297,10 @@ function TravelTimeLayer(props: Props) {
                     onClick={onHospitalClick}
                 />
                 <MapLayer
-                    layerKey="covid-designated-hospitals-symbol"
+                    layerKey="hospital-symbol"
                     layerOptions={{
                         type: 'symbol',
-                        'source-layer': 'coviddesignatedhospitalsgeo',
+                        'source-layer': hospitalSourceLayer,
                         paint: {
                             'icon-color': '#a72828',
                         },

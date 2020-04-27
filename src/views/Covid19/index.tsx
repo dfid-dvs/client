@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
 import { _cs } from '@togglecorp/fujs';
 
@@ -32,35 +32,18 @@ import TravelTimeLayer, {
     twelveHourColor,
 } from './TravelTimeLayer';
 
+import {
+    Attribute,
+    FiveWOption,
+    Indicator,
+    AgeGroup,
+    HospitalType,
+    Season,
+} from './types';
+
 import styles from './styles.css';
 
-// FIXME: use from typings
-interface Indicator {
-    id: number;
-    fullTitle: string;
-    abstract: string | undefined;
-}
-const indicatorKeySelector = (indicator: Indicator) => indicator.id;
-const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
-
-interface AgeGroup {
-    key: AgeGroupOption;
-    label: string;
-}
-const ageGroupOptions: AgeGroup[] = [
-    { key: 'belowFourteen', label: 'Below 14' },
-    { key: 'fifteenToFourtyNine', label: '15 to 49' },
-    { key: 'aboveFifty', label: 'Above 50' },
-];
-const ageGroupKeySelector = (ageGroup: AgeGroup) => ageGroup.key;
-const ageGroupLabelSelector = (ageGroup: AgeGroup) => ageGroup.label;
-
-type Attribute = 'indicator' | 'fiveW';
-interface AttributeOption {
-    key: Attribute;
-    label: string;
-}
-const attributeOptions: AttributeOption[] = [
+const attributeOptions: Attribute[] = [
     {
         key: 'fiveW',
         label: 'Dfid Data',
@@ -70,13 +53,9 @@ const attributeOptions: AttributeOption[] = [
         label: 'Indicator',
     },
 ];
-const attributeKeySelector = (option: AttributeOption) => option.key;
-const attributeLabelSelector = (option: AttributeOption) => option.label;
+const attributeKeySelector = (option: Attribute) => option.key;
+const attributeLabelSelector = (option: Attribute) => option.label;
 
-interface FiveWOption {
-    key: CovidFiveWOptionKey;
-    label: string;
-}
 const fiveWOptions: FiveWOption[] = [
     {
         key: 'projectName',
@@ -90,22 +69,50 @@ const fiveWOptions: FiveWOption[] = [
 const fiveWKeySelector = (option: FiveWOption) => option.key;
 const fiveWLabelSelector = (option: FiveWOption) => option.label;
 
+const indicatorKeySelector = (indicator: Indicator) => indicator.id;
+const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
+
+const ageGroupOptions: AgeGroup[] = [
+    { key: 'belowFourteen', label: 'Below 14' },
+    { key: 'fifteenToFourtyNine', label: '15 to 49' },
+    { key: 'aboveFifty', label: 'Above 50' },
+];
+const ageGroupKeySelector = (ageGroup: AgeGroup) => ageGroup.key;
+const ageGroupLabelSelector = (ageGroup: AgeGroup) => ageGroup.label;
+
+const hospitalTypeOptions: HospitalType[] = [
+    { key: 'deshosp', label: 'Covid Designated Hospitals' },
+    { key: 'allcovidhfs', label: 'Covid Hospitals' },
+    { key: 'allhfs', label: 'All Hospitals' },
+];
+const hospitalTypeKeySelector = (hospitalType: HospitalType) => hospitalType.key;
+const hospitalTypeLabelSelector = (hospitalType: HospitalType) => hospitalType.label;
+
+const seasonOptions: Season[] = [
+    { key: 'dry', label: 'Dry' },
+    { key: 'msn', label: 'Monsoon' },
+];
+const seasonKeySelector = (season: Season) => season.key;
+const seasonLabelSelector = (season: Season) => season.label;
+
 interface Props {
     className?: string;
 }
 
 function Covid19(props: Props) {
     const { className } = props;
-    const { regionLevel } = React.useContext(NavbarContext);
+    const { regionLevel } = useContext(NavbarContext);
 
-    const [selectedAttribute, setAttribute] = React.useState<Attribute>('fiveW');
-    const [selectedFiveWOption, setFiveWOption] = React.useState<CovidFiveWOptionKey | undefined>('projectName');
-    const [selectedIndicator, setSelectedIndicator] = React.useState<number | undefined>();
-    const [selectedAgeGroup, setSelectedAgeGroup] = React.useState<AgeGroupOption>('belowFourteen');
+    const [selectedAttribute, setAttribute] = useState<Attribute['key']>('fiveW');
+    const [selectedFiveWOption, setFiveWOption] = useState<CovidFiveWOptionKey | undefined>('projectName');
+    const [selectedIndicator, setSelectedIndicator] = useState<number | undefined>();
+    const [selectedAgeGroup, setSelectedAgeGroup] = useState<AgeGroupOption>('belowFourteen');
 
-    const [showHealthResource, setShowHealthResource] = React.useState<boolean>(true);
-    const [showHealthTravelTime, setShowHealthTravelTime] = React.useState<boolean>(true);
-    const [selectedHospitals, setSelectedHospitals] = React.useState<string[]>([]);
+    const [showHealthResource, setShowHealthResource] = useState<boolean>(true);
+    const [showHealthTravelTime, setShowHealthTravelTime] = useState<boolean>(false);
+    const [selectedHospitals, setSelectedHospitals] = useState<string[]>([]);
+    const [selectedSeason, setSeason] = useState<Season['key']>('dry');
+    const [selectedHospitalType, setHospitalType] = useState<HospitalType['key']>('deshosp');
 
     const indicatorListGetUrl = `${apiEndPoint}/indicator-list/?is_covid=1`;
     const [indicatorListPending, indicatorListResponse] = useRequest<MultiResponse<Indicator>>(
@@ -129,7 +136,7 @@ function Covid19(props: Props) {
     // const mapStatePending = mapStateForIndicatorPending || mapStateForFiveWPending;
     // const pending = mapStatePending || indicatorListPending;
 
-    const { paint: mapPaint, legend: mapLegend, min: dataMinValue } = React.useMemo(
+    const { paint: mapPaint, legend: mapLegend, min: dataMinValue } = useMemo(
         () => {
             const valueList = mapState.map(d => d.value);
             const min = Math.min(...valueList);
@@ -143,7 +150,7 @@ function Covid19(props: Props) {
         [mapState],
     );
 
-    const selectedIndicatorDetails = React.useMemo(
+    const selectedIndicatorDetails = useMemo(
         () => {
             if (selectedIndicator) {
                 return indicatorListResponse?.results.find(
@@ -155,7 +162,7 @@ function Covid19(props: Props) {
         [selectedIndicator, indicatorListResponse],
     );
 
-    const indicatorOptions = React.useMemo(
+    const indicatorOptions = useMemo(
         () => {
             if (!indicatorListResponse?.results) {
                 return undefined;
@@ -197,6 +204,13 @@ function Covid19(props: Props) {
         return true;
     };
 
+    useEffect(
+        () => {
+            setSelectedHospitals([]);
+        },
+        [selectedHospitalType],
+    );
+
     return (
         <div className={_cs(
             styles.covid19,
@@ -217,6 +231,10 @@ function Covid19(props: Props) {
             >
                 {showHealthResource && (
                     <TravelTimeLayer
+                        key={`${selectedSeason}-${selectedHospitalType}`}
+                        prefix={`${selectedSeason}-${selectedHospitalType}`}
+                        season={selectedSeason}
+                        hospitalType={selectedHospitalType}
                         onHospitalClick={handleHospitalClick}
                         selectedHospitals={selectedHospitals}
                         travelTimeShown={showHealthTravelTime}
@@ -231,42 +249,63 @@ function Covid19(props: Props) {
                     value={showHealthResource}
                     onChange={setShowHealthResource}
                 />
-                {selectedHospitals.length > 0 && (
-                    <div className={styles.hospitals}>
-                        {selectedHospitals.map(hospital => (
-                            <Button
-                                className={styles.button}
-                                key={hospital}
-                                name={hospital}
-                                onClick={handleHospitalToggle}
-                                icons={(
-                                    <FiX />
-                                )}
-                            >
-                                {hospital}
-                            </Button>
-                        ))}
-                    </div>
-                )}
-                <ToggleButton
-                    disabled={!showHealthResource}
-                    label="Show travel time"
-                    value={showHealthTravelTime}
-                    onChange={setShowHealthTravelTime}
-                />
-                {showHealthResource && showHealthTravelTime && (
-                    <ChoroplethLegend
-                        className={styles.legend}
-                        minValue=""
-                        opacity={0.6}
-                        legend={{
-                            [fourHourColor]: '4hrs',
-                            [eightHourColor]: '8hrs',
-                            [twelveHourColor]: '12hrs',
-                            // [uncoveredColor]: 'Uncovered',
-                        }}
-                        zeroPrecision={selectedIndicator === -1}
-                    />
+                {showHealthResource && (
+                    <>
+                        <SegmentInput
+                            label="Hospital Type"
+                            options={hospitalTypeOptions}
+                            onChange={setHospitalType}
+                            value={selectedHospitalType}
+                            optionLabelSelector={hospitalTypeLabelSelector}
+                            optionKeySelector={hospitalTypeKeySelector}
+                        />
+                        {selectedHospitals.length > 0 && (
+                            <div className={styles.hospitals}>
+                                {selectedHospitals.map(hospital => (
+                                    <Button
+                                        className={styles.button}
+                                        key={hospital}
+                                        name={hospital}
+                                        onClick={handleHospitalToggle}
+                                        icons={(
+                                            <FiX />
+                                        )}
+                                    >
+                                        {hospital}
+                                    </Button>
+                                ))}
+                            </div>
+                        )}
+                        <ToggleButton
+                            label="Show travel time"
+                            value={showHealthTravelTime}
+                            onChange={setShowHealthTravelTime}
+                        />
+                        {selectedHospitalType !== 'allhfs' && showHealthTravelTime && (
+                            <>
+                                <SegmentInput
+                                    label="Season"
+                                    options={seasonOptions}
+                                    onChange={setSeason}
+                                    value={selectedSeason}
+                                    optionLabelSelector={seasonLabelSelector}
+                                    optionKeySelector={seasonKeySelector}
+                                />
+                                <ChoroplethLegend
+                                    className={styles.legend}
+                                    minValue=""
+                                    opacity={0.6}
+                                    legend={{
+                                        [fourHourColor]: '4hrs',
+                                        [eightHourColor]: '8hrs',
+                                        [twelveHourColor]: '12hrs',
+                                        // [uncoveredColor]: 'Uncovered',
+                                    }}
+                                    zeroPrecision={selectedIndicator === -1}
+                                />
+                            </>
+                        )}
+                    </>
                 )}
                 <div className={styles.layerSelection}>
                     <SegmentInput

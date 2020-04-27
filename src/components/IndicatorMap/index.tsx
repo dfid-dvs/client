@@ -92,6 +92,7 @@ function IndicatorMap(props: Props) {
             scaleControlPosition="bottom-right"
             navControlShown
             navControlPosition="bottom-right"
+            debug
         >
             <MapContainer className={_cs(styles.mapContainer, className)} />
             <MapSource
