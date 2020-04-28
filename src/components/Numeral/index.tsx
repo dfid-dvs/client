@@ -1,5 +1,5 @@
 import React from 'react';
-import { _cs, isDefined, formattedNormalize, Lang } from '@togglecorp/fujs';
+import { _cs, isDefined, formattedNormalize, Lang, addSeparator } from '@togglecorp/fujs';
 import styles from './styles.css';
 
 const getPrecision = (value: number | undefined) => {
@@ -24,12 +24,14 @@ interface Props {
     precision?: number | undefined;
     className?: string;
     normalize?: boolean;
+    separatorShown?: boolean;
 }
 function Numeral({
     value,
     precision = getPrecision(value),
     className: classNameFromProps,
     normalize,
+    separatorShown = true,
 }: Props) {
     if (!isDefined(value)) {
         return null;
@@ -42,21 +44,24 @@ function Numeral({
 
     const className = _cs(classNameFromProps, styles.numeral);
 
+    let output: string | undefined | null = '';
+    let suffix = '';
+
     if (normalize) {
         const { number, normalizeSuffix = '' } = formattedNormalize(sanitizedValue, Lang.en);
+        output = number.toFixed(1);
+        suffix = normalizeSuffix;
+    } else {
+        output = sanitizedValue.toFixed(precision);
+    }
 
-        if (normalizeSuffix) {
-            return (
-                <div className={className}>
-                    {`${number.toFixed(1)}${normalizeSuffix}`}
-                </div>
-            );
-        }
+    if (separatorShown) {
+        output = addSeparator(output, ',');
     }
 
     return (
         <div className={className}>
-            { sanitizedValue.toFixed(precision) }
+            {`${output}${suffix}`}
         </div>
     );
 }

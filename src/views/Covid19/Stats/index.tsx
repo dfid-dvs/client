@@ -5,13 +5,15 @@ import { GoLinkExternal } from 'react-icons/go';
 import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
 
+import Numeral from '#components/Numeral';
+
 import useRequest from '#hooks/useRequest';
 
 import styles from './styles.css';
 
 interface StatOutputProps {
     label: string | number;
-    value: string | number | undefined;
+    value: number | undefined;
 }
 const StatOutput = ({
     label,
@@ -19,7 +21,11 @@ const StatOutput = ({
 }: StatOutputProps) => (
     <div className={styles.statOutput}>
         <div className={styles.value}>
-            { value }
+            <Numeral
+                value={value}
+                precision={0}
+                separatorShown
+            />
         </div>
         <div className={styles.label}>
             { label }
