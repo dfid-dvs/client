@@ -150,19 +150,28 @@ export const generateBubbleMapPaintAndLegend = (
     maxValue: number = 1,
     maxRadius: number = 50,
 ) => {
-    const quarterPoint = minValue + ((minValue + maxValue) / 8);
     const array = [
         minValue, 0,
-        quarterPoint, maxRadius / 5,
         maxValue, maxRadius,
     ];
 
-    const mapPaint: mapboxgl.CirclePaint = ({
-        'circle-radius': [
+    let circleRadius: mapboxgl.CirclePaint['circle-radius'] = [
+        'interpolate', ['linear'],
+        ['abs', ['number', ['feature-state', 'value'], 0]],
+        ...array,
+    ];
+
+    if (minValue === maxValue) {
+        circleRadius = [
             'interpolate', ['linear'],
             ['abs', ['number', ['feature-state', 'value'], 0]],
-            ...array,
-        ],
+            0, 0,
+            maxValue, maxRadius,
+        ];
+    }
+
+    const mapPaint: mapboxgl.CirclePaint = ({
+        'circle-radius': circleRadius,
         'circle-color': [
             'case',
             ['>', ['number', ['feature-state', 'value'], 0], 0],
@@ -175,19 +184,7 @@ export const generateBubbleMapPaintAndLegend = (
         'circle-stroke-opacity': 0.2,
     });
 
-    const mapLegend = [
-        {
-            label: `0 - ${Math.round(quarterPoint * 100) / 100}`,
-            radius: Math.round((maxRadius / 5 * 100) / 100),
-        },
-        {
-            label: `${Math.round(quarterPoint * 100) / 100} - ${Math.round(maxValue * 100) / 100}`,
-            radius: maxRadius,
-        },
-    ];
-
     return ({
         mapPaint,
-        mapLegend,
     });
 };

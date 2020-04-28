@@ -1,6 +1,9 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { IoIosClose } from 'react-icons/io';
-import { _cs } from '@togglecorp/fujs';
+import {
+    _cs,
+    isDefined,
+} from '@togglecorp/fujs';
 
 import RegionSelector from '#components/RegionSelector';
 import SegmentInput from '#components/SegmentInput';
@@ -19,7 +22,10 @@ import useMapStateForCovidFiveW from '#hooks/useMapStateForCovidFiveW';
 
 import { AgeGroupOption, MultiResponse, CovidFiveWOptionKey } from '#types';
 
-import { generateChoroplethMapPaintAndLegend } from '#utils/common';
+import {
+    generateChoroplethMapPaintAndLegend,
+    generateBubbleMapPaintAndLegend,
+} from '#utils/common';
 import {
     colorDomain,
     apiEndPoint,
@@ -117,7 +123,6 @@ function Covid19(props: Props) {
     const { className } = props;
     const { regionLevel } = useContext(NavbarContext);
 
-    const [selectedAttribute, setAttribute] = useState<Attribute['key']>('fiveW');
     const [selectedFiveWOption, setFiveWOption] = useState<CovidFiveWOptionKey | undefined>('projectName');
     const [selectedIndicator, setSelectedIndicator] = useState<number | undefined>();
     const [selectedAgeGroup, setSelectedAgeGroup] = useState<AgeGroupOption>('belowFourteen');
@@ -144,23 +149,58 @@ function Covid19(props: Props) {
         mapStateForFiveW,
     ] = useMapStateForCovidFiveW(regionLevel, selectedFiveWOption);
 
-    const mapState = selectedAttribute === 'indicator'
-        ? mapStateForIndicator
-        : mapStateForFiveW;
+    const [invertMapStyle, setInvertMapStyle] = useState(false);
+
+    const {
+        choroplethMapState,
+        bubbleMapState,
+    } = useMemo(() => {
+        if (invertMapStyle) {
+            return {
+                choroplethMapState: mapStateForIndicator,
+                bubbleMapState: mapStateForFiveW,
+            };
+        }
+        return {
+            choroplethMapState: mapStateForFiveW,
+            bubbleMapState: mapStateForIndicator,
+        };
+    }, [invertMapStyle, mapStateForIndicator, mapStateForFiveW]);
 
     // const mapStatePending = mapStateForIndicatorPending || mapStateForFiveWPending;
     // const pending = mapStatePending || indicatorListPending;
 
-    const { paint: mapPaint, legend: mapLegend, min: dataMinValue } = useMemo(
+    const {
+        paint: mapPaint,
+        legend: mapLegend,
+        min: dataMinValue,
+    } = useMemo(
         () => {
-            const valueList = mapState.map(d => d.value);
+            const valueList = choroplethMapState.map(d => d.value);
             const min = Math.min(...valueList);
             const max = Math.max(...valueList);
 
             return generateChoroplethMapPaintAndLegend(colorDomain, min, max);
         },
-        [mapState],
+        [choroplethMapState],
     );
+
+    const { mapPaint: bubblePaint } = useMemo(() => {
+        const valueList = bubbleMapState
+            .filter(d => isDefined(d.value)).map(d => Math.abs(d.value));
+
+        const min = valueList.length > 0 ? Math.min(...valueList) : undefined;
+        const max = valueList.length > 0 ? Math.max(...valueList) : undefined;
+
+        let maxRadius = 50;
+        if (regionLevel === 'district') {
+            maxRadius = 40;
+        } else if (regionLevel === 'municipality') {
+            maxRadius = 30;
+        }
+
+        return generateBubbleMapPaintAndLegend(min, max, maxRadius);
+    }, [bubbleMapState, regionLevel]);
 
     const selectedIndicatorDetails = useMemo(
         () => {
@@ -238,9 +278,10 @@ function Covid19(props: Props) {
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
-                choroplethMapState={mapState}
+                choroplethMapState={choroplethMapState}
                 choroplethMapPaint={mapPaint}
-                hideBubble
+                bubbleMapState={bubbleMapState}
+                bubbleMapPaint={bubblePaint}
             >
                 {showHealthResource && (
                     <TravelTimeLayer
@@ -344,68 +385,54 @@ function Covid19(props: Props) {
                     </>
                 )}
                 <div className={styles.layerSelection}>
-                    <SegmentInput
-                        options={attributeOptions}
-                        onChange={setAttribute}
-                        value={selectedAttribute}
-                        optionLabelSelector={attributeLabelSelector}
-                        optionKeySelector={attributeKeySelector}
+                    <h4>DFID Data</h4>
+                    <SelectInput
+                        className={styles.fiveWSegmentInput}
+                        options={fiveWOptions}
+                        onChange={setFiveWOption}
+                        value={selectedFiveWOption}
+                        optionLabelSelector={fiveWLabelSelector}
+                        optionKeySelector={fiveWKeySelector}
                     />
-                    {selectedAttribute === 'fiveW' && (
-                        <>
-                            <SelectInput
-                                label="Selected attribute"
-                                className={styles.fiveWSegmentInput}
-                                options={fiveWOptions}
-                                onChange={setFiveWOption}
-                                value={selectedFiveWOption}
-                                optionLabelSelector={fiveWLabelSelector}
-                                optionKeySelector={fiveWKeySelector}
-                            />
-                            <ChoroplethLegend
-                                className={styles.legend}
-                                minValue={dataMinValue}
-                                legend={mapLegend}
-                            />
-                        </>
+                    <h4>Indicator</h4>
+                    <SelectInput
+                        placeholder="Select an indicator"
+                        className={styles.indicatorSelectInput}
+                        disabled={indicatorListPending}
+                        options={indicatorOptions}
+                        onChange={setSelectedIndicator}
+                        value={selectedIndicator}
+                        optionLabelSelector={indicatorLabelSelector}
+                        optionKeySelector={indicatorKeySelector}
+                        groupKeySelector={indicatorGroupKeySelector}
+                    />
+                    {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
+                        <div className={styles.abstract}>
+                            { selectedIndicatorDetails.abstract }
+                        </div>
                     )}
-                    {selectedAttribute === 'indicator' && (
-                        <>
-                            <SelectInput
-                                placeholder="Select an indicator"
-                                className={styles.indicatorSelectInput}
-                                disabled={indicatorListPending}
-                                options={indicatorOptions}
-                                onChange={setSelectedIndicator}
-                                value={selectedIndicator}
-                                optionLabelSelector={indicatorLabelSelector}
-                                optionKeySelector={indicatorKeySelector}
-                                groupKeySelector={indicatorGroupKeySelector}
-                            />
-                            {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
-                                <div className={styles.abstract}>
-                                    { selectedIndicatorDetails.abstract }
-                                </div>
-                            )}
-                            {selectedIndicator === -1 && (
-                                <SegmentInput
-                                    label="Selected range"
-                                    className={styles.ageGroupSelectInput}
-                                    options={ageGroupOptions}
-                                    onChange={setSelectedAgeGroup}
-                                    value={selectedAgeGroup}
-                                    optionLabelSelector={ageGroupLabelSelector}
-                                    optionKeySelector={ageGroupKeySelector}
-                                />
-                            )}
-                            <ChoroplethLegend
-                                className={styles.legend}
-                                minValue={dataMinValue}
-                                legend={mapLegend}
-                                zeroPrecision={selectedIndicator === -1}
-                            />
-                        </>
+                    {selectedIndicator === -1 && (
+                        <SegmentInput
+                            label="Selected range"
+                            className={styles.ageGroupSelectInput}
+                            options={ageGroupOptions}
+                            onChange={setSelectedAgeGroup}
+                            value={selectedAgeGroup}
+                            optionLabelSelector={ageGroupLabelSelector}
+                            optionKeySelector={ageGroupKeySelector}
+                        />
                     )}
+                    <ToggleButton
+                        label="Toggle Choropleth/Bubble"
+                        value={invertMapStyle}
+                        onChange={setInvertMapStyle}
+                    />
+                    <ChoroplethLegend
+                        className={styles.legend}
+                        minValue={dataMinValue}
+                        legend={mapLegend}
+                        zeroPrecision={selectedIndicator === -1}
+                    />
                 </div>
             </div>
         </div>

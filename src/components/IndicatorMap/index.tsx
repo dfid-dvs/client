@@ -189,6 +189,7 @@ function IndicatorMap(props: Props) {
                     }}
                 />
                 <MapState
+                    key={selectedSourceForBubble}
                     attributes={choroplethMapState}
                     attributeKey="value"
                     sourceLayer={selectedSourceForChoropleth}
@@ -269,6 +270,7 @@ function IndicatorMap(props: Props) {
                 />
                 */}
                 <MapState
+                    key={selectedSourceForBubble}
                     attributes={bubbleMapState}
                     attributeKey="value"
                     sourceLayer={selectedSourceForBubble}

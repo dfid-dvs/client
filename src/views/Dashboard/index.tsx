@@ -147,10 +147,7 @@ const Dashboard = (props: Props) => {
     );
 
     // const pending = mapStatePending || indicatorListPending;
-    const {
-        mapPaint: bubblePaint,
-        mapLegend: bubbleLegend,
-    } = useMemo(() => {
+    const { mapPaint: bubblePaint } = useMemo(() => {
         const valueList = bubbleMapState
             .filter(d => isDefined(d.value)).map(d => Math.abs(d.value));
 
@@ -188,7 +185,7 @@ const Dashboard = (props: Props) => {
             />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />
-                <h4>DFID Data</h4>
+                <h4>Indictor</h4>
                 <SelectInput
                     className={styles.indicatorSelectInput}
                     disabled={indicatorListPending}
@@ -199,7 +196,7 @@ const Dashboard = (props: Props) => {
                     optionKeySelector={indicatorKeySelector}
                     groupKeySelector={indicatorGroupKeySelector}
                 />
-                <h4>Indicator</h4>
+                <h4>DFID Data</h4>
                 <SelectInput
                     className={styles.fiveWSegmentInput}
                     options={fiveWOptions}
