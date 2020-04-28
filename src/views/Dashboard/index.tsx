@@ -114,7 +114,7 @@ const Dashboard = (props: Props) => {
         setAttribute,
     ] = React.useState<'indicator' | 'fiveW'>('fiveW');
 
-    const indicatorListGetUrl = `${apiEndPoint}/indicator-list/`;
+    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/`;
     const [
         indicatorListPending,
         indicatorListResponse,

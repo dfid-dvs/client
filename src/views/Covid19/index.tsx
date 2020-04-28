@@ -128,7 +128,7 @@ function Covid19(props: Props) {
     const [selectedTravelTimeType, setTravelTimeType] = useState<TravelTimeType['key']>('catchment');
     const [selectedHospitalType, setHospitalType] = useState<HospitalType['key']>('deshosp');
 
-    const indicatorListGetUrl = `${apiEndPoint}/indicator-list/?is_covid=1`;
+    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_covid=1`;
     const [indicatorListPending, indicatorListResponse] = useRequest<MultiResponse<Indicator>>(
         indicatorListGetUrl,
     );

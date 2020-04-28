@@ -86,7 +86,7 @@ function RegionSelector(props: Props) {
         [regionLevel],
     );
 
-    const regionGetRequest = searchHidden ? undefined : `${apiEndPoint}/${regionLevel}/`;
+    const regionGetRequest = searchHidden ? undefined : `${apiEndPoint}/core/${regionLevel}/`;
     const [
         regionListPending,
         regionListResponse,

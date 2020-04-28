@@ -43,7 +43,6 @@ function useAgeGroupList(
         ageGroupListResponse,
     ] = useRequest<AgeGroup[]>(ageGroupListUrl);
 
-
     const ageGroupList = useMemo(
         () => {
             if (!ageGroupListResponse) {
