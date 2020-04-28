@@ -15,6 +15,12 @@ import { Season, HospitalType, TravelTimeType } from '../types';
 
 import theme, { visibleLayout, noneLayout } from './mapTheme';
 
+
+// const uncoveredColor = '#455a64';
+// const uncoveredDarkColor = '#1c313a';
+
+// const noOp = () => {};
+
 export interface DesignatedHospital {
     name: string;
     category__name: string;
