@@ -25,7 +25,7 @@ function useMapStateForIndicator(
     if (isDefined(selectedIndicator) && String(selectedIndicator) !== '-1') {
         switch (regionLevel) {
             case 'municipality':
-                regionIndicatorUrl = `${apiEndPoint}/core/municipality-indicator/?indicator_id=${selectedIndicator}/`;
+                regionIndicatorUrl = `${apiEndPoint}/core/municipality-indicator/?indicator_id=${selectedIndicator}`;
                 break;
             case 'district':
                 regionIndicatorUrl = `${apiEndPoint}/core/district-indicator/${selectedIndicator}/`;
