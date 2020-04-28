@@ -4,7 +4,7 @@ import {
     MultiResponse,
     RegionLevelOption,
     CovidFiveW,
-    MapState,
+    MapStateFiveWData,
     CovidFiveWRegionKey,
     CovidFiveWOptionKey,
     Province,
@@ -18,7 +18,7 @@ import useRequest from './useRequest';
 function useMapStateForCovidFiveW(
     regionLevel: RegionLevelOption,
     selectedFiveWOption: CovidFiveWOptionKey | undefined,
-): [boolean, MapState[]] {
+): [boolean, MapStateFiveWData[]] {
     let regionFiveWGetUrl;
     let provinceUrl;
     let districtUrl;
@@ -51,7 +51,7 @@ function useMapStateForCovidFiveW(
         regionFiveWListResponse,
     ] = useRequest<MultiResponse<CovidFiveW>>(regionFiveWGetUrl);
 
-    const fiveWMapState: MapState[] = useMemo(
+    const fiveWMapState: MapStateFiveWData[] = useMemo(
         () => {
             if (!regionFiveWListResponse
                 || !selectedFiveWOption
@@ -95,7 +95,7 @@ function useMapStateForCovidFiveW(
                 .map((fw) => {
                     const municipalities = municipalityListResponse.results.filter((m) => {
                         const fwDistrictId = districtListResponse
-                            .results.find(d => d.code === fw.municipalityCode)?.id;
+                            .results.find(d => d.code === fw.districtCode)?.id;
                         return m.districtId === fwDistrictId;
                     });
                     return municipalities.map(municipality => ({
@@ -137,6 +137,7 @@ function useMapStateForCovidFiveW(
                 return {
                     id: +key,
                     value: (options?.length || 0),
+                    data: value,
                 };
             });
             return mapState;

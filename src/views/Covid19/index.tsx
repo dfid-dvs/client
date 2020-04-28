@@ -188,9 +188,16 @@ function Covid19(props: Props) {
 
     const [
         mapStateForFiveWPending,
-        mapStateForFiveW,
+        covidFiveWData,
     ] = useMapStateForCovidFiveW(regionLevel, selectedFiveWOption);
 
+
+    const mapStateForFiveW = useMemo(
+        () => (
+            covidFiveWData.map(v => ({ id: v.id, value: v.value }))
+        ),
+        [covidFiveWData],
+    );
     const [invertMapStyle, setInvertMapStyle] = useState(false);
 
     const {
@@ -240,6 +247,13 @@ function Covid19(props: Props) {
         selectedFiveWOption,
         indicatorList,
     ]);
+
+    const tooltipData = useMemo(
+        () => (
+            covidFiveWData.map(v => ({ id: v.id, data: v.data }))
+        ),
+        [covidFiveWData],
+    );
 
     // const mapStatePending = mapStateForIndicatorPending || mapStateForFiveWPending;
     // const pending = mapStatePending || indicatorListPending;

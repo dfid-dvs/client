@@ -33,6 +33,15 @@ export interface MapState {
     value: number;
 }
 
+export interface MapStateFiveWData extends MapState {
+    data?: CovidFiveW[];
+}
+
+export interface FiveWTooltipData {
+    id: number;
+    data?: CovidFiveW[];
+}
+
 export interface FiveW {
     id: number;
     name: string;

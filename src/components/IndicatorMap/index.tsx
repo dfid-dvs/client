@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { _cs } from '@togglecorp/fujs';
+import React from 'react';
+import { _cs, unique } from '@togglecorp/fujs';
 
 import Map from '#remap';
 import MapContainer from '#remap/MapContainer';
@@ -8,6 +8,9 @@ import MapTooltip from '#remap/MapTooltip';
 import MapLayer from '#remap/MapSource/MapLayer';
 import MapState from '#remap/MapSource/MapState';
 import { getLayerName } from '#remap/utils';
+
+
+import List from '#components/List';
 
 import {
     mapOptions,
@@ -18,6 +21,7 @@ import {
 } from '#utils/common';
 
 import { Layer } from '#types';
+import { FiveWTooltipData, CovidFiveW } from '#types';
 
 import theme, { noneLayout, visibleLayout } from './mapTheme';
 
@@ -28,11 +32,58 @@ interface HoveredRegion {
     lngLat: mapboxgl.LngLatLike;
 }
 
+const projectKeySelector = (d: CovidFiveW) => d.projectName;
+
+const projectRendererParams = (_: string, d: CovidFiveW) => ({ value: d.projectName });
+
+const sectorKeySelector = (d: CovidFiveW) => d.sector;
+const sectorRendererParams = (_: string, d: CovidFiveW) => ({ value: d.sector });
+const ListItem = ({ value }: { value: string}) => <div>{value}</div>;
+
 const Tooltip = ({
     feature,
-}: { feature: mapboxgl.MapboxGeoJSONFeature }) => {
+    tooltipData,
+}: { feature: mapboxgl.MapboxGeoJSONFeature; tooltipData?: FiveWTooltipData[] }) => {
     if (!feature) {
         return null;
+    }
+    if (tooltipData) {
+        const data = tooltipData.find(d => d.id === feature.properties?.id)?.data;
+        const uniqueProjects = unique(data, d => d.projectName);
+        const uniqueSectors = unique(data, d => d.sector);
+        return (
+            <div className={styles.tooltip}>
+                {feature.properties && (
+                    <div className={styles.regionTitle}>
+                        { feature.properties.name }
+                    </div>
+                )}
+                { uniqueProjects && (
+                    <div className={styles.projects}>
+                        Projects
+                        <div>{uniqueProjects.length}</div>
+                        <List
+                            data={uniqueProjects}
+                            keySelector={projectKeySelector}
+                            rendererParams={projectRendererParams}
+                            renderer={ListItem}
+                        />
+                    </div>
+                )}
+                { uniqueSectors && (
+                    <div className={styles.sectors}>
+                        Sectors
+                        <div>{uniqueSectors.length}</div>
+                        <List
+                            data={uniqueSectors}
+                            keySelector={sectorKeySelector}
+                            rendererParams={sectorRendererParams}
+                            renderer={ListItem}
+                        />
+                    </div>
+                )}
+            </div>
+        );
     }
 
     return (
@@ -226,6 +277,7 @@ function IndicatorMap(props: Props) {
                     >
                         <Tooltip
                             feature={hoveredRegionProperties.feature}
+                            tooltipData={tooltipData}
                         />
                     </MapTooltip>
                 )}
