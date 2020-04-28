@@ -86,13 +86,12 @@ function IndicatorMap(props: Props) {
 
     return (
         <Map
-            mapStyle="mapbox://styles/mapbox/light-v10"
+            mapStyle="mapbox://styles/togglecorp/ck9jjmob30vio1it71wja5zhi"
             mapOptions={mapOptions}
             scaleControlShown
-            scaleControlPosition="bottom-right"
+            scaleControlPosition="top-left"
             navControlShown
-            navControlPosition="bottom-right"
-            debug
+            navControlPosition="top-left"
         >
             <MapContainer className={_cs(styles.mapContainer, className)} />
             <MapSource

@@ -15,7 +15,7 @@ function useMapStateForFiveW(
     selectedFiveWOption: FiveWOptionKey | undefined,
 ): [boolean, MapState[]] {
     const regionFiveWGetUrl = selectedFiveWOption
-        ? `${apiEndPoint}/fivew-${regionLevel}/`
+        ? `${apiEndPoint}/core/fivew-${regionLevel}/`
         : undefined;
 
     const [

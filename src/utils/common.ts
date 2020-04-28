@@ -69,17 +69,19 @@ export const getFloatPlacement = (parentRef: React.RefObject<HTMLElement>) => {
     return placement;
 };
 
+
 export const generateChoroplethMapPaintAndLegend = (
     colorDomain: string[],
     minValue: number,
     maxValue: number,
 ) => {
-    const range = maxValue - minValue;
     const colors: (string | number)[] = [];
+
     const legend: {
         [key: string]: number;
     } = {};
 
+    const range = maxValue - minValue;
 
     if (!Number.isNaN(range) && range !== Infinity && range !== -Infinity) {
         const gap = range / colorDomain.length;
@@ -109,32 +111,36 @@ export const generateChoroplethMapPaintAndLegend = (
         }
     }
 
-    let paint: mapboxgl.FillPaint = {
-        'fill-color': '#08467d',
-        'fill-opacity': 0.1,
-    };
+    if (colors.length >= 4) {
+        const colorsWithoutLastValue = colors.slice(0, -1);
 
-    if (colors.length !== 0) {
         const fillColor: mapboxgl.FillPaint['fill-color'] = [
             'step',
             ['feature-state', 'value'],
-            ...colors.slice(0, -1),
+            ...colorsWithoutLastValue,
         ];
 
         const fillOpacity: mapboxgl.FillPaint['fill-opacity'] = [
             'case',
+            // ['==', ['feature-state', 'hovered'], true],
+            // 1,
             ['==', ['feature-state', 'value'], null],
             0.1,
-            ['==', ['feature-state', 'hovered'], true],
-            0.97,
-            0.77,
+            0.90,
         ];
 
-        paint = {
+        const paint = {
             'fill-color': fillColor,
             'fill-opacity': fillOpacity,
         };
+        return { min: minValue, paint, legend };
     }
 
-    return { paint, legend };
+    const emptyPaint: mapboxgl.FillPaint = {
+        'fill-color': '#08467d',
+        'fill-opacity': 0.1,
+    };
+    const emptyLegend: typeof legend = {};
+
+    return { min: minValue, paint: emptyPaint, legend: emptyLegend };
 };

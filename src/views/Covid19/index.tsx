@@ -1,5 +1,5 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
-import { FiX } from 'react-icons/fi';
+import { IoIosClose } from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
 
 import RegionSelector from '#components/RegionSelector';
@@ -32,6 +32,9 @@ import {
     fourHourColor,
     eightHourColor,
     twelveHourColor,
+    fourHourUncoveredColor,
+    eightHourUncoveredColor,
+    twelveHourUncoveredColor,
 } from './TravelTimeLayer/mapTheme';
 
 import {
@@ -41,6 +44,7 @@ import {
     AgeGroup,
     HospitalType,
     Season,
+    TravelTimeType,
 } from './types';
 
 import styles from './styles.css';
@@ -97,6 +101,13 @@ const seasonOptions: Season[] = [
 const seasonKeySelector = (season: Season) => season.key;
 const seasonLabelSelector = (season: Season) => season.label;
 
+const travelTimeTypeOptions: TravelTimeType[] = [
+    { key: 'catchment', label: 'Catchment' },
+    { key: 'uncovered', label: 'Uncovered' },
+];
+const travelTimeTypeKeySelector = (travelTimeType: TravelTimeType) => travelTimeType.key;
+const travelTimeTypeLabelSelector = (travelTimeType: TravelTimeType) => travelTimeType.label;
+
 interface Props {
     className?: string;
 }
@@ -114,9 +125,10 @@ function Covid19(props: Props) {
     const [showHealthTravelTime, setShowHealthTravelTime] = useState<boolean>(false);
     const [selectedHospitals, setSelectedHospitals] = useState<string[]>([]);
     const [selectedSeason, setSeason] = useState<Season['key']>('dry');
+    const [selectedTravelTimeType, setTravelTimeType] = useState<TravelTimeType['key']>('catchment');
     const [selectedHospitalType, setHospitalType] = useState<HospitalType['key']>('deshosp');
 
-    const indicatorListGetUrl = `${apiEndPoint}/indicator-list/?is_covid=1`;
+    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_covid=1`;
     const [indicatorListPending, indicatorListResponse] = useRequest<MultiResponse<Indicator>>(
         indicatorListGetUrl,
     );
@@ -240,6 +252,7 @@ function Covid19(props: Props) {
                         onHospitalClick={handleHospitalClick}
                         selectedHospitals={selectedHospitals}
                         travelTimeShown={showHealthTravelTime}
+                        travelTimeType={selectedTravelTimeType}
                     />
                 )}
             </IndicatorMap>
@@ -270,7 +283,7 @@ function Covid19(props: Props) {
                                         name={hospital}
                                         onClick={handleHospitalToggle}
                                         icons={(
-                                            <FiX />
+                                            <IoIosClose />
                                         )}
                                     >
                                         {hospital}
@@ -278,13 +291,23 @@ function Covid19(props: Props) {
                                 ))}
                             </div>
                         )}
-                        <ToggleButton
-                            label="Show travel time"
-                            value={showHealthTravelTime}
-                            onChange={setShowHealthTravelTime}
-                        />
+                        {selectedHospitalType !== 'allhfs' && (
+                            <ToggleButton
+                                label="Show travel time"
+                                value={showHealthTravelTime}
+                                onChange={setShowHealthTravelTime}
+                            />
+                        )}
                         {selectedHospitalType !== 'allhfs' && showHealthTravelTime && (
                             <>
+                                <SegmentInput
+                                    label="Type"
+                                    options={travelTimeTypeOptions}
+                                    onChange={setTravelTimeType}
+                                    value={selectedTravelTimeType}
+                                    optionLabelSelector={travelTimeTypeLabelSelector}
+                                    optionKeySelector={travelTimeTypeKeySelector}
+                                />
                                 <SegmentInput
                                     label="Season"
                                     options={seasonOptions}
@@ -293,18 +316,30 @@ function Covid19(props: Props) {
                                     optionLabelSelector={seasonLabelSelector}
                                     optionKeySelector={seasonKeySelector}
                                 />
-                                <ChoroplethLegend
-                                    className={styles.legend}
-                                    minValue=""
-                                    opacity={0.6}
-                                    legend={{
-                                        [fourHourColor]: '4hrs',
-                                        [eightHourColor]: '8hrs',
-                                        [twelveHourColor]: '12hrs',
-                                        // [uncoveredColor]: 'Uncovered',
-                                    }}
-                                    zeroPrecision={selectedIndicator === -1}
-                                />
+                                {selectedTravelTimeType === 'catchment' && (
+                                    <ChoroplethLegend
+                                        className={styles.legend}
+                                        minValue=""
+                                        opacity={0.6}
+                                        legend={{
+                                            [fourHourColor]: '4hrs',
+                                            [eightHourColor]: '8hrs',
+                                            [twelveHourColor]: '12hrs',
+                                        }}
+                                    />
+                                )}
+                                {selectedTravelTimeType === 'uncovered' && (
+                                    <ChoroplethLegend
+                                        className={styles.legend}
+                                        minValue=""
+                                        opacity={0.6}
+                                        legend={{
+                                            [twelveHourUncoveredColor]: '> 12hrs',
+                                            [eightHourUncoveredColor]: '> 8hrs',
+                                            [fourHourUncoveredColor]: '> 4hrs',
+                                        }}
+                                    />
+                                )}
                             </>
                         )}
                     </>

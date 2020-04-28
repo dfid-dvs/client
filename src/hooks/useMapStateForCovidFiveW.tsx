@@ -25,10 +25,10 @@ function useMapStateForCovidFiveW(
     let municipalityUrl;
 
     if (isDefined(selectedFiveWOption)) {
-        regionFiveWGetUrl = 'https://dvsnaxa.naxa.com.np/covid/covid-fivew/';
-        municipalityUrl = `${apiEndPoint}/gapanapa/`; // FIXME: should use /municipality/
-        districtUrl = `${apiEndPoint}/district/`;
-        provinceUrl = `${apiEndPoint}/province/`;
+        regionFiveWGetUrl = `${apiEndPoint}/covid/covid-fivew/`;
+        municipalityUrl = `${apiEndPoint}/core/gapanapa/`; // FIXME: should use /municipality/
+        districtUrl = `${apiEndPoint}/core/district/`;
+        provinceUrl = `${apiEndPoint}/core/province/`;
     }
 
     const [

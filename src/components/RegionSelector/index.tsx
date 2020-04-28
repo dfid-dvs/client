@@ -86,7 +86,8 @@ function RegionSelector(props: Props) {
         [regionLevel],
     );
 
-    const regionGetRequest = searchHidden ? undefined : `${apiEndPoint}/${regionLevel}/`;
+    // FIXME: /municipality is /gapanapa currently
+    const regionGetRequest = searchHidden ? undefined : `${apiEndPoint}/core/${regionLevel}/`;
     const [
         regionListPending,
         regionListResponse,

@@ -31,3 +31,8 @@ export interface Season {
     key: 'msn' | 'dry';
     label: string;
 }
+
+export interface TravelTimeType {
+    key: 'catchment' | 'uncovered';
+    label: string;
+}

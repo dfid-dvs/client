@@ -10,7 +10,7 @@
 
     .view {
         flex-grow: 1;
-        padding: var(--spacing-large);
+        /* padding: var(--spacing-large); */
         overflow: auto;
     }
 

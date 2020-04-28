@@ -17,13 +17,13 @@ function TextOutput({
             <div className={styles.label}>
                 { label }
             </div>
-            { isDefined(value) && value !== 'null' ? (
+            { isDefined(value) ? (
                 <div className={styles.value}>
                     { value }
                 </div>
             ) : (
                 <div className={styles.nullValue}>
-                    Information not available
+                    N/A
                 </div>
             )}
         </div>

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { IoIosSearch } from 'react-icons/io';
+// import { IoIosSearch } from 'react-icons/io';
+import { IoIosClose } from 'react-icons/io';
 import {
     _cs,
     caseInsensitiveSubmatch,
@@ -12,6 +13,7 @@ import {
 import { getFloatPlacement } from '#utils/common';
 import useBlurEffect from '#hooks/useBlurEffect';
 
+import Button from '#components/Button';
 import Portal from '#components/Portal';
 import TextInput from '#components/TextInput';
 import RawButton from '#components/RawButton';
@@ -166,6 +168,13 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         [],
     );
 
+    const handleClearClick = React.useCallback(
+        () => {
+            onChange(undefined);
+        },
+        [onChange],
+    );
+
     return (
         <div className={_cs(className, styles.selectInput)}>
             <TextInput
@@ -177,7 +186,16 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                 onChange={handleInputValueChange}
                 placeholder={placeholder}
                 disabled={disabled}
-                icons={<IoIosSearch />}
+                actions={(
+                    <Button
+                        transparent
+                        name="close"
+                        onClick={handleClearClick}
+                        icons={(
+                            <IoIosClose />
+                        )}
+                    />
+                )}
             />
             { showDropdown && (
                 <Portal>

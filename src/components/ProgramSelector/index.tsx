@@ -102,31 +102,31 @@ function ProgramSelector(props: Props) {
         setSelectedMarker,
     ] = React.useState<string[] | undefined>(undefined);
 
-    const programListGetUrl = `${apiEndPoint}/program/`;
+    const programListGetUrl = `${apiEndPoint}/core/program/`;
     const [
         programListPending,
         programListResponse,
     ] = useRequest<MultiResponse<Program>>(programListGetUrl);
 
-    const sectorGetRequest = `${apiEndPoint}/sector/`;
+    const sectorGetRequest = `${apiEndPoint}/core/sector/`;
     const [
         sectorListPending,
         sectorListResponse,
     ] = useRequest<MultiResponse<Sector>>(sectorGetRequest);
 
-    const subSectorGetRequest = `${apiEndPoint}/sub-sector/`;
+    const subSectorGetRequest = `${apiEndPoint}/core/sub-sector/`;
     const [
         subSectorListPending,
         subSectorListResponse,
     ] = useRequest<MultiResponse<SubSector>>(subSectorGetRequest);
 
-    const markerGetRequest = `${apiEndPoint}/marker-category/`;
+    const markerGetRequest = `${apiEndPoint}/core/marker-category/`;
     const [
         markerListPending,
         markerListResponse,
     ] = useRequest<MultiResponse<Marker>>(markerGetRequest);
 
-    const subMarkerGetRequest = `${apiEndPoint}/marker-value/`;
+    const subMarkerGetRequest = `${apiEndPoint}/core/marker-value/`;
     const [
         subMarkerListPending,
         subMarkerListResponse,
