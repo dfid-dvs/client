@@ -26,7 +26,7 @@ function useMapStateForCovidFiveW(
 
     if (isDefined(selectedFiveWOption)) {
         regionFiveWGetUrl = `${apiEndPoint}/covid/covid-fivew/`;
-        municipalityUrl = `${apiEndPoint}/core/gapanapa/`; // FIXME: should use /municipality/
+        municipalityUrl = `${apiEndPoint}/core/municipality/`;
         districtUrl = `${apiEndPoint}/core/district/`;
         provinceUrl = `${apiEndPoint}/core/province/`;
     }

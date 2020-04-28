@@ -38,6 +38,7 @@ interface Indicator {
     id: number;
     fullTitle: string;
     abstract: string | undefined;
+    category: string;
 }
 
 interface FiveWOption {
@@ -69,6 +70,7 @@ const fiveWLabelSelector = (option: FiveWOption) => option.label;
 
 const indicatorKeySelector = (indicator: Indicator) => indicator.id;
 const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
+const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 
 type Attribute = 'indicator' | 'fiveW';
 
@@ -190,6 +192,7 @@ const Dashboard = (props: Props) => {
                         value={selectedIndicator}
                         optionLabelSelector={indicatorLabelSelector}
                         optionKeySelector={indicatorKeySelector}
+                        groupKeySelector={indicatorGroupKeySelector}
                     />
                 )}
                 { selectedAttribute === 'fiveW' && (

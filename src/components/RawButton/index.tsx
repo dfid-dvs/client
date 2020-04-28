@@ -46,6 +46,3 @@ function RawButton(props: Props) {
 }
 
 export default RawButton;
-RawButton.defaultProps = {
-    type: 'button',
-};

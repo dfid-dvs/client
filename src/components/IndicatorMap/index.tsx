@@ -98,7 +98,7 @@ function IndicatorMap(props: Props) {
                 sourceKey="nepal"
                 sourceOptions={{
                     type: 'vector',
-                    url: 'mapbox://togglecorp.8cq1z31t',
+                    url: 'mapbox://togglecorp.2p8uqg5e',
                 }}
             >
                 <MunicipalityLayer

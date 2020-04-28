@@ -77,6 +77,7 @@ const fiveWLabelSelector = (option: FiveWOption) => option.label;
 
 const indicatorKeySelector = (indicator: Indicator) => indicator.id;
 const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
+const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 
 const ageGroupOptions: AgeGroup[] = [
     { key: 'belowFourteen', label: 'Below 14' },
@@ -184,7 +185,7 @@ function Covid19(props: Props) {
             const options = [
                 ...indicatorListResponse?.results,
             ];
-            options.push({ id: -1, fullTitle: 'Age group', abstract: undefined });
+            options.push({ id: -1, fullTitle: 'Age group', abstract: undefined, category: 'Demographics' });
             return options;
         },
         [indicatorListResponse],
@@ -381,6 +382,7 @@ function Covid19(props: Props) {
                                 value={selectedIndicator}
                                 optionLabelSelector={indicatorLabelSelector}
                                 optionKeySelector={indicatorKeySelector}
+                                groupKeySelector={indicatorGroupKeySelector}
                             />
                             {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
                                 <div className={styles.abstract}>

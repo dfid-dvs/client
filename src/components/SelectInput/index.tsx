@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useCallback, useEffect } from 'react';
 // import { IoIosSearch } from 'react-icons/io';
 import { IoIosClose } from 'react-icons/io';
 import {
@@ -13,12 +13,55 @@ import {
 import { getFloatPlacement } from '#utils/common';
 import useBlurEffect from '#hooks/useBlurEffect';
 
+import List from '#components/List';
 import Button from '#components/Button';
 import Portal from '#components/Portal';
 import TextInput from '#components/TextInput';
-import RawButton from '#components/RawButton';
+import RawButton, { Props as RawButtonProps } from '#components/RawButton';
 
 import styles from './styles.css';
+
+function Option(props: RawButtonProps & { selected: boolean }) {
+    const divRef = useRef<HTMLButtonElement>(null);
+    const focusedByMouse = useRef(false);
+
+    const { selected, ...otherProps } = props;
+
+    useEffect(
+        () => {
+            if (selected && !focusedByMouse.current && divRef.current) {
+                divRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                });
+            }
+        },
+        [selected],
+    );
+
+    const handleMouseMove = useCallback(
+        () => {
+            focusedByMouse.current = true;
+        },
+        [],
+    );
+
+    const handleMouseLeave = useCallback(
+        () => {
+            focusedByMouse.current = false;
+        },
+        [],
+    );
+
+    return (
+        <RawButton
+            elementRef={divRef}
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+            {...otherProps}
+        />
+    );
+}
 
 interface DropdownProps {
     className?: string;
@@ -26,7 +69,6 @@ interface DropdownProps {
     elementRef: React.RefObject<HTMLDivElement>;
     children: React.ReactNode;
 }
-
 function Dropdown(props: DropdownProps) {
     const {
         parentRef,
@@ -48,6 +90,23 @@ function Dropdown(props: DropdownProps) {
     );
 }
 
+interface GroupNameProps {
+    name: string;
+    className?: string;
+}
+function GroupName(props: GroupNameProps) {
+    const {
+        name,
+        className,
+    } = props;
+
+    return (
+        <div className={className}>
+            {name}
+        </div>
+    );
+}
+
 interface Props<T, K> {
     className?: string;
     dropdownContainerClassName?: string;
@@ -59,6 +118,8 @@ interface Props<T, K> {
     onChange: (d: K | undefined) => void;
     disabled?: boolean;
     placeholder?: string;
+
+    groupKeySelector?: (d: T) => string;
 }
 
 function SelectInput<T, K extends string | number>(props: Props<T, K>) {
@@ -72,6 +133,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         onChange,
         disabled,
         placeholder = 'Select an option',
+        groupKeySelector,
     } = props;
 
     const inputContainerRef = React.useRef<HTMLDivElement>(null);
@@ -175,6 +237,29 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         [onChange],
     );
 
+    const groupRendererParams = useCallback(
+        (groupKey: string) => ({
+            name: groupKey,
+            className: styles.group,
+        }),
+        [],
+    );
+
+    const rendererParams = useCallback(
+        (key: K, datum: T) => {
+            const selected = key === value;
+            return {
+                selected,
+                className: _cs(styles.option, selected && styles.selected),
+                name: String(key),
+                onClick: handleOptionClick,
+                disabled: disabled || selected,
+                children: optionLabelSelector(datum),
+            };
+        },
+        [disabled, handleOptionClick, optionLabelSelector, value],
+    );
+
     return (
         <div className={_cs(className, styles.selectInput)}>
             <TextInput
@@ -209,25 +294,25 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 No option available
                             </div>
                         )}
-                        {filteredOptions?.map((d) => {
-                            const key = optionKeySelector(d);
-                            const selected = key === value;
-                            // FIXME: style disabled item differently
-                            // FIXME: rawbutton doesn't show difference between disabled
-                            // elements
-
-                            return (
-                                <RawButton
-                                    key={key}
-                                    className={_cs(styles.option, selected && styles.selected)}
-                                    name={String(key)}
-                                    onClick={handleOptionClick}
-                                    disabled={disabled || selected}
-                                >
-                                    {optionLabelSelector(d)}
-                                </RawButton>
-                            );
-                        })}
+                        {groupKeySelector ? (
+                            <List
+                                data={filteredOptions}
+                                renderer={Option}
+                                keySelector={optionKeySelector}
+                                rendererParams={rendererParams}
+                                grouped
+                                groupKeySelector={groupKeySelector}
+                                groupRendererParams={groupRendererParams}
+                                groupRenderer={GroupName}
+                            />
+                        ) : (
+                            <List
+                                data={filteredOptions}
+                                renderer={Option}
+                                keySelector={optionKeySelector}
+                                rendererParams={rendererParams}
+                            />
+                        )}
                     </Dropdown>
                 </Portal>
             )}

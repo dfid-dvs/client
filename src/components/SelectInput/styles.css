@@ -18,6 +18,15 @@
         color: var(--color-text-disabled);
     }
 
+    .group {
+        display: block;
+        padding: 6px;
+        width: 100%;
+        text-align: left;
+
+        color: var(--color-accent);
+    }
+
     .option {
         display: block;
         padding: 6px;
