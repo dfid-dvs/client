@@ -89,7 +89,7 @@ function IndicatorMap(props: Props) {
             mapStyle="mapbox://styles/togglecorp/ck9jjmob30vio1it71wja5zhi"
             mapOptions={mapOptions}
             scaleControlShown
-            scaleControlPosition="bottom-right"
+            scaleControlPosition="top-left"
             navControlShown
             navControlPosition="top-left"
         >

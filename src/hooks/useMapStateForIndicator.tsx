@@ -21,8 +21,7 @@ function useMapStateForIndicator(
     selectedIndicator: number | undefined,
     selectedAgeGroup: AgeGroupOption | undefined,
 ): [boolean, MapState[]] {
-    let regionIndicatorUrl;
-
+    let regionIndicatorUrl: string | undefined;
     if (isDefined(selectedIndicator) && String(selectedIndicator) !== '-1') {
         switch (regionLevel) {
             case 'municipality':

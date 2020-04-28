@@ -1,5 +1,5 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
-import { FiX } from 'react-icons/fi';
+import { IoIosClose } from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
 
 import RegionSelector from '#components/RegionSelector';
@@ -283,7 +283,7 @@ function Covid19(props: Props) {
                                         name={hospital}
                                         onClick={handleHospitalToggle}
                                         icons={(
-                                            <FiX />
+                                            <IoIosClose />
                                         )}
                                     >
                                         {hospital}

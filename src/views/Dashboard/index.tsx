@@ -12,6 +12,7 @@ import IndicatorMap from '#components/IndicatorMap';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
+import useMapStateForFiveW from '#hooks/useMapStateForFiveW';
 
 import { generateChoroplethMapPaintAndLegend } from '#utils/common';
 import {
@@ -25,7 +26,6 @@ import {
 } from '#utils/constants';
 
 import styles from './styles.css';
-import useMapStateForFiveW from '#hooks/useMapStateForFiveW';
 
 // FIXME: use from typings
 interface MapState {
@@ -130,7 +130,7 @@ const Dashboard = (props: Props) => {
         fiveWMapState,
     ] = useMapStateForFiveW(regionLevel, selectedFiveWOption);
 
-    const mapStatePending = indicatorMapStatePending || fiveWMapStatePending;
+    // const mapStatePending = indicatorMapStatePending || fiveWMapStatePending;
     const mapState = selectedAttribute === 'indicator' ? indicatorMapState : fiveWMapState;
     const {
         paint: mapPaint,
@@ -151,7 +151,7 @@ const Dashboard = (props: Props) => {
         [mapState],
     );
 
-    const pending = mapStatePending || indicatorListPending;
+    // const pending = mapStatePending || indicatorListPending;
 
     return (
         <div className={_cs(
@@ -159,11 +159,11 @@ const Dashboard = (props: Props) => {
             className,
         )}
         >
-            { pending && (
+            {/* pending && (
                 <Backdrop className={styles.backdrop}>
                     <LoadingAnimation />
                 </Backdrop>
-            )}
+            ) */}
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
@@ -171,7 +171,9 @@ const Dashboard = (props: Props) => {
                 mapPaint={mapPaint}
             />
             <div className={styles.mapStyleConfigContainer}>
-                <RegionSelector />
+                <RegionSelector
+                    searchHidden
+                />
                 <SegmentInput
                     options={attributeOptions}
                     onChange={setAttribute}
