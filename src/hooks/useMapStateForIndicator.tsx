@@ -49,7 +49,7 @@ function useMapStateForIndicator(
     ] = useAgeGroupList(selectedIndicator === -1, regionLevel);
 
     let mapState: MapState[] = [];
-    if (selectedIndicator) {
+    if (isDefined(selectedIndicator)) {
         if (selectedIndicator === -1 && selectedAgeGroup) {
             mapState = ageGroupList.map(d => ({
                 id: d.code,
