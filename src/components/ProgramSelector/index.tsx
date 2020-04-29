@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { _cs, isFalsy } from '@togglecorp/fujs';
+import { _cs } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -102,31 +102,31 @@ function ProgramSelector(props: Props) {
         setSelectedMarker,
     ] = React.useState<string[]>([]);
 
-    const programListGetUrl = `${apiEndPoint}/program/`;
+    const programListGetUrl = `${apiEndPoint}/core/program/`;
     const [
         programListPending,
         programListResponse,
     ] = useRequest<MultiResponse<Program>>(programListGetUrl);
 
-    const sectorGetRequest = `${apiEndPoint}/sector/`;
+    const sectorGetRequest = `${apiEndPoint}/core/sector/`;
     const [
         sectorListPending,
         sectorListResponse,
     ] = useRequest<MultiResponse<Sector>>(sectorGetRequest);
 
-    const subSectorGetRequest = `${apiEndPoint}/sub-sector/`;
+    const subSectorGetRequest = `${apiEndPoint}/core/sub-sector/`;
     const [
         subSectorListPending,
         subSectorListResponse,
     ] = useRequest<MultiResponse<SubSector>>(subSectorGetRequest);
 
-    const markerGetRequest = `${apiEndPoint}/marker-category/`;
+    const markerGetRequest = `${apiEndPoint}/core/marker-category/`;
     const [
         markerListPending,
         markerListResponse,
     ] = useRequest<MultiResponse<Marker>>(markerGetRequest);
 
-    const subMarkerGetRequest = `${apiEndPoint}/marker-value/`;
+    const subMarkerGetRequest = `${apiEndPoint}/core/marker-value/`;
     const [
         subMarkerListPending,
         subMarkerListResponse,
@@ -201,7 +201,7 @@ function ProgramSelector(props: Props) {
                 return undefined;
             }
             if (selectedSector.length === 0 && selectedMarker.length === 0) {
-                return programListResponse?.results;
+                return programListResponse.results;
             }
 
             const { results: programs } = programListResponse;
@@ -214,13 +214,19 @@ function ProgramSelector(props: Props) {
                 ?.filter(subSector => selectedSector?.includes(subSector.key))
                 .map(subSector => subSector.id);
 
-            const filteredProgramsBySector = programs.filter(program => (
-                program.sector.some(sector => sectorKeys?.includes(sector))
-            ));
+            let filteredProgramsBySector: Program[] = [];
+            if (sectorKeys && sectorKeys.length > 0) {
+                filteredProgramsBySector = programs.filter(program => (
+                    program.sector.some(sector => sectorKeys?.includes(sector))
+                ));
+            }
 
-            const filteredProgramsBySubSector = programs.filter(program => (
-                program.subSector.some(subSector => subSectorKeys?.includes(subSector))
-            ));
+            let filteredProgramsBySubSector: Program[] = [];
+            if (subSectorKeys && subSectorKeys.length > 0) {
+                filteredProgramsBySubSector = programs.filter(program => (
+                    program.subSector.some(subSector => subSectorKeys?.includes(subSector))
+                ));
+            }
 
             const markerKeys = markerOptions
                 ?.filter(marker => selectedMarker?.includes(marker.key))
@@ -230,13 +236,19 @@ function ProgramSelector(props: Props) {
                 ?.filter(subMarker => selectedMarker?.includes(subMarker.key))
                 .map(subMarker => subMarker.id);
 
-            const filteredProgramsByMarker = programs.filter(program => (
-                program.markerCategory.some(marker => markerKeys?.includes(marker))
-            ));
+            let filteredProgramsByMarker: Program[] = [];
+            if (markerKeys && markerKeys.length > 0) {
+                filteredProgramsByMarker = programs.filter(program => (
+                    program.markerCategory.some(marker => markerKeys?.includes(marker))
+                ));
+            }
 
-            const filteredProgramsBySubMarker = programs.filter(program => (
-                program.markerValue.some(subMarker => subMarkerKeys?.includes(subMarker))
-            ));
+            let filteredProgramsBySubMarker: Program[] = [];
+            if (subMarkerKeys && subMarkerKeys.length > 0) {
+                filteredProgramsBySubMarker = programs.filter(program => (
+                    program.markerValue.some(subMarker => subMarkerKeys?.includes(subMarker))
+                ));
+            }
 
             return [
                 ...filteredProgramsBySector,
