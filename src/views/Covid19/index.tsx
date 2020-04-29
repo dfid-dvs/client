@@ -67,11 +67,11 @@ const legendRadiusSelector = (option: LegendItem) => option.radius;
 const fiveWOptions: FiveWOption[] = [
     {
         key: 'projectName',
-        label: 'Project',
+        label: 'No. of projects',
     },
     {
         key: 'sector',
-        label: 'Sector',
+        label: 'No. of sectors',
     },
 ];
 const fiveWKeySelector = (option: FiveWOption) => option.key;

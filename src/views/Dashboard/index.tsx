@@ -217,6 +217,15 @@ const Dashboard = (props: Props) => {
                 <RegionSelector searchHidden />
                 <div className={styles.separator} />
                 <SelectInput
+                    label="DFID Data"
+                    className={styles.fiveWSegmentInput}
+                    options={fiveWOptions}
+                    onChange={setFiveWOption}
+                    value={selectedFiveWOption}
+                    optionLabelSelector={fiveWLabelSelector}
+                    optionKeySelector={fiveWKeySelector}
+                />
+                <SelectInput
                     label="Indicator"
                     className={styles.indicatorSelectInput}
                     disabled={indicatorListPending}
@@ -226,15 +235,6 @@ const Dashboard = (props: Props) => {
                     optionLabelSelector={indicatorLabelSelector}
                     optionKeySelector={indicatorKeySelector}
                     groupKeySelector={indicatorGroupKeySelector}
-                />
-                <SelectInput
-                    label="DFID Data"
-                    className={styles.fiveWSegmentInput}
-                    options={fiveWOptions}
-                    onChange={setFiveWOption}
-                    value={selectedFiveWOption}
-                    optionLabelSelector={fiveWLabelSelector}
-                    optionKeySelector={fiveWKeySelector}
                 />
                 <ToggleButton
                     label="Toggle Choropleth/Bubble"

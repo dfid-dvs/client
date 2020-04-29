@@ -23,7 +23,7 @@
         width: 400px;
 
         .separator {
-            margin: var(--spacing-small) 0;
+            margin: var(--spacing-large) 0;
             border-bottom: var(--width-separator-thin) solid var(--color-separator);
             width: 100%;
         }
