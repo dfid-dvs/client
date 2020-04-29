@@ -91,3 +91,12 @@ export interface LegendItem {
     radius: number;
     value: number;
 }
+
+export interface Layer {
+    id: number;
+    name: string;
+    layerName: string;
+    workspace: string;
+    geoserverUrl: string;
+    type: 'raster' | 'vector';
+}

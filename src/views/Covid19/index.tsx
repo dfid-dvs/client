@@ -15,6 +15,8 @@ import Button from '#components/Button';
 import BubbleLegend from '#components/BubbleLegend';
 
 import IndicatorMap from '#components/IndicatorMap';
+import MapSource from '#remap/MapSource';
+import MapLayer from '#remap/MapSource/MapLayer';
 import Stats from './Stats';
 
 import useRequest from '#hooks/useRequest';
@@ -23,9 +25,10 @@ import useMapStateForCovidFiveW from '#hooks/useMapStateForCovidFiveW';
 
 import {
     AgeGroupOption,
-    MultiResponse,
     CovidFiveWOptionKey,
+    Layer,
     LegendItem,
+    MultiResponse,
 } from '#types';
 
 import {
@@ -110,6 +113,9 @@ const travelTimeTypeOptions: TravelTimeType[] = [
 const travelTimeTypeKeySelector = (travelTimeType: TravelTimeType) => travelTimeType.key;
 const travelTimeTypeLabelSelector = (travelTimeType: TravelTimeType) => travelTimeType.label;
 
+const layerKeySelector = (d: Layer) => d.id;
+const layerLabelSelector = (d: Layer) => d.layerName;
+
 interface Props {
     className?: string;
 }
@@ -129,11 +135,19 @@ function Covid19(props: Props) {
     const [selectedTravelTimeType, setTravelTimeType] = useState<TravelTimeType['key']>('catchment');
     const [selectedHospitalType, setHospitalType] = useState<HospitalType['key']>('deshosp');
 
+    const [selectedLayer, setSelectedLayer] = useState<number | undefined>(undefined);
+
     const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_covid=1`;
     const [indicatorListPending, indicatorListResponse] = useRequest<MultiResponse<Indicator>>(
         indicatorListGetUrl,
     );
     const indicatorList = indicatorListResponse?.results;
+
+    const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
+    const [
+        mapLayerListPending,
+        mapLayerListResponse,
+    ] = useRequest<MultiResponse<Layer>>(mapLayerGetUrl);
 
     const [
         mapStateForIndicatorPending,
@@ -293,6 +307,13 @@ function Covid19(props: Props) {
         || showTravelTimeChoropleth
     );
 
+    const rasterLayers = useMemo(
+        () => (mapLayerListResponse?.results.filter(v => v.type === 'raster')),
+        [mapLayerListResponse],
+    );
+
+    const selectedRasterLayer = rasterLayers?.find(v => v.id === selectedLayer);
+
     return (
         <div className={_cs(
             styles.covid19,
@@ -313,6 +334,26 @@ function Covid19(props: Props) {
                 bubbleMapState={bubbleMapState}
                 bubbleMapPaint={bubblePaint}
             >
+                {selectedRasterLayer && (
+                    <MapSource
+                        key={selectedRasterLayer.layerName}
+                        // layerKey={selectedRasterLayer.id}
+                        sourceKey={selectedRasterLayer.layerName}
+                        sourceOptions={{
+                            type: 'raster',
+                            tiles: [selectedRasterLayer.geoserverUrl],
+                            tileSize: 256,
+                        }}
+                    >
+                        <MapLayer
+                            layerKey="raster-layer"
+                            layerOptions={{
+                                type: 'raster',
+                            }}
+                        />
+                    </MapSource>
+
+                )}
                 {showHealthResource && (
                     <TravelTimeLayer
                         key={`${selectedSeason}-${selectedHospitalType}`}
@@ -487,6 +528,16 @@ function Covid19(props: Props) {
                             )}
                         </>
                     )}
+                    <SelectInput
+                        placeholder="Background Layer"
+                        className={styles.backgroundLayerSelectInput}
+                        disabled={mapLayerListPending}
+                        options={rasterLayers}
+                        onChange={setSelectedLayer}
+                        value={selectedLayer}
+                        optionKeySelector={layerKeySelector}
+                        optionLabelSelector={layerLabelSelector}
+                    />
                 </div>
             )}
         </div>
