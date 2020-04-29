@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { _cs, unique } from '@togglecorp/fujs';
 
 import Map from '#remap';
@@ -20,8 +20,7 @@ import {
     getRasterTile,
 } from '#utils/common';
 
-import { Layer } from '#types';
-import { FiveWTooltipData, CovidFiveW } from '#types';
+import { Layer, FiveWTooltipData, CovidFiveW } from '#types';
 
 import theme, { noneLayout, visibleLayout } from './mapTheme';
 
@@ -31,6 +30,20 @@ interface HoveredRegion {
     feature: mapboxgl.MapboxGeoJSONFeature;
     lngLat: mapboxgl.LngLatLike;
 }
+
+interface ClickedRegion {
+    feature: mapboxgl.MapboxGeoJSONFeature;
+    lngLat: mapboxgl.LngLatLike;
+    point: mapboxgl.Point;
+}
+
+
+const onClickTooltipOptions: mapboxgl.PopupOptions = {
+    closeOnClick: true,
+    closeButton: true,
+    offset: 8,
+    maxWidth: '480px',
+};
 
 const projectKeySelector = (d: CovidFiveW) => d.projectName;
 
@@ -111,11 +124,11 @@ interface Props {
     choroplethMapPaint?: mapboxgl.FillPaint;
     bubbleMapPaint?: mapboxgl.CirclePaint;
     children?: React.ReactNode;
-    hideTooltip?: boolean;
     hideChoropleth?: boolean;
     hideBubble?: boolean;
     rasterLayer?: Layer;
     printMode?: boolean;
+    hideTooltipOnHover?: boolean;
 }
 
 function IndicatorMap(props: Props) {
@@ -127,17 +140,22 @@ function IndicatorMap(props: Props) {
         choroplethMapPaint,
         bubbleMapPaint,
         children,
-        hideTooltip,
         hideChoropleth,
         hideBubble,
         rasterLayer,
         printMode,
+        hideTooltipOnHover,
     } = props;
 
     const [
         hoveredRegionProperties,
         setHoveredRegionProperties,
     ] = React.useState<HoveredRegion | undefined>();
+
+    const [
+        clickedRegionProperties,
+        setClickedRegionProperties,
+    ] = React.useState<ClickedRegion | undefined>();
 
     const handleMapRegionMouseEnter = React.useCallback(
         (feature: mapboxgl.MapboxGeoJSONFeature, lngLat: mapboxgl.LngLat) => {
@@ -184,6 +202,29 @@ function IndicatorMap(props: Props) {
         selectedSourceForChoropleth = 'palikageo';
         selectedSourceForBubble = 'palikacentroidgeo';
     }
+    const handleMapRegionOnClick = React.useCallback(
+        (
+            feature: mapboxgl.MapboxGeoJSONFeature,
+            lngLat: mapboxgl.LngLat,
+            point: mapboxgl.Point,
+        ) => {
+            setClickedRegionProperties({
+                feature,
+                lngLat,
+                point,
+            });
+
+            return true;
+        },
+        [setClickedRegionProperties],
+    );
+
+    const handleTooltipClose = React.useCallback(
+        () => {
+            setClickedRegionProperties(undefined);
+        },
+        [setClickedRegionProperties],
+    );
 
     return (
         <Map
@@ -213,6 +254,7 @@ function IndicatorMap(props: Props) {
                     }}
                     onMouseEnter={handleMapRegionMouseEnter}
                     onMouseLeave={handleMapRegionMouseLeave}
+                    onClick={handleMapRegionOnClick}
                 />
                 <MapLayer
                     layerKey="palika-line"
@@ -233,6 +275,7 @@ function IndicatorMap(props: Props) {
                     }}
                     onMouseEnter={handleMapRegionMouseEnter}
                     onMouseLeave={handleMapRegionMouseLeave}
+                    onClick={handleMapRegionOnClick}
                 />
                 <MapLayer
                     layerKey="district-line"
@@ -253,6 +296,7 @@ function IndicatorMap(props: Props) {
                     }}
                     onMouseEnter={handleMapRegionMouseEnter}
                     onMouseLeave={handleMapRegionMouseLeave}
+                    onClick={handleMapRegionOnClick}
                 />
                 <MapLayer
                     layerKey="province-line"
@@ -269,7 +313,9 @@ function IndicatorMap(props: Props) {
                     attributeKey="value"
                     sourceLayer={selectedSourceForChoropleth}
                 />
-                {!hideTooltip && hoveredRegionProperties && hoveredRegionProperties.lngLat && (
+                {!hideTooltipOnHover
+                    && hoveredRegionProperties
+                    && hoveredRegionProperties.lngLat && (
                     <MapTooltip
                         coordinates={hoveredRegionProperties.lngLat}
                         tooltipOptions={tooltipOptions}
@@ -277,8 +323,22 @@ function IndicatorMap(props: Props) {
                     >
                         <Tooltip
                             feature={hoveredRegionProperties.feature}
+                        />
+                    </MapTooltip>
+                )}
+                {!hideTooltipOnClick
+                    && clickedRegionProperties
+                    && clickedRegionProperties.lngLat && (
+                    <MapTooltip
+                        coordinates={clickedRegionProperties.lngLat}
+                        tooltipOptions={onClickTooltipOptions}
+                        onHide={handleTooltipClose}
+                    >
+                        <Tooltip
+                            feature={clickedRegionProperties.feature}
                             tooltipData={tooltipData}
                         />
+
                     </MapTooltip>
                 )}
             </MapSource>

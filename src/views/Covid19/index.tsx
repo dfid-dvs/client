@@ -424,6 +424,7 @@ function Covid19(props: Props) {
                 bubbleMapPaint={bubblePaint}
                 rasterLayer={selectedRasterLayer}
                 printMode={printMode}
+                hideTooltipOnHover
             >
                 {showHealthResource && (
                     <TravelTimeLayer
