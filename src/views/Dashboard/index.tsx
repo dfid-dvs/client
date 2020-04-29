@@ -9,6 +9,7 @@ import NavbarContext from '#components/NavbarContext';
 import ToggleButton from '#components/ToggleButton';
 import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
+import BubbleLegend from '#components/BubbleLegend';
 import IndicatorMap from '#components/IndicatorMap';
 
 import useRequest from '#hooks/useRequest';
@@ -22,6 +23,7 @@ import {
 import {
     MultiResponse,
     FiveWOptionKey,
+    LegendItem,
 } from '#types';
 
 import {
@@ -72,6 +74,10 @@ const fiveWOptions: FiveWOption[] = [
 const fiveWKeySelector = (option: FiveWOption) => option.key;
 const fiveWLabelSelector = (option: FiveWOption) => option.label;
 
+const legendKeySelector = (option: LegendItem) => option.radius;
+const legendValueSelector = (option: LegendItem) => option.value;
+const legendRadiusSelector = (option: LegendItem) => option.radius;
+
 const indicatorKeySelector = (indicator: Indicator) => indicator.id;
 const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
 const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
@@ -101,6 +107,7 @@ const Dashboard = (props: Props) => {
         indicatorListPending,
         indicatorListResponse,
     ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl);
+    const indicatorList = indicatorListResponse?.results;
 
     const [
         indicatorMapStatePending,
@@ -117,18 +124,36 @@ const Dashboard = (props: Props) => {
     const {
         choroplethMapState,
         bubbleMapState,
+        choroplethTitle,
+        bubbleTitle,
     } = useMemo(() => {
+        const indicator = indicatorList?.find(i => indicatorKeySelector(i) === selectedIndicator);
+        const indicatorTitle = indicator && indicatorLabelSelector(indicator);
+        const fiveW = fiveWOptions.find(i => fiveWKeySelector(i) === selectedFiveWOption);
+        const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
+
         if (invertMapStyle) {
             return {
                 choroplethMapState: indicatorMapState,
+                choroplethTitle: indicatorTitle,
                 bubbleMapState: fiveWMapState,
+                bubbleTitle: fiveWTitle,
             };
         }
         return {
             choroplethMapState: fiveWMapState,
+            choroplethTitle: fiveWTitle,
             bubbleMapState: indicatorMapState,
+            bubbleTitle: indicatorTitle,
         };
-    }, [invertMapStyle, indicatorMapState, fiveWMapState]);
+    }, [
+        invertMapStyle,
+        indicatorMapState,
+        fiveWMapState,
+        selectedIndicator,
+        selectedFiveWOption,
+        indicatorList,
+    ]);
 
     const {
         paint: mapPaint,
@@ -147,9 +172,14 @@ const Dashboard = (props: Props) => {
     );
 
     // const pending = mapStatePending || indicatorListPending;
-    const { mapPaint: bubblePaint } = useMemo(() => {
+    const {
+        mapPaint: bubblePaint,
+        legend: bubbleLegend,
+    } = useMemo(() => {
         const valueList = bubbleMapState
-            .filter(d => isDefined(d.value)).map(d => Math.abs(d.value));
+            .map(d => d.value)
+            .filter(isDefined)
+            .map(Math.abs);
 
         const min = valueList.length > 0 ? Math.min(...valueList) : undefined;
         const max = valueList.length > 0 ? Math.max(...valueList) : undefined;
@@ -185,11 +215,11 @@ const Dashboard = (props: Props) => {
             />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />
-                <h4>Indictor</h4>
+                <h4>Indicator</h4>
                 <SelectInput
                     className={styles.indicatorSelectInput}
                     disabled={indicatorListPending}
-                    options={indicatorListResponse?.results}
+                    options={indicatorList}
                     onChange={setSelectedIndicator}
                     value={selectedIndicator}
                     optionLabelSelector={indicatorLabelSelector}
@@ -210,17 +240,25 @@ const Dashboard = (props: Props) => {
                     value={invertMapStyle}
                     onChange={setInvertMapStyle}
                 />
-                {Object.keys(mapLegend).length > 0 && (
-                    <div className={styles.stats}>
-                        <h4>Legend</h4>
-                        <ChoroplethLegend
-                            className={styles.legend}
-                            minValue={dataMinValue}
-                            legend={mapLegend}
-                        />
-                    </div>
-                )}
             </div>
+            {(bubbleLegend.length > 0 || Object.keys(mapLegend).length > 0) && (
+                <div className={styles.legendContainer}>
+                    <BubbleLegend
+                        className={styles.legend}
+                        title={bubbleTitle}
+                        data={bubbleLegend}
+                        keySelector={legendKeySelector}
+                        valueSelector={legendValueSelector}
+                        radiusSelector={legendRadiusSelector}
+                    />
+                    <ChoroplethLegend
+                        title={choroplethTitle}
+                        className={styles.choroplethLegend}
+                        minValue={dataMinValue}
+                        legend={mapLegend}
+                    />
+                </div>
+            )}
         </div>
     );
 };

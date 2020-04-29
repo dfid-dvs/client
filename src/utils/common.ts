@@ -72,9 +72,14 @@ export const getFloatPlacement = (parentRef: React.RefObject<HTMLElement>) => {
 
 export const generateChoroplethMapPaintAndLegend = (
     colorDomain: string[],
-    minValue: number,
+    minVal: number,
     maxValue: number,
 ) => {
+    let minValue = minVal;
+    if (minValue === maxValue) {
+        minValue = 0;
+    }
+
     const colors: (string | number)[] = [];
 
     const legend: {
@@ -146,37 +151,40 @@ export const generateChoroplethMapPaintAndLegend = (
 };
 
 export const generateBubbleMapPaintAndLegend = (
-    minValue: number = 0,
-    maxValue: number = 1,
+    minVal: number = 0,
+    maxValue: number = 0,
     maxRadius: number = 50,
+    positiveColor: string = '#01665e',
+    negativeColor: string = '#de2d26',
 ) => {
-    const array = [
+    let minValue = minVal;
+    if (minValue === maxValue) {
+        minValue = 0;
+    }
+
+    let array = [
         minValue, 0,
         maxValue, maxRadius,
     ];
 
-    let circleRadius: mapboxgl.CirclePaint['circle-radius'] = [
-        'interpolate', ['linear'],
-        ['abs', ['number', ['feature-state', 'value'], 0]],
-        ...array,
-    ];
-
-    if (minValue === maxValue) {
-        circleRadius = [
-            'interpolate', ['linear'],
-            ['abs', ['number', ['feature-state', 'value'], 0]],
+    if (minValue === maxValue && maxValue === 0) {
+        array = [
             0, 0,
-            maxValue, maxRadius,
+            1, maxRadius,
         ];
     }
 
     const mapPaint: mapboxgl.CirclePaint = ({
-        'circle-radius': circleRadius,
+        'circle-radius': [
+            'interpolate', ['linear'],
+            ['abs', ['number', ['feature-state', 'value'], 0]],
+            ...array,
+        ],
         'circle-color': [
             'case',
             ['>', ['number', ['feature-state', 'value'], 0], 0],
-            '#01665e',
-            '#de2d26',
+            positiveColor,
+            negativeColor,
         ],
         'circle-opacity': 0.6,
         'circle-stroke-color': '#fff',
@@ -184,7 +192,23 @@ export const generateBubbleMapPaintAndLegend = (
         'circle-stroke-opacity': 0.2,
     });
 
+    const legend = [];
+    let currentRadius = 10;
+
+    if (minValue !== maxValue) {
+        while (currentRadius <= maxRadius) {
+            const valueInCurrentRadius = minValue
+                + ((maxValue - minValue) / maxRadius) * currentRadius;
+            legend.push({
+                value: valueInCurrentRadius,
+                radius: currentRadius,
+            });
+            currentRadius += 10;
+        }
+    }
+
     return ({
         mapPaint,
+        legend,
     });
 };

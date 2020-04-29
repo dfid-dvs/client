@@ -86,3 +86,8 @@ export interface Municipality {
     code: string;
     population: number;
 }
+
+export interface LegendItem {
+    radius: number;
+    value: number;
+}

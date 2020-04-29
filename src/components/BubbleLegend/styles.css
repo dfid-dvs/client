@@ -1,7 +1,14 @@
+.heading {
+    padding: var(--spacing-extra-small) 0;
+}
+
 .legend-item {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: var(--spacing-small) 0;
+    height: var(--font-size-medium);
+    overflow: hidden;
 
     .icon {
         flex-shrink: 0;
@@ -12,14 +19,41 @@
     .color {
         flex-shrink: 0;
         margin-right: var(--spacing-small);
+        border-radius: 50%;
         width: var(--font-size-medium);
         height: var(--font-size-medium);
     }
 
-    .label {
+    .value {
         flex-grow: 1;
-        margin-right: var(--spacing-small);
+        margin-left: var(--spacing-small);
         text-transform: capitalize;
         color: var(--color-text-label);
+    }
+}
+
+.footer {
+    display: flex;
+    align-items: center;
+
+    .circle {
+        opacity: 0.6;
+        margin-right: var(--spacing-small);
+        border-radius: 50%;
+        width: var(--font-size-medium);
+        height: var(--font-size-medium);
+        content: '';
+    }
+
+    .positive,
+    .negative {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        font-size: var(--font-size-small);
+    }
+
+    .negative {
+        padding-right: var(--spacing-medium);
     }
 }

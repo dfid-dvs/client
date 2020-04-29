@@ -12,6 +12,7 @@ import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import ToggleButton from '#components/ToggleButton';
 import Button from '#components/Button';
+import BubbleLegend from '#components/BubbleLegend';
 
 import IndicatorMap from '#components/IndicatorMap';
 import Stats from './Stats';
@@ -20,7 +21,12 @@ import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
 import useMapStateForCovidFiveW from '#hooks/useMapStateForCovidFiveW';
 
-import { AgeGroupOption, MultiResponse, CovidFiveWOptionKey } from '#types';
+import {
+    AgeGroupOption,
+    MultiResponse,
+    CovidFiveWOptionKey,
+    LegendItem,
+} from '#types';
 
 import {
     generateChoroplethMapPaintAndLegend,
@@ -44,7 +50,6 @@ import {
 } from './TravelTimeLayer/mapTheme';
 
 import {
-    Attribute,
     FiveWOption,
     Indicator,
     AgeGroup,
@@ -55,18 +60,9 @@ import {
 
 import styles from './styles.css';
 
-const attributeOptions: Attribute[] = [
-    {
-        key: 'fiveW',
-        label: 'Dfid Data',
-    },
-    {
-        key: 'indicator',
-        label: 'Indicator',
-    },
-];
-const attributeKeySelector = (option: Attribute) => option.key;
-const attributeLabelSelector = (option: Attribute) => option.label;
+const legendKeySelector = (option: LegendItem) => option.radius;
+const legendValueSelector = (option: LegendItem) => option.value;
+const legendRadiusSelector = (option: LegendItem) => option.radius;
 
 const fiveWOptions: FiveWOption[] = [
     {
@@ -138,6 +134,7 @@ function Covid19(props: Props) {
     const [indicatorListPending, indicatorListResponse] = useRequest<MultiResponse<Indicator>>(
         indicatorListGetUrl,
     );
+    const indicatorList = indicatorListResponse?.results;
 
     const [
         mapStateForIndicatorPending,
@@ -154,18 +151,36 @@ function Covid19(props: Props) {
     const {
         choroplethMapState,
         bubbleMapState,
+        choroplethTitle,
+        bubbleTitle,
     } = useMemo(() => {
+        const indicator = indicatorList?.find(i => indicatorKeySelector(i) === selectedIndicator);
+        const indicatorTitle = indicator && indicatorLabelSelector(indicator);
+        const fiveW = fiveWOptions.find(i => fiveWKeySelector(i) === selectedFiveWOption);
+        const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
+
         if (invertMapStyle) {
             return {
                 choroplethMapState: mapStateForIndicator,
+                choroplethTitle: indicatorTitle,
                 bubbleMapState: mapStateForFiveW,
+                bubbleTitle: fiveWTitle,
             };
         }
         return {
             choroplethMapState: mapStateForFiveW,
+            choroplethTitle: fiveWTitle,
             bubbleMapState: mapStateForIndicator,
+            bubbleTitle: indicatorTitle,
         };
-    }, [invertMapStyle, mapStateForIndicator, mapStateForFiveW]);
+    }, [
+        invertMapStyle,
+        mapStateForIndicator,
+        mapStateForFiveW,
+        selectedIndicator,
+        selectedFiveWOption,
+        indicatorList,
+    ]);
 
     // const mapStatePending = mapStateForIndicatorPending || mapStateForFiveWPending;
     // const pending = mapStatePending || indicatorListPending;
@@ -185,9 +200,14 @@ function Covid19(props: Props) {
         [choroplethMapState],
     );
 
-    const { mapPaint: bubblePaint } = useMemo(() => {
+    const {
+        mapPaint: bubblePaint,
+        legend: bubbleLegend,
+    } = useMemo(() => {
         const valueList = bubbleMapState
-            .filter(d => isDefined(d.value)).map(d => Math.abs(d.value));
+            .map(d => d.value)
+            .filter(isDefined)
+            .map(Math.abs);
 
         const min = valueList.length > 0 ? Math.min(...valueList) : undefined;
         const max = valueList.length > 0 ? Math.max(...valueList) : undefined;
@@ -427,14 +447,27 @@ function Covid19(props: Props) {
                         value={invertMapStyle}
                         onChange={setInvertMapStyle}
                     />
-                    <ChoroplethLegend
+                </div>
+            </div>
+            {(bubbleLegend.length > 0 || Object.keys(mapLegend).length > 0) && (
+                <div className={styles.legendContainer}>
+                    <BubbleLegend
                         className={styles.legend}
+                        title={bubbleTitle}
+                        data={bubbleLegend}
+                        keySelector={legendKeySelector}
+                        valueSelector={legendValueSelector}
+                        radiusSelector={legendRadiusSelector}
+                    />
+                    <ChoroplethLegend
+                        className={styles.choroplethLegend}
+                        title={choroplethTitle}
                         minValue={dataMinValue}
                         legend={mapLegend}
                         zeroPrecision={selectedIndicator === -1}
                     />
                 </div>
-            </div>
+            )}
         </div>
     );
 }

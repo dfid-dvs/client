@@ -9,11 +9,13 @@ interface ChoroplethLegend {
     minValue: number | string;
     legend: {[key: string]: number | string};
     className?: string;
+    title?: string;
     zeroPrecision?: boolean;
     opacity?: number;
 }
 function ChoroplethLegend(
     {
+        title,
         minValue,
         legend,
         className,
@@ -27,44 +29,51 @@ function ChoroplethLegend(
     }
 
     return (
-        <div className={_cs(className, styles.choroplethLegend)}>
-            {isDefined(minValue) && typeof minValue === 'number' && (
-                <Numeral
-                    className={styles.min}
-                    value={minValue}
-                    precision={zeroPrecision ? 0 : undefined}
-                    normalize
-                />
+        <div className={_cs(styles.legendContainer, className)}>
+            {title && (
+                <h5 className={styles.heading}>
+                    {title}
+                </h5>
             )}
-            {isDefined(minValue) && typeof minValue === 'string' && (
-                minValue
-            )}
-            {colors.map((color) => {
-                const value = legend[color];
-                return (
-                    <div
-                        className={styles.legendElement}
-                        key={color}
-                    >
+            <div className={styles.choroplethLegend}>
+                {isDefined(minValue) && typeof minValue === 'number' && (
+                    <Numeral
+                        className={styles.min}
+                        value={minValue}
+                        precision={zeroPrecision ? 0 : undefined}
+                        normalize
+                    />
+                )}
+                {isDefined(minValue) && typeof minValue === 'string' && (
+                    minValue
+                )}
+                {colors.map((color) => {
+                    const value = legend[color];
+                    return (
                         <div
-                            className={styles.color}
-                            style={{ backgroundColor: color, opacity }}
-                        />
-                        <div className={styles.value}>
-                            {typeof value === 'number' && (
-                                <Numeral
-                                    value={value}
-                                    precision={zeroPrecision ? 0 : undefined}
-                                    normalize
-                                />
-                            )}
-                            {typeof value === 'string' && (
-                                value
-                            )}
+                            className={styles.legendElement}
+                            key={color}
+                        >
+                            <div
+                                className={styles.color}
+                                style={{ backgroundColor: color, opacity }}
+                            />
+                            <div className={styles.value}>
+                                {typeof value === 'number' && (
+                                    <Numeral
+                                        value={value}
+                                        precision={zeroPrecision ? 0 : undefined}
+                                        normalize
+                                    />
+                                )}
+                                {typeof value === 'string' && (
+                                    value
+                                )}
+                            </div>
                         </div>
-                    </div>
-                );
-            })}
+                    );
+                })}
+            </div>
         </div>
     );
 }

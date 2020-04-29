@@ -207,7 +207,7 @@ function IndicatorMap(props: Props) {
                 )}
             </MapSource>
             <MapSource
-                sourceKey="neal-centroids"
+                sourceKey="nepal-centroids"
                 sourceOptions={{
                     type: 'vector',
                     url: 'mapbox://togglecorp.4eqzulj8',

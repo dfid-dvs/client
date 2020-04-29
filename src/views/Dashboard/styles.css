@@ -39,6 +39,21 @@
             margin: var(--spacing-medium);
             margin-top: 0;
         }
+    }
+
+    .legend-container {
+        position: absolute;
+        bottom: 10px;
+        left: 420px;
+        border: 1px solid rgba(0, 0, 0, .1);
+        background-color: #fff;
+        padding: var(--spacing-medium);
+        max-width: 400px;
+
+        .choropleth-legend {
+            margin: var(--spacing-medium);
+            width: calc(400px - 4 * var(--spacing-medium));
+        }
 
         .legend {
             margin: var(--spacing-medium);
