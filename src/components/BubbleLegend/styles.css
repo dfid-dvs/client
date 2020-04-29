@@ -1,5 +1,5 @@
 .heading {
-    padding: var(--spacing-extra-small) 0;
+    margin-bottom: var(--spacing-medium);
 }
 
 .legend-item {

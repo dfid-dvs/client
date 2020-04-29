@@ -41,7 +41,7 @@ function Input<T>(props: Props<T>) {
                 )}
                 <RawInput
                     elementRef={inputRef}
-                    className={_cs(styles.input, className)}
+                    className={styles.input}
                     {...otherProps}
                 />
                 { actions && (

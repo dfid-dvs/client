@@ -6,7 +6,9 @@
 
     --font-size-extra-small: 9px;
     --font-size-small: 12px;
+    --font-size-small-medium: 13px;
     --font-size-medium: 14px;
+    --font-size-medium-large: 16px;
     --font-size-large: 18px;
     --font-size-extra-large: 24px;
 
@@ -23,9 +25,11 @@
     --color-text-light-on-accent: rgba(255, 255, 255, .5);
 
     --color-text-disabled: rgba(0, 0, 0, .4);
+    --color-text-label: rgba(0, 0, 0, .6);
 
     --color-separator: rgba(0, 0, 0, .1);
-    --color-background-accent-hint: #18cc9c11;
+    --color-background-accent-hint: #18cc9c55;
+    --color-background-hover: rgba(0, 0, 0, .05);
 
     --width-separator-thin: 1px;
 }

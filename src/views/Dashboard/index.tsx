@@ -215,8 +215,9 @@ const Dashboard = (props: Props) => {
             />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />
-                <h4>Indicator</h4>
+                <div className={styles.separator} />
                 <SelectInput
+                    label="Indicator"
                     className={styles.indicatorSelectInput}
                     disabled={indicatorListPending}
                     options={indicatorList}
@@ -226,8 +227,8 @@ const Dashboard = (props: Props) => {
                     optionKeySelector={indicatorKeySelector}
                     groupKeySelector={indicatorGroupKeySelector}
                 />
-                <h4>DFID Data</h4>
                 <SelectInput
+                    label="DFID Data"
                     className={styles.fiveWSegmentInput}
                     options={fiveWOptions}
                     onChange={setFiveWOption}
@@ -244,8 +245,8 @@ const Dashboard = (props: Props) => {
             {(bubbleLegend.length > 0 || Object.keys(mapLegend).length > 0) && (
                 <div className={styles.legendContainer}>
                     <ChoroplethLegend
+                        className={styles.legend}
                         title={choroplethTitle}
-                        className={styles.choroplethLegend}
                         minValue={dataMinValue}
                         legend={mapLegend}
                     />

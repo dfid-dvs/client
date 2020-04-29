@@ -115,9 +115,9 @@ function IndicatorMap(props: Props) {
             mapStyle="mapbox://styles/togglecorp/ck9jjmob30vio1it71wja5zhi"
             mapOptions={mapOptions}
             scaleControlShown
-            scaleControlPosition="top-left"
+            scaleControlPosition="bottom-right"
             navControlShown
-            navControlPosition="top-left"
+            navControlPosition="bottom-right"
         >
             <MapContainer className={_cs(styles.mapContainer, className)} />
             <MapSource

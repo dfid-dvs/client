@@ -1,4 +1,4 @@
-.select-input{
+.text-input{
     background-color: rgba(0, 0, 0, .05); 
 }
 
@@ -8,7 +8,6 @@
     left: 50%;
     border: var(--width-separator-thin) solid var(--color-separator);
     background-color: #fff;
-    padding: 10px;
     max-width: 90vw;
     max-height: 50vh;
     overflow: auto;
@@ -20,7 +19,7 @@
 
     .group {
         display: block;
-        padding: 6px;
+        padding: 6px 10px;
         width: 100%;
         text-align: left;
 
@@ -29,7 +28,7 @@
 
     .option {
         display: block;
-        padding: 6px;
+        padding: 6px 10px;
         width: 100%;
         text-align: left;
         /* color: rgba(0, 0, 0, .5); */
@@ -39,7 +38,7 @@
         }
 
         &:hover {
-            background-color: var(--color-background-accent-hint);
+            background-color: var(--color-background-hover);
             /* color: rgba(0, 0, 0, .9); */
         }
     }

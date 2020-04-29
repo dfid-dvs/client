@@ -2,13 +2,13 @@
     display: flex;
     overflow: auto;
     color: var(--color-text-label);
-    font-size: var(--font-size-extra-small);
+    font-size: var(--font-size-small);
     font-weight: var(--font-weight-bold);
 
     .left {
         flex-grow: 1;
         overflow: hidden;
-        text-transform: uppercase;
+        text-transform: capitalize;
         text-overflow: ellipsis;
         white-space: nowrap;
     }

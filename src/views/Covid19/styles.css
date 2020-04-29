@@ -22,9 +22,14 @@
         padding: var(--spacing-medium);
         width: 400px;
 
-        .heading {
-            padding: var(--spacing-medium);
-            color: var(--color-accent);
+        .separator {
+            margin: var(--spacing-small) 0;
+            border-bottom: var(--width-separator-thin) solid var(--color-separator);
+            width: 100%;
+        }
+
+        .input-item {
+            margin: var(--spacing-medium) 0;
         }
 
         .layer-by-selection {
@@ -43,21 +48,17 @@
             }
         }
 
-        .layer-selection {
-            margin-top: var(--spacing-medium);
+        .age-group-select-input {
+            padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
+        }
 
-            .indicator-select-input {
-                margin: var(--spacing-medium);
-            }
+        .indicator-input {
+            margin-bottom: 0;
+        }
 
-            .age-group-select-input {
-                padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
-            }
-
-            .abstract {
-                padding: var(--spacing-medium);
-                font-size: var(--font-size-small);
-            }
+        .abstract {
+            padding: var(--spacing-medium) 0;
+            font-size: var(--font-size-small);
         }
     }
 
@@ -65,18 +66,16 @@
         display: flex;
         position: absolute;
         bottom: 10px;
-        left: 420px;
-        border: 1px solid rgba(0, 0, 0, .1);
-        background-color: #fff;
-        padding: var(--spacing-medium);
-        max-width: 400px;
-
-        .choropleth-legend {
-            margin: var(--spacing-medium);
-        }
+        left: calc(400px + 2 * var(--spacing-medium));
+        align-items: flex-end;
+        max-width: 512px;
+        max-height: 400px;
 
         .legend {
-            margin: var(--spacing-medium);
+            margin: 0 var(--spacing-small);
+            border: 1px solid rgba(0, 0, 0, .1);
+            background-color: #fff;
+            padding: var(--spacing-medium);
         }
     }
 
