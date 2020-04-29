@@ -38,7 +38,6 @@ function LegendItem(props: LegendItemProps) {
             <div className={styles.value}>
                 <Numeral
                     value={value}
-                    precision={2}
                     normalize
                 />
             </div>

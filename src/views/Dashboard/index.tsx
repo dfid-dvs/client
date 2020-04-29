@@ -243,6 +243,12 @@ const Dashboard = (props: Props) => {
             </div>
             {(bubbleLegend.length > 0 || Object.keys(mapLegend).length > 0) && (
                 <div className={styles.legendContainer}>
+                    <ChoroplethLegend
+                        title={choroplethTitle}
+                        className={styles.choroplethLegend}
+                        minValue={dataMinValue}
+                        legend={mapLegend}
+                    />
                     <BubbleLegend
                         className={styles.legend}
                         title={bubbleTitle}
@@ -250,12 +256,6 @@ const Dashboard = (props: Props) => {
                         keySelector={legendKeySelector}
                         valueSelector={legendValueSelector}
                         radiusSelector={legendRadiusSelector}
-                    />
-                    <ChoroplethLegend
-                        title={choroplethTitle}
-                        className={styles.choroplethLegend}
-                        minValue={dataMinValue}
-                        legend={mapLegend}
                     />
                 </div>
             )}

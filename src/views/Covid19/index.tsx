@@ -451,6 +451,13 @@ function Covid19(props: Props) {
             </div>
             {(bubbleLegend.length > 0 || Object.keys(mapLegend).length > 0) && (
                 <div className={styles.legendContainer}>
+                    <ChoroplethLegend
+                        className={styles.choroplethLegend}
+                        title={choroplethTitle}
+                        minValue={dataMinValue}
+                        legend={mapLegend}
+                        zeroPrecision={selectedIndicator === -1}
+                    />
                     <BubbleLegend
                         className={styles.legend}
                         title={bubbleTitle}
@@ -458,13 +465,6 @@ function Covid19(props: Props) {
                         keySelector={legendKeySelector}
                         valueSelector={legendValueSelector}
                         radiusSelector={legendRadiusSelector}
-                    />
-                    <ChoroplethLegend
-                        className={styles.choroplethLegend}
-                        title={choroplethTitle}
-                        minValue={dataMinValue}
-                        legend={mapLegend}
-                        zeroPrecision={selectedIndicator === -1}
                     />
                 </div>
             )}

@@ -42,6 +42,7 @@
     }
 
     .legend-container {
+        display: flex;
         position: absolute;
         bottom: 10px;
         left: 420px;
@@ -52,7 +53,6 @@
 
         .choropleth-legend {
             margin: var(--spacing-medium);
-            width: calc(400px - 4 * var(--spacing-medium));
         }
 
         .legend {

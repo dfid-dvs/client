@@ -7,14 +7,10 @@ const getPrecision = (value: number | undefined) => {
         return 0;
     }
 
-    if (value < 0.1) {
-        return 4;
+    const absolute = Math.abs(value);
+    if (absolute < 1) {
+        return Math.ceil(-Math.log10(absolute)) + 1;
     }
-
-    if (value < 1) {
-        return 3;
-    }
-
     return 2;
 };
 
@@ -49,8 +45,12 @@ function Numeral({
 
     if (normalize) {
         const { number, normalizeSuffix = '' } = formattedNormalize(sanitizedValue, Lang.en);
-        output = number.toFixed(1);
         suffix = normalizeSuffix;
+        if (suffix !== '') {
+            output = number.toFixed(1);
+        } else {
+            output = number.toFixed(precision);
+        }
     } else {
         output = sanitizedValue.toFixed(precision);
     }

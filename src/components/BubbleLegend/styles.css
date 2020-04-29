@@ -34,7 +34,7 @@
 
 .footer {
     display: flex;
-    align-items: center;
+    flex-direction: column;
 
     .circle {
         opacity: 0.6;
@@ -54,6 +54,6 @@
     }
 
     .negative {
-        padding-right: var(--spacing-medium);
+        margin-bottom: var(--spacing-small);
     }
 }

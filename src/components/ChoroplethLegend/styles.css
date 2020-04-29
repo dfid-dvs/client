@@ -5,27 +5,22 @@
 .choropleth-legend {
     display: flex;
     position: relative;
-
-    .min {
-        position: absolute;
-        bottom: 0;
-        left: calc(-1 * var(--spacing-small));
-        font-size: var(--font-size-extra-small);
-    }
+    flex-direction: column;
 
     .legend-element {
+        display: flex;
         flex-grow: 1;
 
         .color {
-            height: var(--font-size-extra-small);
+            width: var(--font-size-medium);
+            height: var(--font-size-extra-large);
         }
 
         .value {
-            margin-right: calc(-1 * var(--spacing-small));
-            padding-top: var(--spacing-small);
-            text-align: right;
+            align-self: flex-end;
+            margin-bottom: calc(-1 * var(--font-size-medium) / 2);
+            padding-left: var(--spacing-small);
             color: var(--color-text-label);
-            font-size: var(--font-size-extra-small);
         }
     }
 }
