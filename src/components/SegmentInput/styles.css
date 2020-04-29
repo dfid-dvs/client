@@ -1,7 +1,8 @@
 .segment-input {
     display: flex;
-    align-items: center;
-    padding: 0 calc(var(--spacing-large) - var(--spacing-small));
+    flex-direction: column;
+    /* padding: 0 calc(var(--spacing-large) - var(--spacing-small)); */
+    padding: var(--spacing-small);
 
     .input-label {
         opacity: .6;

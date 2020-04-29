@@ -88,9 +88,9 @@ const ageGroupKeySelector = (ageGroup: AgeGroup) => ageGroup.key;
 const ageGroupLabelSelector = (ageGroup: AgeGroup) => ageGroup.label;
 
 const hospitalTypeOptions: HospitalType[] = [
-    { key: 'deshosp', label: 'Covid Designated Hospitals' },
-    { key: 'allcovidhfs', label: 'Covid Hospitals' },
-    { key: 'allhfs', label: 'All Hospitals' },
+    { key: 'deshosp', label: 'Covid Designated' },
+    { key: 'allcovidhfs', label: 'Covid' },
+    { key: 'allhfs', label: 'All' },
 ];
 const hospitalTypeKeySelector = (hospitalType: HospitalType) => hospitalType.key;
 const hospitalTypeLabelSelector = (hospitalType: HospitalType) => hospitalType.label;
@@ -268,7 +268,7 @@ function Covid19(props: Props) {
                 {showHealthResource && (
                     <>
                         <SegmentInput
-                            label="Hospital Type"
+                            label="Hospitals"
                             options={hospitalTypeOptions}
                             onChange={setHospitalType}
                             value={selectedHospitalType}
