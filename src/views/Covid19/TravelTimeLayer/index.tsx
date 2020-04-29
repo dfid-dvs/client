@@ -1,5 +1,8 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { sum } from '@togglecorp/fujs';
+import {
+    BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+} from 'recharts';
 
 import MapSource from '#remap/MapSource';
 import MapLayer from '#remap/MapSource/MapLayer';
@@ -12,21 +15,15 @@ import { Season, HospitalType, TravelTimeType } from '../types';
 
 import theme, { visibleLayout, noneLayout } from './mapTheme';
 
-// const uncoveredColor = '#455a64';
-// const uncoveredDarkColor = '#1c313a';
-
-const noOp = () => {};
-
 export interface DesignatedHospital {
     name: string;
     category__name: string;
     type__name: string;
     contact_num: string;
 }
+type SelectedHospital = GeoJSON.Feature<GeoJSON.Point, DesignatedHospital>;
 
 export interface TravelTimeRegion {
-    name?: string;
-    GAPA_NAPA?: string;
     f_5: number;
     f_10: number;
     f_15: number;
@@ -61,6 +58,21 @@ export interface TravelTimeRegion {
     m_80: number;
 }
 
+interface CatchmentRegion extends TravelTimeRegion {
+    name: string;
+}
+interface UncoveredRegion extends TravelTimeRegion {
+    GAPA_NAPA: string;
+}
+type Region = CatchmentRegion | UncoveredRegion;
+type SelectedTravelTimeRegion = GeoJSON.Feature<GeoJSON.Point, Region>;
+function isCatchmentRegion(region: Region): region is CatchmentRegion {
+    return !!(region as CatchmentRegion).name;
+}
+function isUncoveredRegion(region: Region): region is UncoveredRegion {
+    return !!(region as UncoveredRegion).GAPA_NAPA;
+}
+
 function getTotalMalePopulation(region: TravelTimeRegion) {
     const result = sum([
         region.m_5, region.m_10, region.m_15, region.m_20, region.m_25, region.m_30,
@@ -88,6 +100,167 @@ const tooltipOptions: mapboxgl.PopupOptions = {
     maxWidth: '480px',
 };
 
+interface HospitalTooltipProps {
+    lngLat: mapboxgl.LngLatLike;
+    feature: SelectedHospital;
+}
+function HospitalTooltip(props: HospitalTooltipProps) {
+    const {
+        lngLat,
+        feature: {
+            properties: {
+                name,
+                category__name: categoryName,
+                type__name: typeName,
+                contact_num: contactNumber,
+            },
+        },
+    } = props;
+    return (
+        <MapTooltip
+            coordinates={lngLat}
+            tooltipOptions={tooltipOptions}
+            trackPointer
+        >
+            <>
+                <h3>
+                    {name}
+                </h3>
+                <TextOutput
+                    label="Category"
+                    value={categoryName}
+                />
+                <TextOutput
+                    label="Type"
+                    value={typeName}
+                />
+                <TextOutput
+                    label="Contact"
+                    value={contactNumber}
+                />
+            </>
+        </MapTooltip>
+    );
+}
+
+interface RegionTooltipProps {
+    lngLat: mapboxgl.LngLatLike;
+    feature: SelectedTravelTimeRegion;
+}
+function RegionTooltip(props: RegionTooltipProps) {
+    const {
+        lngLat,
+        feature: {
+            properties,
+        },
+    } = props;
+
+
+    let header = '';
+    let totalPopulationHeader = '';
+    if (isCatchmentRegion(properties)) {
+        header = properties.name;
+        totalPopulationHeader = 'Total Population';
+    } else {
+        header = properties.GAPA_NAPA;
+        totalPopulationHeader = 'Uncovered Population';
+    }
+
+    const data = useMemo(
+        () => ([
+            { name: '5', male: properties.m_5, female: properties.f_5 },
+            { name: '10', male: properties.m_10, female: properties.f_10 },
+            { name: '15', male: properties.m_15, female: properties.f_15 },
+            { name: '20', male: properties.m_20, female: properties.f_20 },
+            { name: '25', male: properties.m_25, female: properties.f_25 },
+            { name: '30', male: properties.m_30, female: properties.f_30 },
+            { name: '35', male: properties.m_35, female: properties.f_35 },
+            { name: '40', male: properties.m_40, female: properties.f_40 },
+            { name: '45', male: properties.m_45, female: properties.f_45 },
+            { name: '50', male: properties.m_50, female: properties.f_50 },
+            { name: '55', male: properties.m_55, female: properties.f_55 },
+            { name: '60', male: properties.m_60, female: properties.f_60 },
+            { name: '65', male: properties.m_65, female: properties.f_65 },
+            { name: '70', male: properties.m_70, female: properties.f_70 },
+            { name: '75', male: properties.m_75, female: properties.f_75 },
+            { name: '80', male: properties.m_80, female: properties.f_80 },
+        ]),
+        [properties],
+    );
+
+    return (
+        <MapTooltip
+            coordinates={lngLat}
+            tooltipOptions={tooltipOptions}
+            trackPointer
+        >
+            <>
+                <h3>
+                    {header}
+                </h3>
+                <TextOutput
+                    label={totalPopulationHeader}
+                    value={(
+                        <Numeral
+                            value={getTotalPopulation(properties)}
+                            precision={0}
+                        />
+                    )}
+                />
+                <TextOutput
+                    label="Female"
+                    value={(
+                        <Numeral
+                            value={getTotalFemalePopulation(properties)}
+                            precision={0}
+                        />
+                    )}
+                />
+                <TextOutput
+                    label="Male"
+                    value={(
+                        <Numeral
+                            value={getTotalMalePopulation(properties)}
+                            precision={0}
+                        />
+                    )}
+                />
+                <h4>
+                    Age distribution
+                </h4>
+                <BarChart
+                    width={300}
+                    height={200}
+                    data={data}
+                    margin={{
+                        top: 0, right: 0, left: 0, bottom: 0,
+                    }}
+                >
+                    <CartesianGrid
+                        strokeDasharray="3 3"
+                    />
+                    <XAxis
+                        dataKey="name"
+                    />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar
+                        dataKey="male"
+                        stackId="total"
+                        fill="#02a3fe"
+                    />
+                    <Bar
+                        dataKey="female"
+                        stackId="total"
+                        fill="#ec49a6"
+                    />
+                </BarChart>
+            </>
+        </MapTooltip>
+    );
+}
+
 interface Props {
     selectedHospitals: string[];
     onHospitalClick: (feature: mapboxgl.MapboxGeoJSONFeature) => boolean;
@@ -112,7 +285,6 @@ function TravelTimeLayer(props: Props) {
         travelTimeType,
     } = props;
 
-    type SelectedHospital = GeoJSON.Feature<GeoJSON.Point, DesignatedHospital>;
     const [
         designatedHospitalProperties,
         setDesignatedHospitalProperties,
@@ -139,7 +311,6 @@ function TravelTimeLayer(props: Props) {
         [],
     );
 
-    type SelectedTravelTimeRegion = GeoJSON.Feature<GeoJSON.Point, TravelTimeRegion>;
     const [
         travelTimeRegionProperties,
         setTravelTimeRegionProperties,
@@ -193,6 +364,8 @@ function TravelTimeLayer(props: Props) {
         ? undefined
         : ['in', ['get', 'name'], ['literal', selectedHospitals]];
 
+    const uncoveredFilter = ['!=', ['get', 'GAPA_NAPA'], 'Koshi Tappu Wildlife Reserve'];
+
     const uncoveredLayout = travelTimeShown && travelTimeType === 'uncovered'
         ? visibleLayout
         : noneLayout;
@@ -217,6 +390,7 @@ function TravelTimeLayer(props: Props) {
                             'source-layer': 'fourhourgeo',
                             paint: theme.uncovered.fourhour.fillPaint,
                             layout: uncoveredLayout,
+                            filter: uncoveredFilter,
                         }}
                         onMouseEnter={handleTravelTimeRegionOpen}
                         onMouseLeave={handleTravelTimeRegionHide}
@@ -228,6 +402,7 @@ function TravelTimeLayer(props: Props) {
                             'source-layer': 'eighthourgeo',
                             paint: theme.uncovered.eighthour.fillPaint,
                             layout: uncoveredLayout,
+                            filter: uncoveredFilter,
                         }}
                         onMouseEnter={handleTravelTimeRegionOpen}
                         onMouseLeave={handleTravelTimeRegionHide}
@@ -239,6 +414,7 @@ function TravelTimeLayer(props: Props) {
                             'source-layer': 'twelvehourgeo',
                             paint: theme.uncovered.twelvehour.fillPaint,
                             layout: uncoveredLayout,
+                            filter: uncoveredFilter,
                         }}
                         onMouseEnter={handleTravelTimeRegionOpen}
                         onMouseLeave={handleTravelTimeRegionHide}
@@ -251,6 +427,7 @@ function TravelTimeLayer(props: Props) {
                             'source-layer': 'fourhourgeo',
                             paint: theme.uncovered.fourhour.linePaint,
                             layout: uncoveredLayout,
+                            filter: uncoveredFilter,
                         }}
                     />
                     <MapLayer
@@ -260,6 +437,7 @@ function TravelTimeLayer(props: Props) {
                             'source-layer': 'eighthourgeo',
                             paint: theme.uncovered.eighthour.linePaint,
                             layout: uncoveredLayout,
+                            filter: uncoveredFilter,
                         }}
                     />
                     <MapLayer
@@ -269,6 +447,7 @@ function TravelTimeLayer(props: Props) {
                             'source-layer': 'twelvehourgeo',
                             paint: theme.uncovered.twelvehour.linePaint,
                             layout: uncoveredLayout,
+                            filter: uncoveredFilter,
                         }}
                     />
                 </MapSource>
@@ -418,79 +597,16 @@ function TravelTimeLayer(props: Props) {
                     }}
                 />
                 {designatedHospitalProperties && (
-                    <MapTooltip
-                        coordinates={designatedHospitalProperties.lngLat}
-                        tooltipOptions={tooltipOptions}
-                        trackPointer
-                    >
-                        <>
-                            <h3>
-                                {designatedHospitalProperties.feature.properties.name}
-                            </h3>
-                            <TextOutput
-                                label="Category"
-                                // eslint-disable-next-line max-len
-                                value={designatedHospitalProperties.feature.properties.category__name}
-                            />
-                            <TextOutput
-                                label="Type"
-                                // eslint-disable-next-line max-len
-                                value={designatedHospitalProperties.feature.properties.type__name}
-                            />
-                            <TextOutput
-                                label="Contact"
-                                // eslint-disable-next-line max-len
-                                value={designatedHospitalProperties.feature.properties.contact_num}
-                            />
-                        </>
-                    </MapTooltip>
+                    <HospitalTooltip
+                        lngLat={designatedHospitalProperties.lngLat}
+                        feature={designatedHospitalProperties.feature}
+                    />
                 )}
                 {travelTimeRegionProperties && (
-                    <MapTooltip
-                        coordinates={travelTimeRegionProperties.lngLat}
-                        tooltipOptions={tooltipOptions}
-                        trackPointer
-                    >
-                        <>
-                            <h3>
-                                {travelTimeRegionProperties.feature.properties.name
-                                || travelTimeRegionProperties.feature.properties.GAPA_NAPA}
-                            </h3>
-                            <TextOutput
-                                label="Total Population"
-                                value={(
-                                    <Numeral
-                                        // eslint-disable-next-line max-len
-                                        value={getTotalPopulation(travelTimeRegionProperties.feature.properties)}
-                                        precision={0}
-                                        normalize
-                                    />
-                                )}
-                            />
-                            <TextOutput
-                                label="Female Population"
-                                value={(
-                                    <Numeral
-                                        // eslint-disable-next-line max-len
-                                        value={getTotalMalePopulation(travelTimeRegionProperties.feature.properties)}
-                                        precision={0}
-                                        normalize
-                                    />
-                                )}
-                            />
-                            <TextOutput
-                                label="Male Population"
-                                value={(
-                                    <Numeral
-                                        // eslint-disable-next-line max-len
-                                        value={getTotalMalePopulation(travelTimeRegionProperties.feature.properties)}
-                                        precision={0}
-                                        normalize
-                                    />
-                                )}
-                            />
-                        </>
-                    </MapTooltip>
+                    <RegionTooltip
+                        lngLat={travelTimeRegionProperties.lngLat}
+                        feature={travelTimeRegionProperties.feature}
+                    />
                 )}
             </MapSource>
         </>
