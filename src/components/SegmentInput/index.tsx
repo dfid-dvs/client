@@ -1,6 +1,8 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
+import Label from '#components/Label';
+
 import Option from './Option';
 import styles from './styles.css';
 
@@ -15,6 +17,11 @@ interface Props<T, V> {
     value?: V;
     onChange?: (value: V, name: string | undefined) => void;
     name?: string;
+    disabled?: boolean;
+    hideLabel?: boolean;
+    error?: string;
+    labelRightComponent?: React.ReactNode;
+    labelRightComponentClassName?: string;
 }
 
 
@@ -27,16 +34,27 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
         renderer,
         label,
         value,
+        hideLabel,
+        labelRightComponent,
+        labelRightComponentClassName,
+        error,
+        disabled,
         onChange,
         name,
     } = props;
 
     return (
         <div className={_cs(className, styles.segmentInput)}>
-            {label && (
-                <div className={styles.inputLabel}>
-                    { label }
-                </div>
+            {!hideLabel && (
+                <Label
+                    className={styles.label}
+                    disabled={disabled}
+                    error={!!error}
+                    rightComponent={labelRightComponent}
+                    rightComponentClassName={labelRightComponentClassName}
+                >
+                    {label}
+                </Label>
             )}
             <div className={styles.inputContainer}>
                 { options.map((option) => {

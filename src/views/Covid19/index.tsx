@@ -1,6 +1,9 @@
 import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { IoIosClose } from 'react-icons/io';
-import { _cs } from '@togglecorp/fujs';
+import {
+    _cs,
+    isDefined,
+} from '@togglecorp/fujs';
 
 import RegionSelector from '#components/RegionSelector';
 import SegmentInput from '#components/SegmentInput';
@@ -9,6 +12,7 @@ import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import ToggleButton from '#components/ToggleButton';
 import Button from '#components/Button';
+import BubbleLegend from '#components/BubbleLegend';
 
 import IndicatorMap from '#components/IndicatorMap';
 import Stats from './Stats';
@@ -17,9 +21,17 @@ import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
 import useMapStateForCovidFiveW from '#hooks/useMapStateForCovidFiveW';
 
-import { AgeGroupOption, MultiResponse, CovidFiveWOptionKey } from '#types';
+import {
+    AgeGroupOption,
+    MultiResponse,
+    CovidFiveWOptionKey,
+    LegendItem,
+} from '#types';
 
-import { generateChoroplethMapPaintAndLegend } from '#utils/common';
+import {
+    generateChoroplethMapPaintAndLegend,
+    generateBubbleMapPaintAndLegend,
+} from '#utils/common';
 import {
     colorDomain,
     apiEndPoint,
@@ -38,7 +50,6 @@ import {
 } from './TravelTimeLayer/mapTheme';
 
 import {
-    Attribute,
     FiveWOption,
     Indicator,
     AgeGroup,
@@ -49,27 +60,18 @@ import {
 
 import styles from './styles.css';
 
-const attributeOptions: Attribute[] = [
-    {
-        key: 'fiveW',
-        label: 'Dfid Data',
-    },
-    {
-        key: 'indicator',
-        label: 'Indicator',
-    },
-];
-const attributeKeySelector = (option: Attribute) => option.key;
-const attributeLabelSelector = (option: Attribute) => option.label;
+const legendKeySelector = (option: LegendItem) => option.radius;
+const legendValueSelector = (option: LegendItem) => option.value;
+const legendRadiusSelector = (option: LegendItem) => option.radius;
 
 const fiveWOptions: FiveWOption[] = [
     {
         key: 'projectName',
-        label: 'Project',
+        label: 'No. of projects',
     },
     {
         key: 'sector',
-        label: 'Sector',
+        label: 'No. of sectors',
     },
 ];
 const fiveWKeySelector = (option: FiveWOption) => option.key;
@@ -117,7 +119,6 @@ function Covid19(props: Props) {
     const { className } = props;
     const { regionLevel } = useContext(NavbarContext);
 
-    const [selectedAttribute, setAttribute] = useState<Attribute['key']>('fiveW');
     const [selectedFiveWOption, setFiveWOption] = useState<CovidFiveWOptionKey | undefined>('projectName');
     const [selectedIndicator, setSelectedIndicator] = useState<number | undefined>();
     const [selectedAgeGroup, setSelectedAgeGroup] = useState<AgeGroupOption>('belowFourteen');
@@ -133,6 +134,7 @@ function Covid19(props: Props) {
     const [indicatorListPending, indicatorListResponse] = useRequest<MultiResponse<Indicator>>(
         indicatorListGetUrl,
     );
+    const indicatorList = indicatorListResponse?.results;
 
     const [
         mapStateForIndicatorPending,
@@ -144,26 +146,81 @@ function Covid19(props: Props) {
         mapStateForFiveW,
     ] = useMapStateForCovidFiveW(regionLevel, selectedFiveWOption);
 
-    const mapState = selectedAttribute === 'indicator'
-        ? mapStateForIndicator
-        : mapStateForFiveW;
+    const [invertMapStyle, setInvertMapStyle] = useState(false);
+
+    const {
+        choroplethMapState,
+        bubbleMapState,
+        choroplethTitle,
+        bubbleTitle,
+    } = useMemo(() => {
+        const indicator = indicatorList?.find(i => indicatorKeySelector(i) === selectedIndicator);
+        const indicatorTitle = indicator && indicatorLabelSelector(indicator);
+        const fiveW = fiveWOptions.find(i => fiveWKeySelector(i) === selectedFiveWOption);
+        const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
+
+        if (invertMapStyle) {
+            return {
+                choroplethMapState: mapStateForIndicator,
+                choroplethTitle: indicatorTitle,
+                bubbleMapState: mapStateForFiveW,
+                bubbleTitle: fiveWTitle,
+            };
+        }
+        return {
+            choroplethMapState: mapStateForFiveW,
+            choroplethTitle: fiveWTitle,
+            bubbleMapState: mapStateForIndicator,
+            bubbleTitle: indicatorTitle,
+        };
+    }, [
+        invertMapStyle,
+        mapStateForIndicator,
+        mapStateForFiveW,
+        selectedIndicator,
+        selectedFiveWOption,
+        indicatorList,
+    ]);
 
     // const mapStatePending = mapStateForIndicatorPending || mapStateForFiveWPending;
     // const pending = mapStatePending || indicatorListPending;
 
-    const { paint: mapPaint, legend: mapLegend, min: dataMinValue } = useMemo(
+    const {
+        paint: mapPaint,
+        legend: mapLegend,
+        min: dataMinValue,
+    } = useMemo(
         () => {
-            const valueList = mapState.map(d => d.value);
+            const valueList = choroplethMapState.map(d => d.value);
             const min = Math.min(...valueList);
             const max = Math.max(...valueList);
 
-            return {
-                min,
-                ...generateChoroplethMapPaintAndLegend(colorDomain, min, max),
-            };
+            return generateChoroplethMapPaintAndLegend(colorDomain, min, max);
         },
-        [mapState],
+        [choroplethMapState],
     );
+
+    const {
+        mapPaint: bubblePaint,
+        legend: bubbleLegend,
+    } = useMemo(() => {
+        const valueList = bubbleMapState
+            .map(d => d.value)
+            .filter(isDefined)
+            .map(Math.abs);
+
+        const min = valueList.length > 0 ? Math.min(...valueList) : undefined;
+        const max = valueList.length > 0 ? Math.max(...valueList) : undefined;
+
+        let maxRadius = 50;
+        if (regionLevel === 'district') {
+            maxRadius = 40;
+        } else if (regionLevel === 'municipality') {
+            maxRadius = 30;
+        }
+
+        return generateBubbleMapPaintAndLegend(min, max, maxRadius);
+    }, [bubbleMapState, regionLevel]);
 
     const selectedIndicatorDetails = useMemo(
         () => {
@@ -226,6 +283,18 @@ function Covid19(props: Props) {
         [selectedHospitalType],
     );
 
+    const showTravelTimeChoropleth = (
+        showHealthResource
+        && selectedHospitalType !== 'allhfs'
+        && showHealthTravelTime
+    );
+
+    const showLegend = (
+        bubbleLegend.length > 0
+        || Object.keys(mapLegend).length > 0
+        || showTravelTimeChoropleth
+    );
+
     return (
         <div className={_cs(
             styles.covid19,
@@ -241,8 +310,10 @@ function Covid19(props: Props) {
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
-                mapState={mapState}
-                mapPaint={mapPaint}
+                choroplethMapState={choroplethMapState}
+                choroplethMapPaint={mapPaint}
+                bubbleMapState={bubbleMapState}
+                bubbleMapPaint={bubblePaint}
             >
                 {showHealthResource && (
                     <TravelTimeLayer
@@ -260,156 +331,170 @@ function Covid19(props: Props) {
             <Stats className={styles.stats} />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />
-                <ToggleButton
-                    label="Show health facilities"
-                    value={showHealthResource}
-                    onChange={setShowHealthResource}
-                />
-                {showHealthResource && (
-                    <>
-                        <SegmentInput
-                            label="Hospitals"
-                            options={hospitalTypeOptions}
-                            onChange={setHospitalType}
-                            value={selectedHospitalType}
-                            optionLabelSelector={hospitalTypeLabelSelector}
-                            optionKeySelector={hospitalTypeKeySelector}
-                        />
-                        {selectedHospitals.length > 0 && (
-                            <div className={styles.hospitals}>
-                                {selectedHospitals.map(hospital => (
-                                    <Button
-                                        className={styles.button}
-                                        key={hospital}
-                                        name={hospital}
-                                        onClick={handleHospitalToggle}
-                                        icons={(
-                                            <IoIosClose />
-                                        )}
-                                    >
-                                        {hospital}
-                                    </Button>
-                                ))}
-                            </div>
-                        )}
-                        {selectedHospitalType !== 'allhfs' && (
-                            <ToggleButton
-                                label="Show travel time"
-                                value={showHealthTravelTime}
-                                onChange={setShowHealthTravelTime}
-                            />
-                        )}
-                        {selectedHospitalType !== 'allhfs' && showHealthTravelTime && (
-                            <>
-                                <SegmentInput
-                                    label="Type"
-                                    options={travelTimeTypeOptions}
-                                    onChange={setTravelTimeType}
-                                    value={selectedTravelTimeType}
-                                    optionLabelSelector={travelTimeTypeLabelSelector}
-                                    optionKeySelector={travelTimeTypeKeySelector}
-                                />
-                                <SegmentInput
-                                    label="Season"
-                                    options={seasonOptions}
-                                    onChange={setSeason}
-                                    value={selectedSeason}
-                                    optionLabelSelector={seasonLabelSelector}
-                                    optionKeySelector={seasonKeySelector}
-                                />
-                                {selectedTravelTimeType === 'catchment' && (
-                                    <ChoroplethLegend
-                                        className={styles.legend}
-                                        minValue=""
-                                        opacity={0.6}
-                                        legend={{
-                                            [fourHourColor]: '4hrs',
-                                            [eightHourColor]: '8hrs',
-                                            [twelveHourColor]: '12hrs',
-                                        }}
-                                    />
-                                )}
-                                {selectedTravelTimeType === 'uncovered' && (
-                                    <ChoroplethLegend
-                                        className={styles.legend}
-                                        minValue=""
-                                        opacity={0.6}
-                                        legend={{
-                                            [twelveHourUncoveredColor]: '> 12hrs',
-                                            [eightHourUncoveredColor]: '> 8hrs',
-                                            [fourHourUncoveredColor]: '> 4hrs',
-                                        }}
-                                    />
-                                )}
-                            </>
-                        )}
-                    </>
-                )}
-                <div className={styles.layerSelection}>
-                    <SegmentInput
-                        options={attributeOptions}
-                        onChange={setAttribute}
-                        value={selectedAttribute}
-                        optionLabelSelector={attributeLabelSelector}
-                        optionKeySelector={attributeKeySelector}
+                <div className={styles.separator} />
+                <div className={styles.health}>
+                    <ToggleButton
+                        className={styles.inputItem}
+                        label="Show health facilities"
+                        value={showHealthResource}
+                        onChange={setShowHealthResource}
                     />
-                    {selectedAttribute === 'fiveW' && (
+                    {showHealthResource && (
                         <>
-                            <SelectInput
-                                label="Selected attribute"
-                                className={styles.fiveWSegmentInput}
-                                options={fiveWOptions}
-                                onChange={setFiveWOption}
-                                value={selectedFiveWOption}
-                                optionLabelSelector={fiveWLabelSelector}
-                                optionKeySelector={fiveWKeySelector}
+                            <SegmentInput
+                                label="Hospitals"
+                                className={styles.inputItem}
+                                options={hospitalTypeOptions}
+                                onChange={setHospitalType}
+                                value={selectedHospitalType}
+                                optionLabelSelector={hospitalTypeLabelSelector}
+                                optionKeySelector={hospitalTypeKeySelector}
                             />
-                            <ChoroplethLegend
-                                className={styles.legend}
-                                minValue={dataMinValue}
-                                legend={mapLegend}
-                            />
-                        </>
-                    )}
-                    {selectedAttribute === 'indicator' && (
-                        <>
-                            <SelectInput
-                                placeholder="Select an indicator"
-                                className={styles.indicatorSelectInput}
-                                disabled={indicatorListPending}
-                                options={indicatorOptions}
-                                onChange={setSelectedIndicator}
-                                value={selectedIndicator}
-                                optionLabelSelector={indicatorLabelSelector}
-                                optionKeySelector={indicatorKeySelector}
-                                groupKeySelector={indicatorGroupKeySelector}
-                            />
-                            {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
-                                <div className={styles.abstract}>
-                                    { selectedIndicatorDetails.abstract }
+                            {selectedHospitals.length > 0 && (
+                                <div className={styles.hospitals}>
+                                    {selectedHospitals.map(hospital => (
+                                        <Button
+                                            className={styles.button}
+                                            key={hospital}
+                                            name={hospital}
+                                            onClick={handleHospitalToggle}
+                                            icons={(
+                                                <IoIosClose />
+                                            )}
+                                        >
+                                            {hospital}
+                                        </Button>
+                                    ))}
                                 </div>
                             )}
-                            {selectedIndicator === -1 && (
-                                <SegmentInput
-                                    label="Selected range"
-                                    className={styles.ageGroupSelectInput}
-                                    options={ageGroupOptions}
-                                    onChange={setSelectedAgeGroup}
-                                    value={selectedAgeGroup}
-                                    optionLabelSelector={ageGroupLabelSelector}
-                                    optionKeySelector={ageGroupKeySelector}
+                            {selectedHospitalType !== 'allhfs' && (
+                                <ToggleButton
+                                    className={styles.inputItem}
+                                    label="Show travel time"
+                                    value={showHealthTravelTime}
+                                    onChange={setShowHealthTravelTime}
                                 />
                             )}
-                            <ChoroplethLegend
-                                className={styles.legend}
-                                minValue={dataMinValue}
-                                legend={mapLegend}
-                                zeroPrecision={selectedIndicator === -1}
-                            />
+                            {selectedHospitalType !== 'allhfs' && showHealthTravelTime && (
+                                <>
+                                    <SegmentInput
+                                        label="Type"
+                                        className={styles.inputItem}
+                                        options={travelTimeTypeOptions}
+                                        onChange={setTravelTimeType}
+                                        value={selectedTravelTimeType}
+                                        optionLabelSelector={travelTimeTypeLabelSelector}
+                                        optionKeySelector={travelTimeTypeKeySelector}
+                                    />
+                                    <SegmentInput
+                                        label="Season"
+                                        className={styles.inputItem}
+                                        options={seasonOptions}
+                                        onChange={setSeason}
+                                        value={selectedSeason}
+                                        optionLabelSelector={seasonLabelSelector}
+                                        optionKeySelector={seasonKeySelector}
+                                    />
+                                </>
+                            )}
                         </>
                     )}
                 </div>
+                <div className={styles.separator} />
+                <SelectInput
+                    label="DFID Data"
+                    options={fiveWOptions}
+                    className={styles.inputItem}
+                    onChange={setFiveWOption}
+                    value={selectedFiveWOption}
+                    optionLabelSelector={fiveWLabelSelector}
+                    optionKeySelector={fiveWKeySelector}
+                />
+                <SelectInput
+                    className={_cs(styles.indicatorInput, styles.inputItem)}
+                    label="Indicator"
+                    placeholder="Select an indicator"
+                    disabled={indicatorListPending}
+                    options={indicatorOptions}
+                    onChange={setSelectedIndicator}
+                    value={selectedIndicator}
+                    optionLabelSelector={indicatorLabelSelector}
+                    optionKeySelector={indicatorKeySelector}
+                    groupKeySelector={indicatorGroupKeySelector}
+                />
+                {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
+                    <div className={styles.abstract}>
+                        { selectedIndicatorDetails.abstract }
+                    </div>
+                )}
+                {selectedIndicator === -1 && (
+                    <SegmentInput
+                        label="Selected range"
+                        className={styles.ageGroupSelectInput}
+                        options={ageGroupOptions}
+                        onChange={setSelectedAgeGroup}
+                        value={selectedAgeGroup}
+                        optionLabelSelector={ageGroupLabelSelector}
+                        optionKeySelector={ageGroupKeySelector}
+                    />
+                )}
+                <ToggleButton
+                    label="Toggle Choropleth/Bubble"
+                    className={styles.inputItem}
+                    value={invertMapStyle}
+                    onChange={setInvertMapStyle}
+                />
             </div>
+            {showLegend && (
+                <div className={styles.legendContainer}>
+                    <ChoroplethLegend
+                        className={styles.legend}
+                        title={choroplethTitle}
+                        minValue={dataMinValue}
+                        legend={mapLegend}
+                        zeroPrecision={selectedIndicator === -1}
+                    />
+                    <BubbleLegend
+                        className={styles.legend}
+                        title={bubbleTitle}
+                        data={bubbleLegend}
+                        keySelector={legendKeySelector}
+                        valueSelector={legendValueSelector}
+                        radiusSelector={legendRadiusSelector}
+                        zeroPrecision={selectedIndicator === -1}
+                    />
+                    {showTravelTimeChoropleth && (
+                        <>
+                            {selectedTravelTimeType === 'catchment' && (
+                                <ChoroplethLegend
+                                    title="Catchment"
+                                    className={styles.legend}
+                                    minValue=""
+                                    opacity={0.6}
+                                    legend={{
+                                        [fourHourColor]: '4hrs',
+                                        [eightHourColor]: '8hrs',
+                                        [twelveHourColor]: '12hrs',
+                                    }}
+                                />
+                            )}
+                            {selectedTravelTimeType === 'uncovered' && (
+                                <ChoroplethLegend
+                                    title="Uncovered"
+                                    className={styles.legend}
+                                    minValue=""
+                                    opacity={0.6}
+                                    legend={{
+                                        [twelveHourUncoveredColor]: '> 12hrs',
+                                        [eightHourUncoveredColor]: '> 8hrs',
+                                        [fourHourUncoveredColor]: '> 4hrs',
+                                    }}
+                                />
+                            )}
+                        </>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

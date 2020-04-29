@@ -46,19 +46,21 @@ function useMapStateForIndicator(
     const [
         ageGroupListPending,
         ageGroupList,
-    ] = useAgeGroupList(String(selectedIndicator) === '-1', regionLevel);
+    ] = useAgeGroupList(selectedIndicator === -1, regionLevel);
 
     let mapState: MapState[] = [];
-    if (String(selectedIndicator) === '-1' && selectedAgeGroup) {
-        mapState = ageGroupList.map(d => ({
-            id: d.code,
-            value: d[selectedAgeGroup],
-        }));
-    } else if (regionIndicatorListResponse) {
-        mapState = regionIndicatorListResponse.results.map(d => ({
-            id: d.code,
-            value: d.value,
-        }));
+    if (selectedIndicator) {
+        if (selectedIndicator === -1 && selectedAgeGroup) {
+            mapState = ageGroupList.map(d => ({
+                id: d.code,
+                value: d[selectedAgeGroup],
+            }));
+        } else if (regionIndicatorListResponse) {
+            mapState = regionIndicatorListResponse.results.map(d => ({
+                id: d.code,
+                value: d.value,
+            }));
+        }
     }
 
     const pending = regionIndicatorListPending || ageGroupListPending;

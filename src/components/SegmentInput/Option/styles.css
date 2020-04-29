@@ -1,12 +1,15 @@
 .option {
+    background-color: rgba(0, 0, 0, .05); 
     cursor: pointer;
-    padding: 0 var(--spacing-small);
+    padding: var(--spacing-extra-small) var(--spacing-small);
+    font-size: var(--font-size-small-medium);
 
     &.disabled {
         color: var(--color-text-disabled);
     }
 
     &.active {
-        color: var(--color-accent);
+        background-color: var(--color-background-accent-hint);
+        color: var(--color-text);
     }
 }

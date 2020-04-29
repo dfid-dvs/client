@@ -22,6 +22,7 @@ export const tooltipOptions: mapboxgl.PopupOptions = {
     maxWidth: '480px',
 };
 
+/*
 export const colorDomain: string[] = [
     '#a8c1e7',
     '#8ba8d1',
@@ -29,6 +30,16 @@ export const colorDomain: string[] = [
     '#5078a6',
     '#316291',
     '#004c7d',
+];
+ */
+
+export const colorDomain: string[] = [
+    '#eff3ff',
+    '#c6dbef',
+    '#9ecae1',
+    '#6baed6',
+    '#3182bd',
+    '#08519c',
 ];
 
 export const apiEndPoint = process.env.REACT_APP_API_SERVER_URL || 'https://dvsnaxa.naxa.com.np/api/v1';

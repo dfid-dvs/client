@@ -17,6 +17,7 @@ import List from '#components/List';
 import Button from '#components/Button';
 import Portal from '#components/Portal';
 import TextInput from '#components/TextInput';
+import Label from '#components/Label';
 import RawButton, { Props as RawButtonProps } from '#components/RawButton';
 
 import styles from './styles.css';
@@ -118,6 +119,10 @@ interface Props<T, K> {
     onChange: (d: K | undefined) => void;
     disabled?: boolean;
     placeholder?: string;
+    hideLabel?: boolean;
+    error?: string;
+    labelRightComponent?: React.ReactNode;
+    labelRightComponentClassName?: string;
 
     groupKeySelector?: (d: T) => string;
 }
@@ -134,6 +139,11 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         disabled,
         placeholder = 'Select an option',
         groupKeySelector,
+        hideLabel,
+        label,
+        error,
+        labelRightComponent,
+        labelRightComponentClassName,
     } = props;
 
     const inputContainerRef = React.useRef<HTMLDivElement>(null);
@@ -261,7 +271,21 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
     );
 
     return (
-        <div className={_cs(className, styles.selectInput)}>
+        <div
+            className={_cs(className, styles.selectInput)}
+            title={label}
+        >
+            {!hideLabel && (
+                <Label
+                    className={styles.label}
+                    disabled={disabled}
+                    error={!!error}
+                    rightComponent={labelRightComponent}
+                    rightComponentClassName={labelRightComponentClassName}
+                >
+                    {label}
+                </Label>
+            )}
             <TextInput
                 className={styles.textInput}
                 elementRef={inputContainerRef}
