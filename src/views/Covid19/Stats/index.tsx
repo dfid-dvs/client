@@ -6,6 +6,7 @@ import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
 
 import Numeral from '#components/Numeral';
+import LastUpdated from '#components/LastUpdated';
 
 import useRequest from '#hooks/useRequest';
 
@@ -94,6 +95,7 @@ function Stats(props: Props) {
         <div className={_cs(className, styles.stats)}>
             <h4 className={styles.heading}>
                 COVID-19 summary
+                <LastUpdated date={status?.updated_at} />
             </h4>
             { statusPending && (
                 <Backdrop>
