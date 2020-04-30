@@ -1,0 +1,18 @@
+.tooltip {
+    display: flex;
+    flex-direction: column;
+
+    .content {
+        display: flex;
+
+        .projects {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sectors {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}

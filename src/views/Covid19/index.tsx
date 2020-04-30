@@ -8,6 +8,8 @@ import {
     isDefined,
 } from '@togglecorp/fujs';
 
+import MapTooltip from '#remap/MapTooltip';
+
 import RegionSelector from '#components/RegionSelector';
 import SegmentInput from '#components/SegmentInput';
 import NavbarContext from '#components/NavbarContext';
@@ -31,6 +33,7 @@ import {
     Layer,
     LegendItem,
     MultiResponse,
+    ClickedRegion,
 } from '#types';
 
 import {
@@ -56,6 +59,7 @@ import {
     twelveHourUncoveredColor,
 } from './TravelTimeLayer/mapTheme';
 
+import Tooltip from './Tooltip';
 import {
     FiveWOption,
     Indicator,
@@ -148,6 +152,13 @@ const travelTimeTypeLabelSelector = (travelTimeType: TravelTimeType) => travelTi
 const layerKeySelector = (d: Layer) => d.id;
 const layerLabelSelector = (d: Layer) => d.name;
 
+const onClickTooltipOptions: mapboxgl.PopupOptions = {
+    closeOnClick: true,
+    closeButton: true,
+    offset: 8,
+    maxWidth: '480px',
+};
+
 interface Props {
     className?: string;
 }
@@ -200,6 +211,11 @@ function Covid19(props: Props) {
     );
     const [invertMapStyle, setInvertMapStyle] = useState(false);
 
+    const [
+        clickedRegionProperties,
+        setClickedRegionProperties,
+    ] = React.useState<ClickedRegion | undefined>();
+
     const {
         choroplethMapState,
         choroplethTitle,
@@ -247,13 +263,6 @@ function Covid19(props: Props) {
         selectedFiveWOption,
         indicatorList,
     ]);
-
-    const tooltipData = useMemo(
-        () => (
-            covidFiveWData.map(v => ({ id: v.id, data: v.data }))
-        ),
-        [covidFiveWData],
-    );
 
     // const mapStatePending = mapStateForIndicatorPending || mapStateForFiveWPending;
     // const pending = mapStatePending || indicatorListPending;
@@ -363,6 +372,30 @@ function Covid19(props: Props) {
         return true;
     };
 
+    const handleTooltipClose = React.useCallback(
+        () => {
+            setClickedRegionProperties(undefined);
+        },
+        [setClickedRegionProperties],
+    );
+
+    const handleMapRegionOnClick = React.useCallback(
+        (
+            feature: mapboxgl.MapboxGeoJSONFeature,
+            lngLat: mapboxgl.LngLat,
+            point: mapboxgl.Point,
+        ) => {
+            setClickedRegionProperties({
+                feature,
+                lngLat,
+                point,
+            });
+
+            return true;
+        },
+        [setClickedRegionProperties],
+    );
+
     useEffect(
         () => {
             setSelectedHospitals([]);
@@ -397,6 +430,11 @@ function Covid19(props: Props) {
         setTtInfoVisbility(!ttInfoVisibility);
     }, [setTtInfoVisbility, ttInfoVisibility]);
 
+    const tooltipData = useMemo(
+        () => covidFiveWData.find(v => v.id === clickedRegionProperties?.feature.id)?.data,
+        [covidFiveWData, clickedRegionProperties],
+    );
+
     return (
         <div className={_cs(
             styles.covid19,
@@ -411,10 +449,10 @@ function Covid19(props: Props) {
             />
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
-                    <LoadingAnimation />
+                <LoadingAnimation />
                 </Backdrop>
                 )
-            */}
+              */}
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
@@ -424,8 +462,21 @@ function Covid19(props: Props) {
                 bubbleMapPaint={bubblePaint}
                 rasterLayer={selectedRasterLayer}
                 printMode={printMode}
+                onClick={handleMapRegionOnClick}
                 hideTooltipOnHover
             >
+                {clickedRegionProperties && (
+                    <MapTooltip
+                        coordinates={clickedRegionProperties.lngLat}
+                        tooltipOptions={onClickTooltipOptions}
+                        onHide={handleTooltipClose}
+                    >
+                        <Tooltip
+                            feature={clickedRegionProperties.feature}
+                            data={tooltipData}
+                        />
+                    </MapTooltip>
+                )}
                 {showHealthResource && (
                     <TravelTimeLayer
                         key={`${selectedSeason}-${selectedHospitalType}`}

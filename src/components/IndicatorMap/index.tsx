@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { _cs, unique } from '@togglecorp/fujs';
+import { _cs } from '@togglecorp/fujs';
 
 import Map from '#remap';
 import MapContainer from '#remap/MapContainer';
@@ -9,9 +9,6 @@ import MapLayer from '#remap/MapSource/MapLayer';
 import MapState from '#remap/MapSource/MapState';
 import { getLayerName } from '#remap/utils';
 
-
-import List from '#components/List';
-
 import {
     mapOptions,
     tooltipOptions,
@@ -20,7 +17,7 @@ import {
     getRasterTile,
 } from '#utils/common';
 
-import { Layer, FiveWTooltipData, CovidFiveW } from '#types';
+import { Layer } from '#types';
 
 import theme, { noneLayout, visibleLayout } from './mapTheme';
 
@@ -31,72 +28,11 @@ interface HoveredRegion {
     lngLat: mapboxgl.LngLatLike;
 }
 
-interface ClickedRegion {
-    feature: mapboxgl.MapboxGeoJSONFeature;
-    lngLat: mapboxgl.LngLatLike;
-    point: mapboxgl.Point;
-}
-
-
-const onClickTooltipOptions: mapboxgl.PopupOptions = {
-    closeOnClick: true,
-    closeButton: true,
-    offset: 8,
-    maxWidth: '480px',
-};
-
-const projectKeySelector = (d: CovidFiveW) => d.projectName;
-
-const projectRendererParams = (_: string, d: CovidFiveW) => ({ value: d.projectName });
-
-const sectorKeySelector = (d: CovidFiveW) => d.sector;
-const sectorRendererParams = (_: string, d: CovidFiveW) => ({ value: d.sector });
-const ListItem = ({ value }: { value: string}) => <div>{value}</div>;
-
 const Tooltip = ({
     feature,
-    tooltipData,
-}: { feature: mapboxgl.MapboxGeoJSONFeature; tooltipData?: FiveWTooltipData[] }) => {
+}: { feature: mapboxgl.MapboxGeoJSONFeature }) => {
     if (!feature) {
         return null;
-    }
-    if (tooltipData) {
-        const data = tooltipData.find(d => d.id === feature.properties?.id)?.data;
-        const uniqueProjects = unique(data, d => d.projectName);
-        const uniqueSectors = unique(data, d => d.sector);
-        return (
-            <div className={styles.tooltip}>
-                {feature.properties && (
-                    <div className={styles.regionTitle}>
-                        { feature.properties.name }
-                    </div>
-                )}
-                { uniqueProjects && (
-                    <div className={styles.projects}>
-                        Projects
-                        <div>{uniqueProjects.length}</div>
-                        <List
-                            data={uniqueProjects}
-                            keySelector={projectKeySelector}
-                            rendererParams={projectRendererParams}
-                            renderer={ListItem}
-                        />
-                    </div>
-                )}
-                { uniqueSectors && (
-                    <div className={styles.sectors}>
-                        Sectors
-                        <div>{uniqueSectors.length}</div>
-                        <List
-                            data={uniqueSectors}
-                            keySelector={sectorKeySelector}
-                            rendererParams={sectorRendererParams}
-                            renderer={ListItem}
-                        />
-                    </div>
-                )}
-            </div>
-        );
     }
 
     return (
@@ -129,6 +65,11 @@ interface Props {
     rasterLayer?: Layer;
     printMode?: boolean;
     hideTooltipOnHover?: boolean;
+    onClick?: (
+        feature: mapboxgl.MapboxGeoJSONFeature,
+        lngLat: mapboxgl.LngLat,
+        point: mapboxgl.Point,
+    ) => boolean | undefined;
 }
 
 function IndicatorMap(props: Props) {
@@ -145,17 +86,13 @@ function IndicatorMap(props: Props) {
         rasterLayer,
         printMode,
         hideTooltipOnHover,
+        onClick,
     } = props;
 
     const [
         hoveredRegionProperties,
         setHoveredRegionProperties,
     ] = React.useState<HoveredRegion | undefined>();
-
-    const [
-        clickedRegionProperties,
-        setClickedRegionProperties,
-    ] = React.useState<ClickedRegion | undefined>();
 
     const handleMapRegionMouseEnter = React.useCallback(
         (feature: mapboxgl.MapboxGeoJSONFeature, lngLat: mapboxgl.LngLat) => {
@@ -202,29 +139,6 @@ function IndicatorMap(props: Props) {
         selectedSourceForChoropleth = 'palikageo';
         selectedSourceForBubble = 'palikacentroidgeo';
     }
-    const handleMapRegionOnClick = React.useCallback(
-        (
-            feature: mapboxgl.MapboxGeoJSONFeature,
-            lngLat: mapboxgl.LngLat,
-            point: mapboxgl.Point,
-        ) => {
-            setClickedRegionProperties({
-                feature,
-                lngLat,
-                point,
-            });
-
-            return true;
-        },
-        [setClickedRegionProperties],
-    );
-
-    const handleTooltipClose = React.useCallback(
-        () => {
-            setClickedRegionProperties(undefined);
-        },
-        [setClickedRegionProperties],
-    );
 
     return (
         <Map
@@ -254,7 +168,7 @@ function IndicatorMap(props: Props) {
                     }}
                     onMouseEnter={handleMapRegionMouseEnter}
                     onMouseLeave={handleMapRegionMouseLeave}
-                    onClick={handleMapRegionOnClick}
+                    onClick={onClick}
                 />
                 <MapLayer
                     layerKey="palika-line"
@@ -275,7 +189,7 @@ function IndicatorMap(props: Props) {
                     }}
                     onMouseEnter={handleMapRegionMouseEnter}
                     onMouseLeave={handleMapRegionMouseLeave}
-                    onClick={handleMapRegionOnClick}
+                    onClick={onClick}
                 />
                 <MapLayer
                     layerKey="district-line"
@@ -296,7 +210,7 @@ function IndicatorMap(props: Props) {
                     }}
                     onMouseEnter={handleMapRegionMouseEnter}
                     onMouseLeave={handleMapRegionMouseLeave}
-                    onClick={handleMapRegionOnClick}
+                    onClick={onClick}
                 />
                 <MapLayer
                     layerKey="province-line"
@@ -324,21 +238,6 @@ function IndicatorMap(props: Props) {
                         <Tooltip
                             feature={hoveredRegionProperties.feature}
                         />
-                    </MapTooltip>
-                )}
-                {!hideTooltipOnClick
-                    && clickedRegionProperties
-                    && clickedRegionProperties.lngLat && (
-                    <MapTooltip
-                        coordinates={clickedRegionProperties.lngLat}
-                        tooltipOptions={onClickTooltipOptions}
-                        onHide={handleTooltipClose}
-                    >
-                        <Tooltip
-                            feature={clickedRegionProperties.feature}
-                            tooltipData={tooltipData}
-                        />
-
                     </MapTooltip>
                 )}
             </MapSource>

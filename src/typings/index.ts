@@ -109,3 +109,9 @@ export interface Layer {
     geoserverUrl: string;
     type: 'raster' | 'vector';
 }
+
+export interface ClickedRegion {
+    feature: mapboxgl.MapboxGeoJSONFeature;
+    lngLat: mapboxgl.LngLatLike;
+    point: mapboxgl.Point;
+}
