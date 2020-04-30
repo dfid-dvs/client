@@ -1,0 +1,22 @@
+.last-updated-container {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    font-weight: var(--font-weight-medium);
+
+    .label {
+        margin-right: var(--spacing-extra-small);
+        text-align: right;
+        color: var(--color-text-label);
+        font-size: var(--font-size-extra-small);
+        font-style: italic;
+    }
+
+    .date {
+        flex-shrink: 0;
+        color: var(--color-text-label);
+        font-size: var(--font-size-extra-small);
+        font-style: italic;
+    }
+}

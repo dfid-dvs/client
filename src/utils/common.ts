@@ -284,3 +284,36 @@ export function getRasterTile(baseUrl: string, workspace: string, layer: string)
     ].join('');
     return rasterTile;
 }
+
+export function getRasterLegendUrl(baseUrl: string, workspace: string, layer: string) {
+    const legendUrl = [
+        baseUrl, // 'http://34.71.203.97:8080/geoserver/Naxa/wms'
+        '?',
+        '&version=1.1.1',
+        '&service=WMS',
+        '&request=GetLegendGraphic',
+        `&layers=${workspace}:${layer}`,
+        '&format=image/png',
+        '&legend_options=fontAntiAliasing:true;layout:vertical;columnheight:100;dpi:96;labelMargin:2;fontSize:9;',
+        '&width=12',
+        '&height=12',
+    ].join('');
+
+    return legendUrl;
+}
+
+export const imageUrlToDataUrl = (url, callback) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            callback(reader.result);
+        };
+
+        reader.readAsDataURL(xhr.response);
+    };
+
+    xhr.open('GET', url);
+    xhr.responseType = 'blob';
+    xhr.send();
+};
