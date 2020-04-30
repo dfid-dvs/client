@@ -68,10 +68,12 @@ const fiveWOptions: FiveWOption[] = [
     {
         key: 'projectName',
         label: 'No. of projects',
+        integer: true,
     },
     {
         key: 'sector',
         label: 'No. of sectors',
+        integer: true,
     },
 ];
 const fiveWKeySelector = (option: FiveWOption) => option.key;
@@ -160,12 +162,16 @@ function Covid19(props: Props) {
 
     const {
         choroplethMapState,
-        bubbleMapState,
         choroplethTitle,
+        choroplethInteger,
+
+        bubbleMapState,
         bubbleTitle,
+        bubbleInteger,
     } = useMemo(() => {
         const indicator = indicatorList?.find(i => indicatorKeySelector(i) === selectedIndicator);
         const indicatorTitle = indicator && indicatorLabelSelector(indicator);
+
         const fiveW = fiveWOptions.find(i => fiveWKeySelector(i) === selectedFiveWOption);
         const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
 
@@ -173,13 +179,17 @@ function Covid19(props: Props) {
             return {
                 choroplethMapState: mapStateForIndicator,
                 choroplethTitle: indicatorTitle,
+
                 bubbleMapState: mapStateForFiveW,
                 bubbleTitle: fiveWTitle,
+                bubbleInteger: fiveW?.integer,
             };
         }
         return {
             choroplethMapState: mapStateForFiveW,
             choroplethTitle: fiveWTitle,
+            choroplethInteger: fiveW?.integer,
+
             bubbleMapState: mapStateForIndicator,
             bubbleTitle: indicatorTitle,
         };
@@ -205,9 +215,9 @@ function Covid19(props: Props) {
             const min = Math.min(...valueList);
             const max = Math.max(...valueList);
 
-            return generateChoroplethMapPaintAndLegend(colorDomain, min, max);
+            return generateChoroplethMapPaintAndLegend(colorDomain, min, max, choroplethInteger);
         },
-        [choroplethMapState],
+        [choroplethMapState, choroplethInteger],
     );
 
     const {

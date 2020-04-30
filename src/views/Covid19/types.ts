@@ -8,6 +8,7 @@ export interface Attribute {
 export interface FiveWOption {
     key: CovidFiveWOptionKey;
     label: string;
+    integer: boolean;
 }
 
 // FIXME: use from typings

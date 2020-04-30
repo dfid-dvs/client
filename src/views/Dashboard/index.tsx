@@ -48,9 +48,11 @@ interface Indicator {
     category: string;
 }
 
+// FIXME: use from typings
 interface FiveWOption {
     key: FiveWOptionKey;
     label: string;
+    integer?: boolean;
 }
 
 const fiveWOptions: FiveWOption[] = [
@@ -61,14 +63,17 @@ const fiveWOptions: FiveWOption[] = [
     {
         key: 'maleBeneficiary',
         label: 'Male Beneficiary',
+        integer: true,
     },
     {
         key: 'femaleBeneficiary',
         label: 'Female Beneficiary',
+        integer: true,
     },
     {
         key: 'totalBeneficiary',
         label: 'Total Beneficiary',
+        integer: true,
     },
 ];
 
@@ -135,9 +140,12 @@ const Dashboard = (props: Props) => {
 
     const {
         choroplethMapState,
-        bubbleMapState,
         choroplethTitle,
+        choroplethInteger,
+
+        bubbleMapState,
         bubbleTitle,
+        bubbleInteger,
     } = useMemo(() => {
         const indicator = indicatorList?.find(i => indicatorKeySelector(i) === selectedIndicator);
         const indicatorTitle = indicator && indicatorLabelSelector(indicator);
@@ -148,13 +156,17 @@ const Dashboard = (props: Props) => {
             return {
                 choroplethMapState: indicatorMapState,
                 choroplethTitle: indicatorTitle,
+
                 bubbleMapState: fiveWMapState,
                 bubbleTitle: fiveWTitle,
+                bubbleInteger: fiveW?.integer,
             };
         }
         return {
             choroplethMapState: fiveWMapState,
             choroplethTitle: fiveWTitle,
+            choroplethInteger: fiveW?.integer,
+
             bubbleMapState: indicatorMapState,
             bubbleTitle: indicatorTitle,
         };
@@ -178,9 +190,9 @@ const Dashboard = (props: Props) => {
             const min = Math.min(...valueList);
             const max = Math.max(...valueList);
 
-            return generateChoroplethMapPaintAndLegend(colorDomain, min, max);
+            return generateChoroplethMapPaintAndLegend(colorDomain, min, max, choroplethInteger);
         },
-        [choroplethMapState],
+        [choroplethMapState, choroplethInteger],
     );
 
     // const pending = mapStatePending || indicatorListPending;

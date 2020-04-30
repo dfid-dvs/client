@@ -2,7 +2,7 @@ import React from 'react';
 import { _cs, isDefined, formattedNormalize, Lang, addSeparator } from '@togglecorp/fujs';
 import styles from './styles.css';
 
-const getPrecision = (value: number | undefined) => {
+export function getPrecision(value: number | undefined) {
     if (!value) {
         return 0;
     }
@@ -16,7 +16,7 @@ const getPrecision = (value: number | undefined) => {
         return 0;
     }
     return 2;
-};
+}
 
 
 interface Props {

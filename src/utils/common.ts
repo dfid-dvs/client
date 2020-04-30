@@ -2,7 +2,10 @@ import {
     isDefined,
     isObject,
     isList,
+    listToMap,
 } from '@togglecorp/fujs';
+
+import { getPrecision } from '#components/Numeral';
 
 const forEach = (obj: object, func: (key: string, val: unknown) => void) => {
     Object.keys(obj).forEach((key) => {
@@ -74,80 +77,108 @@ export const generateChoroplethMapPaintAndLegend = (
     colorDomain: string[],
     minVal: number,
     maxValue: number,
-) => {
-    let minValue = minVal;
-    if (minValue === maxValue) {
-        minValue = 0;
-    }
+    integer = false,
+): {
+    min: number;
+    paint: mapboxgl.FillPaint;
+    legend: { [key: string]: number };
+} => {
+    // NOTE: handle diverging series
+    // NOTE: handle overflow/underflow
 
-    const colors: (string | number)[] = [];
+    const minValue = minVal === maxValue
+        ? 0
+        : minVal;
 
-    const legend: {
-        [key: string]: number;
-    } = {};
+    const colorMap: {
+        color: string;
+        value: number;
+    }[] = [];
 
-    const range = maxValue - minValue;
+    if (minValue !== Infinity && maxValue !== -Infinity && minValue !== maxValue) {
+        const totalSegments = colorDomain.length;
+        const range = maxValue - minValue;
 
-    if (!Number.isNaN(range) && range !== Infinity && range !== -Infinity) {
-        const gap = range / colorDomain.length;
+        let gap = range / (totalSegments + 1);
 
-        if (maxValue <= 1 || gap < 1) {
-            colorDomain.forEach((color, i) => {
-                const val = +(minValue + (i + 1) * gap).toFixed(4);
-                // NOTE: avoid duplicates
-                if (colors.length > 0 && colors[colors.length - 1] === val) {
-                    return;
-                }
-                colors.push(color);
-                colors.push(val);
-                legend[color] = val;
-            });
-        } else {
-            colorDomain.forEach((color, i) => {
-                const val = Math.floor(minValue + (i + 1) * gap);
-                // NOTE: avoid duplicates
-                if (colors.length > 0 && colors[colors.length - 1] === val) {
-                    return;
-                }
-                colors.push(color);
-                colors.push(val);
-                legend[color] = val;
+        if (integer) {
+            // gap should be at least one and integer
+            gap = Math.max(Math.ceil(gap), 1);
+        }
+
+        const realLength = Math.ceil(range / gap) + 1;
+        // NOTE: we are excluding the minimum value
+        for (let i = 1; i < realLength; i += 1) {
+            const value = minValue + (i * gap);
+
+            const precision = getPrecision(value);
+            const sanitizedValue = +(value.toFixed(precision));
+
+            if (colorMap.length > 0 && colorMap[colorMap.length - 1].value === sanitizedValue) {
+                // NOTE: avoid duplicate values
+                // eslint-disable-next-line no-continue
+                continue;
+            }
+
+            const colorIndex = Math.round(totalSegments * ((i - 1) / (realLength - 1)));
+            if (colorIndex >= totalSegments) {
+                console.error('Range exceeded');
+                // eslint-disable-next-line no-continue
+                continue;
+            }
+
+            const color = colorDomain[colorIndex];
+            colorMap.push({
+                color,
+                value: sanitizedValue,
             });
         }
     }
 
-    if (colors.length >= 4) {
-        const colorsWithoutLastValue = colors.slice(0, -1);
-
-        const fillColor: mapboxgl.FillPaint['fill-color'] = [
-            'step',
-            ['feature-state', 'value'],
-            ...colorsWithoutLastValue,
-        ];
-
-        const fillOpacity: mapboxgl.FillPaint['fill-opacity'] = [
-            'case',
-            // ['==', ['feature-state', 'hovered'], true],
-            // 1,
-            ['==', ['feature-state', 'value'], null],
-            0.1,
-            0.7,
-        ];
-
-        const paint = {
-            'fill-color': fillColor,
-            'fill-opacity': fillOpacity,
+    // Need at least start and end
+    if (colorMap.length < 2) {
+        return {
+            min: minValue,
+            paint: {
+                'fill-color': '#08467d',
+                'fill-opacity': 0.1,
+            },
+            legend: {},
         };
-        return { min: minValue, paint, legend };
     }
 
-    const emptyPaint: mapboxgl.FillPaint = {
-        'fill-color': '#08467d',
-        'fill-opacity': 0.1,
-    };
-    const emptyLegend: typeof legend = {};
+    const colors = colorMap
+        .map(item => [item.color, item.value])
+        .flat()
+        .slice(0, -1); // remove last element
 
-    return { min: minValue, paint: emptyPaint, legend: emptyLegend };
+    const fillColor: mapboxgl.FillPaint['fill-color'] = [
+        'step',
+        ['feature-state', 'value'],
+        ...colors,
+    ];
+
+    const fillOpacity: mapboxgl.FillPaint['fill-opacity'] = [
+        'case',
+        ['==', ['feature-state', 'value'], null],
+        0.1,
+        0.7,
+    ];
+
+    const paint: mapboxgl.FillPaint = {
+        'fill-color': fillColor,
+        'fill-opacity': fillOpacity,
+    };
+
+    return {
+        min: minValue,
+        paint,
+        legend: listToMap(
+            colorMap,
+            item => item.color,
+            item => item.value,
+        ),
+    };
 };
 
 export const generateBubbleMapPaintAndLegend = (
