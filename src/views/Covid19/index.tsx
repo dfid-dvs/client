@@ -8,6 +8,8 @@ import {
     isDefined,
 } from '@togglecorp/fujs';
 
+import MapTooltip from '#remap/MapTooltip';
+
 import RegionSelector from '#components/RegionSelector';
 import SegmentInput from '#components/SegmentInput';
 import NavbarContext from '#components/NavbarContext';
@@ -56,6 +58,7 @@ import {
     twelveHourUncoveredColor,
 } from './TravelTimeLayer/mapTheme';
 
+import Tooltip from './Tooltip';
 import {
     FiveWOption,
     Indicator,
@@ -66,6 +69,16 @@ import {
 } from './types';
 
 import styles from './styles.css';
+
+interface Region {
+    name: string;
+}
+
+interface ClickedRegion {
+    feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
+    lngLat: mapboxgl.LngLatLike;
+    point: mapboxgl.Point;
+}
 
 const legendKeySelector = (option: LegendItem) => option.radius;
 const legendValueSelector = (option: LegendItem) => option.value;
@@ -117,12 +130,13 @@ const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
 const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 
 const ageGroupOptions: AgeGroup[] = [
-    { key: 'belowFourteen', label: 'Below 14' },
-    { key: 'fifteenToFourtyNine', label: '15 to 49' },
-    { key: 'aboveFifty', label: 'Above 50' },
+    { key: 'belowFourteen', label: 'Below 14', tooltipLabel: 'Number of People Aged Below 14' },
+    { key: 'fifteenToFourtyNine', label: '15 to 49', tooltipLabel: 'Number of Peple Aged From 15 to 49' },
+    { key: 'aboveFifty', label: 'Above 50', tooltipLabel: 'Number of People Aged Above 50' },
 ];
 const ageGroupKeySelector = (ageGroup: AgeGroup) => ageGroup.key;
 const ageGroupLabelSelector = (ageGroup: AgeGroup) => ageGroup.label;
+const ageGroupTooltipLabelSelector = (ageGroup: AgeGroup) => ageGroup.tooltipLabel;
 
 const hospitalTypeOptions: HospitalType[] = [
     { key: 'deshosp', label: 'Covid Designated' },
@@ -147,6 +161,13 @@ const travelTimeTypeLabelSelector = (travelTimeType: TravelTimeType) => travelTi
 
 const layerKeySelector = (d: Layer) => d.id;
 const layerLabelSelector = (d: Layer) => d.name;
+
+const onClickTooltipOptions: mapboxgl.PopupOptions = {
+    closeOnClick: true,
+    closeButton: false,
+    offset: 8,
+    maxWidth: '480px',
+};
 
 interface Props {
     className?: string;
@@ -188,10 +209,22 @@ function Covid19(props: Props) {
 
     const [
         mapStateForFiveWPending,
-        mapStateForFiveW,
+        covidFiveWData,
     ] = useMapStateForCovidFiveW(regionLevel, selectedFiveWOption);
 
+
+    const mapStateForFiveW = useMemo(
+        () => (
+            covidFiveWData.map(v => ({ id: v.id, value: v.value }))
+        ),
+        [covidFiveWData],
+    );
     const [invertMapStyle, setInvertMapStyle] = useState(false);
+
+    const [
+        clickedRegionProperties,
+        setClickedRegionProperties,
+    ] = React.useState<ClickedRegion | undefined>();
 
     const {
         choroplethMapState,
@@ -243,6 +276,48 @@ function Covid19(props: Props) {
 
     // const mapStatePending = mapStateForIndicatorPending || mapStateForFiveWPending;
     // const pending = mapStatePending || indicatorListPending;
+    const indicatorData = useMemo(
+        () => {
+            if (isDefined(selectedIndicator)) {
+                if (selectedIndicator === -1 && selectedAgeGroup) {
+                    const ageGroup = ageGroupOptions.find(v => v.key === selectedAgeGroup);
+                    const ageGroupLabel = ageGroup && ageGroupTooltipLabelSelector(ageGroup);
+                    const ageGroupValue = mapStateForIndicator.find(
+                        v => v.id === clickedRegionProperties?.feature.id,
+                    )?.value;
+
+                    return {
+                        label: ageGroupLabel,
+                        value: ageGroupValue,
+                    };
+                }
+
+                const indicator = indicatorList?.find(
+                    i => indicatorKeySelector(i) === selectedIndicator,
+                );
+
+                if (indicator) {
+                    const indicatorTitle = indicatorLabelSelector(indicator);
+                    const indicatorValue = mapStateForIndicator.find(
+                        v => v.id === clickedRegionProperties?.feature.id,
+                    )?.value;
+
+                    return {
+                        label: indicatorTitle,
+                        value: indicatorValue,
+                    };
+                }
+            }
+            return undefined;
+        },
+        [
+            selectedIndicator,
+            clickedRegionProperties,
+            indicatorList,
+            mapStateForIndicator,
+            selectedAgeGroup,
+        ],
+    );
 
     const {
         paint: mapPaint,
@@ -349,6 +424,30 @@ function Covid19(props: Props) {
         return true;
     };
 
+    const handleTooltipClose = React.useCallback(
+        () => {
+            setClickedRegionProperties(undefined);
+        },
+        [setClickedRegionProperties],
+    );
+
+    const handleMapRegionOnClick = React.useCallback(
+        (
+            feature: mapboxgl.MapboxGeoJSONFeature,
+            lngLat: mapboxgl.LngLat,
+            point: mapboxgl.Point,
+        ) => {
+            setClickedRegionProperties({
+                feature,
+                lngLat,
+                point,
+            });
+
+            return true;
+        },
+        [setClickedRegionProperties],
+    );
+
     useEffect(
         () => {
             setSelectedHospitals([]);
@@ -383,6 +482,11 @@ function Covid19(props: Props) {
         setTtInfoVisbility(!ttInfoVisibility);
     }, [setTtInfoVisbility, ttInfoVisibility]);
 
+    const dfidData = useMemo(
+        () => covidFiveWData.find(v => v.id === clickedRegionProperties?.feature.id)?.data,
+        [covidFiveWData, clickedRegionProperties],
+    );
+
     return (
         <div className={_cs(
             styles.covid19,
@@ -397,10 +501,10 @@ function Covid19(props: Props) {
             />
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
-                    <LoadingAnimation />
+                <LoadingAnimation />
                 </Backdrop>
                 )
-            */}
+              */}
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
@@ -410,7 +514,22 @@ function Covid19(props: Props) {
                 bubbleMapPaint={bubblePaint}
                 rasterLayer={selectedRasterLayer}
                 printMode={printMode}
+                onClick={handleMapRegionOnClick}
+                hideTooltipOnHover
             >
+                {clickedRegionProperties && (
+                    <MapTooltip
+                        coordinates={clickedRegionProperties.lngLat}
+                        tooltipOptions={onClickTooltipOptions}
+                        onHide={handleTooltipClose}
+                    >
+                        <Tooltip
+                            feature={clickedRegionProperties.feature}
+                            dfidData={dfidData}
+                            indicatorData={indicatorData}
+                        />
+                    </MapTooltip>
+                )}
                 {showHealthResource && (
                     <TravelTimeLayer
                         key={`${selectedSeason}-${selectedHospitalType}`}

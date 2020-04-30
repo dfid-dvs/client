@@ -60,11 +60,16 @@ interface Props {
     choroplethMapPaint?: mapboxgl.FillPaint;
     bubbleMapPaint?: mapboxgl.CirclePaint;
     children?: React.ReactNode;
-    hideTooltip?: boolean;
     hideChoropleth?: boolean;
     hideBubble?: boolean;
     rasterLayer?: Layer;
     printMode?: boolean;
+    hideTooltipOnHover?: boolean;
+    onClick?: (
+        feature: mapboxgl.MapboxGeoJSONFeature,
+        lngLat: mapboxgl.LngLat,
+        point: mapboxgl.Point,
+    ) => boolean | undefined;
 }
 
 function IndicatorMap(props: Props) {
@@ -76,11 +81,12 @@ function IndicatorMap(props: Props) {
         choroplethMapPaint,
         bubbleMapPaint,
         children,
-        hideTooltip,
         hideChoropleth,
         hideBubble,
         rasterLayer,
         printMode,
+        hideTooltipOnHover,
+        onClick,
     } = props;
 
     const [
@@ -162,6 +168,7 @@ function IndicatorMap(props: Props) {
                     }}
                     onMouseEnter={handleMapRegionMouseEnter}
                     onMouseLeave={handleMapRegionMouseLeave}
+                    onClick={onClick}
                 />
                 <MapLayer
                     layerKey="palika-line"
@@ -182,6 +189,7 @@ function IndicatorMap(props: Props) {
                     }}
                     onMouseEnter={handleMapRegionMouseEnter}
                     onMouseLeave={handleMapRegionMouseLeave}
+                    onClick={onClick}
                 />
                 <MapLayer
                     layerKey="district-line"
@@ -202,6 +210,7 @@ function IndicatorMap(props: Props) {
                     }}
                     onMouseEnter={handleMapRegionMouseEnter}
                     onMouseLeave={handleMapRegionMouseLeave}
+                    onClick={onClick}
                 />
                 <MapLayer
                     layerKey="province-line"
@@ -218,7 +227,9 @@ function IndicatorMap(props: Props) {
                     attributeKey="value"
                     sourceLayer={selectedSourceForChoropleth}
                 />
-                {!hideTooltip && hoveredRegionProperties && hoveredRegionProperties.lngLat && (
+                {!hideTooltipOnHover
+                    && hoveredRegionProperties
+                    && hoveredRegionProperties.lngLat && (
                     <MapTooltip
                         coordinates={hoveredRegionProperties.lngLat}
                         tooltipOptions={tooltipOptions}
