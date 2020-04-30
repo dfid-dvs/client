@@ -1,5 +1,5 @@
 .option {
-    background-color: rgba(0, 0, 0, .05); 
+    background-color: var(--color-background);
     cursor: pointer;
     padding: var(--spacing-extra-small) var(--spacing-small);
     font-size: var(--font-size-small-medium);
@@ -11,5 +11,11 @@
     &.active {
         background-color: var(--color-background-accent-hint);
         color: var(--color-text);
+    }
+
+    &:not(.active) {
+        &:hover {
+            background-color: var(--color-background-hover);
+        }
     }
 }

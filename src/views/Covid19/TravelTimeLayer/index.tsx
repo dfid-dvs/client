@@ -344,11 +344,9 @@ function TravelTimeLayer(props: Props) {
     );
 
 
-    const hospitalSourceLayer = (
-        (hospitalType === 'deshosp' && 'coviddesignatedhospitalsgeo')
-        || (hospitalType === 'allcovidhfs' && 'covidhospitalsgeo')
-        || 'allhospitalsgeo'
-    );
+    const hospitalSourceLayer = hospitalType === 'deshosp'
+        ? 'coviddesignatedhospitalsgeo'
+        : 'covidhospitalsgeo';
 
     const catchmentUrl = (
         (hospitalType === 'deshosp' && season === 'dry' && 'mapbox://togglecorp.265cfnxb')
@@ -533,45 +531,6 @@ function TravelTimeLayer(props: Props) {
                             layout: catchmentLayout,
                         }}
                     />
-                    {/*
-                    <MapLayer
-                        layerKey="uncovered-fill"
-                        layerOptions={{
-                            type: 'fill',
-                            'source-layer': 'uncoveredgeo',
-                            paint: {
-                                'fill-color': uncoveredColor,
-                                'fill-opacity': 0.4,
-                            },
-                            layout: travelTimeShow && selectedHospitals.length <= 0
-                                ? { visibility: 'visible' }
-                                : { visibility: 'none' },
-                        }}
-                        onMouseEnter={noOp}
-                    />
-                    */}
-                    {/*
-                    <MapLayer
-                        layerKey="uncovered-line"
-                        layerOptions={{
-                            type: 'line',
-                            'source-layer': 'uncoveredgeo',
-                            paint: {
-                                'line-width': 2,
-                                'line-color': uncoveredDarkColor,
-                                'line-opacity': [
-                                    'case',
-                                    ['==', ['feature-state', 'hovered'], true],
-                                    1,
-                                    0,
-                                ],
-                            },
-                            layout: travelTimeShow && selectedHospitals.length <= 0
-                                ? { visibility: 'visible' }
-                                : { visibility: 'none' },
-                        }}
-                    />
-                    */}
                 </MapSource>
             )}
             <MapSource

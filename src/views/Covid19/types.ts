@@ -24,7 +24,7 @@ export interface AgeGroup {
 }
 
 export interface HospitalType {
-    key: 'deshosp' | 'allcovidhfs' | 'allhfs';
+    key: 'deshosp' | 'allcovidhfs';
     label: string;
 }
 
