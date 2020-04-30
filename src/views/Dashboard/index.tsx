@@ -11,6 +11,7 @@ import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import BubbleLegend from '#components/BubbleLegend';
 import IndicatorMap from '#components/IndicatorMap';
+import PrintButton from '#components/PrintButton';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
@@ -239,13 +240,20 @@ const Dashboard = (props: Props) => {
         () => rasterLayers?.find(v => v.id === selectedLayer),
         [rasterLayers, selectedLayer],
     );
+    const [printMode, setPrintMode] = useState(false);
 
     return (
         <div className={_cs(
             styles.dashboard,
             className,
+            printMode && styles.printMode,
         )}
         >
+            <PrintButton
+                className={styles.printModeButton}
+                printMode={printMode}
+                onPrintModeChange={setPrintMode}
+            />
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
                     <LoadingAnimation />
@@ -259,6 +267,7 @@ const Dashboard = (props: Props) => {
                 bubbleMapState={bubbleMapState}
                 bubbleMapPaint={bubblePaint}
                 rasterLayer={selectedRasterLayer}
+                printMode={printMode}
             />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />

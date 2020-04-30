@@ -13,6 +13,7 @@ import ChoroplethLegend from '#components/ChoroplethLegend';
 import ToggleButton from '#components/ToggleButton';
 import Button from '#components/Button';
 import BubbleLegend from '#components/BubbleLegend';
+import PrintButton from '#components/PrintButton';
 import IndicatorMap from '#components/IndicatorMap';
 
 import useRequest from '#hooks/useRequest';
@@ -37,6 +38,7 @@ import {
 } from '#utils/constants';
 
 import Stats from './Stats';
+
 import TravelTimeLayer, {
     DesignatedHospital,
 } from './TravelTimeLayer';
@@ -323,13 +325,20 @@ function Covid19(props: Props) {
         () => rasterLayers?.find(v => v.id === selectedLayer),
         [rasterLayers, selectedLayer],
     );
+    const [printMode, setPrintMode] = useState(false);
 
     return (
         <div className={_cs(
             styles.covid19,
             className,
+            printMode && styles.printMode,
         )}
         >
+            <PrintButton
+                className={styles.printModeButton}
+                printMode={printMode}
+                onPrintModeChange={setPrintMode}
+            />
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
                     <LoadingAnimation />
@@ -344,6 +353,7 @@ function Covid19(props: Props) {
                 bubbleMapState={bubbleMapState}
                 bubbleMapPaint={bubblePaint}
                 rasterLayer={selectedRasterLayer}
+                printMode={printMode}
             >
                 {showHealthResource && (
                     <TravelTimeLayer

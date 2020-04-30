@@ -1,3 +1,7 @@
+@page {
+    size: 297mm 210mm;
+}
+
 .navbar {
     display: flex;
     align-items: center;
@@ -56,3 +60,10 @@
         }
     }
 }
+
+@media print {
+    .navbar {
+        display: none;
+    }
+}
+

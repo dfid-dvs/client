@@ -72,4 +72,26 @@
         padding: var(--spacing-medium);
         width: 300px;
     }
+
+    .print-mode-button {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1111111;
+    }
+
+    &.print-mode {
+        flex-grow: unset;
+        margin: auto;
+        width: 297mm!important;
+        height: 210mm!important;
+
+        .map-style-config-container {
+            display: none;
+        }
+
+        .legend-container {
+            left: 10px;
+        }
+    }
 }

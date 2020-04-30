@@ -63,8 +63,8 @@ interface Props {
     hideTooltip?: boolean;
     hideChoropleth?: boolean;
     hideBubble?: boolean;
-
     rasterLayer?: Layer;
+    printMode?: boolean;
 }
 
 function IndicatorMap(props: Props) {
@@ -79,8 +79,8 @@ function IndicatorMap(props: Props) {
         hideTooltip,
         hideChoropleth,
         hideBubble,
-
         rasterLayer,
+        printMode,
     } = props;
 
     const [
@@ -140,7 +140,7 @@ function IndicatorMap(props: Props) {
             mapOptions={mapOptions}
             scaleControlShown
             scaleControlPosition="bottom-right"
-            navControlShown
+            navControlShown={!printMode}
             navControlPosition="bottom-right"
         >
             <MapContainer className={_cs(styles.mapContainer, className)} />
