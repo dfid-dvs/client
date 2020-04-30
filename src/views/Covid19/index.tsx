@@ -12,7 +12,7 @@ import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import ToggleButton from '#components/ToggleButton';
 import Button from '#components/Button';
-import BubbleLegend from '#components/BubbleLegend';
+import BubbleLegend, { BubbleLegendType } from '#components/BubbleLegend';
 import PrintButton from '#components/PrintButton';
 import IndicatorMap from '#components/IndicatorMap';
 
@@ -225,11 +225,22 @@ function Covid19(props: Props) {
     const {
         mapPaint: bubblePaint,
         legend: bubbleLegend,
+        legendType: bubbleLegendType,
     } = useMemo(() => {
         const valueList = bubbleMapState
             .map(d => d.value)
             .filter(isDefined)
             .map(Math.abs);
+
+        const hasNegativeValues = bubbleMapState.some(v => v.value < 0);
+        const hasPositiveValues = bubbleMapState.some(v => v.value > 0);
+
+        let legendType: BubbleLegendType = 'both';
+        if (hasNegativeValues && !hasPositiveValues) {
+            legendType = 'negative';
+        } else if (!hasNegativeValues && hasPositiveValues) {
+            legendType = 'positive';
+        }
 
         const min = valueList.length > 0 ? Math.min(...valueList) : undefined;
         const max = valueList.length > 0 ? Math.max(...valueList) : undefined;
@@ -241,7 +252,10 @@ function Covid19(props: Props) {
             maxRadius = 30;
         }
 
-        return generateBubbleMapPaintAndLegend(min, max, maxRadius);
+        return {
+            legendType,
+            ...generateBubbleMapPaintAndLegend(min, max, maxRadius),
+        };
     }, [bubbleMapState, regionLevel]);
 
     const selectedIndicatorDetails = useMemo(
@@ -509,6 +523,7 @@ function Covid19(props: Props) {
                         keySelector={legendKeySelector}
                         valueSelector={legendValueSelector}
                         radiusSelector={legendRadiusSelector}
+                        legendType={bubbleLegendType}
                     />
                     {showTravelTimeChoropleth && (
                         <>

@@ -7,6 +7,8 @@ import Numeral from '#components/Numeral';
 import { OptionKey } from '../types';
 import styles from './styles.css';
 
+export type BubbleLegendType = 'positive' | 'negative' | 'both';
+
 interface LegendItemProps {
     className?: string;
     value: number;
@@ -52,8 +54,8 @@ interface Props<T, K extends OptionKey> {
     keySelector: (datum: T) => K;
     radiusSelector: (datum: T) => number;
     valueSelector: (datum: T) => number;
-    colorSelector?: (datum: T) => string;
     itemClassName?: string;
+    legendType: BubbleLegendType;
     positiveColor?: string;
     negativeColor?: string;
 }
@@ -64,12 +66,12 @@ function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
         data,
         radiusSelector,
         valueSelector,
-        colorSelector,
         keySelector,
         itemClassName,
         title,
         negativeColor,
         positiveColor,
+        legendType,
     } = props;
 
     const legendItemRendererParams = useCallback((_: K, d: T, i: number, allData: T[]) => {
@@ -79,14 +81,28 @@ function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
 
         const maxRadius = Math.max(...radiuses);
 
+        let color = '#aeaeae';
+        if (legendType === 'positive' && positiveColor) {
+            color = positiveColor;
+        } else if (legendType === 'negative' && negativeColor) {
+            color = negativeColor;
+        }
+
         return ({
             value: valueSelector(d),
-            color: colorSelector ? colorSelector(d) : '#aeaeae',
+            color,
             radius: radiusSelector ? radiusSelector(d) : undefined,
             maxRadius,
             className: itemClassName,
         });
-    }, [radiusSelector, valueSelector, colorSelector, itemClassName]);
+    }, [
+        radiusSelector,
+        valueSelector,
+        itemClassName,
+        negativeColor,
+        positiveColor,
+        legendType,
+    ]);
 
     if (data.length <= 0) {
         return null;
@@ -105,22 +121,24 @@ function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
                 keySelector={keySelector}
                 rendererParams={legendItemRendererParams}
             />
-            <div className={styles.footer}>
-                <div className={styles.negative}>
-                    <span
-                        className={styles.circle}
-                        style={{ backgroundColor: negativeColor }}
-                    />
-                    Less than 0
+            {legendType === 'both' && (
+                <div className={styles.footer}>
+                    <div className={styles.negative}>
+                        <span
+                            className={styles.circle}
+                            style={{ backgroundColor: negativeColor }}
+                        />
+                        Less than 0
+                    </div>
+                    <div className={styles.positive}>
+                        <span
+                            className={styles.circle}
+                            style={{ backgroundColor: positiveColor }}
+                        />
+                        Greater than 0
+                    </div>
                 </div>
-                <div className={styles.positive}>
-                    <span
-                        className={styles.circle}
-                        style={{ backgroundColor: positiveColor }}
-                    />
-                    Greater than 0
-                </div>
-            </div>
+            )}
         </div>
     );
 }
