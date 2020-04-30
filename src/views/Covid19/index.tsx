@@ -13,9 +13,7 @@ import ChoroplethLegend from '#components/ChoroplethLegend';
 import ToggleButton from '#components/ToggleButton';
 import Button from '#components/Button';
 import BubbleLegend from '#components/BubbleLegend';
-
 import IndicatorMap from '#components/IndicatorMap';
-import Stats from './Stats';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
@@ -23,9 +21,10 @@ import useMapStateForCovidFiveW from '#hooks/useMapStateForCovidFiveW';
 
 import {
     AgeGroupOption,
-    MultiResponse,
     CovidFiveWOptionKey,
+    Layer,
     LegendItem,
+    MultiResponse,
 } from '#types';
 
 import {
@@ -37,6 +36,7 @@ import {
     apiEndPoint,
 } from '#utils/constants';
 
+import Stats from './Stats';
 import TravelTimeLayer, {
     DesignatedHospital,
 } from './TravelTimeLayer';
@@ -110,6 +110,9 @@ const travelTimeTypeOptions: TravelTimeType[] = [
 const travelTimeTypeKeySelector = (travelTimeType: TravelTimeType) => travelTimeType.key;
 const travelTimeTypeLabelSelector = (travelTimeType: TravelTimeType) => travelTimeType.label;
 
+const layerKeySelector = (d: Layer) => d.id;
+const layerLabelSelector = (d: Layer) => d.name;
+
 interface Props {
     className?: string;
 }
@@ -129,11 +132,19 @@ function Covid19(props: Props) {
     const [selectedTravelTimeType, setTravelTimeType] = useState<TravelTimeType['key']>('catchment');
     const [selectedHospitalType, setHospitalType] = useState<HospitalType['key']>('deshosp');
 
+    const [selectedLayer, setSelectedLayer] = useState<number | undefined>(undefined);
+
     const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_covid=1`;
     const [indicatorListPending, indicatorListResponse] = useRequest<MultiResponse<Indicator>>(
         indicatorListGetUrl,
     );
     const indicatorList = indicatorListResponse?.results;
+
+    const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
+    const [
+        mapLayerListPending,
+        mapLayerListResponse,
+    ] = useRequest<MultiResponse<Layer>>(mapLayerGetUrl);
 
     const [
         mapStateForIndicatorPending,
@@ -293,6 +304,16 @@ function Covid19(props: Props) {
         || showTravelTimeChoropleth
     );
 
+    const rasterLayers = useMemo(
+        () => (mapLayerListResponse?.results.filter(v => v.type === 'raster')),
+        [mapLayerListResponse],
+    );
+
+    const selectedRasterLayer = useMemo(
+        () => rasterLayers?.find(v => v.id === selectedLayer),
+        [rasterLayers, selectedLayer],
+    );
+
     return (
         <div className={_cs(
             styles.covid19,
@@ -312,6 +333,7 @@ function Covid19(props: Props) {
                 choroplethMapPaint={mapPaint}
                 bubbleMapState={bubbleMapState}
                 bubbleMapPaint={bubblePaint}
+                rasterLayer={selectedRasterLayer}
             >
                 {showHealthResource && (
                     <TravelTimeLayer
@@ -407,7 +429,7 @@ function Covid19(props: Props) {
                     optionKeySelector={fiveWKeySelector}
                 />
                 <SelectInput
-                    className={_cs(styles.indicatorInput, styles.inputItem)}
+                    className={styles.inputItem}
                     label="Indicator"
                     placeholder="Select an indicator"
                     disabled={indicatorListPending}
@@ -425,8 +447,8 @@ function Covid19(props: Props) {
                 )}
                 {selectedIndicator === -1 && (
                     <SegmentInput
-                        label="Selected range"
-                        className={styles.ageGroupSelectInput}
+                        label="Age range"
+                        className={styles.inputItem}
                         options={ageGroupOptions}
                         onChange={setSelectedAgeGroup}
                         value={selectedAgeGroup}
@@ -439,6 +461,17 @@ function Covid19(props: Props) {
                     className={styles.inputItem}
                     value={invertMapStyle}
                     onChange={setInvertMapStyle}
+                />
+                <div className={styles.separator} />
+                <SelectInput
+                    label="Background Layer"
+                    className={styles.inputItem}
+                    disabled={mapLayerListPending}
+                    options={rasterLayers}
+                    onChange={setSelectedLayer}
+                    value={selectedLayer}
+                    optionKeySelector={layerKeySelector}
+                    optionLabelSelector={layerLabelSelector}
                 />
             </div>
             {showLegend && (

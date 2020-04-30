@@ -4,20 +4,6 @@
     flex-direction: column;
     background-color: var(--color-background-alt);
 
-    .separator {
-        margin: var(--spacing-large) 0;
-        border-bottom: var(--width-separator-thin) solid var(--color-separator);
-        width: 100%;
-    }
-
-    .backdrop {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 11111;
-        background-color: rgba(255, 255, 255, .7);
-    }
-
     .map-container {
         flex-grow: 1;
         font-family: inherit;
@@ -25,23 +11,26 @@
 
     .map-style-config-container {
         position: absolute;
-        bottom: 10px;
-        left: 10px;
-        border: 1px solid rgba(0, 0, 0, .1);
+        bottom: var(--spacing-medium);
+        left: var(--spacing-medium);
+        border: var(--width-separator-thin) solid var(--color-separator);
         background-color: #fff;
         padding: var(--spacing-medium);
         width: 400px;
 
-        .heading {
-            padding: var(--spacing-medium);
-            color: var(--color-accent);
+        .separator {
+            margin: var(--spacing-large) 0;
+            border-bottom: var(--width-separator-thin) solid var(--color-separator);
+            width: 100%;
         }
 
-        .indicator-select-input {
+        .input-item {
             margin: var(--spacing-medium) 0;
         }
-        .five-w-segment-input {
-            margin: var(--spacing-medium) 0;
+
+        .abstract {
+            padding: var(--spacing-small);
+            font-size: var(--font-size-small);
         }
     }
 

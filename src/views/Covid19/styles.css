@@ -4,10 +4,6 @@
     flex-direction: column;
     background-color: var(--color-background-alt);
 
-    .backdrop {
-        z-index: 11111;
-    }
-
     .map-container {
         flex-grow: 1;
         font-family: inherit;
@@ -17,7 +13,7 @@
         position: absolute;
         bottom: var(--spacing-medium);
         left: var(--spacing-medium);
-        border: 1px solid rgba(0, 0, 0, .1);
+        border: var(--width-separator-thin) solid var(--color-separator);
         background-color: #fff;
         padding: var(--spacing-medium);
         width: 400px;
@@ -32,10 +28,6 @@
             margin: var(--spacing-medium) 0;
         }
 
-        .layer-by-selection {
-            padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
-        }
-
         .hospitals {
             display: flex;
             flex-wrap: wrap;
@@ -48,16 +40,8 @@
             }
         }
 
-        .age-group-select-input {
-            padding: 0 calc(var(--spacing-medium) - var(--spacing-small));
-        }
-
-        .indicator-input {
-            margin-bottom: 0;
-        }
-
         .abstract {
-            padding: var(--spacing-medium) 0;
+            padding: var(--spacing-small);
             font-size: var(--font-size-small);
         }
     }
