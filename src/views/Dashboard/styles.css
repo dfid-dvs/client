@@ -74,6 +74,7 @@
         }
 
         .legend-container {
+            bottom: calc(var(--height-print-bar) + 10px);
             left: 10px;
         }
     }

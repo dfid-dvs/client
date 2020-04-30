@@ -28,6 +28,11 @@
             margin: var(--spacing-medium) 0;
         }
 
+        .input-item-container {
+            display: flex;
+            align-items: center;
+        }
+
         .hospitals {
             display: flex;
             flex-wrap: wrap;
@@ -43,6 +48,12 @@
         .abstract {
             padding: var(--spacing-small);
             font-size: var(--font-size-small);
+
+            .link {
+                margin: 0 var(--spacing-extra-small);
+                text-decoration: underline;
+                color: var(--color-link);
+            }
         }
     }
 
@@ -91,6 +102,7 @@
         }
 
         .legend-container {
+            bottom: calc(var(--height-print-bar) + 10px);
             left: 10px;
         }
     }

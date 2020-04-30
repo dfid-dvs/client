@@ -7,7 +7,7 @@ import { _cs } from '@togglecorp/fujs';
 
 import ProgramSelector from '#components/ProgramSelector';
 
-import dfidLogo from './DfID-logo.svg';
+import dfidLogo from '#resources/DfID-logo.svg';
 import styles from './styles.css';
 
 interface Props {

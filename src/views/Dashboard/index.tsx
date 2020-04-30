@@ -12,6 +12,7 @@ import ChoroplethLegend from '#components/ChoroplethLegend';
 import BubbleLegend, { BubbleLegendType } from '#components/BubbleLegend';
 import IndicatorMap from '#components/IndicatorMap';
 import PrintButton from '#components/PrintButton';
+import PrintDetailsBar from '#components/PrintDetailsBar';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
@@ -147,11 +148,14 @@ const Dashboard = (props: Props) => {
         bubbleMapState,
         bubbleTitle,
         bubbleInteger,
+        titleForPrintBar,
     } = useMemo(() => {
         const indicator = indicatorList?.find(i => indicatorKeySelector(i) === selectedIndicator);
         const indicatorTitle = indicator && indicatorLabelSelector(indicator);
         const fiveW = fiveWOptions.find(i => fiveWKeySelector(i) === selectedFiveWOption);
         const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
+
+        const title = [fiveWTitle, indicatorTitle].filter(isDefined).join(' & ');
 
         if (invertMapStyle) {
             return {
@@ -161,6 +165,8 @@ const Dashboard = (props: Props) => {
                 bubbleMapState: fiveWMapState,
                 bubbleTitle: fiveWTitle,
                 bubbleInteger: fiveW?.integer,
+
+                titleForPrintBar: title,
             };
         }
         return {
@@ -170,6 +176,8 @@ const Dashboard = (props: Props) => {
 
             bubbleMapState: indicatorMapState,
             bubbleTitle: indicatorTitle,
+
+            titleForPrintBar: title,
         };
     }, [
         invertMapStyle,
@@ -348,6 +356,11 @@ const Dashboard = (props: Props) => {
                     />
                 </div>
             )}
+            <PrintDetailsBar
+                show={printMode}
+                title={titleForPrintBar}
+                description={selectedIndicatorDetails?.abstract}
+            />
         </div>
     );
 };
