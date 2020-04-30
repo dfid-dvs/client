@@ -1,5 +1,8 @@
-import React, { useState, useContext, useMemo, useEffect } from 'react';
-import { IoIosClose } from 'react-icons/io';
+import React, { useState, useCallback, useContext, useMemo, useEffect } from 'react';
+import {
+    IoIosClose,
+    IoIosInformationCircleOutline,
+} from 'react-icons/io';
 import {
     _cs,
     isDefined,
@@ -12,8 +15,10 @@ import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import ToggleButton from '#components/ToggleButton';
 import Button from '#components/Button';
-import BubbleLegend from '#components/BubbleLegend';
+import BubbleLegend, { BubbleLegendType } from '#components/BubbleLegend';
 import IndicatorMap from '#components/IndicatorMap';
+import PrintButton from '#components/PrintButton';
+import PrintDetailsBar from '#components/PrintDetailsBar';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
@@ -37,6 +42,7 @@ import {
 } from '#utils/constants';
 
 import Stats from './Stats';
+
 import TravelTimeLayer, {
     DesignatedHospital,
 } from './TravelTimeLayer';
@@ -63,6 +69,32 @@ import styles from './styles.css';
 const legendKeySelector = (option: LegendItem) => option.radius;
 const legendValueSelector = (option: LegendItem) => option.value;
 const legendRadiusSelector = (option: LegendItem) => option.radius;
+
+const travelTimeDetails = (
+    <span>
+        These maps show the catchment areas of COVID hospitals in Nepal based on
+        one-way travel time cutoffs of 4 / 8 / 12 hours using the fastest possible
+        means of transport, which roughly correspond to 1 / 2 / 3 day round trips.
+        The uncovered layers show the inverse of these catchments.
+        Population from
+        <a
+            className={styles.link}
+            href="https://www.worldpop.org/project/categories?id=3"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            WorldPop 2020 projections.
+        </a>
+        <a
+            className={styles.link}
+            href="http://documents.worldbank.org/curated/en/605991565195559324/Measuring-Inequality-of-Access-Modeling-Physical-Remoteness-in-Nepal"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            Travel time models from Banick and Kawasoe (2019)
+        </a>
+    </span>
+);
 
 const fiveWOptions: FiveWOption[] = [
     {
@@ -168,12 +200,15 @@ function Covid19(props: Props) {
         bubbleMapState,
         bubbleTitle,
         bubbleInteger,
+
+        titleForPrintBar,
     } = useMemo(() => {
         const indicator = indicatorList?.find(i => indicatorKeySelector(i) === selectedIndicator);
         const indicatorTitle = indicator && indicatorLabelSelector(indicator);
 
         const fiveW = fiveWOptions.find(i => fiveWKeySelector(i) === selectedFiveWOption);
         const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
+        const title = [fiveWTitle, indicatorTitle].filter(isDefined).join(' & ');
 
         if (invertMapStyle) {
             return {
@@ -183,6 +218,8 @@ function Covid19(props: Props) {
                 bubbleMapState: mapStateForFiveW,
                 bubbleTitle: fiveWTitle,
                 bubbleInteger: fiveW?.integer,
+
+                titleForPrintBar: title,
             };
         }
         return {
@@ -192,6 +229,7 @@ function Covid19(props: Props) {
 
             bubbleMapState: mapStateForIndicator,
             bubbleTitle: indicatorTitle,
+            titleForPrintBar: title,
         };
     }, [
         invertMapStyle,
@@ -223,11 +261,22 @@ function Covid19(props: Props) {
     const {
         mapPaint: bubblePaint,
         legend: bubbleLegend,
+        legendType: bubbleLegendType,
     } = useMemo(() => {
         const valueList = bubbleMapState
             .map(d => d.value)
             .filter(isDefined)
             .map(Math.abs);
+
+        const hasNegativeValues = bubbleMapState.some(v => v.value < 0);
+        const hasPositiveValues = bubbleMapState.some(v => v.value > 0);
+
+        let legendType: BubbleLegendType = 'both';
+        if (hasNegativeValues && !hasPositiveValues) {
+            legendType = 'negative';
+        } else if (!hasNegativeValues && hasPositiveValues) {
+            legendType = 'positive';
+        }
 
         const min = valueList.length > 0 ? Math.min(...valueList) : undefined;
         const max = valueList.length > 0 ? Math.max(...valueList) : undefined;
@@ -239,7 +288,10 @@ function Covid19(props: Props) {
             maxRadius = 30;
         }
 
-        return generateBubbleMapPaintAndLegend(min, max, maxRadius);
+        return {
+            legendType,
+            ...generateBubbleMapPaintAndLegend(min, max, maxRadius),
+        };
     }, [bubbleMapState, regionLevel]);
 
     const selectedIndicatorDetails = useMemo(
@@ -323,13 +375,25 @@ function Covid19(props: Props) {
         () => rasterLayers?.find(v => v.id === selectedLayer),
         [rasterLayers, selectedLayer],
     );
+    const [printMode, setPrintMode] = useState(false);
+    const [ttInfoVisibility, setTtInfoVisbility] = useState(false);
+
+    const handleTtInfoVisibilityChange = useCallback(() => {
+        setTtInfoVisbility(!ttInfoVisibility);
+    }, [setTtInfoVisbility, ttInfoVisibility]);
 
     return (
         <div className={_cs(
             styles.covid19,
             className,
+            printMode && styles.printMode,
         )}
         >
+            <PrintButton
+                className={styles.printModeButton}
+                printMode={printMode}
+                onPrintModeChange={setPrintMode}
+            />
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
                     <LoadingAnimation />
@@ -344,6 +408,7 @@ function Covid19(props: Props) {
                 bubbleMapState={bubbleMapState}
                 bubbleMapPaint={bubblePaint}
                 rasterLayer={selectedRasterLayer}
+                printMode={printMode}
             >
                 {showHealthResource && (
                     <TravelTimeLayer
@@ -397,12 +462,23 @@ function Covid19(props: Props) {
                                     ))}
                                 </div>
                             )}
-                            <ToggleButton
-                                className={styles.inputItem}
-                                label="Show travel time"
-                                value={showHealthTravelTime}
-                                onChange={setShowHealthTravelTime}
-                            />
+                            <div className={styles.inputItemContainer}>
+                                <ToggleButton
+                                    className={styles.inputItem}
+                                    label="Show travel time"
+                                    value={showHealthTravelTime}
+                                    onChange={setShowHealthTravelTime}
+                                />
+                                {showHealthTravelTime && (
+                                    <Button
+                                        onClick={handleTtInfoVisibilityChange}
+                                        transparent
+                                        icons={(
+                                            <IoIosInformationCircleOutline />
+                                        )}
+                                    />
+                                )}
+                            </div>
                             {showHealthTravelTime && (
                                 <>
                                     <SegmentInput
@@ -423,6 +499,11 @@ function Covid19(props: Props) {
                                         optionLabelSelector={seasonLabelSelector}
                                         optionKeySelector={seasonKeySelector}
                                     />
+                                    {ttInfoVisibility && (
+                                        <div className={styles.abstract}>
+                                            {travelTimeDetails}
+                                        </div>
+                                    )}
                                 </>
                             )}
                         </>
@@ -499,6 +580,7 @@ function Covid19(props: Props) {
                         keySelector={legendKeySelector}
                         valueSelector={legendValueSelector}
                         radiusSelector={legendRadiusSelector}
+                        legendType={bubbleLegendType}
                     />
                     {showTravelTimeChoropleth && (
                         <>
@@ -532,6 +614,11 @@ function Covid19(props: Props) {
                     )}
                 </div>
             )}
+            <PrintDetailsBar
+                show={printMode}
+                title={titleForPrintBar}
+                description={selectedIndicatorDetails?.abstract}
+            />
         </div>
     );
 }

@@ -1,0 +1,14 @@
+.print-container {
+    display: flex;
+    align-items: center;
+
+    .print {
+        margin-right: var(--spacing-small);
+    }
+}
+
+@media print {
+    .print-container {
+        display: none;
+    }
+}

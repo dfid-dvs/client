@@ -28,6 +28,11 @@
             margin: var(--spacing-medium) 0;
         }
 
+        .input-item-container {
+            display: flex;
+            align-items: center;
+        }
+
         .hospitals {
             display: flex;
             flex-wrap: wrap;
@@ -43,6 +48,12 @@
         .abstract {
             padding: var(--spacing-small);
             font-size: var(--font-size-small);
+
+            .link {
+                margin: 0 var(--spacing-extra-small);
+                text-decoration: underline;
+                color: var(--color-link);
+            }
         }
     }
 
@@ -71,5 +82,28 @@
         background-color: #fff;
         padding: var(--spacing-medium);
         width: 300px;
+    }
+
+    .print-mode-button {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1111111;
+    }
+
+    &.print-mode {
+        flex-grow: unset;
+        margin: auto;
+        width: 297mm!important;
+        height: 210mm!important;
+
+        .map-style-config-container {
+            display: none;
+        }
+
+        .legend-container {
+            bottom: calc(var(--height-print-bar) + 10px);
+            left: 10px;
+        }
     }
 }

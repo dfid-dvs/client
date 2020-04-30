@@ -1,0 +1,30 @@
+.print-details-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-primary);
+    padding: var(--spacing-small);
+    height: var(--height-print-bar);
+
+    .left-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        color: var(--color-text-on-primary);
+
+        .heading {
+            font-size: var(--font-size-medium);
+        }
+
+        .description {
+            font-size: var(--font-size-extra-small);
+        }
+    }
+
+    .right-container {
+        flex-shrink: 0;
+
+        .logo {
+            height: 48px;
+        }
+    }
+}

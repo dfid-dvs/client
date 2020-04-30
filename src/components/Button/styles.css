@@ -4,6 +4,11 @@
     overflow: hidden;
     font-family: inherit;
 
+    .icons {
+        display: flex;
+        align-items: center;
+    }
+
     &::-moz-focus-inner {
         border:0;
     }

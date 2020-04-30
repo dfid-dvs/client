@@ -9,8 +9,10 @@ import NavbarContext from '#components/NavbarContext';
 import ToggleButton from '#components/ToggleButton';
 import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
-import BubbleLegend from '#components/BubbleLegend';
+import BubbleLegend, { BubbleLegendType } from '#components/BubbleLegend';
 import IndicatorMap from '#components/IndicatorMap';
+import PrintButton from '#components/PrintButton';
+import PrintDetailsBar from '#components/PrintDetailsBar';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
@@ -146,11 +148,14 @@ const Dashboard = (props: Props) => {
         bubbleMapState,
         bubbleTitle,
         bubbleInteger,
+        titleForPrintBar,
     } = useMemo(() => {
         const indicator = indicatorList?.find(i => indicatorKeySelector(i) === selectedIndicator);
         const indicatorTitle = indicator && indicatorLabelSelector(indicator);
         const fiveW = fiveWOptions.find(i => fiveWKeySelector(i) === selectedFiveWOption);
         const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
+
+        const title = [fiveWTitle, indicatorTitle].filter(isDefined).join(' & ');
 
         if (invertMapStyle) {
             return {
@@ -160,6 +165,8 @@ const Dashboard = (props: Props) => {
                 bubbleMapState: fiveWMapState,
                 bubbleTitle: fiveWTitle,
                 bubbleInteger: fiveW?.integer,
+
+                titleForPrintBar: title,
             };
         }
         return {
@@ -169,6 +176,8 @@ const Dashboard = (props: Props) => {
 
             bubbleMapState: indicatorMapState,
             bubbleTitle: indicatorTitle,
+
+            titleForPrintBar: title,
         };
     }, [
         invertMapStyle,
@@ -199,11 +208,22 @@ const Dashboard = (props: Props) => {
     const {
         mapPaint: bubblePaint,
         legend: bubbleLegend,
+        legendType: bubbleLegendType,
     } = useMemo(() => {
         const valueList = bubbleMapState
             .map(d => d.value)
             .filter(isDefined)
             .map(Math.abs);
+
+        const hasNegativeValues = bubbleMapState.some(v => v.value < 0);
+        const hasPositiveValues = bubbleMapState.some(v => v.value > 0);
+
+        let legendType: BubbleLegendType = 'both';
+        if (hasNegativeValues && !hasPositiveValues) {
+            legendType = 'negative';
+        } else if (!hasNegativeValues && hasPositiveValues) {
+            legendType = 'positive';
+        }
 
         const min = valueList.length > 0 ? Math.min(...valueList) : undefined;
         const max = valueList.length > 0 ? Math.max(...valueList) : undefined;
@@ -215,7 +235,10 @@ const Dashboard = (props: Props) => {
             maxRadius = 30;
         }
 
-        return generateBubbleMapPaintAndLegend(min, max, maxRadius);
+        return {
+            legendType,
+            ...generateBubbleMapPaintAndLegend(min, max, maxRadius),
+        };
     }, [bubbleMapState, regionLevel]);
 
     const selectedIndicatorDetails = useMemo(
@@ -239,13 +262,20 @@ const Dashboard = (props: Props) => {
         () => rasterLayers?.find(v => v.id === selectedLayer),
         [rasterLayers, selectedLayer],
     );
+    const [printMode, setPrintMode] = useState(false);
 
     return (
         <div className={_cs(
             styles.dashboard,
             className,
+            printMode && styles.printMode,
         )}
         >
+            <PrintButton
+                className={styles.printModeButton}
+                printMode={printMode}
+                onPrintModeChange={setPrintMode}
+            />
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
                     <LoadingAnimation />
@@ -259,6 +289,7 @@ const Dashboard = (props: Props) => {
                 bubbleMapState={bubbleMapState}
                 bubbleMapPaint={bubblePaint}
                 rasterLayer={selectedRasterLayer}
+                printMode={printMode}
             />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />
@@ -321,9 +352,15 @@ const Dashboard = (props: Props) => {
                         keySelector={legendKeySelector}
                         valueSelector={legendValueSelector}
                         radiusSelector={legendRadiusSelector}
+                        legendType={bubbleLegendType}
                     />
                 </div>
             )}
+            <PrintDetailsBar
+                show={printMode}
+                title={titleForPrintBar}
+                description={selectedIndicatorDetails?.abstract}
+            />
         </div>
     );
 };

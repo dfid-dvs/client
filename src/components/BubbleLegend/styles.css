@@ -18,6 +18,7 @@
 
     .color {
         flex-shrink: 0;
+        opacity: 0.6;
         margin-right: var(--spacing-small);
         border-radius: 50%;
         width: var(--font-size-medium);
