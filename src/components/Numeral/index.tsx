@@ -11,6 +11,10 @@ const getPrecision = (value: number | undefined) => {
     if (absolute < 1) {
         return Math.ceil(-Math.log10(absolute)) + 1;
     }
+
+    if (absolute > 100) {
+        return 0;
+    }
     return 2;
 };
 
@@ -47,12 +51,16 @@ function Numeral({
         const { number, normalizeSuffix = '' } = formattedNormalize(sanitizedValue, Lang.en);
         suffix = normalizeSuffix;
         if (suffix !== '') {
-            output = number.toFixed(1);
+            output = number.toFixed(2);
         } else {
             output = number.toFixed(precision);
         }
     } else {
         output = sanitizedValue.toFixed(precision);
+    }
+
+    if (output.match(/\.0+$/)) {
+        output = output.substr(0, output.indexOf('.'));
     }
 
     if (separatorShown) {

@@ -452,7 +452,6 @@ function Covid19(props: Props) {
                         title={choroplethTitle}
                         minValue={dataMinValue}
                         legend={mapLegend}
-                        zeroPrecision={selectedIndicator === -1}
                     />
                     <BubbleLegend
                         className={styles.legend}
@@ -461,7 +460,6 @@ function Covid19(props: Props) {
                         keySelector={legendKeySelector}
                         valueSelector={legendValueSelector}
                         radiusSelector={legendRadiusSelector}
-                        zeroPrecision={selectedIndicator === -1}
                     />
                     {showTravelTimeChoropleth && (
                         <>

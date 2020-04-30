@@ -9,7 +9,6 @@ interface LegendElementProps {
     color: string;
     value: string | number;
     opacity?: number;
-    zeroPrecision?: boolean;
 }
 
 function LegendElement(props: LegendElementProps) {
@@ -17,7 +16,6 @@ function LegendElement(props: LegendElementProps) {
         color,
         value,
         opacity = 1,
-        zeroPrecision,
     } = props;
 
     return (
@@ -33,7 +31,6 @@ function LegendElement(props: LegendElementProps) {
                 {typeof value === 'number' && (
                     <Numeral
                         value={value}
-                        precision={zeroPrecision ? 0 : undefined}
                         normalize
                     />
                 )}
@@ -50,7 +47,6 @@ interface ChoroplethLegend {
     legend: {[key: string]: number | string};
     className?: string;
     title?: string;
-    zeroPrecision?: boolean;
     opacity?: number;
 }
 function ChoroplethLegend(
@@ -59,7 +55,6 @@ function ChoroplethLegend(
         minValue,
         legend,
         className,
-        zeroPrecision,
         opacity,
     }: ChoroplethLegend,
 ) {
@@ -81,7 +76,6 @@ function ChoroplethLegend(
                         value={minValue}
                         color="white"
                         opacity={0}
-                        zeroPrecision={zeroPrecision}
                     />
                 )}
                 {colors.map((color) => {
@@ -92,7 +86,6 @@ function ChoroplethLegend(
                             value={value}
                             color={color}
                             opacity={opacity}
-                            zeroPrecision={zeroPrecision}
                         />
                     );
                 })}
