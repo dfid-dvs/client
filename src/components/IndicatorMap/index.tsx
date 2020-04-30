@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import Map from '#remap';
@@ -7,11 +7,17 @@ import MapSource from '#remap/MapSource';
 import MapTooltip from '#remap/MapTooltip';
 import MapLayer from '#remap/MapSource/MapLayer';
 import MapState from '#remap/MapSource/MapState';
+import { getLayerName } from '#remap/utils';
 
 import {
     mapOptions,
     tooltipOptions,
 } from '#utils/constants';
+import {
+    getRasterTile,
+} from '#utils/common';
+
+import { Layer } from '#types';
 
 import theme, { noneLayout, visibleLayout } from './mapTheme';
 
@@ -57,6 +63,8 @@ interface Props {
     hideTooltip?: boolean;
     hideChoropleth?: boolean;
     hideBubble?: boolean;
+
+    rasterLayer?: Layer;
 }
 
 function IndicatorMap(props: Props) {
@@ -71,6 +79,8 @@ function IndicatorMap(props: Props) {
         hideTooltip,
         hideChoropleth,
         hideBubble,
+
+        rasterLayer,
     } = props;
 
     const [
@@ -91,6 +101,20 @@ function IndicatorMap(props: Props) {
     const handleMapRegionMouseLeave = React.useCallback(() => {
         setHoveredRegionProperties(undefined);
     }, [setHoveredRegionProperties]);
+
+    const rasterTiles = useMemo(
+        () => {
+            if (!rasterLayer) {
+                return undefined;
+            }
+            return [getRasterTile(
+                rasterLayer.geoserverUrl,
+                rasterLayer.workspace,
+                rasterLayer.layerName,
+            )];
+        },
+        [rasterLayer],
+    );
 
     const isProvinceVisible = regionLevel === 'province';
     const isDistrictVisible = regionLevel === 'district';
@@ -269,6 +293,26 @@ function IndicatorMap(props: Props) {
                     }}
                 />
                 */}
+                {rasterLayer && (
+                    <MapSource
+                        key={rasterLayer.layerName}
+                        sourceKey={rasterLayer.layerName}
+                        sourceOptions={{
+                            type: 'raster',
+                            tiles: rasterTiles,
+                            tileSize: 256,
+                        }}
+                    >
+                        <MapLayer
+                            layerKey="raster-layer"
+                            beneath={getLayerName('nepal', 'palika-fill')}
+                            layerOptions={{
+                                type: 'raster',
+                                paint: theme.background.rasterPaint,
+                            }}
+                        />
+                    </MapSource>
+                )}
                 <MapState
                     key={selectedSourceForBubble}
                     attributes={bubbleMapState}

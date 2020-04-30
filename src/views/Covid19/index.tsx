@@ -13,11 +13,7 @@ import ChoroplethLegend from '#components/ChoroplethLegend';
 import ToggleButton from '#components/ToggleButton';
 import Button from '#components/Button';
 import BubbleLegend from '#components/BubbleLegend';
-
 import IndicatorMap from '#components/IndicatorMap';
-import MapSource from '#remap/MapSource';
-import MapLayer from '#remap/MapSource/MapLayer';
-import Stats from './Stats';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
@@ -40,6 +36,7 @@ import {
     apiEndPoint,
 } from '#utils/constants';
 
+import Stats from './Stats';
 import TravelTimeLayer, {
     DesignatedHospital,
 } from './TravelTimeLayer';
@@ -114,7 +111,7 @@ const travelTimeTypeKeySelector = (travelTimeType: TravelTimeType) => travelTime
 const travelTimeTypeLabelSelector = (travelTimeType: TravelTimeType) => travelTimeType.label;
 
 const layerKeySelector = (d: Layer) => d.id;
-const layerLabelSelector = (d: Layer) => d.layerName;
+const layerLabelSelector = (d: Layer) => d.name;
 
 interface Props {
     className?: string;
@@ -312,7 +309,10 @@ function Covid19(props: Props) {
         [mapLayerListResponse],
     );
 
-    const selectedRasterLayer = rasterLayers?.find(v => v.id === selectedLayer);
+    const selectedRasterLayer = useMemo(
+        () => rasterLayers?.find(v => v.id === selectedLayer),
+        [rasterLayers, selectedLayer],
+    );
 
     return (
         <div className={_cs(
@@ -333,27 +333,8 @@ function Covid19(props: Props) {
                 choroplethMapPaint={mapPaint}
                 bubbleMapState={bubbleMapState}
                 bubbleMapPaint={bubblePaint}
+                rasterLayer={selectedRasterLayer}
             >
-                {selectedRasterLayer && (
-                    <MapSource
-                        key={selectedRasterLayer.layerName}
-                        // layerKey={selectedRasterLayer.id}
-                        sourceKey={selectedRasterLayer.layerName}
-                        sourceOptions={{
-                            type: 'raster',
-                            tiles: [selectedRasterLayer.geoserverUrl],
-                            tileSize: 256,
-                        }}
-                    >
-                        <MapLayer
-                            layerKey="raster-layer"
-                            layerOptions={{
-                                type: 'raster',
-                            }}
-                        />
-                    </MapSource>
-
-                )}
                 {showHealthResource && (
                     <TravelTimeLayer
                         key={`${selectedSeason}-${selectedHospitalType}`}
@@ -448,7 +429,7 @@ function Covid19(props: Props) {
                     optionKeySelector={fiveWKeySelector}
                 />
                 <SelectInput
-                    className={_cs(styles.indicatorInput, styles.inputItem)}
+                    className={styles.inputItem}
                     label="Indicator"
                     placeholder="Select an indicator"
                     disabled={indicatorListPending}
@@ -466,8 +447,8 @@ function Covid19(props: Props) {
                 )}
                 {selectedIndicator === -1 && (
                     <SegmentInput
-                        label="Selected range"
-                        className={styles.ageGroupSelectInput}
+                        label="Age range"
+                        className={styles.inputItem}
                         options={ageGroupOptions}
                         onChange={setSelectedAgeGroup}
                         value={selectedAgeGroup}
@@ -480,6 +461,17 @@ function Covid19(props: Props) {
                     className={styles.inputItem}
                     value={invertMapStyle}
                     onChange={setInvertMapStyle}
+                />
+                <div className={styles.separator} />
+                <SelectInput
+                    label="Background Layer"
+                    className={styles.inputItem}
+                    disabled={mapLayerListPending}
+                    options={rasterLayers}
+                    onChange={setSelectedLayer}
+                    value={selectedLayer}
+                    optionKeySelector={layerKeySelector}
+                    optionLabelSelector={layerLabelSelector}
                 />
             </div>
             {showLegend && (
@@ -528,16 +520,6 @@ function Covid19(props: Props) {
                             )}
                         </>
                     )}
-                    <SelectInput
-                        placeholder="Background Layer"
-                        className={styles.backgroundLayerSelectInput}
-                        disabled={mapLayerListPending}
-                        options={rasterLayers}
-                        onChange={setSelectedLayer}
-                        value={selectedLayer}
-                        optionKeySelector={layerKeySelector}
-                        optionLabelSelector={layerLabelSelector}
-                    />
                 </div>
             )}
         </div>

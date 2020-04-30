@@ -24,6 +24,7 @@ import {
     MultiResponse,
     FiveWOptionKey,
     LegendItem,
+    Layer,
 } from '#types';
 
 import {
@@ -82,6 +83,9 @@ const indicatorKeySelector = (indicator: Indicator) => indicator.id;
 const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
 const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 
+const layerKeySelector = (d: Layer) => d.id;
+const layerLabelSelector = (d: Layer) => d.name;
+
 interface Props {
     className?: string;
 }
@@ -100,6 +104,8 @@ const Dashboard = (props: Props) => {
         setFiveWOption,
     ] = useState<FiveWOptionKey | undefined>('allocatedBudget');
 
+    const [selectedLayer, setSelectedLayer] = useState<number | undefined>(undefined);
+
     const [invertMapStyle, setInvertMapStyle] = useState(false);
 
     const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/`;
@@ -108,6 +114,12 @@ const Dashboard = (props: Props) => {
         indicatorListResponse,
     ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl);
     const indicatorList = indicatorListResponse?.results;
+
+    const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
+    const [
+        mapLayerListPending,
+        mapLayerListResponse,
+    ] = useRequest<MultiResponse<Layer>>(mapLayerGetUrl);
 
     const [
         indicatorMapStatePending,
@@ -194,6 +206,28 @@ const Dashboard = (props: Props) => {
         return generateBubbleMapPaintAndLegend(min, max, maxRadius);
     }, [bubbleMapState, regionLevel]);
 
+    const selectedIndicatorDetails = useMemo(
+        () => {
+            if (selectedIndicator) {
+                return indicatorListResponse?.results.find(
+                    d => d.id === selectedIndicator,
+                );
+            }
+            return undefined;
+        },
+        [selectedIndicator, indicatorListResponse],
+    );
+
+    const rasterLayers = useMemo(
+        () => (mapLayerListResponse?.results.filter(v => v.type === 'raster')),
+        [mapLayerListResponse],
+    );
+
+    const selectedRasterLayer = useMemo(
+        () => rasterLayers?.find(v => v.id === selectedLayer),
+        [rasterLayers, selectedLayer],
+    );
+
     return (
         <div className={_cs(
             styles.dashboard,
@@ -212,13 +246,14 @@ const Dashboard = (props: Props) => {
                 choroplethMapPaint={mapPaint}
                 bubbleMapState={bubbleMapState}
                 bubbleMapPaint={bubblePaint}
+                rasterLayer={selectedRasterLayer}
             />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />
                 <div className={styles.separator} />
                 <SelectInput
                     label="DFID Data"
-                    className={styles.fiveWSegmentInput}
+                    className={styles.inputItem}
                     options={fiveWOptions}
                     onChange={setFiveWOption}
                     value={selectedFiveWOption}
@@ -227,7 +262,7 @@ const Dashboard = (props: Props) => {
                 />
                 <SelectInput
                     label="Indicator"
-                    className={styles.indicatorSelectInput}
+                    className={styles.inputItem}
                     disabled={indicatorListPending}
                     options={indicatorList}
                     onChange={setSelectedIndicator}
@@ -236,10 +271,27 @@ const Dashboard = (props: Props) => {
                     optionKeySelector={indicatorKeySelector}
                     groupKeySelector={indicatorGroupKeySelector}
                 />
+                {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
+                    <div className={styles.abstract}>
+                        { selectedIndicatorDetails.abstract }
+                    </div>
+                )}
                 <ToggleButton
                     label="Toggle Choropleth/Bubble"
+                    className={styles.inputItem}
                     value={invertMapStyle}
                     onChange={setInvertMapStyle}
+                />
+                <div className={styles.separator} />
+                <SelectInput
+                    label="Background Layer"
+                    className={styles.inputItem}
+                    disabled={mapLayerListPending}
+                    options={rasterLayers}
+                    onChange={setSelectedLayer}
+                    value={selectedLayer}
+                    optionKeySelector={layerKeySelector}
+                    optionLabelSelector={layerLabelSelector}
                 />
             </div>
             {(bubbleLegend.length > 0 || Object.keys(mapLegend).length > 0) && (

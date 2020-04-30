@@ -4,7 +4,7 @@ import {
     isList,
 } from '@togglecorp/fujs';
 
-export const forEach = (obj: object, func: (key: string, val: unknown) => void) => {
+const forEach = (obj: object, func: (key: string, val: unknown) => void) => {
     Object.keys(obj).forEach((key) => {
         const val = (obj as any)[key];
         func(key, val);
@@ -131,7 +131,7 @@ export const generateChoroplethMapPaintAndLegend = (
             // 1,
             ['==', ['feature-state', 'value'], null],
             0.1,
-            0.90,
+            0.7,
         ];
 
         const paint = {
@@ -212,3 +212,23 @@ export const generateBubbleMapPaintAndLegend = (
         legend,
     });
 };
+
+export function getRasterTile(baseUrl: string, workspace: string, layer: string) {
+    const rasterTile = [
+        baseUrl, // 'http://34.71.203.97:8080/geoserver/Naxa/wms'
+        '?',
+        '&service=WMS',
+        '&version=1.1.1',
+        '&request=GetMap',
+        '&format=image/png',
+        '&transparent=true',
+        '&tiled=true',
+        `&layers=${workspace}:${layer}`,
+        '&exceptions=application/vnd.ogc.se_inimage',
+        '&width=256',
+        '&height=256',
+        '&srs=EPSG:3857',
+        '&bbox={bbox-epsg-3857}',
+    ].join('');
+    return rasterTile;
+}

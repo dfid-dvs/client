@@ -84,6 +84,10 @@ const municipalityOutlinePaint: mapboxgl.LinePaint = {
     ],
 };
 
+const backgroundRasterPaint: mapboxgl.RasterPaint = {
+    'raster-opacity': 0.8,
+};
+
 const theme = {
     province: {
         outlinePaint: provinceOutlinePaint,
@@ -99,6 +103,9 @@ const theme = {
         outlinePaint: municipalityOutlinePaint,
         labelPaint: municipalityLabelPaint,
         labelLayout: municipalityLabelLayout,
+    },
+    background: {
+        rasterPaint: backgroundRasterPaint,
     },
 };
 
