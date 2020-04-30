@@ -36,6 +36,7 @@ function PrintButton(props: Props) {
                     <Button
                         className={styles.print}
                         onClick={handlePrintClick}
+                        variant="primary"
                     >
                         Print
                     </Button>
@@ -44,7 +45,10 @@ function PrintButton(props: Props) {
                     </Button>
                 </>
             ) : (
-                <Button onClick={handlePrintPreviewClick}>
+                <Button
+                    onClick={handlePrintPreviewClick}
+                    variant="primary"
+                >
                     Print Preview
                 </Button>
             )}
