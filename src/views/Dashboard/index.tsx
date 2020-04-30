@@ -13,6 +13,7 @@ import BubbleLegend, { BubbleLegendType } from '#components/BubbleLegend';
 import IndicatorMap from '#components/IndicatorMap';
 import PrintButton from '#components/PrintButton';
 import PrintDetailsBar from '#components/PrintDetailsBar';
+import RasterLegend from '#components/RasterLegend';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
@@ -354,6 +355,12 @@ const Dashboard = (props: Props) => {
                         radiusSelector={legendRadiusSelector}
                         legendType={bubbleLegendType}
                     />
+                    {selectedRasterLayer && (
+                        <RasterLegend
+                            className={styles.legend}
+                            rasterLayer={selectedRasterLayer}
+                        />
+                    )}
                 </div>
             )}
             <PrintDetailsBar

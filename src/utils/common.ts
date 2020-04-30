@@ -289,14 +289,13 @@ export function getRasterLegendUrl(baseUrl: string, workspace: string, layer: st
     const legendUrl = [
         baseUrl, // 'http://34.71.203.97:8080/geoserver/Naxa/wms'
         '?',
-        '&version=1.1.1',
+        '&version=1.0.0',
         '&service=WMS',
         '&request=GetLegendGraphic',
-        `&layers=${workspace}:${layer}`,
+        `&layer=${workspace}:${layer}`,
         '&format=image/png',
-        '&legend_options=fontAntiAliasing:true;layout:vertical;columnheight:100;dpi:96;labelMargin:2;fontSize:9;',
-        '&width=12',
-        '&height=12',
+        '&width=20',
+        '&height=20',
     ].join('');
 
     return legendUrl;
