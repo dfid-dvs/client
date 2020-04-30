@@ -72,6 +72,48 @@ export const getFloatPlacement = (parentRef: React.RefObject<HTMLElement>) => {
     return placement;
 };
 
+function getSegments(
+    totalSegments: number,
+    minValue: number,
+    maxValue: number,
+    integer = false,
+    includeMinimum = false,
+) {
+    const colorMap: { value: number; relativeLocation: number }[] = [];
+
+    const range = maxValue - minValue;
+
+    let gap = range / totalSegments;
+
+    if (integer) {
+        // gap should be at least one and integer
+        gap = Math.max(Math.ceil(gap), 1);
+    }
+
+    const skipValue = includeMinimum ? 0 : 1;
+
+    const realLength = Math.ceil(range / gap);
+    // NOTE: we are excluding the minimum value
+    for (let i = skipValue; i <= realLength; i += 1) {
+        const value = minValue + (i * gap);
+
+        const precision = getPrecision(value);
+        const sanitizedValue = +(value.toFixed(precision));
+
+        if (colorMap.length > 0 && colorMap[colorMap.length - 1].value === sanitizedValue) {
+            // NOTE: avoid duplicate values
+            // eslint-disable-next-line no-continue
+            continue;
+        }
+
+        colorMap.push({
+            relativeLocation: (i - skipValue) / (realLength - skipValue),
+            value: sanitizedValue,
+        });
+    }
+
+    return colorMap;
+}
 
 export const generateChoroplethMapPaintAndLegend = (
     colorDomain: string[],
@@ -90,49 +132,25 @@ export const generateChoroplethMapPaintAndLegend = (
         ? 0
         : minVal;
 
-    const colorMap: {
+    let colorMap: {
         color: string;
         value: number;
     }[] = [];
 
     if (minValue !== Infinity && maxValue !== -Infinity && minValue !== maxValue) {
         const totalSegments = colorDomain.length;
-        const range = maxValue - minValue;
+        const segments = getSegments(
+            totalSegments,
+            minValue,
+            maxValue,
+            integer,
+        );
 
-        let gap = range / (totalSegments + 1);
-
-        if (integer) {
-            // gap should be at least one and integer
-            gap = Math.max(Math.ceil(gap), 1);
-        }
-
-        const realLength = Math.ceil(range / gap) + 1;
-        // NOTE: we are excluding the minimum value
-        for (let i = 1; i < realLength; i += 1) {
-            const value = minValue + (i * gap);
-
-            const precision = getPrecision(value);
-            const sanitizedValue = +(value.toFixed(precision));
-
-            if (colorMap.length > 0 && colorMap[colorMap.length - 1].value === sanitizedValue) {
-                // NOTE: avoid duplicate values
-                // eslint-disable-next-line no-continue
-                continue;
-            }
-
-            const colorIndex = Math.round(totalSegments * ((i - 1) / (realLength - 1)));
-            if (colorIndex >= totalSegments) {
-                console.error('Range exceeded');
-                // eslint-disable-next-line no-continue
-                continue;
-            }
-
-            const color = colorDomain[colorIndex];
-            colorMap.push({
-                color,
-                value: sanitizedValue,
-            });
-        }
+        colorMap = segments.map(segment => ({
+            value: segment.value,
+            // NOTE: add a check here
+            color: colorDomain[Math.round((totalSegments - 1) * segment.relativeLocation)],
+        }));
     }
 
     // Need at least start and end
@@ -182,66 +200,69 @@ export const generateChoroplethMapPaintAndLegend = (
 };
 
 export const generateBubbleMapPaintAndLegend = (
-    minVal: number = 0,
-    maxValue: number = 0,
-    maxRadius: number = 50,
-    positiveColor: string = '#01665e',
-    negativeColor: string = '#de2d26',
-) => {
-    let minValue = minVal;
-    if (minValue === maxValue) {
-        minValue = 0;
-    }
+    minVal: number,
+    maxValue: number,
+    maxRadius: number,
+    integer = false,
+    positiveColor = '#01665e',
+    negativeColor = '#de2d26',
+): {
+    mapPaint: mapboxgl.CirclePaint;
+    legend: { value: number; radius: number }[];
+} => {
+    const minValue = minVal === maxValue
+        ? 0
+        : minVal;
 
-    let array = [
-        minValue, 0,
-        maxValue, maxRadius,
-    ];
-
-    if (minValue === maxValue && maxValue === 0) {
-        array = [
-            0, 0,
-            1, maxRadius,
+    if (minValue !== Infinity && maxValue !== -Infinity && minValue !== maxValue) {
+        const array = [
+            0, 0, // NOTE: previously it was minValue, 0,
+            maxValue, maxRadius,
         ];
+
+        const mapPaint: mapboxgl.CirclePaint = ({
+            'circle-radius': [
+                'interpolate', ['linear'],
+                ['abs', ['number', ['feature-state', 'value'], 0]],
+                ...array,
+            ],
+            'circle-color': [
+                'case',
+                ['>', ['number', ['feature-state', 'value'], 0], 0],
+                positiveColor,
+                negativeColor,
+            ],
+            'circle-opacity': 0.6,
+            'circle-stroke-color': '#fff',
+            'circle-stroke-width': 1,
+            'circle-stroke-opacity': 0.2,
+        });
+
+        const segments = getSegments(
+            4,
+            minValue,
+            maxValue,
+            integer,
+            minValue !== 0,
+        );
+
+        const legend = segments.map(item => ({
+            value: item.value,
+            radius: maxRadius * (item.value / maxValue),
+        }));
+
+        return {
+            mapPaint,
+            legend,
+        };
     }
 
-    const mapPaint: mapboxgl.CirclePaint = ({
-        'circle-radius': [
-            'interpolate', ['linear'],
-            ['abs', ['number', ['feature-state', 'value'], 0]],
-            ...array,
-        ],
-        'circle-color': [
-            'case',
-            ['>', ['number', ['feature-state', 'value'], 0], 0],
-            positiveColor,
-            negativeColor,
-        ],
-        'circle-opacity': 0.6,
-        'circle-stroke-color': '#fff',
-        'circle-stroke-width': 1,
-        'circle-stroke-opacity': 0.2,
-    });
-
-    const legend = [];
-    let currentRadius = 10;
-
-    if (minValue !== maxValue) {
-        while (currentRadius <= maxRadius) {
-            const valueInCurrentRadius = minValue
-                + ((maxValue - minValue) / maxRadius) * currentRadius;
-            legend.push({
-                value: valueInCurrentRadius,
-                radius: currentRadius,
-            });
-            currentRadius += 10;
-        }
-    }
-
-    return ({
-        mapPaint,
-        legend,
-    });
+    return {
+        mapPaint: {
+            'circle-radius': 0,
+        },
+        legend: [],
+    };
 };
 
 export function getRasterTile(baseUrl: string, workspace: string, layer: string) {

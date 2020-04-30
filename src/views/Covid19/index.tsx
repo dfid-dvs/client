@@ -278,8 +278,8 @@ function Covid19(props: Props) {
             legendType = 'positive';
         }
 
-        const min = valueList.length > 0 ? Math.min(...valueList) : undefined;
-        const max = valueList.length > 0 ? Math.max(...valueList) : undefined;
+        const min = Math.min(...valueList);
+        const max = Math.max(...valueList);
 
         let maxRadius = 50;
         if (regionLevel === 'district') {
@@ -290,9 +290,9 @@ function Covid19(props: Props) {
 
         return {
             legendType,
-            ...generateBubbleMapPaintAndLegend(min, max, maxRadius),
+            ...generateBubbleMapPaintAndLegend(min, max, maxRadius, bubbleInteger),
         };
-    }, [bubbleMapState, regionLevel]);
+    }, [bubbleMapState, bubbleInteger, regionLevel]);
 
     const selectedIndicatorDetails = useMemo(
         () => {
