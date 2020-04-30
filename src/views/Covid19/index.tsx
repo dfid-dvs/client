@@ -121,12 +121,13 @@ const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
 const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 
 const ageGroupOptions: AgeGroup[] = [
-    { key: 'belowFourteen', label: 'Below 14' },
-    { key: 'fifteenToFourtyNine', label: '15 to 49' },
-    { key: 'aboveFifty', label: 'Above 50' },
+    { key: 'belowFourteen', label: 'Below 14', tooltipLabel: 'Number of People Aged Below 14' },
+    { key: 'fifteenToFourtyNine', label: '15 to 49', tooltipLabel: 'Number of Peple Aged From 15 to 49' },
+    { key: 'aboveFifty', label: 'Above 50', tooltipLabel: 'Number of People Aged Above 50' },
 ];
 const ageGroupKeySelector = (ageGroup: AgeGroup) => ageGroup.key;
 const ageGroupLabelSelector = (ageGroup: AgeGroup) => ageGroup.label;
+const ageGroupTooltipLabelSelector = (ageGroup: AgeGroup) => ageGroup.tooltipLabel;
 
 const hospitalTypeOptions: HospitalType[] = [
     { key: 'deshosp', label: 'Covid Designated' },
@@ -266,6 +267,48 @@ function Covid19(props: Props) {
 
     // const mapStatePending = mapStateForIndicatorPending || mapStateForFiveWPending;
     // const pending = mapStatePending || indicatorListPending;
+    const indicatorData = useMemo(
+        () => {
+            if (isDefined(selectedIndicator)) {
+                if (selectedIndicator === -1 && selectedAgeGroup) {
+                    const ageGroup = ageGroupOptions.find(v => v.key === selectedAgeGroup);
+                    const ageGroupLabel = ageGroup && ageGroupTooltipLabelSelector(ageGroup);
+                    const ageGroupValue = mapStateForIndicator.find(
+                        v => v.id === clickedRegionProperties?.feature.id,
+                    )?.value;
+
+                    return {
+                        label: ageGroupLabel,
+                        value: ageGroupValue,
+                    };
+                }
+
+                const indicator = indicatorList?.find(
+                    i => indicatorKeySelector(i) === selectedIndicator,
+                );
+
+                if (indicator) {
+                    const indicatorTitle = indicatorLabelSelector(indicator);
+                    const indicatorValue = mapStateForIndicator.find(
+                        v => v.id === clickedRegionProperties?.feature.id,
+                    )?.value;
+
+                    return {
+                        label: indicatorTitle,
+                        value: indicatorValue,
+                    };
+                }
+            }
+            return undefined;
+        },
+        [
+            selectedIndicator,
+            clickedRegionProperties,
+            indicatorList,
+            mapStateForIndicator,
+            selectedAgeGroup,
+        ],
+    );
 
     const {
         paint: mapPaint,
@@ -430,7 +473,7 @@ function Covid19(props: Props) {
         setTtInfoVisbility(!ttInfoVisibility);
     }, [setTtInfoVisbility, ttInfoVisibility]);
 
-    const tooltipData = useMemo(
+    const dfidData = useMemo(
         () => covidFiveWData.find(v => v.id === clickedRegionProperties?.feature.id)?.data,
         [covidFiveWData, clickedRegionProperties],
     );
@@ -473,7 +516,8 @@ function Covid19(props: Props) {
                     >
                         <Tooltip
                             feature={clickedRegionProperties.feature}
-                            data={tooltipData}
+                            dfidData={dfidData}
+                            indicatorData={indicatorData}
                         />
                     </MapTooltip>
                 )}

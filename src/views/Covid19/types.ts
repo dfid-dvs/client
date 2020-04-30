@@ -22,6 +22,7 @@ export interface Indicator {
 export interface AgeGroup {
     key: AgeGroupOption;
     label: string;
+    tooltipLabel: string;
 }
 
 export interface HospitalType {

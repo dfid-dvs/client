@@ -2,6 +2,7 @@ import React from 'react';
 import { unique } from '@togglecorp/fujs';
 
 import TextOutput from '#components/TextOutput';
+import Numeral from '#components/Numeral';
 import List from '#components/List';
 
 import { CovidFiveW } from '#types';
@@ -16,19 +17,21 @@ const ListItem = ({ value }: { value: string}) => <div>{value}</div>;
 
 interface Props {
     feature: mapboxgl.MapboxGeoJSONFeature;
-    data?: CovidFiveW[];
+    dfidData?: CovidFiveW[];
+    indicatorData?: { label?: string; value?: number };
 }
 
 const Tooltip = ({
     feature,
-    data,
+    dfidData,
+    indicatorData,
 }: Props) => {
     if (!feature) {
         return null;
     }
-    if (data) {
-        const uniqueProjects = unique(data, d => d.projectName);
-        const uniqueSectors = unique(data, d => d.sector);
+    if (dfidData) {
+        const uniqueProjects = unique(dfidData, d => d.projectName);
+        const uniqueSectors = unique(dfidData, d => d.sector);
         return (
             <div className={styles.tooltip}>
                 {feature.properties && (
@@ -36,8 +39,19 @@ const Tooltip = ({
                         { feature.properties.name }
                     </div>
                 )}
+                { indicatorData && indicatorData.label && (
+                    <TextOutput
+                        label={indicatorData.label}
+                        value={(
+                            <Numeral
+                                value={indicatorData.value}
+                                normalize
+                            />
+                        )}
+                    />
+                )}
                 <div className={styles.content}>
-                    { uniqueProjects && (
+                    { uniqueProjects && uniqueProjects.length > 0 && (
                         <div className={styles.projects}>
                             Projects
                             <TextOutput
@@ -52,7 +66,7 @@ const Tooltip = ({
                             />
                         </div>
                     )}
-                    { uniqueSectors && (
+                    { uniqueSectors && uniqueSectors.length > 0 && (
                         <div className={styles.sectors}>
                             Sectors
                             <TextOutput
@@ -79,10 +93,16 @@ const Tooltip = ({
                     { feature.properties.name }
                 </div>
             )}
-            {feature.state && (
-                <div className={styles.value}>
-                    { feature.state.value }
-                </div>
+            { indicatorData && indicatorData.label && (
+                <TextOutput
+                    label={indicatorData.label}
+                    value={(
+                        <Numeral
+                            value={indicatorData.value}
+                            normalize
+                        />
+                    )}
+                />
             )}
         </div>
     );
