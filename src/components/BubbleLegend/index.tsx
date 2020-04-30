@@ -13,7 +13,6 @@ interface LegendItemProps {
     radius?: number;
     maxRadius: number;
     color: string;
-    zeroPrecision?: boolean;
 }
 
 function LegendItem(props: LegendItemProps) {
@@ -23,7 +22,6 @@ function LegendItem(props: LegendItemProps) {
         color,
         radius = 5,
         maxRadius = 5,
-        zeroPrecision,
     } = props;
 
     return (
@@ -41,7 +39,6 @@ function LegendItem(props: LegendItemProps) {
                 <Numeral
                     value={value}
                     normalize
-                    precision={zeroPrecision ? 0 : undefined}
                 />
             </div>
         </div>
@@ -59,7 +56,6 @@ interface Props<T, K extends OptionKey> {
     itemClassName?: string;
     positiveColor?: string;
     negativeColor?: string;
-    zeroPrecision?: boolean;
 }
 
 function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
@@ -74,7 +70,6 @@ function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
         title,
         negativeColor,
         positiveColor,
-        zeroPrecision,
     } = props;
 
     const legendItemRendererParams = useCallback((_: K, d: T, i: number, allData: T[]) => {
@@ -90,9 +85,8 @@ function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
             radius: radiusSelector ? radiusSelector(d) : undefined,
             maxRadius,
             className: itemClassName,
-            zeroPrecision,
         });
-    }, [radiusSelector, valueSelector, colorSelector, itemClassName, zeroPrecision]);
+    }, [radiusSelector, valueSelector, colorSelector, itemClassName]);
 
     if (data.length <= 0) {
         return null;
