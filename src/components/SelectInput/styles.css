@@ -1,5 +1,5 @@
 .text-input{
-    background-color: rgba(0, 0, 0, .05); 
+    background-color: var(--color-background);
 }
 
 .dropdown-container {
@@ -31,15 +31,15 @@
         padding: 6px 10px;
         width: 100%;
         text-align: left;
-        /* color: rgba(0, 0, 0, .5); */
 
         &.selected {
             background-color: var(--color-background-accent-hint);
         }
 
-        &:hover {
-            background-color: var(--color-background-hover);
-            /* color: rgba(0, 0, 0, .9); */
+        &:not(.selected) {
+            &:hover {
+                background-color: var(--color-background-hover);
+            }
         }
     }
 }

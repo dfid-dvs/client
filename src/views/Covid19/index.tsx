@@ -91,8 +91,7 @@ const ageGroupLabelSelector = (ageGroup: AgeGroup) => ageGroup.label;
 
 const hospitalTypeOptions: HospitalType[] = [
     { key: 'deshosp', label: 'Covid Designated' },
-    { key: 'allcovidhfs', label: 'Covid' },
-    { key: 'allhfs', label: 'All' },
+    { key: 'allcovidhfs', label: 'All' },
 ];
 const hospitalTypeKeySelector = (hospitalType: HospitalType) => hospitalType.key;
 const hospitalTypeLabelSelector = (hospitalType: HospitalType) => hospitalType.label;
@@ -285,7 +284,6 @@ function Covid19(props: Props) {
 
     const showTravelTimeChoropleth = (
         showHealthResource
-        && selectedHospitalType !== 'allhfs'
         && showHealthTravelTime
     );
 
@@ -367,15 +365,13 @@ function Covid19(props: Props) {
                                     ))}
                                 </div>
                             )}
-                            {selectedHospitalType !== 'allhfs' && (
-                                <ToggleButton
-                                    className={styles.inputItem}
-                                    label="Show travel time"
-                                    value={showHealthTravelTime}
-                                    onChange={setShowHealthTravelTime}
-                                />
-                            )}
-                            {selectedHospitalType !== 'allhfs' && showHealthTravelTime && (
+                            <ToggleButton
+                                className={styles.inputItem}
+                                label="Show travel time"
+                                value={showHealthTravelTime}
+                                onChange={setShowHealthTravelTime}
+                            />
+                            {showHealthTravelTime && (
                                 <>
                                     <SegmentInput
                                         label="Type"
