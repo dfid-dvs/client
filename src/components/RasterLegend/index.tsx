@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { _cs } from '@togglecorp/fujs';
 
 import { Layer } from '#types';
 import {
@@ -9,15 +10,16 @@ import {
 import styles from './styles.css';
 
 interface RasterLegendProps {
+    className?: string;
     rasterLayer?: Layer;
 }
 
 function Legend(props: RasterLegendProps) {
     const {
+        className,
         rasterLayer,
     } = props;
 
-    const [loadingLegend, setLoadingLegend] = useState(true);
     const [rasterLegendDataUrl, setRasterLegendDataUrl] = useState<string|undefined>();
 
     useEffect(
@@ -31,7 +33,6 @@ function Legend(props: RasterLegendProps) {
                 imageUrlToDataUrl(
                     url,
                     (dataUrl: string) => {
-                        setLoadingLegend(false);
                         setRasterLegendDataUrl(dataUrl);
                     },
                 );
@@ -40,17 +41,22 @@ function Legend(props: RasterLegendProps) {
         [rasterLayer],
     );
 
+    if (!rasterLegendDataUrl) {
+        return null;
+    }
+
     return (
-        <div className={styles.rasterLegend}>
-            { rasterLegendDataUrl && (
-                <div className={styles.rasterLegend}>
-                    <img
-                        className={styles.rasterLegendImage}
-                        src={rasterLegendDataUrl}
-                        alt={rasterLayer?.layerName}
-                    />
-                </div>
+        <div className={_cs(styles.rasterLegend, className)}>
+            {rasterLayer?.name && (
+                <h5 className={styles.heading}>
+                    {rasterLayer?.name}
+                </h5>
             )}
+            <img
+                className={styles.rasterLegendImage}
+                src={rasterLegendDataUrl}
+                alt={rasterLayer?.layerName}
+            />
         </div>
     );
 }
