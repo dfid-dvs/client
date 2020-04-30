@@ -33,7 +33,6 @@ import {
     Layer,
     LegendItem,
     MultiResponse,
-    ClickedRegion,
 } from '#types';
 
 import {
@@ -70,6 +69,16 @@ import {
 } from './types';
 
 import styles from './styles.css';
+
+interface Region {
+    name: string;
+}
+
+interface ClickedRegion {
+    feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
+    lngLat: mapboxgl.LngLatLike;
+    point: mapboxgl.Point;
+}
 
 const legendKeySelector = (option: LegendItem) => option.radius;
 const legendValueSelector = (option: LegendItem) => option.value;
@@ -155,7 +164,7 @@ const layerLabelSelector = (d: Layer) => d.name;
 
 const onClickTooltipOptions: mapboxgl.PopupOptions = {
     closeOnClick: true,
-    closeButton: true,
+    closeButton: false,
     offset: 8,
     maxWidth: '480px',
 };

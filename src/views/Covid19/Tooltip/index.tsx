@@ -10,13 +10,35 @@ import { CovidFiveW } from '#types';
 import styles from './styles.css';
 
 const projectKeySelector = (d: CovidFiveW) => d.projectName;
-const projectRendererParams = (_: string, d: CovidFiveW) => ({ value: d.projectName });
+const projectRendererParams = (_: string, d: CovidFiveW, i: number) => ({
+    value: d.projectName,
+    index: i + 1,
+});
+
 const sectorKeySelector = (d: CovidFiveW) => d.sector;
-const sectorRendererParams = (_: string, d: CovidFiveW) => ({ value: d.sector });
-const ListItem = ({ value }: { value: string}) => <div>{value}</div>;
+const sectorRendererParams = (_: string, d: CovidFiveW, i: number) => ({
+    value: d.sector,
+    index: i + 1,
+});
+
+const ListItem = ({ value, index }: { value: string; index: number }) => (
+    <div className={styles.listItem}>
+        <div className={styles.count}>
+            {`${index}.`}
+        </div>
+        <div className={styles.label}>
+            {value}
+        </div>
+    </div>
+);
+
+
+interface Region {
+    name: string;
+}
 
 interface Props {
-    feature: mapboxgl.MapboxGeoJSONFeature;
+    feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
     dfidData?: CovidFiveW[];
     indicatorData?: { label?: string; value?: number };
 }
@@ -26,74 +48,15 @@ const Tooltip = ({
     dfidData,
     indicatorData,
 }: Props) => {
-    if (!feature) {
-        return null;
-    }
-    if (dfidData) {
-        const uniqueProjects = unique(dfidData, d => d.projectName);
-        const uniqueSectors = unique(dfidData, d => d.sector);
-        return (
-            <div className={styles.tooltip}>
-                {feature.properties && (
-                    <div className={styles.regionTitle}>
-                        { feature.properties.name }
-                    </div>
-                )}
-                { indicatorData && indicatorData.label && (
-                    <TextOutput
-                        label={indicatorData.label}
-                        value={(
-                            <Numeral
-                                value={indicatorData.value}
-                                normalize
-                            />
-                        )}
-                    />
-                )}
-                <div className={styles.content}>
-                    { uniqueProjects && uniqueProjects.length > 0 && (
-                        <div className={styles.projects}>
-                            Projects
-                            <TextOutput
-                                label="No of projects"
-                                value={uniqueProjects.length}
-                            />
-                            <List
-                                data={uniqueProjects}
-                                keySelector={projectKeySelector}
-                                rendererParams={projectRendererParams}
-                                renderer={ListItem}
-                            />
-                        </div>
-                    )}
-                    { uniqueSectors && uniqueSectors.length > 0 && (
-                        <div className={styles.sectors}>
-                            Sectors
-                            <TextOutput
-                                label="No of sectors"
-                                value={uniqueSectors.length}
-                            />
-                            <List
-                                data={uniqueSectors}
-                                keySelector={sectorKeySelector}
-                                rendererParams={sectorRendererParams}
-                                renderer={ListItem}
-                            />
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
-    }
+    const uniqueProjects = unique(dfidData, d => d.projectName);
+    const uniqueSectors = unique(dfidData, d => d.sector);
 
     return (
         <div className={styles.tooltip}>
-            {feature.properties && (
-                <div className={styles.regionTitle}>
-                    { feature.properties.name }
-                </div>
-            )}
-            { indicatorData && indicatorData.label && (
+            <h3>
+                { feature.properties.name }
+            </h3>
+            {indicatorData && indicatorData.label && (
                 <TextOutput
                     label={indicatorData.label}
                     value={(
@@ -104,6 +67,50 @@ const Tooltip = ({
                     )}
                 />
             )}
+            {uniqueSectors && (
+                <TextOutput
+                    label="No of sectors"
+                    value={(
+                        <Numeral
+                            value={uniqueSectors.length}
+                        />
+                    )}
+                />
+            )}
+            {uniqueProjects && (
+                <TextOutput
+                    label="No of projects"
+                    value={(
+                        <Numeral
+                            value={uniqueProjects.length}
+                        />
+                    )}
+                />
+            )}
+            <div className={styles.content}>
+                {uniqueSectors && uniqueSectors.length > 0 && (
+                    <div className={styles.sectors}>
+                        <h4>Sectors</h4>
+                        <List
+                            data={uniqueSectors}
+                            keySelector={sectorKeySelector}
+                            rendererParams={sectorRendererParams}
+                            renderer={ListItem}
+                        />
+                    </div>
+                )}
+                {uniqueProjects && uniqueProjects.length > 0 && (
+                    <div className={styles.projects}>
+                        <h4>Projects</h4>
+                        <List
+                            data={uniqueProjects}
+                            keySelector={projectKeySelector}
+                            rendererParams={projectRendererParams}
+                            renderer={ListItem}
+                        />
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
