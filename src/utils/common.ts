@@ -128,9 +128,12 @@ export const generateChoroplethMapPaintAndLegend = (
     // NOTE: handle diverging series
     // NOTE: handle overflow/underflow
 
-    const minValue = minVal === maxValue
-        ? 0
-        : minVal;
+    let minValue = minVal;
+    if (minVal === maxValue) {
+        minValue = 0;
+    } else if (maxValue - minVal <= 1 && integer) {
+        minValue = minVal - 1;
+    }
 
     let colorMap: {
         color: string;
@@ -166,9 +169,9 @@ export const generateChoroplethMapPaintAndLegend = (
     }
 
     const colors = colorMap
-        .map(item => [item.color, item.value])
+        .map(item => [item.value, item.color])
         .flat()
-        .slice(0, -1); // remove last element
+        .slice(1); // remove first element
 
     const fillColor: mapboxgl.FillPaint['fill-color'] = [
         'step',
@@ -180,7 +183,7 @@ export const generateChoroplethMapPaintAndLegend = (
         'case',
         ['==', ['feature-state', 'value'], null],
         0.1,
-        0.7,
+        1,
     ];
 
     const paint: mapboxgl.FillPaint = {

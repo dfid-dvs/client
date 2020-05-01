@@ -9,19 +9,51 @@ import { CovidFiveW } from '../types';
 
 import styles from './styles.css';
 
-const projectKeySelector = (d: CovidFiveW) => d.component;
-const projectRendererParams = (_: string, d: CovidFiveW, i: number) => ({
-    value: d.component,
+const componentKeySelector = (d: CovidFiveW) => d.component;
+const componentRendererParams = (_: string, d: CovidFiveW, i: number) => ({
+    value: d,
     index: i + 1,
 });
+interface ComponentItemProps {
+    index: number;
+    value: CovidFiveW;
+}
+const ComponentItem = ({ index, value }: ComponentItemProps) => (
+    <div className={styles.listItem}>
+        <div className={styles.count}>
+            {`${index}.`}
+        </div>
+        <div className={styles.label}>
+            <div>
+                {value.component}
+            </div>
+            <TextOutput
+                label="Allocated Budget"
+                value={(
+                    <Numeral
+                        value={value.budget}
+                        prefix="£"
+                    />
+                )}
+            />
+            <TextOutput
+                label="Sector"
+                value={value.sector}
+            />
+            <TextOutput
+                label="Partner"
+                value={value.secondTierPartner}
+            />
+        </div>
+    </div>
+);
 
 const sectorKeySelector = (d: CovidFiveW) => d.sector;
 const sectorRendererParams = (_: string, d: CovidFiveW, i: number) => ({
     value: d.sector,
     index: i + 1,
 });
-
-const ListItem = ({ value, index }: { value: string; index: number }) => (
+const SectorItem = ({ value, index }: { value: string; index: number }) => (
     <div className={styles.listItem}>
         <div className={styles.count}>
             {`${index}.`}
@@ -48,9 +80,9 @@ const Tooltip = ({
     dfidData,
     indicatorData,
 }: Props) => {
-    const uniqueProjects = unique(dfidData, d => d.component);
+    const uniqueComponents = unique(dfidData, d => d.component);
     const uniqueSectors = unique(dfidData, d => d.sector);
-    const totalBudget = uniqueProjects && sum(uniqueProjects.map(d => d.budget));
+    // const totalBudget = uniqueComponents && sum(uniqueComponents.map(d => d.budget));
 
     return (
         <div className={styles.tooltip}>
@@ -68,7 +100,7 @@ const Tooltip = ({
                     )}
                 />
             )}
-            { totalBudget && (
+            {/* totalBudget && (
                 <TextOutput
                     label="Allocated Budget"
                     value={(
@@ -80,7 +112,7 @@ const Tooltip = ({
                         </div>
                     )}
                 />
-            )}
+            ) */}
             {uniqueSectors && (
                 <TextOutput
                     label="No of sectors"
@@ -91,12 +123,12 @@ const Tooltip = ({
                     )}
                 />
             )}
-            {uniqueProjects && (
+            {uniqueComponents && (
                 <TextOutput
-                    label="No of projects"
+                    label="No of components"
                     value={(
                         <Numeral
-                            value={uniqueProjects.length}
+                            value={uniqueComponents.length}
                         />
                     )}
                 />
@@ -109,18 +141,18 @@ const Tooltip = ({
                             data={uniqueSectors}
                             keySelector={sectorKeySelector}
                             rendererParams={sectorRendererParams}
-                            renderer={ListItem}
+                            renderer={SectorItem}
                         />
                     </div>
                 )}
-                {uniqueProjects && uniqueProjects.length > 0 && (
-                    <div className={styles.projects}>
-                        <h4>Projects</h4>
+                {uniqueComponents && uniqueComponents.length > 0 && (
+                    <div className={styles.components}>
+                        <h4>Components</h4>
                         <List
-                            data={uniqueProjects}
-                            keySelector={projectKeySelector}
-                            rendererParams={projectRendererParams}
-                            renderer={ListItem}
+                            data={uniqueComponents}
+                            keySelector={componentKeySelector}
+                            rendererParams={componentRendererParams}
+                            renderer={ComponentItem}
                         />
                     </div>
                 )}

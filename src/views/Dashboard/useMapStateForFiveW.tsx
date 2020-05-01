@@ -33,7 +33,7 @@ function useMapStateForFiveW(
             }
 
             return regionFiveWListResponse?.results.map(d => ({
-                id: d.code,
+                id: +d.code,
                 value: d[selectedFiveWOption],
             }));
         },
