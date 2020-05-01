@@ -48,15 +48,7 @@
         .filters {
             display: flex;
             align-items: center;
-            padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
-
-            .region-selector {
-                display: flex;
-            }
-
-            .program-selector {
-                display: flex;
-            }
+            flex-direction: column;
         }
     }
 }

@@ -66,6 +66,11 @@ const Navbar = (props: Props) => {
                         </NavLink>
                       */}
                 </div>
+                <div className={styles.filters}>
+                    {!isCovidPage && (
+                        'This page is still a work in progress.'
+                    )}
+                </div>
                 {/*
                 <div className={styles.filters}>
                     {!isCovidPage && (
