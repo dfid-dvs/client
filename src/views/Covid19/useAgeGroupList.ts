@@ -23,7 +23,7 @@ interface AgeGroup {
 }
 
 interface AggregatedAgeGroup {
-    code: number;
+    code: string;
     belowFourteen: number;
     fifteenToFourtyNine: number;
     aboveFifty: number;
@@ -62,7 +62,7 @@ function useAgeGroupList(
                     );
                     const ageGroupListForProvince: AggregatedAgeGroup[] = Object.keys(groupedList)
                         .map(d => ({
-                            code: +d,
+                            code: d,
                             belowFourteen: sum(groupedList[d].map(i => i.l0_14)),
                             fifteenToFourtyNine: sum(groupedList[d].map(i => i.l15_49)),
                             aboveFifty: sum(groupedList[d].map(i => i.l50plus)),
@@ -77,7 +77,7 @@ function useAgeGroupList(
                     );
                     const ageGroupListForDistrict: AggregatedAgeGroup[] = Object.keys(groupedList)
                         .map(d => ({
-                            code: +d,
+                            code: d,
                             belowFourteen: sum(groupedList[d].map(i => i.l0_14)),
                             fifteenToFourtyNine: sum(groupedList[d].map(i => i.l15_49)),
                             aboveFifty: sum(groupedList[d].map(i => i.l50plus)),
@@ -88,7 +88,7 @@ function useAgeGroupList(
                 case 'municipality': {
                     const ageGroupListForMunicipality: AggregatedAgeGroup[] = sanitizedAgeGroupList
                         .map(d => ({
-                            code: d.munid,
+                            code: String(d.munid),
                             belowFourteen: d.l0_14,
                             fifteenToFourtyNine: d.l15_49,
                             aboveFifty: d.l50plus,

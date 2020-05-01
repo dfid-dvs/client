@@ -14,7 +14,8 @@ export interface MultiResponse<T> {
 // export type ListResponse<T> = T[];
 
 export interface MapStateItem {
-    id: number;
+    // FIXME: this is problematic
+    id: string;
     value: number;
 }
 

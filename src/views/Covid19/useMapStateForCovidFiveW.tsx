@@ -138,7 +138,7 @@ function useMapStateForCovidFiveW(
             const mapState = Object.entries(groupedRegionData).map(([key, value]) => {
                 const options = unique(value.map(v => v[selectedFiveWOption]));
                 return {
-                    id: +key,
+                    id: key,
                     value: (options?.length || 0),
                     data: value,
                 };

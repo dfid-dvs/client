@@ -17,7 +17,7 @@ import {
     getRasterTile,
 } from '#utils/common';
 
-import { Layer } from '#types';
+import { MapStateItem, Layer } from '#types';
 
 import theme, { noneLayout, visibleLayout } from './mapTheme';
 
@@ -55,8 +55,8 @@ interface Props {
     className?: string;
     regionLevel: 'municipality' | 'district' | 'province';
     // FIXME: use type from typings
-    choroplethMapState?: { id: number; value: number }[];
-    bubbleMapState?: { id: number; value: number }[];
+    choroplethMapState?: MapStateItem[];
+    bubbleMapState?: MapStateItem[];
     choroplethMapPaint?: mapboxgl.FillPaint;
     bubbleMapPaint?: mapboxgl.CirclePaint;
     children?: React.ReactNode;
@@ -171,15 +171,6 @@ function IndicatorMap(props: Props) {
                     onClick={onClick}
                 />
                 <MapLayer
-                    layerKey="palika-line"
-                    layerOptions={{
-                        type: 'line',
-                        'source-layer': 'palikageo',
-                        paint: theme.municipality.outlinePaint,
-                        layout: isMunicipalityVisible ? visibleLayout : noneLayout,
-                    }}
-                />
-                <MapLayer
                     layerKey="district-fill"
                     layerOptions={{
                         type: 'fill',
@@ -190,15 +181,6 @@ function IndicatorMap(props: Props) {
                     onMouseEnter={handleMapRegionMouseEnter}
                     onMouseLeave={handleMapRegionMouseLeave}
                     onClick={onClick}
-                />
-                <MapLayer
-                    layerKey="district-line"
-                    layerOptions={{
-                        type: 'line',
-                        'source-layer': 'districtgeo',
-                        paint: theme.district.outlinePaint,
-                        layout: isDistrictVisible ? visibleLayout : noneLayout,
-                    }}
                 />
                 <MapLayer
                     layerKey="province-fill"
@@ -218,7 +200,29 @@ function IndicatorMap(props: Props) {
                         type: 'line',
                         'source-layer': 'provincegeo',
                         paint: theme.province.outlinePaint,
-                        layout: isProvinceVisible ? visibleLayout : noneLayout,
+                        layout: isDistrictVisible || isProvinceVisible
+                            ? visibleLayout
+                            : noneLayout,
+                    }}
+                />
+                <MapLayer
+                    layerKey="district-line"
+                    layerOptions={{
+                        type: 'line',
+                        'source-layer': 'districtgeo',
+                        paint: theme.district.outlinePaint,
+                        layout: isMunicipalityVisible || isDistrictVisible
+                            ? visibleLayout
+                            : noneLayout,
+                    }}
+                />
+                <MapLayer
+                    layerKey="palika-line"
+                    layerOptions={{
+                        type: 'line',
+                        'source-layer': 'palikageo',
+                        paint: theme.municipality.outlinePaint,
+                        layout: isMunicipalityVisible ? visibleLayout : noneLayout,
                     }}
                 />
                 <MapState

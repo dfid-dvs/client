@@ -27,6 +27,7 @@ import {
     LegendItem,
     Layer,
     Indicator,
+    MapStateItem,
 } from '#types';
 
 import {
@@ -163,6 +164,8 @@ const Dashboard = (props: Props) => {
                 titleForPrintBar: title,
             };
         }
+        console.warn(fiveWMapState, indicatorMapState);
+
         return {
             choroplethMapState: fiveWMapState,
             choroplethTitle: fiveWTitle,
@@ -191,14 +194,31 @@ const Dashboard = (props: Props) => {
         min: dataMinValue,
     } = useMemo(
         () => {
-            const valueList = choroplethMapState.filter(d => isDefined(d.value)).map(d => d.value);
+            const excludeKathmanduValley = (item: MapStateItem) => {
+                if (regionLevel === 'district') {
+                    return !['25', '26', '27'].includes(item.id);
+                }
+                if (regionLevel === 'municipality') {
+                    return ![
+                        '280', '281', '282', '283', '284', '285', // lalitpur
+                        '286', '287', '288', '289', // bhaktapur
+                        '290', '291', '292', '293', '294', '295', '296', '297', '299', '300', // kathmandu
+                    ].includes(item.id);
+                }
+                return true;
+            };
+
+            const valueList = choroplethMapState
+                .filter(excludeKathmanduValley)
+                .map(d => d.value)
+                .filter(isDefined);
 
             const min = Math.min(...valueList);
             const max = Math.max(...valueList);
 
             return generateChoroplethMapPaintAndLegend(colorDomain, min, max, choroplethInteger);
         },
-        [choroplethMapState, choroplethInteger],
+        [choroplethMapState, choroplethInteger, regionLevel],
     );
 
     // const pending = mapStatePending || indicatorListPending;

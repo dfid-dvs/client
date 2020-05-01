@@ -446,6 +446,7 @@ function Covid19(props: Props) {
             feature: mapboxgl.MapboxGeoJSONFeature,
             lngLat: mapboxgl.LngLat,
         ) => {
+            console.warn(feature.properties);
             setClickedRegionProperties({
                 feature: feature as unknown as GeoJSON.Feature<GeoJSON.Polygon, Region>,
                 lngLat,
