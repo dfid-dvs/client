@@ -1,5 +1,15 @@
 .text-input{
     background-color: var(--color-background);
+
+    .clear-button {
+        font-size: var(--font-size-medium);
+    }
+
+    &:hover {
+        .clear-button {
+            color: var(--color-danger);
+        }
+    }
 }
 
 .dropdown-container {

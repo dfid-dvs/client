@@ -1,4 +1,6 @@
-import { AgeGroupOption, CovidFiveWOptionKey } from '#types';
+import { MapStateItem } from '#types';
+
+export type AgeGroupOption = 'belowFourteen' | 'fifteenToFourtyNine' | 'aboveFifty';
 
 export interface Attribute {
     key: 'indicator' | 'fiveW';
@@ -8,15 +10,8 @@ export interface Attribute {
 export interface FiveWOption {
     key: CovidFiveWOptionKey;
     label: string;
-    integer: boolean;
-}
-
-// FIXME: use from typings
-export interface Indicator {
-    id: number;
-    fullTitle: string;
-    abstract: string | undefined;
-    category: string;
+    datatype?: 'float' | 'integer';
+    unit?: string;
 }
 
 export interface AgeGroup {
@@ -39,3 +34,28 @@ export interface TravelTimeType {
     key: 'catchment' | 'uncovered';
     label: string;
 }
+
+export interface MapStateFiveWData extends MapStateItem {
+    data?: CovidFiveW[];
+}
+
+export interface FiveWTooltipData {
+    id: number;
+    data?: CovidFiveW[];
+}
+
+export interface CovidFiveW {
+    id: number;
+    partner: string;
+    supplierCode: string;
+    program?: string;
+    projectName: string;
+    sector: string;
+    provinceCode: string;
+    districtCode: string;
+    municipalityCode: string;
+}
+
+export type CovidFiveWOptionKey = Extract<keyof CovidFiveW, 'projectName' | 'sector'>;
+
+export type CovidFiveWRegionKey = Extract<keyof CovidFiveW, 'provinceCode' | 'districtCode' | 'municipalityCode'>;

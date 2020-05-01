@@ -2,18 +2,21 @@ import { useMemo } from 'react';
 import {
     MultiResponse,
     RegionLevelOption,
-    FiveW,
-    MapState,
-    FiveWOptionKey,
+    MapStateItem,
 } from '#types';
 import { apiEndPoint } from '#utils/constants';
 
-import useRequest from './useRequest';
+import useRequest from '#hooks/useRequest';
+
+import {
+    FiveW,
+    FiveWOptionKey,
+} from './types';
 
 function useMapStateForFiveW(
     regionLevel: RegionLevelOption,
     selectedFiveWOption: FiveWOptionKey | undefined,
-): [boolean, MapState[]] {
+): [boolean, MapStateItem[]] {
     const regionFiveWGetUrl = selectedFiveWOption
         ? `${apiEndPoint}/core/fivew-${regionLevel}/`
         : undefined;
@@ -23,7 +26,7 @@ function useMapStateForFiveW(
         regionFiveWListResponse,
     ] = useRequest<MultiResponse<FiveW>>(regionFiveWGetUrl);
 
-    const fiveWMapState: MapState[] = useMemo(
+    const fiveWMapState: MapStateItem[] = useMemo(
         () => {
             if (!regionFiveWListResponse || !selectedFiveWOption) {
                 return [];

@@ -5,7 +5,7 @@ import {
 } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
 
-import ProgramSelector from '#components/ProgramSelector';
+// import ProgramSelector from '#components/ProgramSelector';
 
 import dfidLogo from '#resources/DfID-logo.svg';
 import styles from './styles.css';
@@ -66,6 +66,7 @@ const Navbar = (props: Props) => {
                         </NavLink>
                       */}
                 </div>
+                {/*
                 <div className={styles.filters}>
                     {!isCovidPage && (
                         <ProgramSelector
@@ -73,6 +74,7 @@ const Navbar = (props: Props) => {
                         />
                     )}
                 </div>
+                */}
             </div>
         </nav>
     );

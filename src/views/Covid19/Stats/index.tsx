@@ -94,7 +94,7 @@ function Stats(props: Props) {
     return (
         <div className={_cs(className, styles.stats)}>
             <h4 className={styles.heading}>
-                COVID-19 summary
+                COVID-19 Summary
                 <LastUpdated date={status?.updated_at} />
             </h4>
             { statusPending && (

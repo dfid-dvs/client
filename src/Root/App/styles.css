@@ -1,4 +1,5 @@
 :root {
+    --spacing-super-small: 1px;
     --spacing-extra-small: 3px;
     --spacing-small: 6px;
     --spacing-medium: 10px;
@@ -29,6 +30,9 @@
     --color-link: #3182bd;
 
     --color-separator: rgba(0, 0, 0, .1);
+    --color-danger: firebrick;
+    --color-success: forestgreen;
+    --color-warning: tomato;
 
     --color-background-accent-hint: #18cc9c55;
     --color-background-hover: rgba(0, 0, 0, .06);

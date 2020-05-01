@@ -295,8 +295,9 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                 onChange={handleInputValueChange}
                 placeholder={placeholder}
                 disabled={disabled}
-                actions={(
+                actions={value && (
                     <Button
+                        className={styles.clearButton}
                         transparent
                         name="close"
                         onClick={handleClearClick}

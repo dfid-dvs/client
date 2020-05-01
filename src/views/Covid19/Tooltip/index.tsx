@@ -5,7 +5,7 @@ import TextOutput from '#components/TextOutput';
 import Numeral from '#components/Numeral';
 import List from '#components/List';
 
-import { CovidFiveW } from '#types';
+import { CovidFiveW } from '../types';
 
 import styles from './styles.css';
 

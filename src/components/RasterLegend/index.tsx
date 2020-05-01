@@ -20,7 +20,7 @@ function Legend(props: RasterLegendProps) {
         rasterLayer,
     } = props;
 
-    const [rasterLegendDataUrl, setRasterLegendDataUrl] = useState<string|undefined>();
+    const [rasterLegendDataUrl, setRasterLegendDataUrl] = useState<string | null | undefined>();
 
     useEffect(
         () => {
@@ -32,7 +32,7 @@ function Legend(props: RasterLegendProps) {
                 );
                 imageUrlToDataUrl(
                     url,
-                    (dataUrl: string) => {
+                    (dataUrl) => {
                         setRasterLegendDataUrl(dataUrl);
                     },
                 );

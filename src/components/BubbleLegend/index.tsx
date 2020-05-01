@@ -58,6 +58,7 @@ interface Props<T, K extends OptionKey> {
     legendType: BubbleLegendType;
     positiveColor?: string;
     negativeColor?: string;
+    unit?: string;
 }
 
 function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
@@ -72,6 +73,7 @@ function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
         negativeColor,
         positiveColor,
         legendType,
+        unit,
     } = props;
 
     const legendItemRendererParams = useCallback((_: K, d: T, i: number, allData: T[]) => {
@@ -112,7 +114,7 @@ function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
         <div className={_cs(styles.bubbleLegend, className)}>
             {title && (
                 <h5 className={styles.heading}>
-                    {title}
+                    {unit ? `${title} (${unit})` : title}
                 </h5>
             )}
             <List
