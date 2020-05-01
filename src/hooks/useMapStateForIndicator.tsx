@@ -41,7 +41,7 @@ function useMapStateForIndicator(
     ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl);
 
     let mapState: MapStateItem[] = [];
-    if (regionIndicatorListResponse) {
+    if (regionIndicatorListResponse && isDefined(selectedIndicator)) {
         mapState = regionIndicatorListResponse.results.map(d => ({
             id: d.code,
             value: d.value,

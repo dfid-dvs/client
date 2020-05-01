@@ -14,15 +14,16 @@ function useRequest<T>(
 ): [boolean, T | undefined] {
     const [response, setResponse] = useState<T>();
     const [pending, setPending] = useState(!!url);
+    const [lastUrl, setLastUrl] = useState<string | undefined>();
 
     useEffect(
         () => {
             if (!url) {
+                setLastUrl(undefined);
                 return () => {};
             }
 
             setPending(true);
-            setResponse(undefined);
 
             const controller = new AbortController();
 
@@ -54,6 +55,7 @@ function useRequest<T>(
 
                 if (res.ok) {
                     setResponse(resBody);
+                    setLastUrl(url);
                     setPending(false);
                 }
             }
@@ -67,6 +69,6 @@ function useRequest<T>(
         [url, options],
     );
 
-    return [pending, response];
+    return [pending, url === lastUrl ? response : undefined];
 }
 export default useRequest;

@@ -32,7 +32,7 @@ function Option(props: RawButtonProps & { selected: boolean }) {
         () => {
             if (selected && !focusedByMouse.current && divRef.current) {
                 divRef.current.scrollIntoView({
-                    behavior: 'smooth',
+                    // behavior: 'smooth',
                     block: 'center',
                 });
             }
