@@ -48,6 +48,7 @@ interface ChoroplethLegend {
     className?: string;
     title?: string;
     opacity?: number;
+    unit?: string;
 }
 function ChoroplethLegend(
     {
@@ -56,6 +57,7 @@ function ChoroplethLegend(
         legend,
         className,
         opacity,
+        unit,
     }: ChoroplethLegend,
 ) {
     const colors = Object.keys(legend);
@@ -67,7 +69,7 @@ function ChoroplethLegend(
         <div className={_cs(styles.legendContainer, className)}>
             {title && (
                 <h5 className={styles.heading}>
-                    {title}
+                    {unit ? `${title} (${unit})` : title}
                 </h5>
             )}
             <div className={styles.choroplethLegend}>

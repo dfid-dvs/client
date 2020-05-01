@@ -3,17 +3,20 @@ import { isDefined, listToGroupList, unique } from '@togglecorp/fujs';
 import {
     MultiResponse,
     RegionLevelOption,
-    CovidFiveW,
-    MapStateFiveWData,
-    CovidFiveWRegionKey,
-    CovidFiveWOptionKey,
     Province,
     District,
     Municipality,
 } from '#types';
 
 import { apiEndPoint } from '#utils/constants';
-import useRequest from './useRequest';
+import useRequest from '#hooks/useRequest';
+
+import {
+    CovidFiveW,
+    MapStateFiveWData,
+    CovidFiveWRegionKey,
+    CovidFiveWOptionKey,
+} from './types';
 
 function useMapStateForCovidFiveW(
     regionLevel: RegionLevelOption,

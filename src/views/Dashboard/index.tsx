@@ -17,7 +17,6 @@ import RasterLegend from '#components/RasterLegend';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
-import useMapStateForFiveW from '#hooks/useMapStateForFiveW';
 
 import {
     generateChoroplethMapPaintAndLegend,
@@ -25,9 +24,9 @@ import {
 } from '#utils/common';
 import {
     MultiResponse,
-    FiveWOptionKey,
     LegendItem,
     Layer,
+    Indicator,
 } from '#types';
 
 import {
@@ -35,48 +34,35 @@ import {
     apiEndPoint,
 } from '#utils/constants';
 
+import useMapStateForFiveW from './useMapStateForFiveW';
+
+import {
+    FiveWOptionKey,
+    FiveWOption,
+} from './types';
+
 import styles from './styles.css';
-
-// FIXME: use from typings
-interface MapState {
-    id: number;
-    value: number;
-}
-
-// FIXME: use from typings
-interface Indicator {
-    id: number;
-    fullTitle: string;
-    abstract: string | undefined;
-    category: string;
-}
-
-// FIXME: use from typings
-interface FiveWOption {
-    key: FiveWOptionKey;
-    label: string;
-    integer?: boolean;
-}
 
 const fiveWOptions: FiveWOption[] = [
     {
         key: 'allocatedBudget',
         label: 'Allocated Budget',
+        unit: '£',
     },
     {
         key: 'maleBeneficiary',
         label: 'Male Beneficiary',
-        integer: true,
+        datatype: 'integer',
     },
     {
         key: 'femaleBeneficiary',
         label: 'Female Beneficiary',
-        integer: true,
+        datatype: 'integer',
     },
     {
         key: 'totalBeneficiary',
         label: 'Total Beneficiary',
-        integer: true,
+        datatype: 'integer',
     },
 ];
 
@@ -132,7 +118,7 @@ const Dashboard = (props: Props) => {
     const [
         indicatorMapStatePending,
         indicatorMapState,
-    ] = useMapStateForIndicator(regionLevel, selectedIndicator, undefined);
+    ] = useMapStateForIndicator(regionLevel, selectedIndicator);
 
     const [
         fiveWMapStatePending,
@@ -145,14 +131,18 @@ const Dashboard = (props: Props) => {
         choroplethMapState,
         choroplethTitle,
         choroplethInteger,
+        choroplethUnit,
 
         bubbleMapState,
         bubbleTitle,
         bubbleInteger,
+        bubbleUnit,
+
         titleForPrintBar,
     } = useMemo(() => {
         const indicator = indicatorList?.find(i => indicatorKeySelector(i) === selectedIndicator);
         const indicatorTitle = indicator && indicatorLabelSelector(indicator);
+
         const fiveW = fiveWOptions.find(i => fiveWKeySelector(i) === selectedFiveWOption);
         const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
 
@@ -162,10 +152,13 @@ const Dashboard = (props: Props) => {
             return {
                 choroplethMapState: indicatorMapState,
                 choroplethTitle: indicatorTitle,
+                choroplethInteger: indicator?.datatype === 'integer',
+                choroplethUnit: indicator?.unit,
 
                 bubbleMapState: fiveWMapState,
                 bubbleTitle: fiveWTitle,
-                bubbleInteger: fiveW?.integer,
+                bubbleInteger: fiveW?.datatype === 'integer',
+                bubbleUnit: fiveW?.unit,
 
                 titleForPrintBar: title,
             };
@@ -173,10 +166,13 @@ const Dashboard = (props: Props) => {
         return {
             choroplethMapState: fiveWMapState,
             choroplethTitle: fiveWTitle,
-            choroplethInteger: fiveW?.integer,
+            choroplethInteger: fiveW?.datatype === 'integer',
+            choroplethUnit: fiveW?.unit,
 
             bubbleMapState: indicatorMapState,
             bubbleTitle: indicatorTitle,
+            bubbleInteger: indicator?.datatype === 'integer',
+            bubbleUnit: indicator?.unit,
 
             titleForPrintBar: title,
         };
@@ -345,6 +341,7 @@ const Dashboard = (props: Props) => {
                         title={choroplethTitle}
                         minValue={dataMinValue}
                         legend={mapLegend}
+                        unit={choroplethUnit}
                     />
                     <BubbleLegend
                         className={styles.legend}
@@ -354,6 +351,7 @@ const Dashboard = (props: Props) => {
                         valueSelector={legendValueSelector}
                         radiusSelector={legendRadiusSelector}
                         legendType={bubbleLegendType}
+                        unit={bubbleUnit}
                     />
                     {selectedRasterLayer && (
                         <RasterLegend

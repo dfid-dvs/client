@@ -301,12 +301,17 @@ export function getRasterLegendUrl(baseUrl: string, workspace: string, layer: st
     return legendUrl;
 }
 
-export const imageUrlToDataUrl = (url, callback) => {
+export const imageUrlToDataUrl = (
+    url: string,
+    callback: (result: string | null) => void,
+) => {
     const xhr = new XMLHttpRequest();
     xhr.onload = () => {
         const reader = new FileReader();
         reader.onloadend = () => {
-            callback(reader.result);
+            if (typeof reader.result === 'string' || !reader.result) {
+                callback(reader.result);
+            }
         };
 
         reader.readAsDataURL(xhr.response);

@@ -24,15 +24,15 @@ import PrintDetailsBar from '#components/PrintDetailsBar';
 import RasterLegend from '#components/RasterLegend';
 
 import useRequest from '#hooks/useRequest';
-import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
-import useMapStateForCovidFiveW from '#hooks/useMapStateForCovidFiveW';
+
+import useMapStateForIndicator from './useMapStateForIndicator';
+import useMapStateForCovidFiveW from './useMapStateForCovidFiveW';
 
 import {
-    AgeGroupOption,
-    CovidFiveWOptionKey,
     Layer,
     LegendItem,
     MultiResponse,
+    Indicator,
 } from '#types';
 
 import {
@@ -61,24 +61,15 @@ import {
 import Tooltip from './Tooltip';
 import {
     FiveWOption,
-    Indicator,
     AgeGroup,
     HospitalType,
     Season,
     TravelTimeType,
+    CovidFiveWOptionKey,
+    AgeGroupOption,
 } from './types';
 
 import styles from './styles.css';
-
-interface Region {
-    name: string;
-}
-
-interface ClickedRegion {
-    feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
-    lngLat: mapboxgl.LngLatLike;
-    point: mapboxgl.Point;
-}
 
 const legendKeySelector = (option: LegendItem) => option.radius;
 const legendValueSelector = (option: LegendItem) => option.value;
@@ -114,12 +105,12 @@ const fiveWOptions: FiveWOption[] = [
     {
         key: 'projectName',
         label: 'No. of projects',
-        integer: true,
+        datatype: 'integer',
     },
     {
         key: 'sector',
         label: 'No. of sectors',
-        integer: true,
+        datatype: 'integer',
     },
 ];
 const fiveWKeySelector = (option: FiveWOption) => option.key;
@@ -194,8 +185,6 @@ function Covid19(props: Props) {
     const [indicatorListPending, indicatorListResponse] = useRequest<MultiResponse<Indicator>>(
         indicatorListGetUrl,
     );
-    const indicatorList = indicatorListResponse?.results;
-
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
     const [
         mapLayerListPending,
@@ -221,37 +210,68 @@ function Covid19(props: Props) {
     );
     const [invertMapStyle, setInvertMapStyle] = useState(false);
 
+
+    interface Region {
+        name: string;
+    }
+    interface ClickedRegion {
+        feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
+        lngLat: mapboxgl.LngLatLike;
+    }
+    // FIXME: clear this on region change
     const [
         clickedRegionProperties,
         setClickedRegionProperties,
     ] = React.useState<ClickedRegion | undefined>();
 
+    const indicatorOptions = useMemo(
+        () => {
+            if (!indicatorListResponse?.results) {
+                return undefined;
+            }
+            const options = [
+                ...indicatorListResponse?.results,
+            ];
+            options.push({ id: -1, fullTitle: 'Age group', abstract: undefined, category: 'Demographics' });
+            return options;
+        },
+        [indicatorListResponse],
+    );
+
     const {
         choroplethMapState,
         choroplethTitle,
         choroplethInteger,
+        choroplethUnit,
 
         bubbleMapState,
         bubbleTitle,
         bubbleInteger,
+        bubbleUnit,
 
         titleForPrintBar,
     } = useMemo(() => {
-        const indicator = indicatorList?.find(i => indicatorKeySelector(i) === selectedIndicator);
+        const indicator = indicatorOptions?.find(
+            i => indicatorKeySelector(i) === selectedIndicator,
+        );
         const indicatorTitle = indicator && indicatorLabelSelector(indicator);
 
         const fiveW = fiveWOptions.find(i => fiveWKeySelector(i) === selectedFiveWOption);
         const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
+
         const title = [fiveWTitle, indicatorTitle].filter(isDefined).join(' & ');
 
         if (invertMapStyle) {
             return {
                 choroplethMapState: mapStateForIndicator,
                 choroplethTitle: indicatorTitle,
+                choroplethInteger: indicator?.datatype === 'integer',
+                choroplethUnit: indicator?.unit,
 
                 bubbleMapState: mapStateForFiveW,
                 bubbleTitle: fiveWTitle,
-                bubbleInteger: fiveW?.integer,
+                bubbleInteger: fiveW?.datatype === 'integer',
+                bubbleUnit: fiveW?.unit,
 
                 titleForPrintBar: title,
             };
@@ -259,10 +279,14 @@ function Covid19(props: Props) {
         return {
             choroplethMapState: mapStateForFiveW,
             choroplethTitle: fiveWTitle,
-            choroplethInteger: fiveW?.integer,
+            choroplethInteger: fiveW?.datatype === 'integer',
+            choroplethUnit: fiveW?.unit,
 
             bubbleMapState: mapStateForIndicator,
             bubbleTitle: indicatorTitle,
+            bubbleInteger: indicator?.datatype === 'integer',
+            bubbleUnit: indicator?.unit,
+
             titleForPrintBar: title,
         };
     }, [
@@ -271,7 +295,7 @@ function Covid19(props: Props) {
         mapStateForFiveW,
         selectedIndicator,
         selectedFiveWOption,
-        indicatorList,
+        indicatorOptions,
     ]);
 
     // const mapStatePending = mapStateForIndicatorPending || mapStateForFiveWPending;
@@ -292,7 +316,7 @@ function Covid19(props: Props) {
                     };
                 }
 
-                const indicator = indicatorList?.find(
+                const indicator = indicatorOptions?.find(
                     i => indicatorKeySelector(i) === selectedIndicator,
                 );
 
@@ -313,7 +337,7 @@ function Covid19(props: Props) {
         [
             selectedIndicator,
             clickedRegionProperties,
-            indicatorList,
+            indicatorOptions,
             mapStateForIndicator,
             selectedAgeGroup,
         ],
@@ -373,27 +397,13 @@ function Covid19(props: Props) {
     const selectedIndicatorDetails = useMemo(
         () => {
             if (selectedIndicator) {
-                return indicatorListResponse?.results.find(
+                return indicatorOptions?.find(
                     d => d.id === selectedIndicator,
                 );
             }
             return undefined;
         },
-        [selectedIndicator, indicatorListResponse],
-    );
-
-    const indicatorOptions = useMemo(
-        () => {
-            if (!indicatorListResponse?.results) {
-                return undefined;
-            }
-            const options = [
-                ...indicatorListResponse?.results,
-            ];
-            options.push({ id: -1, fullTitle: 'Age group', abstract: undefined, category: 'Demographics' });
-            return options;
-        },
-        [indicatorListResponse],
+        [selectedIndicator, indicatorOptions],
     );
 
     // FIXME: use useCallback
@@ -435,12 +445,10 @@ function Covid19(props: Props) {
         (
             feature: mapboxgl.MapboxGeoJSONFeature,
             lngLat: mapboxgl.LngLat,
-            point: mapboxgl.Point,
         ) => {
             setClickedRegionProperties({
-                feature,
+                feature: feature as unknown as GeoJSON.Feature<GeoJSON.Polygon, Region>,
                 lngLat,
-                point,
             });
 
             return true;
@@ -642,7 +650,6 @@ function Covid19(props: Props) {
                 <SelectInput
                     className={styles.inputItem}
                     label="Indicator"
-                    placeholder="Select an indicator"
                     disabled={indicatorListPending}
                     options={indicatorOptions}
                     onChange={setSelectedIndicator}
@@ -716,10 +723,11 @@ function Covid19(props: Props) {
                                     className={styles.legend}
                                     minValue=""
                                     opacity={0.6}
+                                    unit="hours"
                                     legend={{
-                                        [fourHourColor]: '4hrs',
-                                        [eightHourColor]: '8hrs',
-                                        [twelveHourColor]: '12hrs',
+                                        [fourHourColor]: 4,
+                                        [eightHourColor]: 8,
+                                        [twelveHourColor]: 12,
                                     }}
                                 />
                             )}
@@ -729,10 +737,11 @@ function Covid19(props: Props) {
                                     className={styles.legend}
                                     minValue=""
                                     opacity={0.6}
+                                    unit="hours"
                                     legend={{
-                                        [twelveHourUncoveredColor]: '> 12hrs',
-                                        [eightHourUncoveredColor]: '> 8hrs',
-                                        [fourHourUncoveredColor]: '> 4hrs',
+                                        [twelveHourUncoveredColor]: '> 12',
+                                        [eightHourUncoveredColor]: '> 8',
+                                        [fourHourUncoveredColor]: '> 4',
                                     }}
                                 />
                             )}
