@@ -65,8 +65,6 @@ import {
     HospitalType,
     Season,
     TravelTimeType,
-    CovidFiveWOptionKey,
-    AgeGroupOption,
 } from './types';
 
 import styles from './styles.css';
@@ -168,7 +166,7 @@ function Covid19(props: Props) {
     const { className } = props;
     const { regionLevel } = useContext(NavbarContext);
 
-    const [selectedFiveWOption, setFiveWOption] = useState<CovidFiveWOptionKey | undefined>('projectName');
+    const [selectedFiveWOption, setFiveWOption] = useState<CovidFiveWOptionKey | undefined>('component');
     const [selectedIndicator, setSelectedIndicator] = useState<number | undefined>();
     const [selectedAgeGroup, setSelectedAgeGroup] = useState<AgeGroupOption>('belowFourteen');
 

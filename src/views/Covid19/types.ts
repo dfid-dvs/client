@@ -44,18 +44,35 @@ export interface FiveWTooltipData {
     data?: CovidFiveW[];
 }
 
-export interface CovidFiveW {
+export interface FiveW {
     id: number;
-    partner: string;
-    supplierCode: string;
-    program?: string;
-    projectName: string;
-    sector: string;
-    provinceCode: string;
-    districtCode: string;
-    municipalityCode: string;
+    name: string;
+    code: number;
+    allocatedBudget: number;
+    maleBeneficiary: number;
+    femaleBeneficiary: number;
+    totalBeneficiary: number;
 }
 
-export type CovidFiveWOptionKey = Extract<keyof CovidFiveW, 'projectName' | 'sector'>;
+export interface CovidFiveW {
+    id: number;
+    provinceCode: number;
+    districtCode: number;
+    municipalityCode: number;
+    component: string;
+    secondTierPartner: string;
+    projectStatus: string;
+    sector: string;
+    budget: number;
+    kathmanduActivity: string;
+    deliveryInLockdown: string;
+    covidPriority_3_12_Months: string;
+    covidRecoveryPriority: string;
+    providingTaToLocalGovernment: string;
+}
+
+export type FiveWOptionKey = Extract<keyof FiveW, 'allocatedBudget' | 'maleBeneficiary' | 'femaleBeneficiary' | 'totalBeneficiary'>;
+
+export type CovidFiveWOptionKey = Extract<keyof CovidFiveW, 'component' | 'sector'>;
 
 export type CovidFiveWRegionKey = Extract<keyof CovidFiveW, 'provinceCode' | 'districtCode' | 'municipalityCode'>;

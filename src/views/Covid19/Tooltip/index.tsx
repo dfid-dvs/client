@@ -50,7 +50,7 @@ const Tooltip = ({
 }: Props) => {
     const uniqueProjects = unique(dfidData, d => d.component);
     const uniqueSectors = unique(dfidData, d => d.sector);
-    const totalBudget = uniqueProjects && sum(uniqueProjects.map(d => Number(d.budget.replace(/[^\d.]/g, ''))));
+    const totalBudget = uniqueProjects && sum(uniqueProjects.map(d => d.budget));
 
     return (
         <div className={styles.tooltip}>
@@ -73,9 +73,9 @@ const Tooltip = ({
                     label="Allocated Budget"
                     value={(
                         <div className={styles.budget}>
-                            £
                             <Numeral
                                 value={totalBudget}
+                                prefix="£"
                             />
                         </div>
                     )}
