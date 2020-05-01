@@ -1,14 +1,14 @@
 import React, { useCallback, useMemo } from 'react';
 import { sum } from '@togglecorp/fujs';
 import {
-    BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine,
 } from 'recharts';
 
 import MapSource from '#remap/MapSource';
 import MapLayer from '#remap/MapSource/MapLayer';
 import MapTooltip from '#remap/MapTooltip';
 
-import Numeral from '#components/Numeral';
+import Numeral, { formatNumber } from '#components/Numeral';
 import TextOutput from '#components/TextOutput';
 
 import { Season, HospitalType, TravelTimeType } from '../types';
@@ -174,24 +174,32 @@ function RegionTooltip(props: RegionTooltipProps) {
 
     const data = useMemo(
         () => ([
-            { name: '5', male: properties.m_5, female: properties.f_5 },
-            { name: '10', male: properties.m_10, female: properties.f_10 },
-            { name: '15', male: properties.m_15, female: properties.f_15 },
-            { name: '20', male: properties.m_20, female: properties.f_20 },
-            { name: '25', male: properties.m_25, female: properties.f_25 },
-            { name: '30', male: properties.m_30, female: properties.f_30 },
-            { name: '35', male: properties.m_35, female: properties.f_35 },
-            { name: '40', male: properties.m_40, female: properties.f_40 },
-            { name: '45', male: properties.m_45, female: properties.f_45 },
-            { name: '50', male: properties.m_50, female: properties.f_50 },
-            { name: '55', male: properties.m_55, female: properties.f_55 },
-            { name: '60', male: properties.m_60, female: properties.f_60 },
-            { name: '65', male: properties.m_65, female: properties.f_65 },
-            { name: '70', male: properties.m_70, female: properties.f_70 },
-            { name: '75', male: properties.m_75, female: properties.f_75 },
-            { name: '80', male: properties.m_80, female: properties.f_80 },
+            { name: '80', male: properties.m_80, female: -properties.f_80 },
+            { name: '75', male: properties.m_75, female: -properties.f_75 },
+            { name: '70', male: properties.m_70, female: -properties.f_70 },
+            { name: '65', male: properties.m_65, female: -properties.f_65 },
+            { name: '60', male: properties.m_60, female: -properties.f_60 },
+            { name: '55', male: properties.m_55, female: -properties.f_55 },
+            { name: '50', male: properties.m_50, female: -properties.f_50 },
+            { name: '45', male: properties.m_45, female: -properties.f_45 },
+            { name: '40', male: properties.m_40, female: -properties.f_40 },
+            { name: '35', male: properties.m_35, female: -properties.f_35 },
+            { name: '30', male: properties.m_30, female: -properties.f_30 },
+            { name: '25', male: properties.m_25, female: -properties.f_25 },
+            { name: '20', male: properties.m_20, female: -properties.f_20 },
+            { name: '15', male: properties.m_15, female: -properties.f_15 },
+            { name: '10', male: properties.m_10, female: -properties.f_10 },
+            { name: '5', male: properties.m_5, female: -properties.f_5 },
         ]),
         [properties],
+    );
+
+    const tickFormatter = useCallback(
+        (value: number) => {
+            const absoluteValue = Math.abs(value);
+            return formatNumber(absoluteValue, true, true);
+        },
+        [],
     );
 
     return (
@@ -241,14 +249,21 @@ function RegionTooltip(props: RegionTooltipProps) {
                     margin={{
                         top: 0, right: 0, left: 0, bottom: 0,
                     }}
+                    stackOffset="sign"
+                    layout="vertical"
                 >
                     <CartesianGrid
                         strokeDasharray="3 3"
                     />
-                    <XAxis
+                    <YAxis
                         dataKey="name"
+                        type="category"
+                        width={30}
                     />
-                    <YAxis />
+                    <XAxis
+                        type="number"
+                        tickFormatter={tickFormatter}
+                    />
                     <Tooltip />
                     <Legend />
                     <Bar

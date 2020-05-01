@@ -10,10 +10,6 @@ import MapState from '#remap/MapSource/MapState';
 import { getLayerName } from '#remap/utils';
 
 import {
-    mapOptions,
-    tooltipOptions,
-} from '#utils/constants';
-import {
     getRasterTile,
 } from '#utils/common';
 
@@ -22,6 +18,31 @@ import { Layer } from '#types';
 import theme, { noneLayout, visibleLayout } from './mapTheme';
 
 import styles from './styles.css';
+
+
+const defaultCenter: mapboxgl.LngLatLike = [
+    84.1240, 28.3949,
+];
+
+const defaultBounds: [number, number, number, number] = [
+    80.05858661752784, 26.347836996368667,
+    88.20166918432409, 30.44702867091792,
+];
+
+const mapOptions: Omit<mapboxgl.MapboxOptions, 'style' | 'container'> = {
+    logoPosition: 'bottom-right',
+    minZoom: 5,
+    zoom: 3,
+    center: defaultCenter,
+    bounds: defaultBounds,
+};
+
+const tooltipOptions: mapboxgl.PopupOptions = {
+    closeOnClick: false,
+    closeButton: false,
+    offset: 8,
+    maxWidth: '480px',
+};
 
 interface HoveredRegion {
     feature: mapboxgl.MapboxGeoJSONFeature;

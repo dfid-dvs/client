@@ -18,31 +18,20 @@ export function getPrecision(value: number | undefined) {
     return 2;
 }
 
-
-interface Props {
-    value: number | undefined;
-    precision?: number | undefined;
-    className?: string;
-    normalize?: boolean;
-    separatorShown?: boolean;
-}
-function Numeral({
-    value,
-    precision = getPrecision(value),
-    className: classNameFromProps,
-    normalize,
+export function formatNumber(
+    value: number | undefined,
     separatorShown = true,
-}: Props) {
+    normalize?: boolean,
+    precision?: number,
+) {
     if (!isDefined(value)) {
-        return null;
+        return undefined;
     }
 
     const sanitizedValue = Number.parseFloat(String(value));
     if (Number.isNaN(sanitizedValue)) {
-        return null;
+        return undefined;
     }
-
-    const className = _cs(classNameFromProps, styles.numeral);
 
     let output: string | undefined | null = '';
     let suffix = '';
@@ -67,9 +56,39 @@ function Numeral({
         output = addSeparator(output, ',');
     }
 
+    return `${output}${suffix}`;
+}
+
+
+interface Props {
+    value: number | undefined;
+    precision?: number | undefined;
+    className?: string;
+    normalize?: boolean;
+    separatorShown?: boolean;
+}
+function Numeral({
+    value,
+    precision = getPrecision(value),
+    className: classNameFromProps,
+    normalize,
+    separatorShown = true,
+}: Props) {
+    if (!isDefined(value)) {
+        return null;
+    }
+
+    const className = _cs(classNameFromProps, styles.numeral);
+    const output = formatNumber(
+        value,
+        separatorShown,
+        normalize,
+        precision,
+    );
+
     return (
         <div className={className}>
-            {`${output}${suffix}`}
+            {output}
         </div>
     );
 }
