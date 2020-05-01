@@ -357,8 +357,6 @@ function Covid19(props: Props) {
         [choroplethMapState, choroplethInteger],
     );
 
-    console.warn(mapPaint, choroplethMapState);
-
     const {
         mapPaint: bubblePaint,
         legend: bubbleLegend,

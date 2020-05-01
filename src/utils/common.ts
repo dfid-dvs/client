@@ -242,11 +242,11 @@ export const generateBubbleMapPaintAndLegend = (
         });
 
         const segments = getSegments(
-            4,
+            5,
             minValue,
             maxValue,
             integer,
-            minValue !== 0,
+            // minValue !== 0,
         );
 
         const legend = segments.map(item => ({
