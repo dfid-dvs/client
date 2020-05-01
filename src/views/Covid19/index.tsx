@@ -65,6 +65,8 @@ import {
     HospitalType,
     Season,
     TravelTimeType,
+    AgeGroupOption,
+    CovidFiveWOptionKey,
 } from './types';
 
 import styles from './styles.css';
@@ -102,7 +104,7 @@ const travelTimeDetails = (
 const fiveWOptions: FiveWOption[] = [
     {
         key: 'component',
-        label: 'No. of projects',
+        label: 'No. of components',
         datatype: 'integer',
     },
     {
@@ -198,7 +200,6 @@ function Covid19(props: Props) {
         mapStateForFiveWPending,
         covidFiveWData,
     ] = useMapStateForCovidFiveW(regionLevel, selectedFiveWOption);
-
 
     const mapStateForFiveW = useMemo(
         () => (
@@ -636,7 +637,7 @@ function Covid19(props: Props) {
                 </div>
                 <div className={styles.separator} />
                 <SelectInput
-                    label="DFID Data"
+                    label="Evidence for Development"
                     options={fiveWOptions}
                     className={styles.inputItem}
                     onChange={setFiveWOption}
