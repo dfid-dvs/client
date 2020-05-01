@@ -103,7 +103,7 @@ const travelTimeDetails = (
 
 const fiveWOptions: FiveWOption[] = [
     {
-        key: 'projectName',
+        key: 'component',
         label: 'No. of projects',
         datatype: 'integer',
     },

@@ -18,6 +18,48 @@ export interface MapStateItem {
     value: number;
 }
 
+export interface MapStateFiveWData extends MapState {
+    data?: CovidFiveW[];
+}
+
+export interface FiveWTooltipData {
+    id: number;
+    data?: CovidFiveW[];
+}
+
+export interface FiveW {
+    id: number;
+    name: string;
+    code: number;
+    allocatedBudget: number;
+    maleBeneficiary: number;
+    femaleBeneficiary: number;
+    totalBeneficiary: number;
+}
+
+export interface CovidFiveW {
+    id: number;
+    provinceCode: string;
+    districtCode: string;
+    municipalityCode: string;
+    component: string;
+    secondTierPartner: string;
+    projectStatus: string;
+    sector: string;
+    budget: string;
+    kathmanduActivity: string;
+    deliveryInLockdown: string;
+    covidPriority_3_12_Months: string;
+    covidRecoveryPriority: string;
+    providingTaToLocalGovernment: string;
+}
+
+export type FiveWOptionKey = Extract<keyof FiveW, 'allocatedBudget' | 'maleBeneficiary' | 'femaleBeneficiary' | 'totalBeneficiary'>;
+
+export type CovidFiveWOptionKey = Extract<keyof CovidFiveW, 'component' | 'sector' | 'budget'>;
+
+export type CovidFiveWRegionKey = Extract<keyof CovidFiveW, 'provinceCode' | 'districtCode' | 'municipalityCode'>;
+
 export interface Province {
     id: number;
     name: string;
