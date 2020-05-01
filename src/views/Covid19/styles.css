@@ -28,9 +28,10 @@
             margin: var(--spacing-medium) 0;
         }
 
-        .input-item-container {
+        .travel-time-input-container {
             display: flex;
             align-items: center;
+            margin: var(--spacing-medium) 0;
         }
 
         .hospitals {

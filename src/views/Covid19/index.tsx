@@ -590,9 +590,8 @@ function Covid19(props: Props) {
                                     ))}
                                 </div>
                             )}
-                            <div className={styles.inputItemContainer}>
+                            <div className={styles.travelTimeInputContainer}>
                                 <ToggleButton
-                                    className={styles.inputItem}
                                     label="Show travel time"
                                     value={showHealthTravelTime}
                                     onChange={setShowHealthTravelTime}

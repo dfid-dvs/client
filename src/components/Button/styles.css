@@ -28,32 +28,32 @@
         }
 
         &.accent {
-            border: 1px solid darkcyan;
-            background-color: darkcyan;
+            border: 1px solid var(--color-accent);
+            background-color: var(--color-accent);
             color: white;
         }
 
         &.danger {
-            border: 1px solid firebrick;
-            background-color: firebrick;
+            border: 1px solid var(--color-danger);
+            background-color: var(--color-danger);
             color: white;
         }
 
         &.primary {
-            border: 1px solid slateblue;
-            background-color: slateblue;
-            color: white;
+            border: 1px solid var(--color-primary);
+            background-color: var(--color-primary);
+            color: var(--color-text-on-primary);
         }
 
         &.success {
-            border: 1px solid forestgreen;
-            background-color: forestgreen;
+            border: 1px solid var(--color-success);
+            background-color: var(--color-success);
             color: white;
         }
 
         &.warning {
-            border: 1px solid tomato;
-            background-color: tomato;
+            border: 1px solid var(--color-warning);
+            background-color: var(--color-warning);
             color: white;
         }
 
