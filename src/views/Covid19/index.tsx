@@ -321,6 +321,8 @@ function Covid19(props: Props) {
 
                 if (indicator) {
                     const indicatorTitle = indicatorLabelSelector(indicator);
+                    console.warn(mapStateForIndicator, clickedRegionProperties?.feature.id);
+
                     const indicatorValue = mapStateForIndicator.find(
                         v => v.id === clickedRegionProperties?.feature.id,
                     )?.value;
@@ -467,12 +469,6 @@ function Covid19(props: Props) {
         && showHealthTravelTime
     );
 
-    const showLegend = (
-        bubbleLegend.length > 0
-        || Object.keys(mapLegend).length > 0
-        || showTravelTimeChoropleth
-    );
-
     const rasterLayers = useMemo(
         () => (mapLayerListResponse?.results.filter(v => v.type === 'raster')),
         [mapLayerListResponse],
@@ -484,6 +480,13 @@ function Covid19(props: Props) {
     );
     const [printMode, setPrintMode] = useState(false);
     const [ttInfoVisibility, setTtInfoVisbility] = useState(false);
+
+    const showLegend = (
+        bubbleLegend.length > 0
+        || Object.keys(mapLegend).length > 0
+        || showTravelTimeChoropleth
+        || selectedRasterLayer
+    );
 
     const handleTtInfoVisibilityChange = useCallback(() => {
         setTtInfoVisbility(!ttInfoVisibility);

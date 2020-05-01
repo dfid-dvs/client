@@ -261,6 +261,12 @@ const Dashboard = (props: Props) => {
     );
     const [printMode, setPrintMode] = useState(false);
 
+    const showLegend = (
+        bubbleLegend.length > 0
+        || Object.keys(mapLegend).length > 0
+        || selectedRasterLayer
+    );
+
     return (
         <div className={_cs(
             styles.dashboard,
@@ -334,7 +340,7 @@ const Dashboard = (props: Props) => {
                     optionLabelSelector={layerLabelSelector}
                 />
             </div>
-            {(bubbleLegend.length > 0 || Object.keys(mapLegend).length > 0) && (
+            {showLegend && (
                 <div className={styles.legendContainer}>
                     <ChoroplethLegend
                         className={styles.legend}
