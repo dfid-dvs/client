@@ -10,7 +10,7 @@ import { apiEndPoint } from '#utils/constants';
 import useRequest from './useRequest';
 
 interface IndicatorValue {
-    code: number;
+    code: number | string;
     value: number;
 }
 
@@ -43,7 +43,7 @@ function useMapStateForIndicator(
     let mapState: MapStateItem[] = [];
     if (regionIndicatorListResponse && isDefined(selectedIndicator)) {
         mapState = regionIndicatorListResponse.results.map(d => ({
-            id: d.code,
+            id: +d.code,
             value: d.value,
         }));
     }

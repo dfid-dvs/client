@@ -321,6 +321,8 @@ function Covid19(props: Props) {
 
                 if (indicator) {
                     const indicatorTitle = indicatorLabelSelector(indicator);
+                    console.warn(mapStateForIndicator, clickedRegionProperties?.feature.id);
+
                     const indicatorValue = mapStateForIndicator.find(
                         v => v.id === clickedRegionProperties?.feature.id,
                     )?.value;
