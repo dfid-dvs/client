@@ -22,13 +22,13 @@ function useMapStateForCovidFiveW(
     regionLevel: RegionLevelOption,
     selectedFiveWOption: CovidFiveWOptionKey | undefined,
 ): [boolean, MapStateFiveWData[]] {
-    let regionFiveWGetUrl;
+    let covidSpecificProjectsGetUrl;
     let provinceUrl;
     let districtUrl;
     let municipalityUrl;
 
     if (isDefined(selectedFiveWOption)) {
-        regionFiveWGetUrl = `${apiEndPoint}/covid/covid-fivew/`;
+        covidSpecificProjectsGetUrl = `${apiEndPoint}/covid/covid-specific-program/`;
         municipalityUrl = `${apiEndPoint}/core/municipality/`;
         districtUrl = `${apiEndPoint}/core/district/`;
         provinceUrl = `${apiEndPoint}/core/province/`;
@@ -52,7 +52,7 @@ function useMapStateForCovidFiveW(
     const [
         regionFiveWPending,
         regionFiveWListResponse,
-    ] = useRequest<MultiResponse<CovidFiveW>>(regionFiveWGetUrl);
+    ] = useRequest<MultiResponse<CovidFiveW>>(covidSpecificProjectsGetUrl);
 
     const fiveWMapState: MapStateFiveWData[] = useMemo(
         () => {
@@ -66,18 +66,22 @@ function useMapStateForCovidFiveW(
             }
 
             let exhaustiveFiveWList: CovidFiveW[] = [];
-            const fiveWAllProvince = regionFiveWListResponse.results.filter(v => v.provinceCode === '-1')
+            const fiveWAllProvince = regionFiveWListResponse.results
+                .filter(v => v.provinceCode === -1)
                 .map(fw => (
                     provinceListResponse.results.map(province => ({
                         ...fw,
                         provinceCode: province.code,
-                        districtCode: '-1',
-                        municipalityCode: '-1',
+                        districtCode: -1,
+                        municipalityCode: -1,
                     })))).flat();
 
-            exhaustiveFiveWList = [...fiveWAllProvince, ...regionFiveWListResponse.results.filter(v => v.provinceCode !== '-1')];
+            exhaustiveFiveWList = [
+                ...fiveWAllProvince,
+                ...regionFiveWListResponse.results.filter(v => v.provinceCode !== -1),
+            ];
 
-            const fiveWAllDistrict = exhaustiveFiveWList.filter(v => v.districtCode === '-1')
+            const fiveWAllDistrict = exhaustiveFiveWList.filter(v => v.districtCode === -1)
                 .map((fw) => {
                     const districts = districtListResponse.results.filter((d) => {
                         const fwProvinceId = provinceListResponse
@@ -87,14 +91,17 @@ function useMapStateForCovidFiveW(
                     return districts.map(district => ({
                         ...fw,
                         districtCode: district.code,
-                        municipalityCode: '-1',
+                        municipalityCode: -1,
                     }));
                 }).flat();
 
-            exhaustiveFiveWList = [...fiveWAllDistrict, ...exhaustiveFiveWList.filter(v => v.districtCode !== '-1')];
+            exhaustiveFiveWList = [
+                ...fiveWAllDistrict,
+                ...exhaustiveFiveWList.filter(v => v.districtCode !== -1),
+            ];
 
             const fiveWAllMunicipality = exhaustiveFiveWList
-                .filter(v => v.municipalityCode === '-1')
+                .filter(v => v.municipalityCode === -1)
                 .map((fw) => {
                     const municipalities = municipalityListResponse.results.filter((m) => {
                         const fwDistrictId = districtListResponse
@@ -109,7 +116,7 @@ function useMapStateForCovidFiveW(
 
             exhaustiveFiveWList = [
                 ...fiveWAllMunicipality,
-                ...exhaustiveFiveWList.filter(v => v.municipalityCode !== '-1'),
+                ...exhaustiveFiveWList.filter(v => v.municipalityCode !== -1),
             ];
 
             let regionKey: CovidFiveWRegionKey = 'provinceCode';

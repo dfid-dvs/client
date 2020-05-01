@@ -1,5 +1,5 @@
 import React from 'react';
-import { unique } from '@togglecorp/fujs';
+import { unique, sum } from '@togglecorp/fujs';
 
 import TextOutput from '#components/TextOutput';
 import Numeral from '#components/Numeral';
@@ -9,9 +9,9 @@ import { CovidFiveW } from '../types';
 
 import styles from './styles.css';
 
-const projectKeySelector = (d: CovidFiveW) => d.projectName;
+const projectKeySelector = (d: CovidFiveW) => d.component;
 const projectRendererParams = (_: string, d: CovidFiveW, i: number) => ({
-    value: d.projectName,
+    value: d.component,
     index: i + 1,
 });
 
@@ -48,8 +48,9 @@ const Tooltip = ({
     dfidData,
     indicatorData,
 }: Props) => {
-    const uniqueProjects = unique(dfidData, d => d.projectName);
+    const uniqueProjects = unique(dfidData, d => d.component);
     const uniqueSectors = unique(dfidData, d => d.sector);
+    const totalBudget = uniqueProjects && sum(uniqueProjects.map(d => d.budget));
 
     return (
         <div className={styles.tooltip}>
@@ -64,6 +65,19 @@ const Tooltip = ({
                             value={indicatorData.value}
                             normalize
                         />
+                    )}
+                />
+            )}
+            { totalBudget && (
+                <TextOutput
+                    label="Allocated Budget"
+                    value={(
+                        <div className={styles.budget}>
+                            <Numeral
+                                value={totalBudget}
+                                prefix="£"
+                            />
+                        </div>
                     )}
                 />
             )}

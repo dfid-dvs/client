@@ -66,6 +66,7 @@ interface Props {
     className?: string;
     normalize?: boolean;
     separatorShown?: boolean;
+    prefix?: string;
 }
 function Numeral({
     value,
@@ -73,6 +74,7 @@ function Numeral({
     className: classNameFromProps,
     normalize,
     separatorShown = true,
+    prefix = '',
 }: Props) {
     if (!isDefined(value)) {
         return null;
@@ -88,7 +90,7 @@ function Numeral({
 
     return (
         <div className={className}>
-            {output}
+            {`${prefix}${output}`}
         </div>
     );
 }

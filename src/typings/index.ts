@@ -21,7 +21,7 @@ export interface MapStateItem {
 export interface Province {
     id: number;
     name: string;
-    code: string;
+    code: number;
     boundary: string;
 }
 
@@ -30,7 +30,7 @@ export interface District {
     provinceId: number;
     provinceName: string;
     name: string;
-    code: string;
+    code: number;
     nCode: number;
 }
 
@@ -41,7 +41,7 @@ export interface Municipality {
     districtId: number;
     hlcitCode: string;
     gnTypeNp: string;
-    code: string;
+    code: number;
     population: number;
 }
 
