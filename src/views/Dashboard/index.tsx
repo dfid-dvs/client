@@ -17,6 +17,7 @@ import RasterLegend from '#components/RasterLegend';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
+import useResizeObserver from '#hooks/useResizeObserver';
 
 import {
     generateChoroplethMapPaintAndLegend,
@@ -87,6 +88,8 @@ interface Props {
 const Dashboard = (props: Props) => {
     const { className } = props;
     const { regionLevel } = useContext(NavbarContext);
+    const containerRef = React.useRef<HTMLDivElement>(null);
+    const entry = useResizeObserver(containerRef);
 
     const [
         selectedIndicator,
@@ -260,13 +263,16 @@ const Dashboard = (props: Props) => {
         [rasterLayers, selectedLayer],
     );
     const [printMode, setPrintMode] = useState(false);
+    console.warn('entry width', entry.contentRect.width);
 
     return (
-        <div className={_cs(
-            styles.dashboard,
-            className,
-            printMode && styles.printMode,
-        )}
+        <div
+            className={_cs(
+                styles.dashboard,
+                className,
+                printMode && styles.printMode,
+            )}
+            ref={containerRef}
         >
             <PrintButton
                 className={styles.printModeButton}
