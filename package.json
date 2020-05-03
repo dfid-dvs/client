@@ -156,6 +156,7 @@
         "@togglecorp/react-rest-request": "^2.4.5",
         "abort-controller": "^3.0.0",
         "core-js": "3",
+        "fetch-suspense": "^1.2.2",
         "immer": "^6.0.2",
         "mapbox-gl": "^1.9.0",
         "memoize-one": "^5.0.5",

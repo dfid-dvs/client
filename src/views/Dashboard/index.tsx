@@ -3,6 +3,7 @@ import {
     _cs,
     isDefined,
 } from '@togglecorp/fujs';
+import useFetch from 'fetch-suspense';
 
 import RegionSelector from '#components/RegionSelector';
 import NavbarContext from '#components/NavbarContext';
@@ -17,7 +18,6 @@ import RasterLegend from '#components/RasterLegend';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
-import useResizeObserver from '#hooks/useResizeObserver';
 
 import {
     generateChoroplethMapPaintAndLegend,
@@ -89,7 +89,6 @@ const Dashboard = (props: Props) => {
     const { className } = props;
     const { regionLevel } = useContext(NavbarContext);
     const containerRef = React.useRef<HTMLDivElement>(null);
-    const entry = useResizeObserver(containerRef);
 
     const [
         selectedIndicator,
@@ -106,10 +105,14 @@ const Dashboard = (props: Props) => {
     const [invertMapStyle, setInvertMapStyle] = useState(false);
 
     const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/`;
+    /*
     const [
         indicatorListPending,
         indicatorListResponse,
     ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl);
+    const indicatorList = indicatorListResponse?.results;
+     */
+    const indicatorListResponse = useFetch(indicatorListGetUrl);
     const indicatorList = indicatorListResponse?.results;
 
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
@@ -263,7 +266,6 @@ const Dashboard = (props: Props) => {
         [rasterLayers, selectedLayer],
     );
     const [printMode, setPrintMode] = useState(false);
-    console.warn('entry width', entry.contentRect.width);
 
     return (
         <div
@@ -309,7 +311,7 @@ const Dashboard = (props: Props) => {
                 <SelectInput
                     label="Indicator"
                     className={styles.inputItem}
-                    disabled={indicatorListPending}
+                    // disabled={indicatorListPending}
                     options={indicatorList}
                     onChange={setSelectedIndicator}
                     value={selectedIndicator}

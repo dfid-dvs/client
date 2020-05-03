@@ -4929,6 +4929,13 @@ fb-watchman@^2.0.0:
   dependencies:
     bser "2.1.1"
 
+fetch-suspense@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/fetch-suspense/-/fetch-suspense-1.2.2.tgz#f6a6635060aed82c5ba59d34a9ef906fbff3d16c"
+  integrity sha512-GqfncRoLp8014UA5AQSRRbUNkRLHJBdZFi9L9QABiNabc4vtlEeBruiayTnXFQFB9tRWSb2iflNNtgdBuYTwTA==
+  dependencies:
+    deep-equal "^1.0.1"
+
 figgy-pudding@^3.5.1:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/figgy-pudding/-/figgy-pudding-3.5.2.tgz#b4eee8148abb01dcf1d1ac34367d59e12fa61d6e"
