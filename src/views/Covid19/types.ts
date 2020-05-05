@@ -47,7 +47,7 @@ export interface FiveWTooltipData {
 export interface FiveW {
     id: number;
     name: string;
-    code: number;
+    code: string;
     allocatedBudget: number;
     maleBeneficiary: number;
     femaleBeneficiary: number;
