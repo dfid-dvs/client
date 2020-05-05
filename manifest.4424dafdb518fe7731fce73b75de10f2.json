@@ -1,0 +1,42 @@
+{
+  "icons": [
+    {
+      "src": "/assets/icons/icon_512x512.db9ab547c636f7846018131a01aa4868.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon_384x384.d4b079586a7cb4ac66e5c29f8e751099.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon_256x256.88e32c7d2fd2c6bf4d0c637428c238f4.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon_192x192.bb0c2869b3ed2cf06a22caaff5242f3b.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon_128x128.fc248bbcde16226129e4f3a889055e61.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/icons/icon_96x96.5974833a0ea21d3b3ac6372ebfdbc808.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    }
+  ],
+  "name": "dfid",
+  "short_name": "DFID",
+  "orientation": "portrait",
+  "display": "standalone",
+  "start_url": "/",
+  "description": "DFID Data Visualization System",
+  "background_color": "#ffffff",
+  "scope": "/"
+}

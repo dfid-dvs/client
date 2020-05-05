@@ -1,0 +1,2 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[8],{DYT0:function(s,e,a){"use strict";a.r(e);var n=a("q1tI"),c=a.n(n),i=a("FRrY"),t=a("qALZ"),r=a.n(t);e.default=function(s){var e=s.className;return c.a.createElement("div",{className:Object(i.b)(e,r.a.infographics)},"Infographics")}},qALZ:function(s,e,a){s.exports={infographics:"styles_infographics_252bYcjzg7hPN6-iaYUxVb",message:"styles_message_1ulJcKU9L3JPG6bz9HeEuY"}}}]);
+//# sourceMappingURL=../sourcemaps/js/8.8b728ac5d91be459fbb6.js.map

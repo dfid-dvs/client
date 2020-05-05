@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="Description" content="DFID Data Visualization System">
+
+        <title>
+            DFID
+        </title>
+
+        <style>
+            :root {
+                --font-family-sans-serif: 'Noto Sans', sans-serif;
+                --font-family-monospace: 'Inconsolata', monospace;
+            }
+
+            html, body {
+                margin: 0;
+                padding: 0;
+                font-family: var(--font-family-sans-serif);
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            h1, h2, h3, h4, h5, h6, p {
+                margin: 0;
+            }
+        </style>
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="manifest" href="/manifest.4424dafdb518fe7731fce73b75de10f2.json" /><link rel="shortcut icon" href="/favicon.ico"><link href="/css/2.css" rel="stylesheet"><link rel="preload" href="/js/vendors.f8f34992e04058cb3df9.js" as="script"><link rel="preload" href="/js/main.3667fb7eb83ef4476a02.js" as="script"><link rel="preload" href="/js/runtime.f4115647b9db6f8e0476.js" as="script"><link rel="prefetch" href="/js/vendors.f8f34992e04058cb3df9.js"><link rel="prefetch" href="/js/main.3667fb7eb83ef4476a02.js"><link rel="prefetch" href="/js/runtime.f4115647b9db6f8e0476.js"></head>
+    <body style="background-color: #f5f5f5;">
+        <noscript>
+            DFID needs Javascript.
+        </noscript>
+        <div id="dfid-root">
+        </div>
+
+        <!-- External resources  -->
+        <!--link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,700|Spartan:300,400,700&display=swap" rel="stylesheet"-->
+        <link href="https://fonts.googleapis.com/css?family=Noto+Sans:400,700|Inconsolata:400,700&display=swap" rel="stylesheet">
+
+        <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css" rel="stylesheet" />
+
+        <script>
+            if ('serviceWorker' in navigator) {
+                /*
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker
+                        .register('/service-worker.js')
+                        .then((registration) => {
+                            console.info('SW registered: ', registration);
+                            registration.onupdatefound = () => {
+                                const installingWorker = registration.installing;
+                                installingWorker.onstatechange = () => {
+                                    switch (installingWorker.state) {
+                                        case 'installed':
+                                            if (navigator.serviceWorker.controller) {
+                                                // New update is available
+                                                console.info('SW: New update is available!');
+                                                const shouldUpdate = window.confirm('New update is available. Do you want to update now?');
+                                                if (shouldUpdate) {
+                                                    window.location.reload(true);
+                                                }
+                                            } else {
+                                                // No new update
+                                                console.info('SW: No new updates!');
+                                            }
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                };
+                            };
+                        })
+                        .catch((registrationError) => {
+                            console.error('SW registration failed: ', registrationError);
+                        });
+                });
+                */
+            }
+        </script>
+    <script type="text/javascript" src="/js/vendors.f8f34992e04058cb3df9.js"></script><script type="text/javascript" src="/js/main.3667fb7eb83ef4476a02.js"></script><script type="text/javascript" src="/js/runtime.f4115647b9db6f8e0476.js"></script></body>
+</html>
