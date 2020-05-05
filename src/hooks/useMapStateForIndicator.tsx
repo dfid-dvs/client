@@ -10,7 +10,7 @@ import { apiEndPoint } from '#utils/constants';
 import useRequest from './useRequest';
 
 interface IndicatorValue {
-    code: number | string;
+    code: string;
     value: number;
 }
 

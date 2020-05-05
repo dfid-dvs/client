@@ -127,6 +127,8 @@ export const generateChoroplethMapPaintAndLegend = (
 } => {
     // NOTE: handle diverging series
     // NOTE: handle overflow/underflow
+    const fillOpacityForNoData = 0.4;
+    const fillColorForNoData = '#78909c';
 
     let minValue = minVal;
     if (minVal === maxValue) {
@@ -161,8 +163,8 @@ export const generateChoroplethMapPaintAndLegend = (
         return {
             min: minValue,
             paint: {
-                'fill-color': '#08467d',
-                'fill-opacity': 0.1,
+                'fill-color': fillColorForNoData,
+                'fill-opacity': fillOpacityForNoData,
             },
             legend: {},
         };
@@ -174,16 +176,21 @@ export const generateChoroplethMapPaintAndLegend = (
         .slice(1); // remove first element
 
     const fillColor: mapboxgl.FillPaint['fill-color'] = [
-        'step',
-        ['feature-state', 'value'],
-        ...colors,
+        'case',
+        ['==', ['feature-state', 'value'], null],
+        fillColorForNoData,
+        [
+            'step',
+            ['feature-state', 'value'],
+            ...colors,
+        ],
     ];
 
     const fillOpacity: mapboxgl.FillPaint['fill-opacity'] = [
         'case',
         ['==', ['feature-state', 'value'], null],
-        0.1,
-        1,
+        fillOpacityForNoData,
+        0.7,
     ];
 
     const paint: mapboxgl.FillPaint = {

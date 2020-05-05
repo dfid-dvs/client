@@ -321,7 +321,6 @@ function Covid19(props: Props) {
 
                 if (indicator) {
                     const indicatorTitle = indicatorLabelSelector(indicator);
-                    console.warn(mapStateForIndicator, clickedRegionProperties?.feature.id);
 
                     const indicatorValue = mapStateForIndicator.find(
                         v => v.id === clickedRegionProperties?.feature.id,
@@ -700,6 +699,7 @@ function Covid19(props: Props) {
                         title={choroplethTitle}
                         minValue={dataMinValue}
                         legend={mapLegend}
+                        unit={choroplethUnit}
                     />
                     <BubbleLegend
                         className={styles.legend}
@@ -709,6 +709,7 @@ function Covid19(props: Props) {
                         valueSelector={legendValueSelector}
                         radiusSelector={legendRadiusSelector}
                         legendType={bubbleLegendType}
+                        unit={bubbleUnit}
                     />
                     {selectedRasterLayer && (
                         <RasterLegend

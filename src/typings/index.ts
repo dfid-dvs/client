@@ -41,7 +41,7 @@ export interface Municipality {
     districtId: number;
     hlcitCode: string;
     gnTypeNp: string;
-    code: number;
+    code: string;
     population: number;
 }
 
