@@ -1,0 +1,7 @@
+.header-cell {
+    display: flex;
+
+    .title {
+        padding: 0 var(--spacing-small);
+    }
+}

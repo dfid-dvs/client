@@ -1,6 +1,6 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
-import { GoLinkExternal } from 'react-icons/go';
+import { MdOpenInNew } from 'react-icons/md';
 
 import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
@@ -49,7 +49,7 @@ const ExternalLink = ({
         target="_blank"
         rel="noopener noreferrer"
     >
-        <GoLinkExternal className={styles.icon} />
+        <MdOpenInNew className={styles.icon} />
         <div className={styles.label}>
             { label }
         </div>

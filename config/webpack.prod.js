@@ -138,7 +138,7 @@ module.exports = (env) => {
                                 modules: {
                                     localIdentName: '[name]_[local]_[hash:base64]',
                                 },
-                                localsConvention: 'camelCase',
+                                localsConvention: 'camelCaseOnly',
                                 sourceMap: true,
                             },
                         },

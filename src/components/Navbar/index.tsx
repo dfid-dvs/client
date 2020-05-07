@@ -47,6 +47,14 @@ const Navbar = (props: Props) => {
                     >
                         COVID-19
                     </NavLink>
+                    <NavLink
+                        exact
+                        className={styles.link}
+                        activeClassName={styles.active}
+                        to="/glossary/"
+                    >
+                        Glossary
+                    </NavLink>
                     {/*
                         <NavLink
                         exact

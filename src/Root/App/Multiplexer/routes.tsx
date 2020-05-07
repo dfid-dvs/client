@@ -25,6 +25,12 @@ export type SomeRoute = Route | FallbackRoute;
 
 const routeSettings: SomeRoute[] = [
     {
+        path: '/glossary/',
+        name: 'glossary',
+        title: 'Glossary',
+        load: lazy(() => import('../../../views/Glossary')),
+    },
+    {
         path: '/dashboard/',
         name: 'dashboard',
         title: 'Dashboard',
