@@ -556,7 +556,7 @@ function Covid19(props: Props) {
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />
                 <div className={styles.separator} />
-                <div className={styles.health}>
+                <div>
                     <ToggleButton
                         className={styles.inputItem}
                         label="Show health facilities"

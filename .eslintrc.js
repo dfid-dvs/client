@@ -1,7 +1,7 @@
 module.exports = {
     'extends': [
         'airbnb',
-        'plugin:css-modules/recommended',
+        'plugin:postcss-modules/recommended',
         'plugin:@typescript-eslint/recommended',
     ],
     'env': {
@@ -12,10 +12,13 @@ module.exports = {
         'react',
         'react-hooks',
         'import',
-        'css-modules',
+        'postcss-modules',
         '@typescript-eslint',
     ],
     'settings': {
+        'postcss-modules': {
+            'camelCase': 'camelCaseOnly',
+        },
         'import/resolver': {
             'babel-module': {
                 'root': ['.'],
@@ -78,8 +81,10 @@ module.exports = {
         'import/extensions': ['off', 'never'],
         'import/no-extraneous-dependencies': ['error', {'devDependencies': true }],
 
-        'css-modules/no-unused-class': [1, { 'camelCase': true }],
-        'css-modules/no-undef-class': [1, { 'camelCase': true }],
+        // 'postcss-modules/no-unused-class': [1, { 'camelCase': true }],
+        // 'postcss-modules/no-undef-class': [1, { 'camelCase': true }],
+        'postcss-modules/no-unused-class': 'warn',
+        'postcss-modules/no-undef-class': 'warn',
 
         'prefer-destructuring': 'warn',
         'function-paren-newline': ['warn', 'consistent'],

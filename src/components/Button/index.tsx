@@ -5,22 +5,6 @@ import RawButton, { Props as RawButtonProps } from '../RawButton';
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 
-/*
-eslint css-modules/no-unused-class: [
-    1,
-    {
-        markAsUsed: [
-            'accent',
-            'danger',
-            'default',
-            'primary',
-            'success'
-            'warning',
-        ],
-        camelCase: true
-    }
-]
-*/
 import styles from './styles.css';
 
 export type ButtonVariant = (
