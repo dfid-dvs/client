@@ -76,7 +76,7 @@ jobs:
           path: build
 
       - name: Add CNAME
-        run: echo "dfid-dvs.togglecorp.com" > build/CNAME
+        run: echo "www.dvs-nepal.org" > build/CNAME
       - name: Add 404 for router
         run: cp build/index.html build/404.html
 
