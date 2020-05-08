@@ -16,7 +16,7 @@ import {
 function useMapStateForFiveW(
     regionLevel: RegionLevelOption,
     selectedFiveWOption: FiveWOptionKey | undefined,
-): [boolean, MapStateItem[]] {
+): [boolean, MapStateItem[], FiveW[]] {
     const regionFiveWGetUrl = selectedFiveWOption
         ? `${apiEndPoint}/core/fivew-${regionLevel}/`
         : undefined;
@@ -26,21 +26,25 @@ function useMapStateForFiveW(
         regionFiveWListResponse,
     ] = useRequest<MultiResponse<FiveW>>(regionFiveWGetUrl);
 
+    const filteredRegionFivewW = regionFiveWListResponse?.results.filter(item => item.code !== '-1');
+
     const fiveWMapState: MapStateItem[] = useMemo(
         () => {
-            if (!regionFiveWListResponse || !selectedFiveWOption) {
+            if (!filteredRegionFivewW || !selectedFiveWOption) {
                 return [];
             }
 
-            return regionFiveWListResponse?.results.map(d => ({
+            return filteredRegionFivewW.map(d => ({
                 id: +d.code,
                 value: d[selectedFiveWOption],
             }));
         },
-        [regionFiveWListResponse, selectedFiveWOption],
+        [filteredRegionFivewW, selectedFiveWOption],
     );
 
-    return [regionFiveWPending, fiveWMapState];
+    const fiveW: FiveW[] = filteredRegionFivewW || [];
+
+    return [regionFiveWPending, fiveWMapState, fiveW];
 }
 
 export default useMapStateForFiveW;

@@ -107,6 +107,7 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
                             sorter,
                             headerCellRenderer: Renderer,
                             headerCellRendererClassName,
+                            cellAsHeader,
                             headerCellRendererParams,
                         } = column;
 
@@ -124,7 +125,11 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
                             <th
                                 key={id}
                                 scope="col"
-                                className={_cs(styles.headerCell, headerCellClassName)}
+                                className={_cs(
+                                    styles.headerCell,
+                                    cellAsHeader && styles.stickLeft,
+                                    headerCellClassName,
+                                )}
                             >
                                 {children}
                             </th>

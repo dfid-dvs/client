@@ -30,12 +30,20 @@ function HeaderCell(props: BaseHeader & { onSortChange?: (value: Sort | undefine
 
     const handleSortClick = useCallback(
         () => {
-            let newSortDirection = SortDirection.dsc;
-            if (!sortDirection || sortDirection === SortDirection.dsc) {
-                newSortDirection = SortDirection.asc;
+            if (!onSortChange) {
+                return;
             }
-            if (onSortChange) {
+            let newSortDirection: SortDirection | undefined;
+            if (!sortDirection) {
+                newSortDirection = SortDirection.asc;
+            } else if (sortDirection === SortDirection.asc) {
+                newSortDirection = SortDirection.dsc;
+            }
+
+            if (newSortDirection) {
                 onSortChange({ name, direction: newSortDirection });
+            } else {
+                onSortChange(undefined);
             }
         },
         [name, onSortChange, sortDirection],

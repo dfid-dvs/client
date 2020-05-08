@@ -1,6 +1,6 @@
 export interface FiveW {
     id: number;
-    name: string | number;
+    name: string;
     code: string;
     allocatedBudget: number;
     maleBeneficiary: number;

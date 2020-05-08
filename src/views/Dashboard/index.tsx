@@ -34,6 +34,7 @@ import {
     apiEndPoint,
 } from '#utils/constants';
 
+import Stats from './Stats';
 import useMapStateForFiveW from './useMapStateForFiveW';
 
 import {
@@ -123,6 +124,7 @@ const Dashboard = (props: Props) => {
     const [
         fiveWMapStatePending,
         fiveWMapState,
+        fivewW,
     ] = useMapStateForFiveW(regionLevel, selectedFiveWOption);
 
     // const mapStatePending = indicatorMapStatePending || fiveWMapStatePending;
@@ -293,6 +295,10 @@ const Dashboard = (props: Props) => {
                 bubbleMapPaint={bubblePaint}
                 rasterLayer={selectedRasterLayer}
                 printMode={printMode}
+            />
+            <Stats
+                className={styles.stats}
+                projects={fivewW}
             />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />
