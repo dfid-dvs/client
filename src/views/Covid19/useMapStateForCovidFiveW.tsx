@@ -22,13 +22,13 @@ function useMapStateForCovidFiveW(
     regionLevel: RegionLevelOption,
     selectedFiveWOption: CovidFiveWOptionKey | undefined,
 ): [boolean, MapStateFiveWData[]] {
-    let covidSpecificProjectsGetUrl;
+    let covidSpecificProgramGetUrl;
     let provinceUrl;
     let districtUrl;
     let municipalityUrl;
 
     if (isDefined(selectedFiveWOption)) {
-        covidSpecificProjectsGetUrl = `${apiEndPoint}/covid/covid-specific-program/`;
+        covidSpecificProgramGetUrl = `${apiEndPoint}/covid/covid-specific-program/`;
         municipalityUrl = `${apiEndPoint}/core/municipality/`;
         districtUrl = `${apiEndPoint}/core/district/`;
         provinceUrl = `${apiEndPoint}/core/province/`;
@@ -52,7 +52,7 @@ function useMapStateForCovidFiveW(
     const [
         regionFiveWPending,
         regionFiveWListResponse,
-    ] = useRequest<MultiResponse<CovidFiveW>>(covidSpecificProjectsGetUrl);
+    ] = useRequest<MultiResponse<CovidFiveW>>(covidSpecificProgramGetUrl);
 
     const fiveWMapState: MapStateFiveWData[] = useMemo(
         () => {

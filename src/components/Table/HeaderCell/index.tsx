@@ -23,6 +23,7 @@ function HeaderCell(props: BaseHeader & { onSortChange?: (value: Sort | undefine
         title,
         name,
 
+        defaultSortDirection,
         sortDirection,
         sortable,
         onSortChange,
@@ -35,9 +36,11 @@ function HeaderCell(props: BaseHeader & { onSortChange?: (value: Sort | undefine
             }
             let newSortDirection: SortDirection | undefined;
             if (!sortDirection) {
-                newSortDirection = SortDirection.asc;
+                newSortDirection = defaultSortDirection;
             } else if (sortDirection === SortDirection.asc) {
                 newSortDirection = SortDirection.dsc;
+            } else if (sortDirection === SortDirection.dsc) {
+                newSortDirection = SortDirection.asc;
             }
 
             if (newSortDirection) {

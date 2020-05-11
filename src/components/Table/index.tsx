@@ -9,6 +9,7 @@ interface Column<D, K, C, H> {
     id: string;
     title?: string;
     sorter?: (a: D, b: D) => number;
+    defaultSortDirection?: SortDirection;
 
     headerCellRenderer: React.ComponentType<H>;
     headerCellRendererParams: Omit<H, keyof BaseHeader>;
@@ -105,6 +106,7 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
                             id,
                             title,
                             sorter,
+                            defaultSortDirection,
                             headerCellRenderer: Renderer,
                             headerCellRendererClassName,
                             cellAsHeader,
@@ -117,6 +119,7 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
                                 name={id}
                                 title={title}
                                 sortable={!!sorter}
+                                defaultSortDirection={defaultSortDirection}
                                 className={headerCellRendererClassName}
                                 sortDirection={sortColumn === id ? sortDirection : undefined}
                             />

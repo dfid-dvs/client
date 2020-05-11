@@ -10,6 +10,7 @@ export interface BaseHeader {
     sortable?: boolean;
 
     sortDirection?: SortDirection;
+    defaultSortDirection?: SortDirection;
 }
 
 export interface BaseCell {

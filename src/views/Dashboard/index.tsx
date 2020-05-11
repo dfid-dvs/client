@@ -298,7 +298,7 @@ const Dashboard = (props: Props) => {
             />
             <Stats
                 className={styles.stats}
-                projects={fivewW}
+                fiveW={fivewW}
             />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />

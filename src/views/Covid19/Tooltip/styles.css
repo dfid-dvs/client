@@ -17,18 +17,9 @@
     max-height: 300px;
     overflow-y: auto;
 
-    .budget {
-        display: flex;
-    }
-
     .content {
         display: flex;
         flex-direction: column;
-
-        .projects {
-            display: flex;
-            flex-direction: column;
-        }
 
         .sectors {
             display: flex;

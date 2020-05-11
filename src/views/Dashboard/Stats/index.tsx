@@ -13,11 +13,11 @@ import styles from './styles.css';
 
 interface Props {
     className: string;
-    projects: FiveW[];
+    fiveW: FiveW[];
 }
 
 function Stats(props: Props) {
-    const { className, projects } = props;
+    const { className, fiveW } = props;
 
     const [sorting, setSorting] = useState<{
         name: string;
@@ -67,6 +67,7 @@ function Stats(props: Props) {
                     foo.allocatedBudget,
                     bar.allocatedBudget,
                 ),
+                defaultSortDirection: SortDirection.dsc,
             },
             {
                 id: 'maleBeneficiary',
@@ -87,6 +88,7 @@ function Stats(props: Props) {
                     foo.maleBeneficiary,
                     bar.maleBeneficiary,
                 ),
+                defaultSortDirection: SortDirection.dsc,
             },
             {
                 id: 'femaleBeneficiary',
@@ -107,6 +109,7 @@ function Stats(props: Props) {
                     foo.femaleBeneficiary,
                     bar.femaleBeneficiary,
                 ),
+                defaultSortDirection: SortDirection.dsc,
             },
             {
                 id: 'totalBeneficiary',
@@ -127,6 +130,7 @@ function Stats(props: Props) {
                     foo.totalBeneficiary,
                     bar.totalBeneficiary,
                 ),
+                defaultSortDirection: SortDirection.dsc,
             },
         ]),
         [],
@@ -134,14 +138,15 @@ function Stats(props: Props) {
 
     return (
         <div className={_cs(className, styles.stats)}>
+            <h3>Region-wise data</h3>
             <Table
-                caption="Region-wise data"
-                data={projects}
+                data={fiveW}
                 keySelector={keySelector}
                 columns={columns}
                 sortDirection={sorting?.direction}
                 sortColumn={sorting?.name}
             />
+            <h3>Program-wise data</h3>
         </div>
     );
 }
