@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { _cs, unique } from '@togglecorp/fujs';
+import { _cs, unique, intersection, isDefined } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -10,6 +10,10 @@ import DropdownMenu from '#components/DropdownMenu';
 import TreeInput from '#components/TreeInput';
 
 import styles from './styles.css';
+
+function commonCount<T>(foo: T[] | undefined, bar: T[] | undefined) {
+    return intersection(new Set(foo), new Set(bar)).size;
+}
 
 // TODO: move this to utils
 // NOTE: join two array together
@@ -149,7 +153,7 @@ function ProgramSelector(props: Props) {
         () => (
             subSectorListResponse?.results.map(
                 ({ id, sectorId, name }) => ({
-                    key: `subsector-${sectorId}-${id}`,
+                    key: `subsector-${id}`,
                     parentKey: `sector-${sectorId}`,
                     parentId: sectorId,
                     name,
@@ -181,7 +185,7 @@ function ProgramSelector(props: Props) {
         () => (
             subMarkerListResponse?.results
                 .map(({ id, markerCategoryId, value }) => ({
-                    key: `submarker-${markerCategoryId}-${id}`,
+                    key: `submarker-${id}`,
                     parentKey: `marker-${markerCategoryId}`,
                     parentId: markerCategoryId,
                     name: value,
@@ -201,73 +205,92 @@ function ProgramSelector(props: Props) {
                 return undefined;
             }
             const { results: programs } = programListResponse;
-            let filtered: Program[] = [];
-
-            if (!selectedMarker
-                && !selectedSector
+            if (
+                (!selectedMarker || selectedMarker.length <= 0)
+                && (!selectedSector || selectedSector.length <= 0)
             ) {
                 return programs;
             }
 
-            if (selectedMarker?.length === 0 && selectedSector?.length === 0) {
-                return programs;
-            }
+            /*
+            const selectedSectors = selectedSector
+                ?.map((item) => {
+                    const result = item.match(/^sector-(\d+)$/);
+                    if (!result) {
+                        return undefined;
+                    }
+                    return +result[1];
+                })
+                .filter(isDefined);
 
-            if (selectedMarker) {
-                const selectedMarkers = markerOptions
-                    ?.filter(v => selectedMarker.some(s => s === v.key))
-                    .map(v => v.id);
+            const selectedSubSectors = selectedSector
+                ?.map((item) => {
+                    const result = item.match(/^subsector-(\d+)-(\d+)$/);
+                    if (!result) {
+                        return undefined;
+                    }
+                    if (selectedSectors?.includes(+result[1])) {
+                        return undefined;
+                    }
+                    return +result[2];
+                })
+                .filter(isDefined);
+            */
 
-                const selectedSubMarkers = subMarkerOptions
-                    ?.filter(v => selectedMarker.some(s => s === v.key))
-                    .map(v => v.id);
+            const selectedSectors = selectedSector
+                ?.filter(item => item.startsWith('sector-'))
+                .map(item => +item.substring('sector-'.length));
 
-                const programsByMarkers = programs
-                    .filter(v => selectedMarkers?.some(marker => v.markerValue.includes(marker)));
+            const selectedSubSectors = selectedSector
+                ?.filter(item => item.startsWith('subsector-'))
+                .map(item => +item.substring('subsector-'.length));
 
-                const programsBySubMarkers = programs
-                    .filter(v => selectedSubMarkers?.some(
-                        subMarker => v.markerCategory.includes(subMarker),
-                    ));
+            const selectedMarkers = selectedMarker
+                ?.filter(item => item.startsWith('marker-'))
+                .map(item => +item.substring('marker-'.length));
 
-                filtered = [...programsByMarkers, ...programsBySubMarkers];
-            }
-            if (selectedSector) {
-                const selectedSectors = sectorOptions
-                    ?.filter(v => selectedSector.some(s => s === v.key))
-                    .map(v => v.id);
+            const selectedSubMarkers = selectedMarker
+                ?.filter(item => item.startsWith('submarker-'))
+                .map(item => +item.substring('submarker-'.length));
 
-                const selectedSubSectors = subSectorOptions
-                    ?.filter(v => selectedSector.some(s => s === v.key))
-                    .map(v => v.id);
-
-                const programsBySectors = programs
-                    .filter(v => selectedSectors?.some(sector => v.sector.includes(sector)));
-
-                const programsBySubSector = programs
-                    .filter(v => selectedSubSectors?.some(
-                        subSector => v.subSector.includes(subSector),
-                    ));
-
-                filtered = [...programsBySectors, ...programsBySubSector];
-            }
-            return unique(filtered, program => program.id);
+            const filtered = programs.filter((program) => {
+                const isSelectedSectorsGood = (
+                    !selectedSector || commonCount(selectedSectors, program.sector) > 0
+                );
+                const isSelectedSubSectorsGood = (
+                    !selectedSector || commonCount(selectedSubSectors, program.subSector) > 0
+                );
+                const isSelectedMarkersGood = (
+                    !selectedMarker || commonCount(selectedMarkers, program.markerCategory) > 0
+                );
+                const isSelectedSubMarkersGood = (
+                    !selectedMarker || commonCount(selectedSubMarkers, program.markerValue) > 0
+                );
+                /*
+                console.warn(
+                    selectedMarker, program.markerCategory, selectedSubMarkers, program.markerValue,
+                );
+                */
+                return (
+                    (isSelectedSectorsGood || isSelectedSubSectorsGood)
+                    && (isSelectedMarkersGood || isSelectedSubMarkersGood)
+                );
+            });
+            return filtered;
         },
         [
             selectedMarker,
             selectedSector,
-            markerOptions,
-            sectorOptions,
-            subMarkerOptions,
-            subSectorOptions,
             programListResponse,
         ],
     );
 
+    // TODO: Only selected programs belonging to filtered programs should be valid
+
     return (
         <div className={_cs(className, styles.programSelector)}>
             <SelectInput
-                placeholder="Select a programme"
+                placeholder={`Select from ${filteredPrograms?.length || 0} programs`}
                 className={styles.indicatorSelectInput}
                 disabled={programListPending}
                 options={filteredPrograms}
@@ -276,7 +299,10 @@ function ProgramSelector(props: Props) {
                 optionLabelSelector={programLabelSelector}
                 optionKeySelector={programKeySelector}
             />
-            <DropdownMenu label="Sectors">
+            <DropdownMenu
+                label={`Sectors ${selectedSector && selectedSector.length > 0 ? '*' : ''}`}
+                className={styles.sectorInput}
+            >
                 <TreeInput
                     className={styles.sectorTree}
                     // label="Sector"
@@ -289,7 +315,10 @@ function ProgramSelector(props: Props) {
                     defaultCollapseLevel={0}
                 />
             </DropdownMenu>
-            <DropdownMenu label="Markers">
+            <DropdownMenu
+                label={`Markers ${selectedMarker && selectedMarker.length > 0 ? '*' : ''}`}
+                className={styles.markerInput}
+            >
                 <TreeInput
                     className={styles.markerTree}
                     // label="Marker"

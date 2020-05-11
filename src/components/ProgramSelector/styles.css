@@ -1,3 +1,11 @@
 .program-selector {
     display: flex;
+
+    .indicator-select-input {
+        padding: var(--spacing-small) var(--spacing-medium);
+        width: 400px;
+    }
+    .sector-input, .marker-input {
+        padding: var(--spacing-small) var(--spacing-medium);
+    }
 }

@@ -76,11 +76,6 @@ const Navbar = (props: Props) => {
                 </div>
                 <div className={styles.filters}>
                     {!isCovidPage && (
-                        'This page is still a work in progress.'
-                    )}
-                </div>
-                <div className={styles.filters}>
-                    {!isCovidPage && (
                         <ProgramSelector
                             className={styles.programSelector}
                         />
