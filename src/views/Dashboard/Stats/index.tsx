@@ -244,7 +244,7 @@ function Stats(props: Props) {
     const [
         programsPending,
         programListResponse,
-    ] = useRequest<MultiResponse<Program>>(`${apiEndPoint}/core/program/`);
+    ] = useRequest<MultiResponse<Program>>(`${apiEndPoint}/core/program/`, 'program-list');
 
     return (
         <div className={_cs(className, styles.stats)}>
