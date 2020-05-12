@@ -1,6 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { compareString, compareNumber, _cs } from '@togglecorp/fujs';
 
+import { apiEndPoint } from '#utils/constants';
+import useRequest from '#hooks/useRequest';
+import { MultiResponse } from '#types';
+
 import Table from '#components/Table';
 import HeaderCell from '#components/Table/HeaderCell';
 import Cell from '#components/Table/Cell';
@@ -11,10 +15,27 @@ import { FiveW } from '../types';
 
 import styles from './styles.css';
 
+interface Program {
+    id: number;
+    name: string;
+    description?: string;
+    sector: number[];
+    subsector: number[];
+    markerCategory: number[];
+    markerValue: number;
+    partner: unknown[];
+    code: string;
+    budget?: number;
+}
+
 interface Props {
     className: string;
     fiveW: FiveW[];
 }
+
+const keySelector = (data: FiveW) => data.id;
+
+const programKeySelector = (data: Program) => data.id;
 
 function Stats(props: Props) {
     const { className, fiveW } = props;
@@ -23,8 +44,6 @@ function Stats(props: Props) {
         name: string;
         direction: SortDirection;
     } | undefined>();
-
-    const keySelector = (data: FiveW) => data.id;
 
     const columns = useMemo(
         () => ([
@@ -136,6 +155,97 @@ function Stats(props: Props) {
         [],
     );
 
+    const programColumns = useMemo(
+        () => ([
+            {
+                id: 'code',
+                title: 'Code',
+
+                headerCellRenderer: HeaderCell,
+                headerCellRendererParams: {
+                    onSortChange: setSorting,
+                },
+
+                cellRenderer: Cell,
+                cellRendererParams: (key: number, datum: Program) => ({
+                    value: datum.code,
+                }),
+
+                sorter: (foo: Program, bar: Program) => compareString(
+                    foo.code,
+                    bar.code,
+                ),
+            },
+            {
+                id: 'name',
+                title: 'Name',
+
+                headerCellRenderer: HeaderCell,
+                headerCellRendererParams: {
+                    onSortChange: setSorting,
+                },
+
+                cellAsHeader: true,
+                cellRenderer: Cell,
+                cellRendererParams: (key: number, datum: Program) => ({
+                    value: datum.name,
+                }),
+
+                sorter: (foo: Program, bar: Program) => compareString(
+                    foo.name,
+                    bar.name,
+                ),
+            },
+            {
+                id: 'budget',
+                title: 'Allocated Budget',
+
+                headerCellRenderer: HeaderCell,
+                headerCellRendererParams: {
+                    onSortChange: setSorting,
+                },
+
+                cellRenderer: Numeral,
+                cellRendererParams: (key: number, datum: Program) => ({
+                    value: datum.budget,
+                    normalize: true,
+                }),
+
+                sorter: (foo: Program, bar: Program) => compareNumber(
+                    foo.budget,
+                    bar.budget,
+                ),
+                defaultSortDirection: SortDirection.dsc,
+            },
+            {
+                id: 'description',
+                title: 'Description',
+
+                headerCellRenderer: HeaderCell,
+                headerCellRendererParams: {
+                    onSortChange: setSorting,
+                },
+
+                cellRenderer: Cell,
+                cellRendererParams: (key: number, datum: Program) => ({
+                    value: datum.description,
+                }),
+
+                sorter: (foo: Program, bar: Program) => compareString(
+                    foo.description,
+                    bar.description,
+                ),
+            },
+        ]),
+        [],
+    );
+
+
+    const [
+        programsPending,
+        programListResponse,
+    ] = useRequest<MultiResponse<Program>>(`${apiEndPoint}/core/program/`);
+
     return (
         <div className={_cs(className, styles.stats)}>
             <h3>Region-wise data</h3>
@@ -147,6 +257,13 @@ function Stats(props: Props) {
                 sortColumn={sorting?.name}
             />
             <h3>Program-wise data</h3>
+            <Table
+                data={programListResponse?.results}
+                keySelector={programKeySelector}
+                columns={programColumns}
+                // sortDirection={sorting?.direction}
+                // sortColumn={sorting?.name}
+            />
         </div>
     );
 }
