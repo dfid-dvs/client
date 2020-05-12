@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { sum } from '@togglecorp/fujs';
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine,
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from 'recharts';
 
 import MapSource from '#remap/MapSource';
@@ -75,9 +75,11 @@ type SelectedTravelTimeRegion = GeoJSON.Feature<GeoJSON.Point, Region>;
 function isCatchmentRegion(region: Region): region is CatchmentRegion {
     return !!(region as CatchmentRegion).name;
 }
+/*
 function isUncoveredRegion(region: Region): region is UncoveredRegion {
     return !!(region as UncoveredRegion).GAPA_NAPA;
 }
+*/
 
 function getTotalMalePopulation(region: TravelTimeRegion) {
     const result = sum([

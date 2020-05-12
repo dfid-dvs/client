@@ -1,5 +1,5 @@
 import React from 'react';
-import { unique, sum } from '@togglecorp/fujs';
+import { unique } from '@togglecorp/fujs';
 
 import TextOutput from '#components/TextOutput';
 import Numeral from '#components/Numeral';

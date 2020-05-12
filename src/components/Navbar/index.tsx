@@ -5,7 +5,7 @@ import {
 } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
 
-// import ProgramSelector from '#components/ProgramSelector';
+import ProgramSelector from '#components/ProgramSelector';
 
 import dfidLogo from '#resources/DfID-logo.svg';
 import styles from './styles.css';
@@ -18,7 +18,7 @@ const Navbar = (props: Props) => {
     const { className } = props;
 
     const location = useLocation();
-    const isCovidPage = location.pathname === '/covid19/';
+    const isDashboardPage = location.pathname === '/dashboard/';
 
     return (
         <nav className={_cs(className, styles.navbar)}>
@@ -74,20 +74,13 @@ const Navbar = (props: Props) => {
                         </NavLink>
                       */}
                 </div>
-                <div className={styles.filters}>
-                    {!isCovidPage && (
-                        'This page is still a work in progress.'
-                    )}
-                </div>
-                {/*
-                <div className={styles.filters}>
-                    {!isCovidPage && (
+                {isDashboardPage && (
+                    <div className={styles.filters}>
                         <ProgramSelector
                             className={styles.programSelector}
                         />
-                    )}
-                </div>
-                */}
+                    </div>
+                )}
             </div>
         </nav>
     );

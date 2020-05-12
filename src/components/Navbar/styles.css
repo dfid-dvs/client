@@ -47,8 +47,7 @@
 
         .filters {
             display: flex;
-            align-items: center;
-            flex-direction: column;
+            padding: var(--spacing-small) calc(var(--spacing-large) - var(--spacing-small));
         }
     }
 }

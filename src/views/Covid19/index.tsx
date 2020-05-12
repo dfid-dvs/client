@@ -238,7 +238,7 @@ function Covid19(props: Props) {
                 return undefined;
             }
             const options = [
-                ...indicatorListResponse?.results,
+                ...indicatorListResponse.results,
             ];
             options.push({ id: -1, fullTitle: 'Age group', abstract: undefined, category: 'Demographics' });
             return options;

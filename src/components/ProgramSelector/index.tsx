@@ -1,15 +1,19 @@
 import React, { useMemo } from 'react';
-import { _cs } from '@togglecorp/fujs';
+import { _cs, intersection } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
 import { MultiResponse } from '#types';
 
-import SelectInput from '#components/SelectInput';
+import MultiSelectInput from '#components/MultiSelectInput';
 import DropdownMenu from '#components/DropdownMenu';
 import TreeInput from '#components/TreeInput';
 
 import styles from './styles.css';
+
+function commonCount<T>(foo: T[] | undefined, bar: T[] | undefined) {
+    return intersection(new Set(foo), new Set(bar)).size;
+}
 
 // TODO: move this to utils
 // NOTE: join two array together
@@ -89,8 +93,8 @@ function ProgramSelector(props: Props) {
     // FIXME: change this to selected programmes
     const [
         selectedProgram,
-        setSelectedProgram,
-    ] = React.useState<number | undefined>(undefined);
+        setSelectedPrograms,
+    ] = React.useState<number[] | undefined>(undefined);
 
     const [
         selectedSector,
@@ -149,7 +153,7 @@ function ProgramSelector(props: Props) {
         () => (
             subSectorListResponse?.results.map(
                 ({ id, sectorId, name }) => ({
-                    key: `subsector-${sectorId}-${id}`,
+                    key: `subsector-${id}`,
                     parentKey: `sector-${sectorId}`,
                     parentId: sectorId,
                     name,
@@ -181,7 +185,7 @@ function ProgramSelector(props: Props) {
         () => (
             subMarkerListResponse?.results
                 .map(({ id, markerCategoryId, value }) => ({
-                    key: `submarker-${markerCategoryId}-${id}`,
+                    key: `submarker-${id}`,
                     parentKey: `marker-${markerCategoryId}`,
                     parentId: markerCategoryId,
                     name: value,
@@ -195,19 +199,110 @@ function ProgramSelector(props: Props) {
         [markerOptions, subMarkerOptions],
     );
 
+    const filteredPrograms = useMemo(
+        () => {
+            if (!programListResponse) {
+                return undefined;
+            }
+            const { results: programs } = programListResponse;
+            if (
+                (!selectedMarker || selectedMarker.length <= 0)
+                && (!selectedSector || selectedSector.length <= 0)
+            ) {
+                return programs;
+            }
+
+            /*
+            const selectedSectors = selectedSector
+                ?.map((item) => {
+                    const result = item.match(/^sector-(\d+)$/);
+                    if (!result) {
+                        return undefined;
+                    }
+                    return +result[1];
+                })
+                .filter(isDefined);
+
+            const selectedSubSectors = selectedSector
+                ?.map((item) => {
+                    const result = item.match(/^subsector-(\d+)-(\d+)$/);
+                    if (!result) {
+                        return undefined;
+                    }
+                    if (selectedSectors?.includes(+result[1])) {
+                        return undefined;
+                    }
+                    return +result[2];
+                })
+                .filter(isDefined);
+            */
+
+            const selectedSectors = selectedSector
+                ?.filter(item => item.startsWith('sector-'))
+                .map(item => +item.substring('sector-'.length));
+
+            const selectedSubSectors = selectedSector
+                ?.filter(item => item.startsWith('subsector-'))
+                .map(item => +item.substring('subsector-'.length));
+
+            const selectedMarkers = selectedMarker
+                ?.filter(item => item.startsWith('marker-'))
+                .map(item => +item.substring('marker-'.length));
+
+            const selectedSubMarkers = selectedMarker
+                ?.filter(item => item.startsWith('submarker-'))
+                .map(item => +item.substring('submarker-'.length));
+
+            const filtered = programs.filter((program) => {
+                const isSelectedSectorsGood = (
+                    !selectedSector || commonCount(selectedSectors, program.sector) > 0
+                );
+                const isSelectedSubSectorsGood = (
+                    !selectedSector || commonCount(selectedSubSectors, program.subSector) > 0
+                );
+                const isSelectedMarkersGood = (
+                    !selectedMarker || commonCount(selectedMarkers, program.markerCategory) > 0
+                );
+                const isSelectedSubMarkersGood = (
+                    !selectedMarker || commonCount(selectedSubMarkers, program.markerValue) > 0
+                );
+                /*
+                console.warn(
+                    selectedMarker, program.markerCategory, selectedSubMarkers, program.markerValue,
+                );
+                */
+                return (
+                    (isSelectedSectorsGood || isSelectedSubSectorsGood)
+                    && (isSelectedMarkersGood || isSelectedSubMarkersGood)
+                );
+            });
+            return filtered;
+        },
+        [
+            selectedMarker,
+            selectedSector,
+            programListResponse,
+        ],
+    );
+
+    // TODO: Only selected programs belonging to filtered programs should be valid
+
     return (
         <div className={_cs(className, styles.programSelector)}>
-            <SelectInput
-                placeholder="Select a programme"
+            <MultiSelectInput
+                placeholder={`Select from ${filteredPrograms?.length || 0} programs`}
                 className={styles.indicatorSelectInput}
                 disabled={programListPending}
-                options={programListResponse?.results}
-                onChange={setSelectedProgram}
+                options={filteredPrograms}
+                onChange={setSelectedPrograms}
                 value={selectedProgram}
                 optionLabelSelector={programLabelSelector}
                 optionKeySelector={programKeySelector}
             />
-            <DropdownMenu label="Sectors">
+            <DropdownMenu
+                label={`Sectors ${selectedSector && selectedSector.length > 0 ? '*' : ''}`}
+                className={styles.sectorInput}
+            >
                 <TreeInput
                     className={styles.sectorTree}
                     // label="Sector"
@@ -220,7 +315,10 @@ function ProgramSelector(props: Props) {
                     defaultCollapseLevel={0}
                 />
             </DropdownMenu>
-            <DropdownMenu label="Markers">
+            <DropdownMenu
+                label={`Markers ${selectedMarker && selectedMarker.length > 0 ? '*' : ''}`}
+                className={styles.markerInput}
+            >
                 <TreeInput
                     className={styles.markerTree}
                     // label="Marker"
