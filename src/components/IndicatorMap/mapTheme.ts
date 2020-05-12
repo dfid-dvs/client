@@ -53,7 +53,7 @@ const municipalityLabelLayout: mapboxgl.SymbolLayout = {
 
 const provinceOutlinePaint: mapboxgl.LinePaint = {
     'line-color': '#000000',
-    'line-width': 1,
+    'line-width': 1.4,
     'line-opacity': [
         'case',
         ['==', ['feature-state', 'hovered'], true],
@@ -64,7 +64,7 @@ const provinceOutlinePaint: mapboxgl.LinePaint = {
 
 const districtOutlinePaint: mapboxgl.LinePaint = {
     'line-color': '#000000',
-    'line-width': 1,
+    'line-width': 1.2,
     'line-opacity': [
         'case',
         ['==', ['feature-state', 'hovered'], true],

@@ -38,6 +38,7 @@ import {
 import {
     generateChoroplethMapPaintAndLegend,
     generateBubbleMapPaintAndLegend,
+    filterMapState,
 } from '#utils/common';
 import {
     colorDomain,
@@ -355,15 +356,22 @@ function Covid19(props: Props) {
         paint: mapPaint,
         legend: mapLegend,
         min: dataMinValue,
+        minExceeds: dataMinExceeds,
+        maxExceeds: dataMaxExceeds,
     } = useMemo(
         () => {
-            const valueList = choroplethMapState.map(d => d.value);
-            const min = Math.min(...valueList);
-            const max = Math.max(...valueList);
-
-            return generateChoroplethMapPaintAndLegend(colorDomain, min, max, choroplethInteger);
+            const { min, max, minExceeds, maxExceeds } = filterMapState(
+                choroplethMapState,
+                regionLevel,
+                true,
+            );
+            return {
+                ...generateChoroplethMapPaintAndLegend(colorDomain, min, max, choroplethInteger),
+                minExceeds,
+                maxExceeds,
+            };
         },
-        [choroplethMapState, choroplethInteger],
+        [choroplethMapState, choroplethInteger, regionLevel],
     );
 
     const {
@@ -708,6 +716,8 @@ function Covid19(props: Props) {
                         minValue={dataMinValue}
                         legend={mapLegend}
                         unit={choroplethUnit}
+                        minExceeds={dataMinExceeds}
+                        maxExceeds={dataMaxExceeds}
                     />
                     <BubbleLegend
                         className={styles.legend}
