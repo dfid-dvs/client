@@ -218,11 +218,18 @@ function Covid19(props: Props) {
         feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
         lngLat: mapboxgl.LngLatLike;
     }
-    // FIXME: clear this on region change
     const [
         clickedRegionProperties,
         setClickedRegionProperties,
     ] = React.useState<ClickedRegion | undefined>();
+
+    // NOTE: clear tooltip on region change
+    useEffect(
+        () => {
+            setClickedRegionProperties(undefined);
+        },
+        [regionLevel],
+    );
 
     const indicatorOptions = useMemo(
         () => {
