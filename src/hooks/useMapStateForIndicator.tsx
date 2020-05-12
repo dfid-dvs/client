@@ -38,7 +38,7 @@ function useMapStateForIndicator(
     const [
         regionIndicatorListPending,
         regionIndicatorListResponse,
-    ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl);
+    ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl, 'indicator');
 
     let mapState: MapStateItem[] = [];
     if (regionIndicatorListResponse && isDefined(selectedIndicator)) {

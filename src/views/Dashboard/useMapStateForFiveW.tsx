@@ -24,7 +24,7 @@ function useMapStateForFiveW(
     const [
         regionFiveWPending,
         regionFiveWListResponse,
-    ] = useRequest<MultiResponse<FiveW>>(regionFiveWGetUrl);
+    ] = useRequest<MultiResponse<FiveW>>(regionFiveWGetUrl, 'fivew');
 
     const filteredRegionFivewW = regionFiveWListResponse?.results.filter(item => item.code !== '-1');
 

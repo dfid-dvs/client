@@ -107,14 +107,14 @@ const Dashboard = (props: Props) => {
     const [
         indicatorListPending,
         indicatorListResponse,
-    ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl);
+    ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl, 'indicator-list');
     const indicatorList = indicatorListResponse?.results;
 
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
     const [
         mapLayerListPending,
         mapLayerListResponse,
-    ] = useRequest<MultiResponse<Layer>>(mapLayerGetUrl);
+    ] = useRequest<MultiResponse<Layer>>(mapLayerGetUrl, 'map-layer-list');
 
     const [
         indicatorMapStatePending,

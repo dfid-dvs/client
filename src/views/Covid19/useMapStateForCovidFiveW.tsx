@@ -37,22 +37,22 @@ function useMapStateForCovidFiveW(
     const [
         provincePending,
         provinceListResponse,
-    ] = useRequest<MultiResponse<Province>>(provinceUrl);
+    ] = useRequest<MultiResponse<Province>>(provinceUrl, 'province');
 
     const [
         districtPending,
         districtListResponse,
-    ] = useRequest<MultiResponse<District>>(districtUrl);
+    ] = useRequest<MultiResponse<District>>(districtUrl, 'district');
 
     const [
         municipalityPending,
         municipalityListResponse,
-    ] = useRequest<MultiResponse<Municipality>>(municipalityUrl);
+    ] = useRequest<MultiResponse<Municipality>>(municipalityUrl, 'municipality');
 
     const [
         regionFiveWPending,
         regionFiveWListResponse,
-    ] = useRequest<MultiResponse<CovidFiveW>>(covidSpecificProgramGetUrl);
+    ] = useRequest<MultiResponse<CovidFiveW>>(covidSpecificProgramGetUrl, 'covid-program-list');
 
     const fiveWMapState: MapStateFiveWData[] = useMemo(
         () => {
@@ -139,8 +139,9 @@ function useMapStateForCovidFiveW(
             }
 
             const groupedRegionData = listToGroupList(
-                exhaustiveFiveWList,
-                data => data[regionKey],
+                exhaustiveFiveWList.filter(item => isDefined(item[regionKey])),
+                // NOTE: we can set this as string as we have filtered exhaustiveFiveWList
+                data => data[regionKey] as string,
             );
             const mapState = Object.entries(groupedRegionData).map(([key, value]) => {
                 const options = unique(value.map(v => v[selectedFiveWOption]));

@@ -89,7 +89,7 @@ function Stats(props: Props) {
     const [
         statusPending,
         status,
-    ] = useRequest<Status>('https://nepalcorona.info/api/v1/data/nepal');
+    ] = useRequest<Status>('https://nepalcorona.info/api/v1/data/nepal', 'corona-data');
 
     return (
         <div className={_cs(className, styles.stats)}>

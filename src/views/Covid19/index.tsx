@@ -184,12 +184,13 @@ function Covid19(props: Props) {
     const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_covid=1`;
     const [indicatorListPending, indicatorListResponse] = useRequest<MultiResponse<Indicator>>(
         indicatorListGetUrl,
+        'indicator-list',
     );
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
     const [
         mapLayerListPending,
         mapLayerListResponse,
-    ] = useRequest<MultiResponse<Layer>>(mapLayerGetUrl);
+    ] = useRequest<MultiResponse<Layer>>(mapLayerGetUrl, 'map-layer-list');
 
     const [
         mapStateForIndicatorPending,

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import {
     listToGroupList,
     sum,
+    isDefined,
 } from '@togglecorp/fujs';
 
 import { RegionLevelOption } from '#types';
@@ -10,16 +11,19 @@ import useRequest from '#hooks/useRequest';
 
 interface AgeGroup {
     id: number;
-    munid: number;
-    provinceId: number;
-    districtId: number;
-    hlcit_code: string;
+    munid?: number;
+    provinceId?: number;
+    districtId?: number;
+
     l0_14: number;
     l15_49: number;
     l50plus: number;
     ltotal: number;
-    municipality: null;
-    district: number;
+
+    hlcit_code?: string;
+    municipality?: unknown;
+    district?: number;
+    pcode?: unknown;
 }
 
 interface AggregatedAgeGroup {
@@ -41,7 +45,7 @@ function useAgeGroupList(
     const [
         ageGroupListPending,
         ageGroupListResponse,
-    ] = useRequest<AgeGroup[]>(ageGroupListUrl);
+    ] = useRequest<AgeGroup[]>(ageGroupListUrl, 'array.age-group-item');
 
     const ageGroupList = useMemo(
         () => {
@@ -57,8 +61,9 @@ function useAgeGroupList(
             switch (regionLevel) {
                 case 'province': {
                     const groupedList = listToGroupList(
-                        sanitizedAgeGroupList,
-                        d => d.provinceId,
+                        sanitizedAgeGroupList.filter(item => isDefined(item.provinceId)),
+                        // NOTE: we can set this as number as we have filtered sanitizedAgeGroupList
+                        d => d.provinceId as number,
                     );
                     const ageGroupListForProvince: AggregatedAgeGroup[] = Object.keys(groupedList)
                         .map(d => ({
@@ -72,8 +77,9 @@ function useAgeGroupList(
                 }
                 case 'district': {
                     const groupedList = listToGroupList(
-                        sanitizedAgeGroupList,
-                        d => d.districtId,
+                        sanitizedAgeGroupList.filter(item => isDefined(item.districtId)),
+                        // NOTE: we can set this as number as we have filtered sanitizedAgeGroupList
+                        d => d.districtId as number,
                     );
                     const ageGroupListForDistrict: AggregatedAgeGroup[] = Object.keys(groupedList)
                         .map(d => ({
@@ -87,8 +93,10 @@ function useAgeGroupList(
                 }
                 case 'municipality': {
                     const ageGroupListForMunicipality: AggregatedAgeGroup[] = sanitizedAgeGroupList
+                        .filter(item => isDefined(item.munid))
+                        // NOTE: we can set this as number as we have filtered sanitizedAgeGroupList
                         .map(d => ({
-                            code: d.munid,
+                            code: d.munid as number,
                             belowFourteen: d.l0_14,
                             fifteenToFourtyNine: d.l15_49,
                             aboveFifty: d.l50plus,
