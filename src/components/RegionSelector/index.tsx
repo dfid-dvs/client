@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -8,7 +8,7 @@ import {
     RegionLevelOption,
 } from '#types';
 
-import SelectInput from '#components/SelectInput';
+import MultiSelectInput from '#components/MultiSelectInput';
 import SegmentInput from '#components/SegmentInput';
 import NavbarContext from '#components/NavbarContext';
 
@@ -70,14 +70,22 @@ function RegionSelector(props: Props) {
 
     // FIXME: this must be a multi-select input
     const [
-        selectedRegion,
-        setSelectedRegion,
+        selectedRegions,
+        setSelectedRegions,
     ] = React.useState<number | undefined>(undefined);
 
     const {
         regionLevel,
         setRegionLevel,
     } = React.useContext<NavbarContextProps>(NavbarContext);
+
+    const setRegionLevelSafely = useCallback(
+        (r: RegionLevelOption) => {
+            setRegionLevel(r);
+            setSelectedRegions(undefined);
+        },
+        [setRegionLevel],
+    );
 
     const regionLevelLabel = useMemo(
         () => (
@@ -88,6 +96,7 @@ function RegionSelector(props: Props) {
 
     const regionGetRequest = searchHidden ? undefined : `${apiEndPoint}/core/${regionLevel}/`;
     const regionSchema = regionLevel;
+
     const [
         regionListPending,
         regionListResponse,
@@ -102,16 +111,16 @@ function RegionSelector(props: Props) {
                 optionKeySelector={regionLevelOptionListKeySelector}
                 optionLabelSelector={regionLevelOptionListLabelSelector}
                 value={regionLevel}
-                onChange={setRegionLevel}
+                onChange={setRegionLevelSafely}
             />
             {!searchHidden && (
-                <SelectInput
+                <MultiSelectInput
                     placeholder={`Select ${regionLevelLabel}`}
                     className={styles.regionSelectInput}
                     disabled={regionListPending}
                     options={regionListResponse?.results}
-                    onChange={setSelectedRegion}
-                    value={selectedRegion}
+                    onChange={setSelectedRegions}
+                    value={selectedRegions}
                     optionLabelSelector={regionLabelSelector}
                     optionKeySelector={regionKeySelector}
                 />
