@@ -6,6 +6,7 @@ import {
 } from '@togglecorp/fujs';
 
 import { getPrecision } from '#components/Numeral';
+import { MapStateItem, RegionLevelOption } from '#types';
 
 const forEach = (obj: object, func: (key: string, val: unknown) => void) => {
     Object.keys(obj).forEach((key) => {
@@ -37,7 +38,7 @@ export const sanitizeResponse = (data: unknown): any => {
     return data;
 };
 
-export const getFloatPlacement = (parentRef: React.RefObject<HTMLElement>) => {
+export function getFloatPlacement(parentRef: React.RefObject<HTMLElement>) {
     const placement = {
         top: 'unset',
         right: 'unset',
@@ -70,7 +71,53 @@ export const getFloatPlacement = (parentRef: React.RefObject<HTMLElement>) => {
     }
 
     return placement;
-};
+}
+
+export function filterMapState(
+    value: MapStateItem[],
+    regionLevel: RegionLevelOption,
+    excludeValley: boolean,
+) {
+    const excludeKathmanduValleyFilter = (item: MapStateItem) => {
+        if (regionLevel === 'district') {
+            return ![25, 26, 27].includes(item.id);
+        }
+        if (regionLevel === 'municipality') {
+            return ![
+                280, 281, 282, 283, 284, 285, // lalitpur
+                286, 287, 288, 289, // bhaktapur
+                290, 291, 292, 293, 294, 295, 296, 297, 299, 300, // kathmandu
+            ].includes(item.id);
+        }
+        return true;
+    };
+
+    const valueList = value
+        .map(d => d.value)
+        .filter(isDefined);
+
+    const min = Math.min(...valueList);
+    const max = Math.max(...valueList);
+
+    if (excludeValley) {
+        const excludedValueList = value
+            .filter(excludeKathmanduValleyFilter)
+            .map(d => d.value)
+            .filter(isDefined);
+        const newMin = Math.min(...excludedValueList);
+        const newMax = Math.max(...excludedValueList);
+        return {
+            list: excludedValueList,
+            min: newMin,
+            max: newMax,
+            maxExceeds: newMax < max,
+            minExceeds: newMin > min,
+        };
+    }
+
+    return { list: valueList, min, max };
+}
+
 
 function getSegments(
     totalSegments: number,

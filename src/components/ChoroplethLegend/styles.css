@@ -24,6 +24,15 @@
                 margin-bottom: calc(-1 * var(--font-size-medium) / 2);
                 padding-left: var(--spacing-small);
                 color: var(--color-text-label);
+
+                .numeral {
+                    display: inline-block;
+                }
+
+                .suffix {
+                    margin-left: var(--spacing-extra-small);
+                    font-size: var(--font-size-small);
+                }
             }
         }
     }
