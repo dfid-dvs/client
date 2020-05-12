@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { _cs, unique, intersection, isDefined } from '@togglecorp/fujs';
+import { _cs, intersection } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
