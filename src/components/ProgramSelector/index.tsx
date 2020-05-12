@@ -33,15 +33,16 @@ function join<T>(foo: T[] | undefined, bar: T[] | undefined) {
 interface Program {
     id: number;
     name: string;
-    description: string;
+    description?: string;
     sector: number[];
     subSector: number[];
     markerCategory: number[];
     markerValue: number[];
     partner: number[];
-    code: number;
+    code: string;
     budget: number;
 }
+
 const programKeySelector = (p: Program) => p.id;
 const programLabelSelector = (p: Program) => p.name;
 
@@ -110,31 +111,31 @@ function ProgramSelector(props: Props) {
     const [
         programListPending,
         programListResponse,
-    ] = useRequest<MultiResponse<Program>>(programListGetUrl);
+    ] = useRequest<MultiResponse<Program>>(programListGetUrl, 'program-list');
 
     const sectorGetRequest = `${apiEndPoint}/core/sector/`;
     const [
         sectorListPending,
         sectorListResponse,
-    ] = useRequest<MultiResponse<Sector>>(sectorGetRequest);
+    ] = useRequest<MultiResponse<Sector>>(sectorGetRequest, 'sector-list');
 
     const subSectorGetRequest = `${apiEndPoint}/core/sub-sector/`;
     const [
         subSectorListPending,
         subSectorListResponse,
-    ] = useRequest<MultiResponse<SubSector>>(subSectorGetRequest);
+    ] = useRequest<MultiResponse<SubSector>>(subSectorGetRequest, 'sub-sector-list');
 
     const markerGetRequest = `${apiEndPoint}/core/marker-category/`;
     const [
         markerListPending,
         markerListResponse,
-    ] = useRequest<MultiResponse<Marker>>(markerGetRequest);
+    ] = useRequest<MultiResponse<Marker>>(markerGetRequest, 'marker-list');
 
     const subMarkerGetRequest = `${apiEndPoint}/core/marker-value/`;
     const [
         subMarkerListPending,
         subMarkerListResponse,
-    ] = useRequest<MultiResponse<SubMarker>>(subMarkerGetRequest);
+    ] = useRequest<MultiResponse<SubMarker>>(subMarkerGetRequest, 'sub-marker-list');
 
     const sectorOptions: TreeItem[] | undefined = useMemo(
         () => (
