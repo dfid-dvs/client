@@ -4,6 +4,7 @@ import {
     isDefined,
 } from '@togglecorp/fujs';
 
+import MapTooltip from '#remap/MapTooltip';
 import RegionSelector from '#components/RegionSelector';
 import NavbarContext from '#components/NavbarContext';
 import ToggleButton from '#components/ToggleButton';
@@ -36,6 +37,7 @@ import {
 } from '#utils/constants';
 
 import Stats from './Stats';
+import Tooltip from './Tooltip';
 import useMapStateForFiveW from './useMapStateForFiveW';
 
 import {
@@ -45,6 +47,12 @@ import {
 
 import styles from './styles.css';
 
+const onClickTooltipOptions: mapboxgl.PopupOptions = {
+    closeOnClick: true,
+    closeButton: false,
+    offset: 8,
+    maxWidth: '480px',
+};
 const fiveWOptions: FiveWOption[] = [
     {
         key: 'allocatedBudget',
@@ -82,6 +90,14 @@ const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 const layerKeySelector = (d: Layer) => d.id;
 const layerLabelSelector = (d: Layer) => d.name;
 
+export interface Region {
+    name: string;
+}
+export interface ClickedRegion {
+    feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
+    lngLat: mapboxgl.LngLatLike;
+}
+
 interface Props {
     className?: string;
 }
@@ -99,6 +115,11 @@ const Dashboard = (props: Props) => {
         selectedFiveWOption,
         setFiveWOption,
     ] = useState<FiveWOptionKey | undefined>('allocatedBudget');
+
+    const [
+        clickedRegionProperties,
+        setClickedRegionProperties,
+    ] = React.useState<ClickedRegion | undefined>();
 
     const [selectedLayer, setSelectedLayer] = useState<number | undefined>(undefined);
 
@@ -125,7 +146,7 @@ const Dashboard = (props: Props) => {
     const [
         fiveWMapStatePending,
         fiveWMapState,
-        fivewW,
+        fivewStats,
     ] = useMapStateForFiveW(regionLevel, selectedFiveWOption);
 
     // const mapStatePending = indicatorMapStatePending || fiveWMapStatePending;
@@ -276,6 +297,33 @@ const Dashboard = (props: Props) => {
         || selectedRasterLayer
     );
 
+    const handleMapRegionOnClick = React.useCallback(
+        (
+            feature: mapboxgl.MapboxGeoJSONFeature,
+            lngLat: mapboxgl.LngLat,
+        ) => {
+            setClickedRegionProperties({
+                feature: feature as unknown as GeoJSON.Feature<GeoJSON.Polygon, Region>,
+                lngLat,
+            });
+
+            return true;
+        },
+        [setClickedRegionProperties],
+    );
+
+    const handleTooltipClose = React.useCallback(
+        () => {
+            setClickedRegionProperties(undefined);
+        },
+        [setClickedRegionProperties],
+    );
+
+    const dfidData = useMemo(
+        () => fivewStats.find(v => v.id === clickedRegionProperties?.feature.id),
+        [fivewStats, clickedRegionProperties],
+    );
+
     return (
         <div className={_cs(
             styles.dashboard,
@@ -290,9 +338,9 @@ const Dashboard = (props: Props) => {
             />
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
-                    <LoadingAnimation />
+                <LoadingAnimation />
                 </Backdrop>
-            ) */}
+                ) */}
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
@@ -301,11 +349,26 @@ const Dashboard = (props: Props) => {
                 bubbleMapState={bubbleMapState}
                 bubbleMapPaint={bubblePaint}
                 rasterLayer={selectedRasterLayer}
+                onClick={handleMapRegionOnClick}
                 printMode={printMode}
-            />
+                hideTooltipOnHover
+            >
+                {clickedRegionProperties && (
+                    <MapTooltip
+                        coordinates={clickedRegionProperties.lngLat}
+                        tooltipOptions={onClickTooltipOptions}
+                        onHide={handleTooltipClose}
+                    >
+                        <Tooltip
+                            feature={clickedRegionProperties.feature}
+                            dfidData={dfidData}
+                        />
+                    </MapTooltip>
+                )}
+            </IndicatorMap>
             <Stats
                 className={styles.stats}
-                fiveW={fivewW}
+                fiveW={fivewStats}
             />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />
