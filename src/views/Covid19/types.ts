@@ -56,9 +56,9 @@ export interface FiveW {
 
 export interface CovidFiveW {
     id: number;
-    provinceCode: string;
-    districtCode: string;
-    municipalityCode: string;
+    provinceCode?: string;
+    districtCode?: string;
+    municipalityCode?: string;
     component: string;
     secondTierPartner: string;
     projectStatus: string;

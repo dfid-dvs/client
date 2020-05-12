@@ -152,7 +152,7 @@
     },
     "dependencies": {
         "@togglecorp/fujs": "^1.8.0",
-        "@togglecorp/ravl": "^1.2.3",
+        "@togglecorp/ravl": "^2.0.0",
         "@togglecorp/react-rest-request": "^2.4.5",
         "abort-controller": "^3.0.0",
         "core-js": "3",

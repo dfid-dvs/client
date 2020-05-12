@@ -87,10 +87,11 @@ function RegionSelector(props: Props) {
     );
 
     const regionGetRequest = searchHidden ? undefined : `${apiEndPoint}/core/${regionLevel}/`;
+    const regionSchema = regionLevel;
     const [
         regionListPending,
         regionListResponse,
-    ] = useRequest<MultiResponse<Region>>(regionGetRequest);
+    ] = useRequest<MultiResponse<Region>>(regionGetRequest, regionSchema);
 
     return (
         <div className={className}>

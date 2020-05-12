@@ -1492,10 +1492,10 @@
   dependencies:
     "@babel/runtime" "^7.7.7"
 
-"@togglecorp/ravl@^1.2.3":
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/@togglecorp/ravl/-/ravl-1.2.3.tgz#bbe8438fe968c4284805451fe71073961bbfd52c"
-  integrity sha512-XHKEugvWraNtl9ta9saT085jn5wgmeGNS2m9wzOo9FDLmiYsNJFz516dqYEJqKCm/d9Wcsq2hPMV9apJ6/bnGg==
+"@togglecorp/ravl@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@togglecorp/ravl/-/ravl-2.0.0.tgz#b030fcb9a29dc091bfe1a70147a027f4d0ba1c45"
+  integrity sha512-4KXW16lEakFJHdFIEr40XN2LX3qIUMOnyXst6SZBMJI9PMbvR7OEJidJgUnZqz7BlDeFAS8P4NRY0kh2LfNzsA==
   dependencies:
     "@togglecorp/fujs" "^1.8.0"
 
