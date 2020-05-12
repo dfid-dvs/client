@@ -47,6 +47,7 @@ const Navbar = (props: Props) => {
                     >
                         COVID-19
                     </NavLink>
+                    {/*
                     <NavLink
                         exact
                         className={styles.link}
@@ -55,23 +56,22 @@ const Navbar = (props: Props) => {
                     >
                         Glossary
                     </NavLink>
-                    {/*
-                        <NavLink
+                    <NavLink
                         exact
                         to="/infographics/"
                         className={styles.link}
                         activeClassName={styles.active}
-                        >
+                    >
                         Infographics
-                        </NavLink>
-                        <NavLink
+                    </NavLink>
+                    <NavLink
                         exact
                         to="/analytical-tools/"
                         className={styles.link}
                         activeClassName={styles.active}
-                        >
+                    >
                         Analytical tools
-                        </NavLink>
+                    </NavLink>
                       */}
                 </div>
                 {isDashboardPage && (
