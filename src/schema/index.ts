@@ -85,6 +85,114 @@ const userDefinedSchemas: Schema[] = [
         },
     },
     {
+        name: 'marker-list',
+        description: 'Get markers',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'marker',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        name: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'sub-marker-list',
+        description: 'Get sub-markers',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'sub-marker',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        value: { type: 'string', required: true },
+                        markerCategoryId: { type: 'uint', required: true },
+                        markerCategory: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'sector-list',
+        description: 'Get sectors',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'sector',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        name: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'sub-sector-list',
+        description: 'Get sub-sectors',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'sub-sector',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        name: { type: 'string', required: true },
+                        code: { type: 'string', required: true },
+                        sectorId: { type: 'uint', required: true },
+                        sectorName: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'program-list',
+        description: 'Get programs',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'program',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        name: { type: 'string', required: true },
+                        description: { type: 'string' },
+                        sector: { type: 'array.number', required: true },
+                        subSector: { type: 'array.number', required: true },
+                        markerCategory: { type: 'array.number', required: true },
+                        markerValue: { type: 'array.number', required: true },
+                        partner: { type: 'array.number', required: true },
+                        code: { type: 'string', required: true },
+                        budget: { type: 'number' },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
         name: 'covid-program-list',
         description: 'Get covid programs',
         fields: {

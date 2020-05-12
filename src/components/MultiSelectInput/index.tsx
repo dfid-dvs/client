@@ -32,35 +32,8 @@ interface OptionProps {
 }
 function Option(props: OptionProps) {
     const divRef = useRef<HTMLButtonElement>(null);
-    const focusedByMouse = useRef(false);
 
     const { name, onClick, selected, ...otherProps } = props;
-
-    useEffect(
-        () => {
-            if (selected && !focusedByMouse.current && divRef.current) {
-                divRef.current.scrollIntoView({
-                    // behavior: 'smooth',
-                    block: 'center',
-                });
-            }
-        },
-        [selected],
-    );
-
-    const handleMouseMove = useCallback(
-        () => {
-            focusedByMouse.current = true;
-        },
-        [],
-    );
-
-    const handleMouseLeave = useCallback(
-        () => {
-            focusedByMouse.current = false;
-        },
-        [],
-    );
 
     const onChange = useCallback(
         () => {
@@ -73,8 +46,6 @@ function Option(props: OptionProps) {
         <CheckboxButton
             elementRef={divRef}
             onChange={onChange}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
             value={selected}
             {...otherProps}
         />
