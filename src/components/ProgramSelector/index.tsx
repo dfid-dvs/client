@@ -5,7 +5,7 @@ import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
 import { MultiResponse } from '#types';
 
-import SelectInput from '#components/SelectInput';
+import MultiSelectInput from '#components/MultiSelectInput';
 import DropdownMenu from '#components/DropdownMenu';
 import TreeInput from '#components/TreeInput';
 
@@ -93,8 +93,8 @@ function ProgramSelector(props: Props) {
     // FIXME: change this to selected programmes
     const [
         selectedProgram,
-        setSelectedProgram,
-    ] = React.useState<number | undefined>(undefined);
+        setSelectedPrograms,
+    ] = React.useState<number[] | undefined>(undefined);
 
     const [
         selectedSector,
@@ -289,12 +289,12 @@ function ProgramSelector(props: Props) {
 
     return (
         <div className={_cs(className, styles.programSelector)}>
-            <SelectInput
+            <MultiSelectInput
                 placeholder={`Select from ${filteredPrograms?.length || 0} programs`}
                 className={styles.indicatorSelectInput}
                 disabled={programListPending}
                 options={filteredPrograms}
-                onChange={setSelectedProgram}
+                onChange={setSelectedPrograms}
                 value={selectedProgram}
                 optionLabelSelector={programLabelSelector}
                 optionKeySelector={programKeySelector}

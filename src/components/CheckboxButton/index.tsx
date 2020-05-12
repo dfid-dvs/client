@@ -2,22 +2,19 @@ import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { MdCheckBoxOutlineBlank, MdCheckBox } from 'react-icons/md';
 
-import RawButton from '#components/RawButton';
+import RawButton, { Props as RawButtonProps } from '#components/RawButton';
 
 import styles from './styles.css';
 
-interface Props {
-    className?: string;
+export interface Props extends Omit<RawButtonProps, 'value' | 'onChange' | 'onClick'> {
     value?: boolean;
-    label?: string | number;
     onChange: (val: boolean) => void;
-    disabled?: boolean;
 }
 
-function Checkbox(props: Props) {
+function CheckboxButton(props: Props) {
     const {
         className,
-        label,
+        children,
         value,
         onChange,
     } = props;
@@ -41,10 +38,10 @@ function Checkbox(props: Props) {
                 { value ? <MdCheckBox /> : <MdCheckBoxOutlineBlank /> }
             </div>
             <div className={styles.label}>
-                { label }
+                {children}
             </div>
         </RawButton>
     );
 }
 
-export default Checkbox;
+export default CheckboxButton;
