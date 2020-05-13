@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { _cs, isDefined } from '@togglecorp/fujs';
 
 import Numeral from '#components/Numeral';
@@ -113,4 +113,4 @@ function ChoroplethLegend(
     );
 }
 
-export default ChoroplethLegend;
+export default memo(ChoroplethLegend);

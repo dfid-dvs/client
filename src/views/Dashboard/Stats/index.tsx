@@ -208,7 +208,7 @@ function ProgramWiseTable(props: ProgramWiseTableProps) {
             return [
                 createColumn('name', 'Name', stringColumn),
                 createColumn('code', 'Code', stringColumn),
-                createColumn('description', 'description', stringColumn),
+                createColumn('description', 'Description', stringColumn),
                 createColumn('budget', 'Budget', numberColumn),
             ];
         },

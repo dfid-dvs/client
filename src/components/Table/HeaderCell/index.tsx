@@ -42,7 +42,6 @@ function HeaderCell(props: HeaderCellProps) {
         filterValue,
         onFilterValueChange,
     } = props;
-    console.warn('Rendering header cell');
 
     const handleSortClick = useCallback(
         () => {

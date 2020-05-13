@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import { Layer } from '#types';
@@ -61,4 +61,4 @@ function Legend(props: RasterLegendProps) {
     );
 }
 
-export default Legend;
+export default memo(Legend);

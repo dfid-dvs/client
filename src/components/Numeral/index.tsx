@@ -76,8 +76,6 @@ function Numeral({
     separatorShown = true,
     prefix = '',
 }: NumeralProps) {
-    console.warn('rendering numeral');
-
     if (!isDefined(value)) {
         return null;
     }
