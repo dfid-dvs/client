@@ -84,9 +84,10 @@ function HeaderCell(props: HeaderCellProps) {
                     {title}
                 </div>
             </div>
-            <div className={styles.filter}>
+            <div className={styles.filterContainer}>
                 {filterType === FilterType.string && (
                     <TextInput
+                        className={styles.textInput}
                         value={filterValue?.subMatch}
                         placeholder="Search"
                         onChange={(value: string) => {
@@ -100,8 +101,9 @@ function HeaderCell(props: HeaderCellProps) {
                 {filterType === FilterType.number && (
                     <>
                         <TextInput
+                            className={styles.numberInput}
                             value={filterValue?.greaterThanOrEqualTo}
-                            placeholder="Min value"
+                            placeholder="Min"
                             type="number"
                             onChange={(value: string) => {
                                 const numericValue = isTruthyString(value) ? +value : undefined;
@@ -112,9 +114,10 @@ function HeaderCell(props: HeaderCellProps) {
                             }}
                         />
                         <TextInput
+                            className={styles.numberInput}
                             value={filterValue?.lessThanOrEqualTo}
                             type="number"
-                            placeholder="Max value"
+                            placeholder="Max"
                             onChange={(value: string) => {
                                 const numericValue = isTruthyString(value) ? +value : undefined;
                                 onFilterValueChange(

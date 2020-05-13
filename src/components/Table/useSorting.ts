@@ -3,8 +3,8 @@ import { useMemo, useState } from 'react';
 import { SortDirection } from './types';
 
 export function useSortState(defaultValue?: SortParameter) {
-    const [sorting, setSorting] = useState<SortParameter | undefined>(defaultValue);
-    return { sorting, setSorting };
+    const [sortState, setSortState] = useState<SortParameter | undefined>(defaultValue);
+    return { sortState, setSortState };
 }
 
 export interface SortParameter {

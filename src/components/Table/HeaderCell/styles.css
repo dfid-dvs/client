@@ -12,6 +12,7 @@
     }
 
     .filter-container {
+        display: flex;
         padding: var(--spacing-extra-small);
     }
 }
