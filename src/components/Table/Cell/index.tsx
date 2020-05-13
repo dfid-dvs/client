@@ -10,6 +10,7 @@ function Cell<T>(props: CellProps<T>) {
         className,
         value,
     } = props;
+    console.warn('Rendering cell');
     return (
         <div className={className}>
             {value}

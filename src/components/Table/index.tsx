@@ -1,15 +1,24 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import { SortDirection, BaseHeader } from './types';
+import { BaseHeader } from './types';
 
 import styles from './styles.css';
+
+// Helper method so that during column creation, id can be re-used
+export function createColumn<KK extends string, D, K, C, H>(
+    id: KK,
+    modifier: (id: KK) => Omit<Column<D, K, C, H>, 'id'>,
+): Column<D, K, C, H> {
+    return {
+        ...modifier(id),
+        id,
+    };
+}
 
 interface Column<D, K, C, H> {
     id: string;
     title?: string;
-    sorter?: (a: D, b: D) => number;
-    defaultSortDirection?: SortDirection;
 
     headerCellRenderer: React.ComponentType<H>;
     headerCellRendererParams: Omit<H, keyof BaseHeader>;
@@ -21,6 +30,7 @@ interface Column<D, K, C, H> {
 
     cellAsHeader?: boolean;
 }
+
 type VerifyColumn<T, D, K> = unknown extends (
     T extends Column<D, K, infer A, infer B>
         ? never
@@ -28,11 +38,6 @@ type VerifyColumn<T, D, K> = unknown extends (
 )
     ? never
     : unknown
-
-// TODO:
-// - get rid of any
-// - better approach to VerifyColumn
-// - column ordering
 
 function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
     props: {
@@ -46,10 +51,6 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
         headerCellClassName?: string;
         rowClassName?: string;
         cellClassName?: string;
-
-        sortDirection?: SortDirection;
-        sortColumn?: string;
-        // columnOrder
     },
 ) {
     const {
@@ -64,31 +65,7 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
         headerCellClassName,
         rowClassName,
         cellClassName,
-
-        sortDirection,
-        sortColumn,
     } = props;
-
-    const selectedSorter = useMemo(
-        () => {
-            const columnToSort = columns.find(column => column.id === sortColumn);
-            return columnToSort?.sorter;
-        },
-        [columns, sortColumn],
-    );
-
-    const sortedData = useMemo(
-        () => {
-            if (!data || !selectedSorter) {
-                return data;
-            }
-            if (sortDirection === SortDirection.dsc) {
-                return [...data].sort(selectedSorter).reverse();
-            }
-            return [...data].sort(selectedSorter);
-        },
-        [data, selectedSorter, sortDirection],
-    );
 
     return (
         <table className={_cs(styles.table, className)}>
@@ -105,8 +82,6 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
                         const {
                             id,
                             title,
-                            sorter,
-                            defaultSortDirection,
                             headerCellRenderer: Renderer,
                             headerCellRendererClassName,
                             cellAsHeader,
@@ -118,10 +93,7 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
                                 {...headerCellRendererParams}
                                 name={id}
                                 title={title}
-                                sortable={!!sorter}
-                                defaultSortDirection={defaultSortDirection}
                                 className={headerCellRendererClassName}
-                                sortDirection={sortColumn === id ? sortDirection : undefined}
                             />
                         );
                         return (
@@ -141,7 +113,7 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
                 </tr>
             </thead>
             <tbody>
-                {sortedData?.map((datum, index) => {
+                {data?.map((datum, index) => {
                     const key = keySelector(datum, index);
                     return (
                         <tr

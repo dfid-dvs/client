@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { _cs, isDefined, formattedNormalize, Lang, addSeparator } from '@togglecorp/fujs';
 import styles from './styles.css';
 
@@ -60,7 +60,7 @@ export function formatNumber(
 }
 
 
-interface Props {
+interface NumeralProps {
     value: number | undefined;
     precision?: number | undefined;
     className?: string;
@@ -75,7 +75,9 @@ function Numeral({
     normalize,
     separatorShown = true,
     prefix = '',
-}: Props) {
+}: NumeralProps) {
+    console.warn('rendering numeral');
+
     if (!isDefined(value)) {
         return null;
     }
@@ -94,4 +96,4 @@ function Numeral({
         </div>
     );
 }
-export default Numeral;
+export default memo(Numeral);

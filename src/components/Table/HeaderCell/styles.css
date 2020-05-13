@@ -1,7 +1,17 @@
 .header-cell {
     display: flex;
+    flex-direction: column;
 
-    .title {
-        padding: 0 var(--spacing-small);
+    .title-container {
+        display: flex;
+        padding: var(--spacing-extra-small);
+
+        .title {
+            padding: 0 var(--spacing-small);
+        }
+    }
+
+    .filter-container {
+        padding: var(--spacing-extra-small);
     }
 }

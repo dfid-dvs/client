@@ -1,14 +1,16 @@
 import React, { useState, useMemo } from 'react';
 import { compareString, compareNumber, _cs } from '@togglecorp/fujs';
 
-import { apiEndPoint } from '#utils/constants';
-import useRequest from '#hooks/useRequest';
-import { MultiResponse } from '#types';
+// import { apiEndPoint } from '#utils/constants';
+// import useRequest from '#hooks/useRequest';
+// import { MultiResponse } from '#types';
 
-import Table from '#components/Table';
+import Table, { createColumn } from '#components/Table';
+import useSorting, { useSortState } from '#components/Table/useSorting';
+import useFiltering, { useFilterState } from '#components/Table/useFiltering';
 import HeaderCell from '#components/Table/HeaderCell';
 import Cell from '#components/Table/Cell';
-import { SortDirection } from '#components/Table/types';
+import { SortDirection, FilterType } from '#components/Table/types';
 import Numeral from '#components/Numeral';
 
 import { FiveW } from '../types';
@@ -35,108 +37,146 @@ interface Props {
 
 const keySelector = (data: FiveW) => data.id;
 
-const programKeySelector = (data: Program) => data.id;
+// const programKeySelector = (data: Program) => data.id;
 
 function Stats(props: Props) {
     const { className, fiveW } = props;
 
-    const [sorting, setSorting] = useState<{
-        name: string;
-        direction: SortDirection;
-    } | undefined>();
+    /*
+    const [
+        programsPending,
+        programListResponse,
+    ] = useRequest<MultiResponse<Program>>(`${apiEndPoint}/core/program/`, 'program-list');
+    */
+
+    const { sorting, setSorting } = useSortState();
+    const { filtering, setFilteringItem, getFilteringItem } = useFilterState();
+
+    // console.warn(filtering);
 
     const columns = useMemo(
-        () => ([
-            {
-                id: 'name',
+        () => {
+            const column1 = createColumn('name', colName => ({
                 title: 'Name',
 
                 headerCellRenderer: HeaderCell,
                 headerCellRendererParams: {
                     onSortChange: setSorting,
+                    sortable: true,
+                    sortDirection: colName === sorting?.name ? sorting?.direction : undefined,
+
+                    filterType: FilterType.string,
+                    filterValue: getFilteringItem(colName),
+                    onFilterValueChange: setFilteringItem,
                 },
 
                 cellAsHeader: true,
                 cellRenderer: Cell,
                 cellRendererParams: (key: number, datum: FiveW) => ({
-                    value: datum.name,
+                    value: datum[colName],
                 }),
 
                 sorter: (foo: FiveW, bar: FiveW) => compareString(
-                    foo.name,
-                    bar.name,
+                    foo[colName],
+                    bar[colName],
                 ),
-            },
-            {
-                id: 'allocatedBudget',
+                filterValueSelector: (foo: FiveW) => foo[colName],
+            }));
+            const column2 = createColumn('allocatedBudget', colName => ({
                 title: 'Allocated Budget',
 
                 headerCellRenderer: HeaderCell,
                 headerCellRendererParams: {
                     onSortChange: setSorting,
+                    sortable: true,
+                    sortDirection: colName === sorting?.name ? sorting?.direction : undefined,
+                    defaultSortDirection: SortDirection.dsc,
+
+                    filterType: FilterType.number,
+                    filterValue: getFilteringItem(colName),
+                    onFilterValueChange: setFilteringItem,
                 },
 
                 cellRenderer: Numeral,
                 cellRendererParams: (key: number, datum: FiveW) => ({
-                    value: datum.allocatedBudget,
+                    value: datum[colName],
                     normalize: true,
                 }),
 
                 sorter: (foo: FiveW, bar: FiveW) => compareNumber(
-                    foo.allocatedBudget,
-                    bar.allocatedBudget,
+                    foo[colName],
+                    bar[colName],
                 ),
-                defaultSortDirection: SortDirection.dsc,
-            },
-            {
-                id: 'maleBeneficiary',
+                filterValueSelector: (foo: FiveW) => foo[colName],
+            }));
+            const column3 = createColumn('maleBeneficiary', colName => ({
                 title: 'Male Beneficiary',
 
                 headerCellRenderer: HeaderCell,
                 headerCellRendererParams: {
                     onSortChange: setSorting,
+                    sortable: true,
+                    sortDirection: colName === sorting?.name ? sorting?.direction : undefined,
+                    defaultSortDirection: SortDirection.dsc,
+
+                    filterType: FilterType.number,
+                    filterValue: getFilteringItem(colName),
+                    onFilterValueChange: setFilteringItem,
                 },
 
                 cellRenderer: Numeral,
                 cellRendererParams: (key: number, datum: FiveW) => ({
-                    value: datum.maleBeneficiary,
+                    value: datum[colName],
                     normalize: true,
                 }),
 
                 sorter: (foo: FiveW, bar: FiveW) => compareNumber(
-                    foo.maleBeneficiary,
-                    bar.maleBeneficiary,
+                    foo[colName],
+                    bar[colName],
                 ),
-                defaultSortDirection: SortDirection.dsc,
-            },
-            {
+                filterValueSelector: (foo: FiveW) => foo[colName],
+            }));
+            const column4 = createColumn('femaleBeneficiary', colName => ({
                 id: 'femaleBeneficiary',
                 title: 'Female Beneficiary',
 
                 headerCellRenderer: HeaderCell,
                 headerCellRendererParams: {
                     onSortChange: setSorting,
+                    sortable: true,
+                    sortDirection: colName === sorting?.name ? sorting?.direction : undefined,
+                    defaultSortDirection: SortDirection.dsc,
+
+                    filterType: FilterType.number,
+                    filterValue: getFilteringItem(colName),
+                    onFilterValueChange: setFilteringItem,
                 },
 
                 cellRenderer: Numeral,
                 cellRendererParams: (key: number, datum: FiveW) => ({
-                    value: datum.femaleBeneficiary,
+                    value: datum[colName],
                     normalize: true,
                 }),
 
                 sorter: (foo: FiveW, bar: FiveW) => compareNumber(
-                    foo.femaleBeneficiary,
-                    bar.femaleBeneficiary,
+                    foo[colName],
+                    bar[colName],
                 ),
-                defaultSortDirection: SortDirection.dsc,
-            },
-            {
-                id: 'totalBeneficiary',
+                filterValueSelector: (foo: FiveW) => foo[colName],
+            }));
+            const column5 = createColumn('totalBeneficiary', colName => ({
                 title: 'Total Beneficiary',
 
                 headerCellRenderer: HeaderCell,
                 headerCellRendererParams: {
                     onSortChange: setSorting,
+                    sortable: true,
+                    sortDirection: colName === sorting?.name ? sorting?.direction : undefined,
+                    defaultSortDirection: SortDirection.dsc,
+
+                    filterType: FilterType.number,
+                    filterValue: getFilteringItem(colName),
+                    onFilterValueChange: setFilteringItem,
                 },
 
                 cellRenderer: Numeral,
@@ -146,15 +186,26 @@ function Stats(props: Props) {
                 }),
 
                 sorter: (foo: FiveW, bar: FiveW) => compareNumber(
-                    foo.totalBeneficiary,
-                    bar.totalBeneficiary,
+                    foo[colName],
+                    bar[colName],
                 ),
-                defaultSortDirection: SortDirection.dsc,
-            },
-        ]),
-        [],
+                filterValueSelector: (foo: FiveW) => foo[colName],
+            }));
+            return [
+                column1,
+                column2,
+                column3,
+                column4,
+                column5,
+            ];
+        },
+        [sorting, getFilteringItem, setFilteringItem, setSorting],
     );
 
+    const sortedFiveW = useSorting(sorting, columns, fiveW);
+    const filteredFiveW = useFiltering(filtering, columns, sortedFiveW);
+
+    /*
     const programColumns = useMemo(
         () => ([
             {
@@ -203,6 +254,7 @@ function Stats(props: Props) {
                 headerCellRenderer: HeaderCell,
                 headerCellRendererParams: {
                     onSortChange: setSorting,
+                    // defaultSortDirection: SortDirection.dsc,
                 },
 
                 cellRenderer: Numeral,
@@ -215,7 +267,6 @@ function Stats(props: Props) {
                     foo.budget,
                     bar.budget,
                 ),
-                defaultSortDirection: SortDirection.dsc,
             },
             {
                 id: 'description',
@@ -239,23 +290,19 @@ function Stats(props: Props) {
         ]),
         [],
     );
-
-
-    const [
-        programsPending,
-        programListResponse,
-    ] = useRequest<MultiResponse<Program>>(`${apiEndPoint}/core/program/`, 'program-list');
+    */
 
     return (
         <div className={_cs(className, styles.stats)}>
             <h3>Region-wise data</h3>
             <Table
-                data={fiveW}
+                data={filteredFiveW}
                 keySelector={keySelector}
                 columns={columns}
-                sortDirection={sorting?.direction}
-                sortColumn={sorting?.name}
+                // sortDirection={sorting?.direction}
+                // sortColumn={sorting?.name}
             />
+            {/*
             <h3>Program-wise data</h3>
             <Table
                 data={programListResponse?.results}
@@ -264,6 +311,7 @@ function Stats(props: Props) {
                 // sortDirection={sorting?.direction}
                 // sortColumn={sorting?.name}
             />
+            */}
         </div>
     );
 }

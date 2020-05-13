@@ -2,15 +2,16 @@ export enum SortDirection {
     'asc' = 'Ascending',
     'dsc' = 'Descending',
 }
+export enum FilterType {
+    'string' = 'string',
+    'number' = 'number',
+}
+
 export interface BaseHeader {
     className?: string;
     name: string;
 
     title?: string;
-    sortable?: boolean;
-
-    sortDirection?: SortDirection;
-    defaultSortDirection?: SortDirection;
 }
 
 export interface BaseCell {
