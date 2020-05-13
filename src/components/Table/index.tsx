@@ -8,11 +8,13 @@ import styles from './styles.css';
 // Helper method so that during column creation, id can be re-used
 export function createColumn<KK extends string, D, K, C, H>(
     id: KK,
-    modifier: (id: KK) => Omit<Column<D, K, C, H>, 'id'>,
+    title: string,
+    modifier: (id: KK) => Omit<Column<D, K, C, H>, 'id' | 'title'>,
 ): Column<D, K, C, H> {
     return {
         ...modifier(id),
         id,
+        title,
     };
 }
 
