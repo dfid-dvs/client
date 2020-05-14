@@ -2,6 +2,9 @@ import React from 'react';
 
 import TextOutput from '#components/TextOutput';
 import Numeral from '#components/Numeral';
+import {
+    Indicator,
+} from '#types';
 
 import { FiveW } from '../types';
 
@@ -11,20 +14,28 @@ interface Region {
     name: string;
 }
 
+interface IndicatorWithValue extends Indicator{
+    value: number;
+}
 interface Props {
     feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
     dfidData?: FiveW;
+    indicatorData?: IndicatorWithValue;
 }
 const Tooltip = ({
     feature,
     dfidData,
+    indicatorData,
 }: Props) => (
     <div className={styles.tooltip}>
-        <h3>
+        <h3 className={styles.heading}>
             { feature.properties.name }
         </h3>
         {dfidData && dfidData.id && (
-            <div>
+            <div className={styles.content}>
+                <div className={styles.subHeading}>
+                    DFID Data
+                </div>
                 <TextOutput
                     label="Allocated Budget"
                     value={(
@@ -55,6 +66,21 @@ const Tooltip = ({
                     value={(
                         <Numeral
                             value={dfidData.totalBeneficiary}
+                        />
+                    )}
+                />
+            </div>
+        )}
+        {indicatorData && (
+            <div className={styles.content}>
+                <div className={styles.subHeading}>
+                    Indicator Data
+                </div>
+                <TextOutput
+                    label={indicatorData.fullTitle}
+                    value={(
+                        <Numeral
+                            value={indicatorData.value}
                         />
                     )}
                 />

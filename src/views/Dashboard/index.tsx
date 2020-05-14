@@ -149,8 +149,6 @@ const Dashboard = (props: Props) => {
         fivewStats,
     ] = useMapStateForFiveW(regionLevel, selectedFiveWOption);
 
-    // const mapStatePending = indicatorMapStatePending || fiveWMapStatePending;
-
     const {
         choroplethMapState,
         choroplethTitle,
@@ -324,6 +322,24 @@ const Dashboard = (props: Props) => {
         [fivewStats, clickedRegionProperties],
     );
 
+    const indicatorData = useMemo(
+        () => {
+            if (!selectedIndicatorDetails) {
+                return undefined;
+            }
+
+            const indicatorValue = indicatorMapState.find(
+                v => v.id === clickedRegionProperties?.feature.id,
+            )?.value;
+
+            return {
+                ...selectedIndicatorDetails,
+                value: indicatorValue,
+            };
+        },
+        [indicatorMapState, selectedIndicatorDetails, clickedRegionProperties],
+    );
+
     return (
         <div className={_cs(
             styles.dashboard,
@@ -362,6 +378,7 @@ const Dashboard = (props: Props) => {
                         <Tooltip
                             feature={clickedRegionProperties.feature}
                             dfidData={dfidData}
+                            indicatorData={indicatorData}
                         />
                     </MapTooltip>
                 )}
