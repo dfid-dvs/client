@@ -36,8 +36,8 @@ import {
     apiEndPoint,
 } from '#utils/constants';
 
-import Stats from './Stats';
 import Tooltip from './Tooltip';
+import Sidepanel from './Sidepanel';
 import useMapStateForFiveW from './useMapStateForFiveW';
 
 import {
@@ -146,7 +146,7 @@ const Dashboard = (props: Props) => {
     const [
         fiveWMapStatePending,
         fiveWMapState,
-        fivewStats,
+        fiveWStats,
     ] = useMapStateForFiveW(regionLevel, selectedFiveWOption);
 
 
@@ -333,9 +333,9 @@ const Dashboard = (props: Props) => {
             }
             const { id } = clickedRegionProperties.feature;
             const code = String(id);
-            return fivewStats.find(v => v.code === code);
+            return fiveWStats.find(v => v.code === code);
         },
-        [fivewStats, clickedRegionProperties],
+        [fiveWStats, clickedRegionProperties],
     );
 
     const indicatorData = useMemo(
@@ -373,36 +373,38 @@ const Dashboard = (props: Props) => {
                     <LoadingAnimation />
                 </Backdrop>
              ) */}
-            <IndicatorMap
-                className={styles.mapContainer}
-                regionLevel={regionLevel}
-                choroplethMapState={choroplethMapState}
-                choroplethMapPaint={mapPaint}
-                bubbleMapState={bubbleMapState}
-                bubbleMapPaint={bubblePaint}
-                rasterLayer={selectedRasterLayer}
-                onClick={handleMapRegionOnClick}
-                printMode={printMode}
-                hideTooltipOnHover
-            >
-                {clickedRegionProperties && (
-                    <MapTooltip
-                        coordinates={clickedRegionProperties.lngLat}
-                        tooltipOptions={onClickTooltipOptions}
-                        onHide={handleTooltipClose}
-                    >
-                        <Tooltip
-                            feature={clickedRegionProperties.feature}
-                            dfidData={dfidData}
-                            indicatorData={indicatorData}
-                        />
-                    </MapTooltip>
-                )}
-            </IndicatorMap>
-            <Stats
-                className={styles.stats}
-                fiveW={fivewStats}
-            />
+            <div className={styles.mainContent}>
+                <IndicatorMap
+                    className={styles.mapContainer}
+                    regionLevel={regionLevel}
+                    choroplethMapState={choroplethMapState}
+                    choroplethMapPaint={mapPaint}
+                    bubbleMapState={bubbleMapState}
+                    bubbleMapPaint={bubblePaint}
+                    rasterLayer={selectedRasterLayer}
+                    onClick={handleMapRegionOnClick}
+                    printMode={printMode}
+                    hideTooltipOnHover
+                >
+                    {clickedRegionProperties && (
+                        <MapTooltip
+                            coordinates={clickedRegionProperties.lngLat}
+                            tooltipOptions={onClickTooltipOptions}
+                            onHide={handleTooltipClose}
+                        >
+                            <Tooltip
+                                feature={clickedRegionProperties.feature}
+                                dfidData={dfidData}
+                                indicatorData={indicatorData}
+                            />
+                        </MapTooltip>
+                    )}
+                </IndicatorMap>
+                <Sidepanel
+                    className={styles.sidebar}
+                    fiveWData={fiveWStats}
+                />
+            </div>
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />
                 <div className={styles.separator} />

@@ -1,0 +1,21 @@
+.sidepanel {
+    position: relative;
+    transition: .6s margin-right ease-in-out;
+    border-left: var(--width-separator-thin) solid var(--color-separator);
+    background-color: var(--color-foreground);
+    padding: 0;
+
+    .toggle-visibility-button {
+        position: absolute;
+        top: var(--spacing-medium);
+        left: 0;
+        transform: translateX(-100%);
+        border-radius: 0;
+        padding: var(--spacing-medium) var(--spacing-extra-small);
+        font-size: var(--font-size-large);
+    }
+
+    &.hidden {
+        margin-right: calc(-1 * var(--width-sidepanel));
+    }
+}

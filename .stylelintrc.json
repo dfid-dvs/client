@@ -1,4 +1,5 @@
 {
+    "defaultSeverity": "warning",
     "plugins": [],
     "extends": [
         "stylelint-config-recommended",
