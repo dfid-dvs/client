@@ -7,19 +7,28 @@ import { MultiResponse } from '#types';
 
 import Table, { createColumn } from '#components/Table';
 import useSorting, { useSortState } from '#components/Table/useSorting';
-import useFiltering, { useFilterState } from '#components/Table/useFiltering';
+import useFiltering, { useFilterState, FilterParameter } from '#components/Table/useFiltering';
 import HeaderCell from '#components/Table/HeaderCell';
 import Cell from '#components/Table/Cell';
 import { SortDirection, FilterType } from '#components/Table/types';
-import Numeral from '#components/Numeral';
+
+import HeaderWithSelection from './HeaderWithSelection';
+import Charts from './Charts';
 
 import { FiveW } from '../types';
+import Numeral from '#components/Numeral';
 
 import styles from './styles.css';
 
 type ExtractKeys<T, M> = {
     [K in keyof Required<T>]: Required<T>[K] extends M ? K : never
 }[keyof T];
+
+interface HeaderProps {
+    name: string;
+    handleButtonClick?: (columnId: string) => void;
+    onFilterValueChange: (name: string, value: Omit<FilterParameter, 'id'>) => void;
+}
 
 interface Program {
     id: number;
@@ -47,6 +56,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
 
     const { sortState, setSortState } = useSortState();
     const { filtering, setFilteringItem, getFilteringItem } = useFilterState();
+    const [selectedColumn, setSelectedColumn] = useState<string | undefined>();
 
     const columns = useMemo(
         () => {
@@ -79,7 +89,13 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             });
 
             const numberColumn = (colName: numericKeys) => ({
-                headerCellRenderer: HeaderCell,
+                headerCellRenderer: (headerProps: HeaderProps) => (
+                    <HeaderWithSelection
+                        selected={selectedColumn}
+                        handleClick={setSelectedColumn}
+                        {...headerProps}
+                    />
+                ),
                 headerCellRendererParams: {
                     onSortChange: setSortState,
                     sortable: true,
@@ -112,7 +128,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                 createColumn('totalBeneficiary', 'Total Beneficiary', numberColumn),
             ];
         },
-        [sortState, getFilteringItem, setFilteringItem, setSortState],
+        [selectedColumn, sortState, getFilteringItem, setFilteringItem, setSortState],
     );
 
     const filteredFiveW = useFiltering(filtering, columns, fiveW);
@@ -121,6 +137,10 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     return (
         <div className={className}>
             <h3>Region-wise data</h3>
+            <Charts
+                fiveWData={fiveW}
+                dataKey={selectedColumn}
+            />
             <Table
                 data={sortedFiveW}
                 keySelector={fiveWKeySelector}
