@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from 'react';
-import { _cs } from '@togglecorp/fujs';
+import { _cs, isTruthyString } from '@togglecorp/fujs';
 import {
     FaSortUp,
     FaSortDown,
@@ -7,17 +7,27 @@ import {
 } from 'react-icons/fa';
 
 import Button from '#components/Button';
+import TextInput from '#components/TextInput';
 
-import { BaseHeader, SortDirection } from '../types';
+import { BaseHeader, SortDirection, FilterType } from '../types';
+import { SortParameter } from '../useSorting';
+import { FilterParameter } from '../useFiltering';
 
 import styles from './styles.css';
 
-interface Sort {
-    name: string;
-    direction: SortDirection;
+interface HeaderCellProps extends BaseHeader {
+    onSortChange?: (value: SortParameter | undefined) => void;
+    sortable?: boolean;
+    sortDirection?: SortDirection;
+    defaultSortDirection?: SortDirection;
+
+    filterType?: FilterType;
+
+    filterValue?: Omit<FilterParameter, 'id'>;
+    onFilterValueChange: (name: string, value: Omit<FilterParameter, 'id'>) => void;
 }
 
-function HeaderCell(props: BaseHeader & { onSortChange?: (value: Sort | undefined) => void }) {
+function HeaderCell(props: HeaderCellProps) {
     const {
         className,
         title,
@@ -27,6 +37,10 @@ function HeaderCell(props: BaseHeader & { onSortChange?: (value: Sort | undefine
         sortDirection,
         sortable,
         onSortChange,
+
+        filterType,
+        filterValue,
+        onFilterValueChange,
     } = props;
 
     const handleSortClick = useCallback(
@@ -49,26 +63,77 @@ function HeaderCell(props: BaseHeader & { onSortChange?: (value: Sort | undefine
                 onSortChange(undefined);
             }
         },
-        [name, onSortChange, sortDirection],
+        [name, onSortChange, sortDirection, defaultSortDirection],
     );
 
     return (
         <div className={_cs(className, styles.headerCell)}>
-            {sortable && (
-                <Button
-                    transparent
-                    onClick={handleSortClick}
-                >
-                    {!sortDirection && <FaSort />}
-                    {sortDirection === SortDirection.asc && <FaSortUp />}
-                    {sortDirection === SortDirection.dsc && <FaSortDown />}
-                </Button>
-            )}
-            <div className={styles.title}>
-                {title}
+            <div className={styles.titleContainer}>
+                {sortable && (
+                    <Button
+                        transparent
+                        onClick={handleSortClick}
+                    >
+                        {!sortDirection && <FaSort />}
+                        {sortDirection === SortDirection.asc && <FaSortUp />}
+                        {sortDirection === SortDirection.dsc && <FaSortDown />}
+                    </Button>
+                )}
+                <div className={styles.title}>
+                    {title}
+                </div>
+            </div>
+            <div className={styles.filterContainer}>
+                {filterType === FilterType.string && (
+                    <TextInput
+                        className={styles.textInput}
+                        value={filterValue?.subMatch}
+                        placeholder="Search"
+                        onChange={(value: string) => {
+                            onFilterValueChange(
+                                name,
+                                { ...filterValue, subMatch: value },
+                            );
+                        }}
+                    />
+                )}
+                {filterType === FilterType.number && (
+                    <>
+                        <TextInput
+                            className={styles.numberInput}
+                            value={filterValue?.greaterThanOrEqualTo}
+                            placeholder="Min"
+                            type="number"
+                            onChange={(value: string) => {
+                                const numericValue = isTruthyString(value) ? +value : undefined;
+                                onFilterValueChange(
+                                    name,
+                                    { ...filterValue, greaterThanOrEqualTo: numericValue },
+                                );
+                            }}
+                        />
+                        <TextInput
+                            className={styles.numberInput}
+                            value={filterValue?.lessThanOrEqualTo}
+                            type="number"
+                            placeholder="Max"
+                            onChange={(value: string) => {
+                                const numericValue = isTruthyString(value) ? +value : undefined;
+                                onFilterValueChange(
+                                    name,
+                                    { ...filterValue, lessThanOrEqualTo: numericValue },
+                                );
+                            }}
+                        />
+                    </>
+                )}
             </div>
         </div>
     );
 }
+
+HeaderCell.defaultProps = {
+    defaultSortDirection: SortDirection.asc,
+};
 
 export default memo(HeaderCell);

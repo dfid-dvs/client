@@ -1,4 +1,4 @@
-import React, { useMemo, Fragment } from 'react';
+import React, { useMemo, memo } from 'react';
 import {
     isNotDefined,
     listToGroupList,
@@ -101,9 +101,9 @@ function GroupedList<D, P, K extends OptionKey, GP, GK extends OptionKey>(
     });
 
     return (
-        <Fragment>
+        <>
             {children}
-        </Fragment>
+        </>
     );
 }
 
@@ -137,9 +137,9 @@ function List<D, P, K extends OptionKey, GP, GK extends OptionKey>(
 
     if (!hasGroup(props)) {
         return (
-            <Fragment>
+            <>
                 {data.map(renderListItem)}
-            </Fragment>
+            </>
         );
     }
 
@@ -154,4 +154,4 @@ List.defaultProps = {
     data: [],
 };
 
-export default List;
+export default memo(List);

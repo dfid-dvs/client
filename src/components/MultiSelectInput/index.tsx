@@ -22,6 +22,7 @@ import CheckboxButton from '#components/CheckboxButton';
 
 import styles from './styles.css';
 
+// use memo
 interface OptionProps {
     name: string;
     selected: boolean;

@@ -22,6 +22,7 @@ import RawButton, { Props as RawButtonProps } from '#components/RawButton';
 
 import styles from './styles.css';
 
+// use memo
 function Option(props: RawButtonProps & { selected: boolean }) {
     const divRef = useRef<HTMLButtonElement>(null);
     const focusedByMouse = useRef(false);

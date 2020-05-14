@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import styles from './styles.css';
@@ -37,4 +37,4 @@ function HintAndError(props: Props) {
     );
 }
 
-export default HintAndError;
+export default memo(HintAndError);

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, memo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import List from '#components/List';
@@ -151,4 +151,4 @@ BubbleLegend.defaultProps = {
     negativeColor: '#de2d26',
 };
 
-export default BubbleLegend;
+export default memo(BubbleLegend);

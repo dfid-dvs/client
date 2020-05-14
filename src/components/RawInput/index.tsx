@@ -58,5 +58,8 @@ function RawInput<T=string>(props: Props<T>) {
         />
     );
 }
+RawInput.defaultProps = {
+    value: '',
+};
 
 export default RawInput;

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import styles from './styles.css';
@@ -45,4 +45,4 @@ function LastUpdatedDate(props: Props) {
         </div>
     );
 }
-export default LastUpdatedDate;
+export default memo(LastUpdatedDate);
