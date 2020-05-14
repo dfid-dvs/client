@@ -1,11 +1,12 @@
 .dashboard {
     display: flex;
-    flex-direction: column;
     position: relative;
+    flex-direction: column;
     background-color: var(--color-background-alt);
 
     .main-content {
         display: flex;
+        position: relative;
         flex-grow: 1;
         overflow: hidden;
 
@@ -21,14 +22,16 @@
 
     }
 
+    --width-config-container: 320px;
+
     .map-style-config-container {
         position: absolute;
         bottom: var(--spacing-medium);
         left: var(--spacing-medium);
         border: var(--width-separator-thin) solid var(--color-separator);
-        background-color: #fff;
-        padding: var(--spacing-medium);
-        width: 400px;
+        background-color: var(--color-foreground);
+        padding: var(--spacing-large);
+        width: var(--width-config-container);
 
         .separator {
             margin: var(--spacing-large) 0;
@@ -51,28 +54,29 @@
         }
     }
 
+    --width-max-legend-container: 512px;
+    --height-max-legend-container: 420px;
     .legend-container {
         display: flex;
         position: absolute;
-        bottom: 10px;
-        left: calc(400px + 2 * var(--spacing-medium));
+        bottom: var(--spacing-medium);
+        left: calc(var(--width-config-container) + var(--spacing-medium));
         align-items: flex-end;
-        max-width: 512px;
-        max-height: 400px;
+        max-width: var(--width-max-legend-container);
+        max-height: var(--height-max-legend-container);
 
         .legend {
-            margin: 0 var(--spacing-small);
-            border: 1px solid rgba(0, 0, 0, .1);
-            background-color: #fff;
-            padding: var(--spacing-medium);
+            border: var(--width-separator-thin) solid rgba(0, 0, 0, .1);
+            background-color: var(--color-foreground);
+            padding: var(--spacing-large);
         }
     }
 
     .print-mode-button {
         position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 1111111;
+        top: var(--spacing-medium);
+        left: var(--spacing-medium);
+        z-index: 1;
     }
 
     &.print-mode {
@@ -86,8 +90,8 @@
         }
 
         .legend-container {
-            bottom: calc(var(--height-print-bar) + 10px);
-            left: 10px;
+            bottom: calc(var(--height-print-bar) + var(--spacing-medium));
+            left: var(--spacing-medium);
         }
     }
 }

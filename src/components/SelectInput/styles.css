@@ -1,6 +1,4 @@
 .text-input{
-    background-color: var(--color-background);
-
     .clear-button {
         font-size: var(--font-size-medium);
     }
@@ -16,20 +14,22 @@
     position: fixed;
     top: 50%;
     left: 50%;
+    z-index: 1;
     border: var(--width-separator-thin) solid var(--color-separator);
-    background-color: #fff;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, .3);
+    background-color: var(--color-foreground);
     max-width: 90vw;
-    max-height: 50vh;
+    max-height: 60vh;
     overflow: auto;
 
     .message {
-        padding: 6px;
+        padding: var(--spacing-medium);
         color: var(--color-text-disabled);
     }
 
     .group {
         display: block;
-        padding: 6px 10px;
+        padding: var(--spacing-small) var(--spacing-medium);
         width: 100%;
         text-align: left;
 
@@ -38,7 +38,7 @@
 
     .option {
         display: block;
-        padding: 6px 10px;
+        padding: var(--spacing-small) var(--spacing-medium);
         width: 100%;
         text-align: left;
 

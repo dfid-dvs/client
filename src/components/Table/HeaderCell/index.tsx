@@ -4,6 +4,9 @@ import {
     FaSortUp,
     FaSortDown,
     FaSort,
+    FaLessThanEqual,
+    FaGreaterThanEqual,
+    FaSearch,
 } from 'react-icons/fa';
 
 import Button from '#components/Button';
@@ -86,6 +89,7 @@ function HeaderCell(props: HeaderCellProps) {
             <div className={styles.filterContainer}>
                 {filterType === FilterType.string && (
                     <TextInput
+                        icons={<FaSearch />}
                         className={styles.textInput}
                         value={filterValue?.subMatch}
                         placeholder="Search"
@@ -100,6 +104,7 @@ function HeaderCell(props: HeaderCellProps) {
                 {filterType === FilterType.number && (
                     <>
                         <TextInput
+                            icons={<FaGreaterThanEqual />}
                             className={styles.numberInput}
                             value={filterValue?.greaterThanOrEqualTo}
                             placeholder="Min"
@@ -113,6 +118,7 @@ function HeaderCell(props: HeaderCellProps) {
                             }}
                         />
                         <TextInput
+                            icons={<FaLessThanEqual />}
                             className={styles.numberInput}
                             value={filterValue?.lessThanOrEqualTo}
                             type="number"

@@ -402,7 +402,7 @@ const Dashboard = (props: Props) => {
                 </IndicatorMap>
                 <Sidepanel
                     className={styles.sidebar}
-                    fiveWData={fiveWStats}
+                    fiveWList={fiveWStats}
                 />
             </div>
             <div className={styles.mapStyleConfigContainer}>

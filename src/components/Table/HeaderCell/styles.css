@@ -16,3 +16,16 @@
         padding: var(--spacing-extra-small);
     }
 }
+
+.text-input,
+.number-input {
+    background-color: #fff;
+
+    >* {
+        border-radius: 0!important;
+    }
+}
+
+.number-input {
+    width: 108px;
+}

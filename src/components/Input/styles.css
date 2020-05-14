@@ -1,31 +1,36 @@
 .input-container {
+    border-bottom: var(--width-separator-thin) solid transparent;
+
     .main {
         display: flex;
-        border-bottom: 1px solid transparent;
-        border-radius: 5px;
-        background-color: rgba(255, 255, 255, .1);
-        padding: var(--spacing-small);
+        background-color: var(--color-background);
+        padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-extra-small));
 
         .icons {
             display: flex;
             align-items: center;
             flex-shrink: 0;
+            padding: 0 var(--spacing-extra-small);
         }
 
         .input {
             flex-grow: 1;
+            padding: 0 var(--spacing-extra-small);
         }
 
         .actions {
             display: flex;
             align-items: center;
             flex-shrink: 0;
+            padding: 0 var(--spacing-extra-small);
         }
     }
 
     &:focus-within {
-        .main {
-            border-bottom-color: var(--color-accent);
+        border-bottom-color: var(--color-accent);
+
+        .label {
+            color: var(--color-accent);
         }
     }
 }

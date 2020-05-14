@@ -1,11 +1,23 @@
 .program-selector {
     display: flex;
+    background-color: rgba(255, 255, 255, .1);
 
     .indicator-select-input {
-        padding: var(--spacing-small) var(--spacing-medium);
-        width: 400px;
+        padding: 0;
+        width: 420px;
+        color: var(--color-text);
     }
-    .sector-input, .marker-input {
-        padding: var(--spacing-small) var(--spacing-medium);
+
+    .sector-input,
+    .marker-input {
+        padding: 0 var(--spacing-medium);
     }
 }
+
+.program-select-dropdown,
+.sectors-dropdown,
+.markers-dropdown {
+    z-index: 111;
+    min-width: 360px!important;
+}
+

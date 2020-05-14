@@ -2,20 +2,24 @@
     --spacing-super-small: 1px;
     --spacing-extra-small: 3px;
     --spacing-small: 6px;
+    --spacing-small-medium: 8px;
     --spacing-medium: 10px;
+    --spacing-large-medium: 13px;
     --spacing-large: 16px;
 
-    --font-size-extra-small: 9px;
-    --font-size-small: 12px;
-    --font-size-small-medium: 13px;
-    --font-size-medium: 14px;
-    --font-size-medium-large: 16px;
+    --font-size-extra-small: 10px;
+    --font-size-small: 11px;
+    --font-size-small-medium: 12px;
+    --font-size-medium: 13px;
+    --font-size-large-medium: 15px;
     --font-size-large: 18px;
     --font-size-extra-large: 24px;
 
     --font-weight-light: 400;
     --font-weight-medium: 400;
     --font-weight-bold: 700;
+
+    --color-text: rgba(0, 0, 0, .7);
 
     --color-primary: #05367d;
     --color-text-on-primary: rgba(255, 255, 255, .9);
@@ -36,10 +40,33 @@
 
     --color-background-accent-hint: #18cc9c55;
     --color-background-hover: rgba(0, 0, 0, .06);
-    --color-background: rgba(0, 0, 0, .03);
+    --color-background: #f3f3f3;
+
+    --color-foreground: #fff;
 
     --width-separator-thin: 1px;
     --height-print-bar: 64px;
 
     --width-sidepanel: 420px;
+    --width-scrollbar: 7px;
 }
+
+body {
+    color: var(--color-text);
+    font-size: var(--font-size-medium);
+}
+
+::-webkit-scrollbar-track {
+    background-color: #eee;
+}
+
+::-webkit-scrollbar {
+    background-color: #eee;
+    width: var(--width-scrollbar);
+    height: var(--width-scrollbar);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+}
+

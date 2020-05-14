@@ -301,10 +301,12 @@ function ProgramSelector(props: Props) {
                 value={selectedProgram}
                 optionLabelSelector={programLabelSelector}
                 optionKeySelector={programKeySelector}
+                dropdownContainerClassName={styles.programSelectDropdown}
             />
             <DropdownMenu
                 label={`Sectors ${selectedSector && selectedSector.length > 0 ? '*' : ''}`}
                 className={styles.sectorInput}
+                dropdownContainerClassName={styles.sectorsDropdown}
             >
                 <TreeInput
                     className={styles.sectorTree}
@@ -321,6 +323,7 @@ function ProgramSelector(props: Props) {
             <DropdownMenu
                 label={`Markers ${selectedMarker && selectedMarker.length > 0 ? '*' : ''}`}
                 className={styles.markerInput}
+                dropdownContainerClassName={styles.markersDropdown}
             >
                 <TreeInput
                     className={styles.markerTree}

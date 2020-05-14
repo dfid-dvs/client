@@ -10,10 +10,11 @@ import useSorting, { useSortState } from '#components/Table/useSorting';
 import useFiltering, { useFilterState } from '#components/Table/useFiltering';
 import HeaderCell from '#components/Table/HeaderCell';
 import Cell from '#components/Table/Cell';
+import Button from '#components/Button';
 import { SortDirection, FilterType } from '#components/Table/types';
 import Numeral from '#components/Numeral';
 
-import { FiveW } from '../types';
+import { FiveW } from '../../types';
 
 import styles from './styles.css';
 
@@ -38,11 +39,13 @@ const fiveWKeySelector = (data: FiveW) => data.id;
 interface RegionWiseTableProps {
     className?: string;
     fiveW: FiveW[];
+    onCloseButtonClick: () => void;
 }
 function RegionWiseTable(props: RegionWiseTableProps) {
     const {
         className,
         fiveW,
+        onCloseButtonClick,
     } = props;
 
     const { sortState, setSortState } = useSortState();
@@ -119,13 +122,24 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     const sortedFiveW = useSorting(sortState, columns, filteredFiveW);
 
     return (
-        <div className={className}>
-            <h3>Region-wise data</h3>
-            <Table
-                data={sortedFiveW}
-                keySelector={fiveWKeySelector}
-                columns={columns}
-            />
+        <div className={_cs(styles.regionTable, className)}>
+            <header className={styles.header}>
+                <h3 className={styles.heading}>
+                    Region-wise data
+                </h3>
+                <div className={styles.actions}>
+                    <Button onClick={onCloseButtonClick}>
+                        Close
+                    </Button>
+                </div>
+            </header>
+            <div className={styles.content}>
+                <Table
+                    data={sortedFiveW}
+                    keySelector={fiveWKeySelector}
+                    columns={columns}
+                />
+            </div>
         </div>
     );
 }
@@ -134,10 +148,12 @@ const programKeySelector = (data: Program) => data.id;
 
 interface ProgramWiseTableProps {
     className?: string;
+    onCloseButtonClick: () => void;
 }
 function ProgramWiseTable(props: ProgramWiseTableProps) {
     const {
         className,
+        onCloseButtonClick,
     } = props;
     const [
         programsPending,
@@ -219,30 +235,53 @@ function ProgramWiseTable(props: ProgramWiseTableProps) {
     const sortedPrograms = useSorting(sortState, columns, filteredPrograms);
 
     return (
-        <div className={className}>
-            <h3>Program-wise data</h3>
-            <Table
-                data={sortedPrograms}
-                keySelector={programKeySelector}
-                columns={columns}
-            />
+        <div className={_cs(styles.programTable, className)}>
+            <header className={styles.header}>
+                <h3 className={styles.heading}>
+                    Program-wise data
+                </h3>
+                <div className={styles.actions}>
+                    <Button onClick={onCloseButtonClick}>
+                        Close
+                    </Button>
+                </div>
+            </header>
+            <div className={styles.content}>
+                <Table
+                    data={sortedPrograms}
+                    keySelector={programKeySelector}
+                    columns={columns}
+                />
+            </div>
         </div>
     );
 }
 
 interface Props {
     className: string;
-    fiveW: FiveW[];
+    fiveW: FiveW[] | undefined;
+    onCloseButtonClick: () => void;
 }
+
 function Stats(props: Props) {
-    const { className, fiveW } = props;
+    const {
+        className,
+        fiveW,
+        onCloseButtonClick,
+    } = props;
 
     return (
         <div className={_cs(className, styles.stats)}>
-            <RegionWiseTable
-                fiveW={fiveW}
-            />
-            <ProgramWiseTable />
+            { fiveW ? (
+                <RegionWiseTable
+                    onCloseButtonClick={onCloseButtonClick}
+                    fiveW={fiveW}
+                />
+            ) : (
+                <ProgramWiseTable
+                    onCloseButtonClick={onCloseButtonClick}
+                />
+            )}
         </div>
     );
 }

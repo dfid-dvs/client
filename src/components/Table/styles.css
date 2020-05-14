@@ -1,16 +1,17 @@
 .table {
     position: relative;
-    border: 2px solid rgb(200, 200, 200);
+    border: 0;
     border-collapse: collapse;
+    font-size: var(--font-size-medium);
 
     .header-row {
         .header-cell {
             position: sticky;
             top: 0;
             z-index: 2;
-            border: 1px solid rgb(190, 190, 190);
-            background-color: rgb(235, 235, 235);
-            padding: 7px 5px;
+            border: 0;
+            background-color: var(--color-background);
+            padding: var(--spacing-medium);
 
             &.stick-left {
                 left: 0;
@@ -24,14 +25,14 @@
             position: sticky;
             left: 0;
             z-index: 1;
-            border: 1px solid rgb(190, 190, 190);
-            background-color: rgb(235, 235, 235);
-            padding: 7px 5px;
+            border: 0;
+            background-color: var(--color-background);
+            padding: var(--spacing-medium);
         }
 
         .cell {
-            border: 1px solid rgb(190, 190, 190);
-            padding: 7px 5px;
+            border: 0;
+            padding: var(--spacing-medium);
         }
     }
 }

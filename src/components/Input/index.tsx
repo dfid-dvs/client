@@ -2,6 +2,7 @@ import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import RawInput, { Props as RawInputProps } from '../RawInput';
+import Label from '../Label';
 import styles from './styles.css';
 
 export interface Props<T> extends Omit<RawInputProps<T>, 'elementRef'> {
@@ -29,9 +30,9 @@ function Input<T>(props: Props<T>) {
             className={_cs(styles.inputContainer, className)}
         >
             { label && (
-                <div className={styles.label}>
+                <Label className={styles.label}>
                     { label }
-                </div>
+                </Label>
             )}
             <div className={styles.main}>
                 { icons && (

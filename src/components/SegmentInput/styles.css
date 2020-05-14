@@ -2,14 +2,6 @@
     display: flex;
     flex-direction: column;
 
-    .input-label {
-        opacity: .6;
-
-        &:after {
-            content: ': ';
-        }
-    }
-
     .input-container {
         display: flex;
     }

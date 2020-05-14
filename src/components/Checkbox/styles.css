@@ -1,23 +1,29 @@
 .checkbox {
     display: flex;
+    align-items: flex-end;
     cursor: pointer;
     user-select: none;
 
     .checkmark {
+        align-self: flex-start;
+        flex-shrink: 0;
+        margin-top: var(--spacing-extra-small);
         margin-right: var(--spacing-extra-small);
-        font-size: 1.4em;
+        font-size: 1.6em;
     }
 
     .input {
         display: none;
+        flex-grow: 1;
     }
 
     .label {
         color: var(--color-text);
         font-weight: var(--font-weight-normal);
-        &:hover {
-            background-color: var(--color-background-accent-hint);
-        }
+    }
+
+    &:hover {
+        background-color: var(--color-background-accent-hint);
     }
 
     &.checked {
