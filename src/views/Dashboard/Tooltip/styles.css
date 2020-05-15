@@ -1,0 +1,21 @@
+.tooltip {
+    display: flex;
+    flex-direction: column;
+    max-height: 300px;
+    overflow-y: auto;
+
+    .heading {
+        padding: var(--spacing-small);
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+
+        .sub-heading {
+            padding: 0 var(--spacing-small);
+            font-size: var(--font-size-small);
+            font-weight: var(--font-weight-bold);
+        }
+    }
+}

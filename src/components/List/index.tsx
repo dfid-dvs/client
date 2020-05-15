@@ -1,8 +1,10 @@
-import React, { useMemo, memo } from 'react';
+import React, { useMemo } from 'react';
 import {
     isNotDefined,
     listToGroupList,
 } from '@togglecorp/fujs';
+
+import { typedMemo } from '#utils/common';
 
 import { OptionKey } from '../types';
 
@@ -154,4 +156,4 @@ List.defaultProps = {
     data: [],
 };
 
-export default memo(List);
+export default typedMemo(List);
