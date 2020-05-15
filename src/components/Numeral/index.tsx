@@ -1,5 +1,6 @@
 import React, { memo } from 'react';
 import { _cs, isDefined, formattedNormalize, Lang, addSeparator } from '@togglecorp/fujs';
+
 import styles from './styles.css';
 
 export function getPrecision(value: number | undefined) {
@@ -7,12 +8,12 @@ export function getPrecision(value: number | undefined) {
         return 0;
     }
 
-    const absolute = Math.abs(value);
-    if (absolute < 1) {
-        return Math.ceil(-Math.log10(absolute)) + 1;
+    const absoluteValue = Math.abs(value);
+    if (absoluteValue < 1) {
+        return Math.ceil(-Math.log10(absoluteValue)) + 1;
     }
 
-    if (absolute > 100) {
+    if (absoluteValue > 100) {
         return 0;
     }
     return 2;

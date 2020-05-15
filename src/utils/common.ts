@@ -1,3 +1,5 @@
+import { memo } from 'react';
+
 import {
     isDefined,
     isObject,
@@ -5,8 +7,13 @@ import {
     listToMap,
 } from '@togglecorp/fujs';
 
+import {
+    LegendItem,
+    MapStateItem,
+    RegionLevelOption,
+} from '#types';
+
 import { getPrecision } from '#components/Numeral';
-import { MapStateItem, RegionLevelOption } from '#types';
 
 const forEach = (obj: object, func: (key: string, val: unknown) => void) => {
     Object.keys(obj).forEach((key) => {
@@ -265,7 +272,7 @@ export const generateBubbleMapPaintAndLegend = (
     negativeColor = '#de2d26',
 ): {
     mapPaint: mapboxgl.CirclePaint;
-    legend: { value: number; radius: number }[];
+    legend: LegendItem[];
 } => {
     const minValue = minVal === maxValue
         ? 0
@@ -378,3 +385,6 @@ export const imageUrlToDataUrl = (
     xhr.responseType = 'blob';
     xhr.send();
 };
+
+// Refer https://github.com/DefinitelyTyped/DefinitelyTyped/issues/37087#issuecomment-542793243
+export const typedMemo: (<T>(c: T) => T) = memo;

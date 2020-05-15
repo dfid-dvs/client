@@ -1,4 +1,6 @@
-import React, { memo } from 'react';
+import React from 'react';
+
+import { typedMemo } from '#utils/common';
 
 interface CellProps<T>{
     className?: string;
@@ -17,4 +19,4 @@ function Cell<T>(props: CellProps<T>) {
     );
 }
 
-export default memo(Cell);
+export default typedMemo(Cell);

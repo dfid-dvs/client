@@ -15,8 +15,9 @@ interface Region {
 }
 
 interface IndicatorWithValue extends Indicator{
-    value: number;
+    value: number | undefined;
 }
+
 interface Props {
     feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
     dfidData?: FiveW;
@@ -31,11 +32,18 @@ const Tooltip = ({
         <h3 className={styles.heading}>
             { feature.properties.name }
         </h3>
-        {dfidData && dfidData.id && (
-            <div className={styles.content}>
-                <div className={styles.subHeading}>
-                    DFID Data
-                </div>
+        {indicatorData && (
+            <TextOutput
+                label={indicatorData.fullTitle}
+                value={(
+                    <Numeral
+                        value={indicatorData.value}
+                    />
+                )}
+            />
+        )}
+        {dfidData && (
+            <>
                 <TextOutput
                     label="Allocated Budget"
                     value={(
@@ -69,22 +77,7 @@ const Tooltip = ({
                         />
                     )}
                 />
-            </div>
-        )}
-        {indicatorData && (
-            <div className={styles.content}>
-                <div className={styles.subHeading}>
-                    Indicator Data
-                </div>
-                <TextOutput
-                    label={indicatorData.fullTitle}
-                    value={(
-                        <Numeral
-                            value={indicatorData.value}
-                        />
-                    )}
-                />
-            </div>
+            </>
         )}
     </div>
 );

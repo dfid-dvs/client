@@ -72,7 +72,7 @@ function RegionSelector(props: Props) {
     const [
         selectedRegions,
         setSelectedRegions,
-    ] = React.useState<number | undefined>(undefined);
+    ] = React.useState<number[] | undefined>(undefined);
 
     const {
         regionLevel,

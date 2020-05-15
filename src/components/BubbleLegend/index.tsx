@@ -1,5 +1,6 @@
-import React, { useCallback, memo } from 'react';
+import React, { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
+import { typedMemo } from '#utils/common';
 
 import List from '#components/List';
 import Numeral from '#components/Numeral';
@@ -47,7 +48,7 @@ function LegendItem(props: LegendItemProps) {
     );
 }
 
-interface Props<T, K extends OptionKey> {
+interface Props<T, K> {
     data: T[];
     className?: string;
     title?: string;
@@ -151,4 +152,4 @@ BubbleLegend.defaultProps = {
     negativeColor: '#de2d26',
 };
 
-export default memo(BubbleLegend);
+export default typedMemo(BubbleLegend);

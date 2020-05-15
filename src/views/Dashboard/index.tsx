@@ -1,4 +1,4 @@
-import React, { useMemo, useContext, useState } from 'react';
+import React, { useMemo, useContext, useState, useEffect } from 'react';
 import {
     _cs,
     isDefined,
@@ -148,6 +148,15 @@ const Dashboard = (props: Props) => {
         fiveWMapState,
         fivewStats,
     ] = useMapStateForFiveW(regionLevel, selectedFiveWOption);
+
+
+    // NOTE: clear tooltip on region change
+    useEffect(
+        () => {
+            setClickedRegionProperties(undefined);
+        },
+        [regionLevel],
+    );
 
     const {
         choroplethMapState,
@@ -318,19 +327,26 @@ const Dashboard = (props: Props) => {
     );
 
     const dfidData = useMemo(
-        () => fivewStats.find(v => v.id === clickedRegionProperties?.feature.id),
+        () => {
+            if (!clickedRegionProperties) {
+                return undefined;
+            }
+            const { id } = clickedRegionProperties.feature;
+            const code = String(id);
+            return fivewStats.find(v => v.code === code);
+        },
         [fivewStats, clickedRegionProperties],
     );
 
     const indicatorData = useMemo(
         () => {
-            if (!selectedIndicatorDetails) {
+            if (!selectedIndicatorDetails || !clickedRegionProperties) {
                 return undefined;
             }
 
-            const indicatorValue = indicatorMapState.find(
-                v => v.id === clickedRegionProperties?.feature.id,
-            )?.value;
+            const { id } = clickedRegionProperties.feature;
+
+            const indicatorValue = indicatorMapState.find(v => v.id === id)?.value;
 
             return {
                 ...selectedIndicatorDetails,
@@ -354,9 +370,9 @@ const Dashboard = (props: Props) => {
             />
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
-                <LoadingAnimation />
+                    <LoadingAnimation />
                 </Backdrop>
-                ) */}
+             ) */}
             <IndicatorMap
                 className={styles.mapContainer}
                 regionLevel={regionLevel}
