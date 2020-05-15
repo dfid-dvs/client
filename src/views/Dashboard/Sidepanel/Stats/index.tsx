@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
+import { IoMdClose } from 'react-icons/io';
 import { compareString, compareNumber, _cs } from '@togglecorp/fujs';
 
 import { apiEndPoint } from '#utils/constants';
@@ -108,11 +109,11 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             });
 
             return [
-                createColumn('name', 'Name', stringColumn),
-                createColumn('allocatedBudget', 'Allocated Budget', numberColumn),
-                createColumn('maleBeneficiary', 'Male Beneficiary', numberColumn),
-                createColumn('femaleBeneficiary', 'Female Beneficiary', numberColumn),
-                createColumn('totalBeneficiary', 'Total Beneficiary', numberColumn),
+                createColumn(stringColumn, 'name', 'Name', true),
+                createColumn(numberColumn, 'allocatedBudget', 'Allocated Budget'),
+                createColumn(numberColumn, 'maleBeneficiary', 'Male Beneficiary'),
+                createColumn(numberColumn, 'femaleBeneficiary', 'Female Beneficiary'),
+                createColumn(numberColumn, 'totalBeneficiary', 'Total Beneficiary'),
             ];
         },
         [sortState, getFilteringItem, setFilteringItem, setSortState],
@@ -125,11 +126,15 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         <div className={_cs(styles.regionTable, className)}>
             <header className={styles.header}>
                 <h3 className={styles.heading}>
-                    Region-wise data
+                    Regions
                 </h3>
                 <div className={styles.actions}>
-                    <Button onClick={onCloseButtonClick}>
-                        Close
+                    <Button
+                        onClick={onCloseButtonClick}
+                        transparent
+                        title="Close"
+                    >
+                        <IoMdClose />
                     </Button>
                 </div>
             </header>
@@ -222,10 +227,10 @@ function ProgramWiseTable(props: ProgramWiseTableProps) {
             });
 
             return [
-                createColumn('name', 'Name', stringColumn),
-                createColumn('code', 'Code', stringColumn),
-                createColumn('description', 'Description', stringColumn),
-                createColumn('budget', 'Budget', numberColumn),
+                createColumn(stringColumn, 'name', 'Name', true),
+                createColumn(stringColumn, 'code', 'Code'),
+                createColumn(stringColumn, 'description', 'Description'),
+                createColumn(numberColumn, 'budget', 'Budget'),
             ];
         },
         [sortState, getFilteringItem, setFilteringItem, setSortState],
@@ -238,11 +243,15 @@ function ProgramWiseTable(props: ProgramWiseTableProps) {
         <div className={_cs(styles.programTable, className)}>
             <header className={styles.header}>
                 <h3 className={styles.heading}>
-                    Program-wise data
+                    Programs
                 </h3>
                 <div className={styles.actions}>
-                    <Button onClick={onCloseButtonClick}>
-                        Close
+                    <Button
+                        onClick={onCloseButtonClick}
+                        title="Close"
+                        transparent
+                    >
+                        <IoMdClose />
                     </Button>
                 </div>
             </header>

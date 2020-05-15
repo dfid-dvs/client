@@ -7,14 +7,16 @@ import styles from './styles.css';
 
 // Helper method so that during column creation, id can be re-used
 export function createColumn<KK extends string, D, K, C, H>(
+    modifier: (id: KK) => Omit<Column<D, K, C, H>, 'id' | 'title' | 'cellAsHeader'>,
     id: KK,
     title: string,
-    modifier: (id: KK) => Omit<Column<D, K, C, H>, 'id' | 'title'>,
+    cellAsHeader?: boolean,
 ): Column<D, K, C, H> {
     return {
         ...modifier(id),
         id,
         title,
+        cellAsHeader,
     };
 }
 
@@ -142,7 +144,7 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
                                     return (
                                         <th
                                             key={id}
-                                            className={_cs(styles.headerCell, cellClassName)}
+                                            className={_cs(styles.rowHeaderCell, cellClassName)}
                                             scope="row"
                                         >
                                             {children}

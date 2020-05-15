@@ -44,23 +44,11 @@ function Summary(props: Props) {
         <div className={_cs(className, styles.summary)}>
             <div className={styles.regionSummary}>
                 <header className={styles.header}>
-                    <h3 className={styles.heading}>
-                        Region summary
-                    </h3>
-                    <Button
-                        onClick={onRegionSummaryMoreClick}
-                        className={styles.seeMoreButton}
-                        transparent
-                        variant="primary"
-                    >
-                        See more
-                    </Button>
+                    <h2 className={styles.heading}>
+                        About Nepal
+                    </h2>
                 </header>
                 <div className={styles.content}>
-                    <SummaryOutput
-                        label="Total population"
-                        value={23000000}
-                    />
                     <SummaryOutput
                         label="Provinces"
                         value={7}
@@ -74,46 +62,68 @@ function Summary(props: Props) {
                         value={753}
                     />
                     <SummaryOutput
+                        label="Total population"
+                        value={28940000}
+                    />
+                    <SummaryOutput
                         label="GDP (USD)"
-                        value={28910000000}
+                        value={29040000000}
                     />
                     <SummaryOutput
                         label="Per capita income (USD)"
-                        value={1024}
+                        value={3110}
                     />
                 </div>
             </div>
             <div className={styles.dfidSummary}>
                 <header className={styles.header}>
-                    <h3 className={styles.heading}>
-                        DFID summary
-                    </h3>
-                    <Button
-                        onClick={onDFIDSummaryMoreClick}
-                        className={styles.seeMoreButton}
-                        transparent
-                        variant="primary"
-                    >
-                        See more
-                    </Button>
+                    <h2 className={styles.heading}>
+                        DFID in Nepal
+                    </h2>
                 </header>
                 <div className={styles.content}>
                     <SummaryOutput
-                        label="Spent on active programs (USD)"
-                        value={28910000000}
+                        label="Allocated Budget (USD)"
+                        value={0}
+                    />
+                    <SummaryOutput
+                        label="Total Beneficiaries"
+                        value={0}
+                    />
+                    <SummaryOutput
+                        label="Male Beneficiaries"
+                        value={0}
+                    />
+                    <SummaryOutput
+                        label="Female Beneficiaries"
+                        value={0}
                     />
                     <SummaryOutput
                         label="Active programs"
-                        value={20}
+                        value={0}
                     />
                     <SummaryOutput
                         label="Active partners"
-                        value={47}
+                        value={0}
                     />
                     <SummaryOutput
                         label="Sectors"
-                        value={10}
+                        value={0}
                     />
+                </div>
+                <div className={styles.links}>
+                    <Button
+                        className={styles.link}
+                        onClick={onRegionSummaryMoreClick}
+                    >
+                        Go to regions
+                    </Button>
+                    <Button
+                        className={styles.link}
+                        onClick={onDFIDSummaryMoreClick}
+                    >
+                        Go to programs
+                    </Button>
                 </div>
             </div>
         </div>

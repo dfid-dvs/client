@@ -89,8 +89,10 @@ function HeaderCell(props: HeaderCellProps) {
             <div className={styles.filterContainer}>
                 {filterType === FilterType.string && (
                     <TextInput
-                        icons={<FaSearch />}
+                        icons={<FaSearch className={styles.icon} />}
                         className={styles.textInput}
+                        inputContainerClassName={styles.rawInputContainer}
+                        inputClassName={styles.rawInput}
                         value={filterValue?.subMatch}
                         placeholder="Search"
                         onChange={(value: string) => {
@@ -104,8 +106,10 @@ function HeaderCell(props: HeaderCellProps) {
                 {filterType === FilterType.number && (
                     <>
                         <TextInput
-                            icons={<FaGreaterThanEqual />}
+                            icons={<FaGreaterThanEqual className={styles.icon} />}
                             className={styles.numberInput}
+                            inputContainerClassName={styles.rawInputContainer}
+                            inputClassName={styles.rawInput}
                             value={filterValue?.greaterThanOrEqualTo}
                             placeholder="Min"
                             type="number"
@@ -118,8 +122,10 @@ function HeaderCell(props: HeaderCellProps) {
                             }}
                         />
                         <TextInput
-                            icons={<FaLessThanEqual />}
+                            icons={<FaLessThanEqual className={styles.icon} />}
                             className={styles.numberInput}
+                            inputContainerClassName={styles.rawInputContainer}
+                            inputClassName={styles.rawInput}
                             value={filterValue?.lessThanOrEqualTo}
                             type="number"
                             placeholder="Max"

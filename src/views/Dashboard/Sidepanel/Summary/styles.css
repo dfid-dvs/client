@@ -29,19 +29,6 @@
             .heading {
                 flex-grow: 1;
                 padding: var(--spacing-small);
-                font-size: var(--font-size-medium);
-            }
-
-            .see-more-button {
-                flex-shrink: 0;
-                margin: var(--spacing-small);
-                text-transform: uppercase;
-                color: var(--color-primary);
-                font-size: var(--font-size-extra-small);
-
-                &:disabled {
-                    color: var(--color-text-disabled);
-                }
             }
         }
 
@@ -52,6 +39,14 @@
             .summary-output {
                 flex-basis: calc(100% / 3);
                 flex-grow: 1;
+            }
+        }
+
+        .links {
+            display: flex;
+
+            .link {
+                margin: var(--spacing-small);
             }
         }
     }

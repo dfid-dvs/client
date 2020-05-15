@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import Map from '#remap';
+import MapBounds from '#remap/MapBounds';
 import MapContainer from '#remap/MapContainer';
 import MapSource from '#remap/MapSource';
 import MapTooltip from '#remap/MapTooltip';
@@ -171,6 +172,10 @@ function IndicatorMap(props: Props) {
             navControlPosition="bottom-right"
         >
             <MapContainer className={_cs(styles.mapContainer, className)} />
+            <MapBounds
+                bounds={defaultBounds}
+                padding={100}
+            />
             <MapSource
                 sourceKey="nepal"
                 sourceOptions={{

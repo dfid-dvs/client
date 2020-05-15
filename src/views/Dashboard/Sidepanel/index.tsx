@@ -26,21 +26,22 @@ function Sidepanel(props: Props) {
 
     const [statMode, setStatMode] = React.useState<'program' | 'region' | undefined>(undefined);
     const [isHidden, setIsHidden] = React.useState(false);
+
     const handleToggleVisibilityButtonClick = React.useCallback(() => {
         setIsHidden(prevValue => !prevValue);
-    }, [setIsHidden]);
+    }, []);
 
     const handleRegionSummaryMoreClick = React.useCallback(() => {
         setStatMode('region');
-    }, [setStatMode]);
+    }, []);
 
     const handleDFIDSummaryMoreClick = React.useCallback(() => {
         setStatMode('program');
-    }, [setStatMode]);
+    }, []);
 
     const handleStatCloseButtonClick = React.useCallback(() => {
         setStatMode(undefined);
-    }, [setStatMode]);
+    }, []);
 
     return (
         <>
