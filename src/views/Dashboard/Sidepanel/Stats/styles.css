@@ -1,0 +1,35 @@
+.stats {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid green;
+    padding: var(--spacing-large);
+    overflow: auto;
+
+    .region-table,
+    .program-table {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        overflow: auto;
+
+        .header {
+            display: flex;
+            flex-shrink: 0;
+
+            .heading {
+                flex-grow: 1;
+                padding: var(--spacing-medium);
+            }
+
+            .actions {
+                flex-shrink: 0;
+                padding: var(--spacing-medium);
+            }
+        }
+
+        .content {
+            flex-grow: 1;
+            overflow: auto;
+        }
+    }
+}

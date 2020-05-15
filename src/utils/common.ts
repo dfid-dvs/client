@@ -51,6 +51,8 @@ export function getFloatPlacement(parentRef: React.RefObject<HTMLElement>) {
         right: 'unset',
         bottom: 'unset',
         left: 'unset',
+        minWidth: 'unset',
+        width: 'unset',
     };
 
     if (parentRef.current) {
@@ -75,6 +77,9 @@ export function getFloatPlacement(parentRef: React.RefObject<HTMLElement>) {
         } else if (verticalPosition === 'bottom') {
             placement.top = `${y + height}px`;
         }
+
+        placement.width = `${width}px`;
+        placement.minWidth = '240px';
     }
 
     return placement;

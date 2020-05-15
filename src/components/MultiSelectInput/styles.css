@@ -1,6 +1,4 @@
 .text-input{
-    background-color: var(--color-background);
-
     .clear-button {
         font-size: var(--font-size-medium);
     }
@@ -16,7 +14,9 @@
     position: fixed;
     top: 50%;
     left: 50%;
+    z-index: 1;
     border: var(--width-separator-thin) solid var(--color-separator);
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, .3);
     background-color: #fff;
     max-width: 90vw;
     max-height: 50vh;

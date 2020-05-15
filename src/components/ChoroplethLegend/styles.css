@@ -1,6 +1,6 @@
 .legend-container {
     .heading {
-        margin-bottom: var(--spacing-medium);
+        margin-bottom: 0;
     }
 
     .choropleth-legend {
@@ -15,7 +15,7 @@
             .color {
                 flex-shrink: 0;
                 width: var(--font-size-medium);
-                height: var(--font-size-extra-large);
+                height: var(--font-size-large);
             }
 
             .value {

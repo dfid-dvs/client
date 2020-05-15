@@ -2,10 +2,13 @@ import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import RawInput, { Props as RawInputProps } from '../RawInput';
+import Label from '../Label';
 import styles from './styles.css';
 
 export interface Props<T> extends Omit<RawInputProps<T>, 'elementRef'> {
     className?: string;
+    inputContainerClassName?: string;
+    inputClassName?: string;
     icons?: React.ReactNode;
     actions?: React.ReactNode;
     inputRef?: React.RefObject<HTMLInputElement>;
@@ -20,6 +23,8 @@ function Input<T>(props: Props<T>) {
         icons,
         actions,
         inputRef,
+        inputContainerClassName,
+        inputClassName,
         ...otherProps
     } = props;
 
@@ -29,11 +34,11 @@ function Input<T>(props: Props<T>) {
             className={_cs(styles.inputContainer, className)}
         >
             { label && (
-                <div className={styles.label}>
+                <Label className={styles.label}>
                     { label }
-                </div>
+                </Label>
             )}
-            <div className={styles.main}>
+            <div className={_cs(styles.main, inputContainerClassName)}>
                 { icons && (
                     <div className={styles.icons}>
                         { icons }
@@ -41,7 +46,7 @@ function Input<T>(props: Props<T>) {
                 )}
                 <RawInput
                     elementRef={inputRef}
-                    className={styles.input}
+                    className={_cs(styles.input, inputClassName)}
                     {...otherProps}
                 />
                 { actions && (

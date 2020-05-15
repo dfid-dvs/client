@@ -10,7 +10,6 @@
 
     .view {
         flex-grow: 1;
-        /* padding: var(--spacing-large); */
         overflow: auto;
     }
 
@@ -21,18 +20,3 @@
         justify-content: center;
     }
 }
-
-::-webkit-scrollbar-track {
-    background-color: #eee;
-}
-
-::-webkit-scrollbar {
-    background-color: #eee;
-    width: 10px;
-    height: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #bbb;
-}
-

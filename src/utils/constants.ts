@@ -1,9 +1,8 @@
 export const colorDomain: string[] = [
-    '#eff3ff',
-    '#c6dbef',
-    '#9ecae1',
-    '#6baed6',
-    '#3182bd',
+    '#e7f2ff',
+    '#b2c8e6',
+    '#7f9fce',
+    '#4e77b5',
     '#08519c',
 ];
 

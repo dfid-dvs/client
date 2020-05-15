@@ -69,7 +69,11 @@ function DropdownMenu(props: Props) {
     return (
         <>
             <RawButton
-                className={_cs(className, styles.dropdownMenu)}
+                className={_cs(
+                    className,
+                    styles.dropdownMenu,
+                    showDropdown && styles.dropdownShown,
+                )}
                 elementRef={buttonRef}
                 onClick={handleShowDropdown}
             >

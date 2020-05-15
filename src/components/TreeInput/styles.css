@@ -9,6 +9,7 @@
     >.left {
         display: flex;
         flex-direction: column;
+        margin-top: var(--spacing-extra-small);
 
         .expand-button {
             flex-shrink: 0;
@@ -41,6 +42,8 @@
     }
 
     .right {
+        flex-grow: 1;
+
         .checkbox {
             display: flex;
             align-items: center;

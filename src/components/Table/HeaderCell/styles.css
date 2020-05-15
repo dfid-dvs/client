@@ -14,5 +14,30 @@
     .filter-container {
         display: flex;
         padding: var(--spacing-extra-small);
+
+        .text-input,
+        .number-input {
+            .icon {
+                font-size: var(--font-size-extra-small);
+            }
+
+            .raw-input-container {
+                background-color: var(--color-foreground);
+            }
+        }
+
+        .number-input {
+            .raw-input-container {
+                .raw-input {
+                    width: 108px;
+                    -moz-appearance:textfield;
+                    &::-webkit-outer-spin-button,
+                    &::-webkit-inner-spin-button {
+                        -webkit-appearance: none;
+                    }
+                }
+            }
+        }
+
     }
 }

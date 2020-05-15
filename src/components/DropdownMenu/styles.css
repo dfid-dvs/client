@@ -1,13 +1,18 @@
 .dropdown-menu {
     padding: var(--spacing-small);
+
+    &.dropdown-shown {
+        background-color: var(--color-background-accent-hint);
+    }
 }
 
 .dropdown-container {
     position: fixed;
     top: 50%;
     left: 50%;
+    z-index: 1;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, .3);
     background-color: #fff;
-    padding: 10px;
     max-width: 90vw;
     max-height: 50vh;
     overflow: auto;

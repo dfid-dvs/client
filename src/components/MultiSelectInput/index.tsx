@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useCallback } from 'react';
 // import { IoIosSearch } from 'react-icons/io';
-import { IoIosClose } from 'react-icons/io';
+import { IoMdClose } from 'react-icons/io';
 import {
     _cs,
     caseInsensitiveSubmatch,
@@ -305,7 +305,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                         name="close"
                         onClick={handleClearClick}
                         icons={(
-                            <IoIosClose />
+                            <IoMdClose />
                         )}
                     />
                 )}

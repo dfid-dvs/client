@@ -20,8 +20,6 @@ interface Props<T, V> {
     disabled?: boolean;
     hideLabel?: boolean;
     error?: string;
-    labelRightComponent?: React.ReactNode;
-    labelRightComponentClassName?: string;
 }
 
 
@@ -35,10 +33,6 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
         label,
         value,
         hideLabel,
-        labelRightComponent,
-        labelRightComponentClassName,
-        error,
-        disabled,
         onChange,
         name,
     } = props;
@@ -46,13 +40,7 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
     return (
         <div className={_cs(className, styles.segmentInput)}>
             {!hideLabel && (
-                <Label
-                    className={styles.label}
-                    disabled={disabled}
-                    error={!!error}
-                    rightComponent={labelRightComponent}
-                    rightComponentClassName={labelRightComponentClassName}
-                >
+                <Label>
                     {label}
                 </Label>
             )}
