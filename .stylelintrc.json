@@ -1,10 +1,13 @@
 {
-    "plugins": [],
+    "plugins": [
+        "stylelint-no-unused-selectors"
+    ],
     "extends": [
         "stylelint-config-recommended",
         "stylelint-config-concentric"
     ],
     "rules": {
-        "indentation": 4
+        "indentation": 4,
+        "plugin/no-unused-selectors": true
     }
 }

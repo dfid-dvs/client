@@ -13,7 +13,9 @@ import StylishPlugin from 'eslint/lib/cli-engine/formatters/stylish';
 import postcssPresetEnv from 'postcss-preset-env';
 import postcssNested from 'postcss-nested';
 import postcssNormalize from 'postcss-normalize';
+import postcssCamelCase from 'postcss-camel-case';
 import StyleLintPlugin from 'stylelint-webpack-plugin';
+import StyleLint from 'stylelint';
 import OptimizeCssAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
 import { config } from 'dotenv';
@@ -150,6 +152,8 @@ module.exports = (env) => {
                                     postcssPresetEnv(),
                                     postcssNested(),
                                     postcssNormalize(),
+                                    postcssCamelCase(),
+                                    StyleLint(),
                                 ],
                                 sourceMap: true,
                             },
@@ -181,10 +185,10 @@ module.exports = (env) => {
             }),
             // Remove build folder anyway
             new CleanWebpackPlugin(),
-            new StyleLintPlugin({
-                files: ['**/*.css'],
-                context: appBase,
-            }),
+            // new StyleLintPlugin({
+            //     files: ['**/*.css'],
+            //     context: appSrc,
+            // }),
             new HtmlWebpackPlugin({
                 template: appIndexHtml,
                 filename: './index.html',

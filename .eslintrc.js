@@ -1,7 +1,6 @@
 module.exports = {
     'extends': [
         'airbnb',
-        'plugin:postcss-modules/recommended',
         'plugin:@typescript-eslint/recommended',
     ],
     'env': {
@@ -12,13 +11,9 @@ module.exports = {
         'react',
         'react-hooks',
         'import',
-        'postcss-modules',
         '@typescript-eslint',
     ],
     'settings': {
-        'postcss-modules': {
-            'camelCase': 'camelCaseOnly',
-        },
         'import/resolver': {
             'babel-module': {
                 'root': ['.'],
@@ -81,11 +76,6 @@ module.exports = {
         'import/extensions': ['off', 'never'],
         'import/no-extraneous-dependencies': ['error', {'devDependencies': true }],
 
-        // 'postcss-modules/no-unused-class': [1, { 'camelCase': true }],
-        // 'postcss-modules/no-undef-class': [1, { 'camelCase': true }],
-        'postcss-modules/no-unused-class': 'warn',
-        'postcss-modules/no-undef-class': 'warn',
-
         'prefer-destructuring': 'warn',
         'function-paren-newline': ['warn', 'consistent'],
         'object-curly-newline': [2, {
@@ -99,7 +89,6 @@ module.exports = {
 
         '@typescript-eslint/no-empty-interface': 0,
         '@typescript-eslint/explicit-function-return-type': 0,
-
 
         'react/no-unused-state': 'warn',
         'react/default-props-match-prop-types': ['warn', {
