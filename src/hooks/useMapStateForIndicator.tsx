@@ -20,19 +20,7 @@ function useMapStateForIndicator(
 ): [boolean, MapStateItem[]] {
     let regionIndicatorUrl: string | undefined;
     if (isDefined(selectedIndicator) && String(selectedIndicator) !== '-1') {
-        switch (regionLevel) {
-            case 'municipality':
-                regionIndicatorUrl = `${apiEndPoint}/core/municipality-indicator/?indicator_id=${selectedIndicator}`;
-                break;
-            case 'district':
-                regionIndicatorUrl = `${apiEndPoint}/core/district-indicator/${selectedIndicator}/`;
-                break;
-            case 'province':
-                regionIndicatorUrl = `${apiEndPoint}/core/province-indicator/${selectedIndicator}/`;
-                break;
-            default:
-                break;
-        }
+        regionIndicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/?indicator_id=${selectedIndicator}`;
     }
 
     const [

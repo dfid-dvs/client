@@ -18,6 +18,7 @@
         .text-input,
         .number-input {
             .icon {
+                color: var(--color-text-label);
                 font-size: var(--font-size-extra-small);
             }
 

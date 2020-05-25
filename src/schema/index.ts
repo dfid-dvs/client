@@ -227,6 +227,9 @@ const userDefinedSchemas: Schema[] = [
         name: 'indicator-list',
         description: 'Get metadata on indicators',
         fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
             results: {
                 arrayType: {
                     name: 'indicator-list-item',

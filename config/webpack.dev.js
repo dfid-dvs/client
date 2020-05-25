@@ -182,7 +182,7 @@ module.exports = (env) => {
             new CleanWebpackPlugin(),
             new StyleLintPlugin({
                 files: ['**/*.css'],
-                context: appBase,
+                context: appSrc,
             }),
             new HtmlWebpackPlugin({
                 template: appIndexHtml,
