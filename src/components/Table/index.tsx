@@ -82,7 +82,7 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
             )}
             <thead>
                 <tr className={_cs(styles.headerRow, headerRowClassName)}>
-                    {columns.map((column) => {
+                    {columns.map((column, index) => {
                         const {
                             id,
                             title,
@@ -97,7 +97,8 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
                                 {...headerCellRendererParams}
                                 name={id}
                                 title={title}
-                                className={headerCellRendererClassName}
+                                index={index}
+                                className={_cs(headerCellRendererClassName, styles.headerComponent)}
                             />
                         );
                         return (
@@ -136,7 +137,7 @@ function Table<D, K extends string | number, C extends Column<D, K, any, any>>(
                                 const children = (
                                     <Renderer
                                         {...otherProps}
-                                        className={cellRendererClassName}
+                                        className={_cs(cellRendererClassName, styles.cellComponent)}
                                         name={id}
                                     />
                                 );

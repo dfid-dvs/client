@@ -67,6 +67,7 @@ export function useFiltering<T>(
     if (!filterParameters || filterParameters.length <= 0) {
         return data;
     }
+    // FIXME: use useMemo?
     const filteredData = data?.filter(datum => (
         filterParameters.every((filterParameter) => {
             let test = true;

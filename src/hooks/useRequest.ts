@@ -10,13 +10,6 @@ const requestOption: RequestInit = {
     },
 };
 
-interface Options {
-    headers: {
-        Accept: string;
-        'Content-Type': string;
-    };
-}
-
 function useRequest<T>(
     url: string | undefined,
     schemaName: string,
@@ -47,7 +40,7 @@ function useRequest<T>(
 
             const controller = new AbortController();
 
-            async function fetchResource(myUrl: string, myOptions: object | undefined) {
+            async function fetchResource(myUrl: string, myOptions: RequestInit | undefined) {
                 const { signal } = controller;
 
                 let res;
@@ -72,22 +65,6 @@ function useRequest<T>(
                     console.error(`An error occured while parsing data from ${myUrl}`, e);
                     return;
                 }
-
-                /*
-                if (!extras || extras.schemaName === undefined) {
-                    // NOTE: usually there is no response body for DELETE
-                    if (method !== methods.DELETE) {
-                        console.error(`Schema is not defined for ${url} ${method}`);
-                    }
-                } else {
-                    try {
-                        schema.validate(sanitizedResponse, extras.schemaName);
-                    } catch (e) {
-                        console.error(url, method, sanitizedResponse, e.message);
-                        throw (e);
-                    }
-                }
-                */
 
                 if (res.ok) {
                     if (schemaName && options.method !== 'DELETE') {

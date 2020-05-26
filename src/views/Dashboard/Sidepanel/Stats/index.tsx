@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { IoMdClose } from 'react-icons/io';
 import { compareString, compareNumber, _cs } from '@togglecorp/fujs';
 
@@ -9,6 +9,7 @@ import { MultiResponse } from '#types';
 import Table, { createColumn } from '#components/Table';
 import useSorting, { useSortState } from '#components/Table/useSorting';
 import useFiltering, { useFilterState } from '#components/Table/useFiltering';
+import useOrdering, { useOrderState } from '#components/Table/useOrdering';
 import HeaderCell from '#components/Table/HeaderCell';
 import Cell from '#components/Table/Cell';
 import Button from '#components/Button';
@@ -51,6 +52,13 @@ function RegionWiseTable(props: RegionWiseTableProps) {
 
     const { sortState, setSortState } = useSortState();
     const { filtering, setFilteringItem, getFilteringItem } = useFilterState();
+    const { ordering, moveOrderingItem, setOrderingItemVisibility } = useOrderState([
+        { name: 'name' },
+        { name: 'allocatedBudget' },
+        { name: 'maleBeneficiary' },
+        { name: 'femaleBeneficiary' },
+        { name: 'totalBeneficiary' },
+    ]);
 
     const columns = useMemo(
         () => {
@@ -60,6 +68,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             const stringColumn = (colName: stringKeys) => ({
                 headerCellRenderer: HeaderCell,
                 headerCellRendererParams: {
+                    name: colName,
                     onSortChange: setSortState,
                     sortable: true,
                     sortDirection: colName === sortState?.name ? sortState?.direction : undefined,
@@ -67,6 +76,12 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     filterType: FilterType.string,
                     filterValue: getFilteringItem(colName),
                     onFilterValueChange: setFilteringItem,
+
+                    draggable: true,
+                    onReorder: moveOrderingItem,
+
+                    hideable: colName !== 'name',
+                    onVisibilityChange: setOrderingItemVisibility,
                 },
 
                 cellAsHeader: true,
@@ -85,6 +100,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             const numberColumn = (colName: numericKeys) => ({
                 headerCellRenderer: HeaderCell,
                 headerCellRendererParams: {
+                    name: colName,
                     onSortChange: setSortState,
                     sortable: true,
                     sortDirection: colName === sortState?.name ? sortState?.direction : undefined,
@@ -93,6 +109,12 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     filterType: FilterType.number,
                     filterValue: getFilteringItem(colName),
                     onFilterValueChange: setFilteringItem,
+
+                    draggable: true,
+                    onReorder: moveOrderingItem,
+
+                    hideable: true,
+                    onVisibilityChange: setOrderingItemVisibility,
                 },
 
                 cellRenderer: Numeral,
@@ -116,11 +138,16 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                 createColumn(numberColumn, 'totalBeneficiary', 'Total Beneficiary'),
             ];
         },
-        [sortState, getFilteringItem, setFilteringItem, setSortState],
+        [
+            sortState, setSortState,
+            getFilteringItem, setFilteringItem,
+            moveOrderingItem, setOrderingItemVisibility,
+        ],
     );
 
-    const filteredFiveW = useFiltering(filtering, columns, fiveW);
-    const sortedFiveW = useSorting(sortState, columns, filteredFiveW);
+    const orderedColumns = useOrdering(columns, ordering);
+    const filteredFiveW = useFiltering(filtering, orderedColumns, fiveW);
+    const sortedFiveW = useSorting(sortState, orderedColumns, filteredFiveW);
 
     return (
         <div className={_cs(styles.regionTable, className)}>
@@ -142,7 +169,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                 <Table
                     data={sortedFiveW}
                     keySelector={fiveWKeySelector}
-                    columns={columns}
+                    columns={orderedColumns}
                 />
             </div>
         </div>
