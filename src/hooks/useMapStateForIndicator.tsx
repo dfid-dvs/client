@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { isDefined } from '@togglecorp/fujs';
 import {
     MultiResponse,
@@ -19,14 +20,29 @@ function useMapStateForIndicator(
     selectedIndicator: number | undefined,
 ): [boolean, MapStateItem[]] {
     let regionIndicatorUrl: string | undefined;
+
+    const options: RequestInit | undefined = useMemo(
+        () => (selectedIndicator ? {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({
+                indicatorId: [selectedIndicator],
+            }),
+        } : undefined),
+        [selectedIndicator],
+    );
+
     if (isDefined(selectedIndicator) && String(selectedIndicator) !== '-1') {
-        regionIndicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/?indicator_id=${selectedIndicator}`;
+        regionIndicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/`;
     }
 
     const [
         regionIndicatorListPending,
         regionIndicatorListResponse,
-    ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl, 'indicator');
+    ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl, 'indicator', options);
 
     let mapState: MapStateItem[] = [];
     if (regionIndicatorListResponse && isDefined(selectedIndicator)) {

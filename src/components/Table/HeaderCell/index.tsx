@@ -1,5 +1,6 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useState, useRef } from 'react';
 import { _cs, isTruthyString } from '@togglecorp/fujs';
+
 import {
     FaSortUp,
     FaSortDown,
@@ -7,7 +8,11 @@ import {
     FaLessThanEqual,
     FaGreaterThanEqual,
     FaSearch,
+    FaGripVertical,
 } from 'react-icons/fa';
+import {
+    IoMdEyeOff,
+} from 'react-icons/io';
 
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
@@ -18,23 +23,87 @@ import { FilterParameter } from '../useFiltering';
 
 import styles from './styles.css';
 
+interface DragHandler<T> {
+    (e: React.DragEvent<T>): void;
+}
+
+function useDropHandler(
+    dragStartHandler: DragHandler<HTMLDivElement>,
+    dropHandler: DragHandler<HTMLDivElement>,
+) {
+    const [dropping, setDropping] = useState(false);
+    const dragEnterCount = useRef(0);
+
+    const onDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+    };
+
+    const onDragEnter = (e: React.DragEvent<HTMLDivElement>) => {
+        if (dragEnterCount.current === 0) {
+            setDropping(true);
+
+            dragStartHandler(e);
+        }
+        dragEnterCount.current += 1;
+    };
+    const onDragLeave = () => {
+        dragEnterCount.current -= 1;
+        if (dragEnterCount.current === 0) {
+            setDropping(false);
+        }
+    };
+
+    const onDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        dragEnterCount.current = 0;
+        setDropping(false);
+
+        dropHandler(e);
+
+        e.preventDefault();
+    };
+
+
+    return {
+        dropping,
+
+        onDragOver,
+        onDragEnter,
+        onDragLeave,
+        onDrop,
+    };
+}
+
 interface HeaderCellProps extends BaseHeader {
     onSortChange?: (value: SortParameter | undefined) => void;
+
     sortable?: boolean;
     sortDirection?: SortDirection;
     defaultSortDirection?: SortDirection;
 
     filterType?: FilterType;
-
     filterValue?: Omit<FilterParameter, 'id'>;
     onFilterValueChange: (name: string, value: Omit<FilterParameter, 'id'>) => void;
+
+    draggable?: boolean;
+    onReorder?: (drag: string, drop: string) => void;
+
+    hideable?: boolean;
+    onVisibilityChange?: (itemKey: string, hidden: boolean | undefined) => void;
 }
+
+interface DropInfo {
+    name: string;
+    index: number;
+}
+
+let tempDropInfo: DropInfo | undefined;
 
 function HeaderCell(props: HeaderCellProps) {
     const {
         className,
         title,
         name,
+        index,
 
         defaultSortDirection,
         sortDirection,
@@ -44,7 +113,25 @@ function HeaderCell(props: HeaderCellProps) {
         filterType,
         filterValue,
         onFilterValueChange,
+
+        draggable,
+        onReorder,
+
+        hideable,
+        onVisibilityChange,
     } = props;
+
+    const [dragging, setDragging] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const handleHideClick = useCallback(
+        () => {
+            if (onVisibilityChange) {
+                onVisibilityChange(name, true);
+            }
+        },
+        [onVisibilityChange, name],
+    );
 
     const handleSortClick = useCallback(
         () => {
@@ -69,22 +156,130 @@ function HeaderCell(props: HeaderCellProps) {
         [name, onSortChange, sortDirection, defaultSortDirection],
     );
 
+    const handleDragStart = useCallback(
+        (e: React.DragEvent<HTMLDivElement>) => {
+            setDragging(true);
+
+            if (containerRef.current) {
+                const size = containerRef.current.getBoundingClientRect();
+                e.dataTransfer.setDragImage(containerRef.current, size.width, 0);
+            }
+            const content: DropInfo = {
+                name,
+                index,
+            };
+            e.dataTransfer.dropEffect = 'move';
+            e.dataTransfer.setData('text/plain', JSON.stringify(content));
+
+            tempDropInfo = content;
+        },
+        [index, name],
+    );
+    const handleDragEnd = useCallback(
+        () => {
+            setDragging(false);
+
+            tempDropInfo = undefined;
+        },
+        [],
+    );
+
+    const [dropInfo, setDropInfo] = useState<DropInfo | undefined>();
+
+    const handleDragEnter = useCallback(
+        () => {
+            // NOTE: this is a hack as we event.dataTransfer.getData() doesn't work
+            setDropInfo(tempDropInfo);
+        },
+        [],
+    );
+
+    const handleDrop = useCallback(
+        (e: React.DragEvent<HTMLDivElement>) => {
+            if (!onReorder) {
+                return;
+            }
+
+            try {
+                const data = e.dataTransfer.getData('text/plain');
+                const parsedData = JSON.parse(data) as DropInfo;
+
+                if (parsedData.name) {
+                    onReorder(parsedData.name, name);
+                }
+            } catch (ex) {
+                console.error(ex);
+            }
+        },
+        [name, onReorder],
+    );
+
+    const {
+        dropping,
+        onDragOver,
+        onDragEnter,
+        onDragLeave,
+        onDrop,
+    } = useDropHandler(handleDragEnter, handleDrop);
+
     return (
-        <div className={_cs(className, styles.headerCell)}>
-            <div className={styles.titleContainer}>
+        <div
+            ref={containerRef}
+            className={_cs(
+                className,
+                styles.headerCell,
+                dragging && styles.dragging,
+                (!dragging && dropping) && (
+                    dropInfo && index > dropInfo.index
+                        ? styles.droppingBehind
+                        : styles.dropping
+                ),
+            )}
+            onDragOver={onDragOver}
+            onDragEnter={onDragEnter}
+            onDragLeave={onDragLeave}
+            onDrop={onDrop}
+        >
+            <div
+                className={_cs(styles.titleContainer)}
+            >
                 {sortable && (
                     <Button
                         transparent
                         onClick={handleSortClick}
+                        title="Sort column"
                     >
                         {!sortDirection && <FaSort />}
                         {sortDirection === SortDirection.asc && <FaSortUp />}
                         {sortDirection === SortDirection.dsc && <FaSortDown />}
                     </Button>
                 )}
-                <div className={styles.title}>
+                <div
+                    className={styles.title}
+                >
                     {title}
                 </div>
+                {hideable && (
+                    <Button
+                        className={styles.hideButton}
+                        transparent
+                        onClick={handleHideClick}
+                        title="Hide column"
+                    >
+                        <IoMdEyeOff />
+                    </Button>
+                )}
+                {draggable && (
+                    <div
+                        className={styles.grip}
+                        role="presentation"
+                        draggable
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
+                    >
+                        <FaGripVertical />
+                    </div>
+                )}
             </div>
             <div className={styles.filterContainer}>
                 {filterType === FilterType.string && (

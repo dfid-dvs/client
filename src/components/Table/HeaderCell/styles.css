@@ -1,13 +1,51 @@
 .header-cell {
     display: flex;
     flex-direction: column;
+    border-right: 2px solid transparent;
+    border-left: 2px solid transparent;
+
+    &.dragging {
+        opacity: 0.5;
+    }
+
+    &.dropping {
+        border-left: 2px solid var(--color-accent);
+    }
+    &.dropping-behind {
+        border-right: 2px solid var(--color-accent);
+    }
 
     .title-container {
         display: flex;
         padding: var(--spacing-extra-small);
 
         .title {
+            flex-grow: 1;
             padding: 0 var(--spacing-small);
+            text-align: left;
+        }
+
+        .hide-button {
+            flex-shrink: 0;
+            visibility: hidden;
+        }
+
+        .grip {
+            flex-shrink: 0;
+            visibility: hidden;
+            margin-left: var(--spacing-small);
+            cursor: move;
+        }
+    }
+
+    &:hover {
+        .title-container {
+            .hide-button {
+                visibility: visible;
+            }
+            .grip {
+                visibility: visible;
+            }
         }
     }
 
