@@ -18,7 +18,8 @@
         "test:watch": "jest --watch",
         "typecheck": "tsc",
         "lint": "eslint ./src --rule 'import/no-unresolved: 0'",
-        "test:coverage": "jest --coverage"
+        "test:coverage": "jest --coverage",
+        "deploy:dev": "test -d build && cp -f build/index.html build/200.hml && surge --domain dvs-nepal.surge.sh build/"
     },
     "jest": {
         "setupFiles": [
@@ -141,6 +142,7 @@
         "stylelint-config-concentric": "^2.0.2",
         "stylelint-config-recommended": "^3.0.0",
         "stylelint-webpack-plugin": "^1.2.3",
+        "surge": "^0.21.3",
         "terser-webpack-plugin": "^1.4.1",
         "typescript": "^3.5.3",
         "webpack": "^4.41.2",
