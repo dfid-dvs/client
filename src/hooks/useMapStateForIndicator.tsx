@@ -29,7 +29,10 @@ function useMapStateForIndicator(
                 'Content-Type': 'application/json; charset=utf-8',
             },
             body: JSON.stringify({
-                indicatorId: [selectedIndicator],
+                // indicatorId: [selectedIndicator],
+                // FIXME:
+                // eslint-disable-next-line
+                indicator_id: [selectedIndicator],
             }),
         } : undefined),
         [selectedIndicator],

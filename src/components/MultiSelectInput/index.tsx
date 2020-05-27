@@ -110,8 +110,8 @@ interface Props<T, K> {
     placeholder?: string;
     hideLabel?: boolean;
     error?: string;
-    labelRightComponent?: React.ReactNode;
-    labelRightComponentClassName?: string;
+    // labelRightComponent?: React.ReactNode;
+    // labelRightComponentClassName?: string;
 
     groupKeySelector?: (d: T) => string;
 }
@@ -131,8 +131,8 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
         hideLabel,
         label,
         error,
-        labelRightComponent,
-        labelRightComponentClassName,
+        // labelRightComponent,
+        // labelRightComponentClassName,
     } = props;
 
     const inputContainerRef = React.useRef<HTMLDivElement>(null);
@@ -283,8 +283,8 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                     className={styles.label}
                     disabled={disabled}
                     error={!!error}
-                    rightComponent={labelRightComponent}
-                    rightComponentClassName={labelRightComponentClassName}
+                    // rightComponent={labelRightComponent}
+                    // rightComponentClassName={labelRightComponentClassName}
                 >
                     {label}
                 </Label>

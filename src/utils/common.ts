@@ -393,3 +393,7 @@ export const imageUrlToDataUrl = (
 
 // Refer https://github.com/DefinitelyTyped/DefinitelyTyped/issues/37087#issuecomment-542793243
 export const typedMemo: (<T>(c: T) => T) = memo;
+
+export type ExtractKeys<T, M> = {
+    [K in keyof Required<T>]: Required<T>[K] extends M ? K : never
+}[keyof T];
