@@ -2,4 +2,11 @@
     padding: var(--spacing-extra-small) 0;
     color: var(--color-text-label);
     font-size: var(--font-size-extra-small);
+
+    &.disabled {
+        color: var(--color-text-disabled);
+    }
+    &.error {
+        color: var(--color-danger);
+    }
 }

@@ -300,8 +300,8 @@ export interface TreeProps<T, K extends OptionKey> {
 
     defaultCollapseLevel: number;
 
-    labelRightComponent?: React.ReactNode;
-    labelRightComponentClassName?: string;
+    // labelRightComponent?: React.ReactNode;
+    // labelRightComponentClassName?: string;
 }
 
 function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
@@ -312,8 +312,8 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
         hint,
         label,
         labelClassName,
-        labelRightComponent,
-        labelRightComponentClassName,
+        // labelRightComponent,
+        // labelRightComponentClassName,
         showHintAndError,
         showLabel,
         title,
@@ -364,9 +364,9 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
                     className={labelClassName}
                     disabled={disabled}
                     error={!!error}
-                    title={label}
-                    rightComponent={labelRightComponent}
-                    rightComponentClassName={labelRightComponentClassName}
+                    // title={label}
+                    // rightComponent={labelRightComponent}
+                    // rightComponentClassName={labelRightComponentClassName}
                 >
                     {label}
                 </Label>

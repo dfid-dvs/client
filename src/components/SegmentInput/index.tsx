@@ -35,12 +35,17 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
         hideLabel,
         onChange,
         name,
+        disabled,
+        error,
     } = props;
 
     return (
         <div className={_cs(className, styles.segmentInput)}>
             {!hideLabel && (
-                <Label>
+                <Label
+                    disabled={disabled}
+                    error={!!error}
+                >
                     {label}
                 </Label>
             )}
@@ -61,6 +66,7 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
                             onClick={onChange ? (() => onChange(key, name)) : undefined}
                             isActive={isActive}
                             label={optionLabel}
+                            disabled={disabled}
                         />
                     );
                 })}
