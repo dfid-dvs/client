@@ -22,7 +22,7 @@ export function createColumn<KK extends string, D, K, C, H>(
 
 interface Column<D, K, C, H> {
     id: string;
-    title?: string;
+    title: string;
 
     headerCellRenderer: React.ComponentType<H>;
     headerCellRendererParams: Omit<H, keyof BaseHeader>;
