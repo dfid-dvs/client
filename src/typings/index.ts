@@ -67,4 +67,5 @@ export interface Indicator {
 
     unit?: string;
     datatype?: 'float' | 'integer';
+    federalLevel: 'all' | 'province' | 'district' | 'municipality';
 }

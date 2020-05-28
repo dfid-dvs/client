@@ -130,7 +130,16 @@ const Dashboard = (props: Props) => {
         indicatorListPending,
         indicatorListResponse,
     ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl, 'indicator-list');
-    const indicatorList = indicatorListResponse?.results;
+
+    const indicatorList = indicatorListResponse?.results.filter(
+        indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regionLevel,
+    );
+    const validSelectedIndicator = (
+        isDefined(selectedIndicator)
+        && indicatorList?.find(indicator => indicator.id === selectedIndicator)
+    )
+        ? selectedIndicator
+        : undefined;
 
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
     const [
@@ -141,7 +150,7 @@ const Dashboard = (props: Props) => {
     const [
         indicatorMapStatePending,
         indicatorMapState,
-    ] = useMapStateForIndicator(regionLevel, selectedIndicator);
+    ] = useMapStateForIndicator(regionLevel, validSelectedIndicator);
 
     const [
         fiveWMapStatePending,
@@ -171,7 +180,9 @@ const Dashboard = (props: Props) => {
 
         titleForPrintBar,
     } = useMemo(() => {
-        const indicator = indicatorList?.find(i => indicatorKeySelector(i) === selectedIndicator);
+        const indicator = indicatorList?.find(
+            i => indicatorKeySelector(i) === validSelectedIndicator,
+        );
         const indicatorTitle = indicator && indicatorLabelSelector(indicator);
 
         const fiveW = fiveWOptions.find(i => fiveWKeySelector(i) === selectedFiveWOption);
@@ -211,7 +222,7 @@ const Dashboard = (props: Props) => {
         invertMapStyle,
         indicatorMapState,
         fiveWMapState,
-        selectedIndicator,
+        validSelectedIndicator,
         selectedFiveWOption,
         indicatorList,
     ]);
@@ -277,14 +288,14 @@ const Dashboard = (props: Props) => {
 
     const selectedIndicatorDetails = useMemo(
         () => {
-            if (selectedIndicator) {
+            if (validSelectedIndicator) {
                 return indicatorListResponse?.results.find(
-                    d => d.id === selectedIndicator,
+                    d => d.id === validSelectedIndicator,
                 );
             }
             return undefined;
         },
-        [selectedIndicator, indicatorListResponse],
+        [validSelectedIndicator, indicatorListResponse],
     );
 
     const rasterLayers = useMemo(
@@ -423,7 +434,7 @@ const Dashboard = (props: Props) => {
                     disabled={indicatorListPending}
                     options={indicatorList}
                     onChange={setSelectedIndicator}
-                    value={selectedIndicator}
+                    value={validSelectedIndicator}
                     optionLabelSelector={indicatorLabelSelector}
                     optionKeySelector={indicatorKeySelector}
                     groupKeySelector={indicatorGroupKeySelector}

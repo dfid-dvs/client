@@ -242,7 +242,7 @@ const userDefinedSchemas: Schema[] = [
                         isCovid: { type: 'boolean' },
                         unit: { type: 'string' },
                         dataType: { type: 'string' }, // only 'float' for now
-                        federalLevel: { type: 'string' }, // only 'palika level' for now
+                        federalLevel: { type: 'string' }, // only 'district', 'municipality', 'province', 'all' for now
                         filter: { type: 'unknown' }, // not used
                     },
                 },
