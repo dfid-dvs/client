@@ -1,23 +1,66 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { _cs } from '@togglecorp/fujs';
+import { MdOpenInNew } from 'react-icons/md';
 
 import Button from '#components/Button';
+import DomainContext from '#components/DomainContext';
+import LastUpdated from '#components/LastUpdated';
 import Numeral from '#components/Numeral';
+
+import useRequest from '#hooks/useRequest';
 
 import styles from './styles.css';
 
-interface Props {
-    className?: string;
-    onRegionSummaryMoreClick: () => void;
-    onDFIDSummaryMoreClick: () => void;
+interface Status {
+    tested_positive: number;
+    tested_negative: number;
+    tested_total: number;
+    in_isolation: number;
+    pending_result: number;
+    recovered: number;
+    deaths: 0;
+    source: string;
+    updated_at: string;
+    latest_sit_report: {
+        type: string;
+        _id: string;
+        no: number;
+        date: string;
+        url: string;
+        created_at: string;
+        updated_at: string;
+        __v: number;
+    };
 }
+
+interface ExternalLinkProps {
+    label: string | number;
+    link: string | undefined;
+}
+
+const ExternalLink = ({
+    link,
+    label,
+}: ExternalLinkProps) => (
+    <a
+        href={link}
+        className={styles.externalLink}
+        target="_blank"
+        rel="noopener noreferrer"
+    >
+        <MdOpenInNew className={styles.icon} />
+        <div className={styles.label}>
+            { label }
+        </div>
+    </a>
+);
 
 function SummaryOutput({
     label,
     value,
 }: {
     label: string;
-    value: number;
+    value: number | undefined;
 }) {
     return (
         <div className={styles.summaryOutput}>
@@ -25,12 +68,19 @@ function SummaryOutput({
                 className={styles.value}
                 value={value}
                 normalize
+                placeholder="-"
             />
             <div className={styles.label}>
                 { label }
             </div>
         </div>
     );
+}
+
+interface Props {
+    className?: string;
+    onRegionSummaryMoreClick: () => void;
+    onDFIDSummaryMoreClick: () => void;
 }
 
 function Summary(props: Props) {
@@ -40,8 +90,57 @@ function Summary(props: Props) {
         onDFIDSummaryMoreClick,
     } = props;
 
+    const { covidMode } = useContext(DomainContext);
+
+    const [
+        statusPending,
+        status,
+    ] = useRequest<Status>(covidMode ? 'https://nepalcorona.info/api/v1/data/nepal' : undefined, 'corona-data');
+
     return (
         <div className={_cs(className, styles.summary)}>
+            {covidMode && (
+                <div className={styles.covidSummary}>
+                    <header className={styles.header}>
+                        <h2 className={styles.heading}>
+                            COVID-19 Summary
+                        </h2>
+                        <LastUpdated date={status?.updated_at} />
+                    </header>
+                    <div className={styles.content}>
+                        <SummaryOutput
+                            label="Tests performed"
+                            value={status?.tested_total}
+                        />
+                        <SummaryOutput
+                            label="Tested positive"
+                            value={status?.tested_positive}
+                        />
+                        <SummaryOutput
+                            label="Tested negative"
+                            value={status?.tested_negative}
+                        />
+                        <SummaryOutput
+                            label="In isolation"
+                            value={status?.in_isolation}
+                        />
+                        <SummaryOutput
+                            label="Deaths"
+                            value={status?.deaths}
+                        />
+                    </div>
+                    <div className={styles.footer}>
+                        <ExternalLink
+                            link={status?.source}
+                            label="Source"
+                        />
+                        <ExternalLink
+                            link={status?.latest_sit_report?.url}
+                            label="Latest situation report"
+                        />
+                    </div>
+                </div>
+            )}
             <div className={styles.regionSummary}>
                 <header className={styles.header}>
                     <h2 className={styles.heading}>

@@ -1,3 +1,22 @@
+.external-link {
+    display: flex;
+    align-items: center;
+    padding: calc(var(--spacing-medium) - var(--spacing-small));
+    text-decoration: none;
+    color: var(--color-primary);
+    font-size: var(--font-size-extra-small);
+    font-weight: var(--font-weight-bold);
+
+    .icon {
+        margin: var(--spacing-extra-small) var(--spacing-super-small);
+    }
+
+    .label {
+        padding: var(--spacing-extra-small) var(--spacing-small);
+        text-transform: capitalize;
+    }
+}
+
 .summary-output {
     padding: var(--spacing-medium) calc(var(--spacing-medium) - var(--spacing-extra-small));
 
@@ -17,6 +36,7 @@
 .summary {
     padding: 0;
 
+    .covid-summary,
     .region-summary,
     .DFID-summary {
         padding: calc(var(--spacing-large) - var(--spacing-medium));
@@ -38,8 +58,12 @@
 
             .summary-output {
                 flex-basis: calc(100% / 3);
-                flex-grow: 1;
             }
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
         }
 
         .links {

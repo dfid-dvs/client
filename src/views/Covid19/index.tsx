@@ -1,8 +1,4 @@
-import React, { useState, useCallback, useContext, useMemo, useEffect } from 'react';
-import {
-    IoIosClose,
-    IoIosInformationCircleOutline,
-} from 'react-icons/io';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import {
     _cs,
     isDefined,
@@ -16,7 +12,6 @@ import DomainContext from '#components/DomainContext';
 import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import ToggleButton from '#components/ToggleButton';
-import Button from '#components/Button';
 import BubbleLegend, { BubbleLegendType } from '#components/BubbleLegend';
 import IndicatorMap from '#components/IndicatorMap';
 import PrintButton from '#components/PrintButton';
@@ -47,25 +42,11 @@ import {
 
 import Stats from './Stats';
 
-import TravelTimeLayer, {
-    DesignatedHospital,
-} from './TravelTimeLayer';
-import {
-    fourHourColor,
-    eightHourColor,
-    twelveHourColor,
-    fourHourUncoveredColor,
-    eightHourUncoveredColor,
-    twelveHourUncoveredColor,
-} from './TravelTimeLayer/mapTheme';
 
 import Tooltip from './Tooltip';
 import {
     FiveWOption,
     AgeGroup,
-    HospitalType,
-    Season,
-    TravelTimeType,
     AgeGroupOption,
     CovidFiveWOptionKey,
 } from './types';
@@ -75,32 +56,6 @@ import styles from './styles.css';
 const legendKeySelector = (option: LegendItem) => option.radius;
 const legendValueSelector = (option: LegendItem) => option.value;
 const legendRadiusSelector = (option: LegendItem) => option.radius;
-
-const travelTimeDetails = (
-    <span>
-        These maps show the catchment areas of COVID hospitals in Nepal based on
-        one-way travel time cutoffs of 4 / 8 / 12 hours using the fastest possible
-        means of transport, which roughly correspond to 1 / 2 / 3 day round trips.
-        The uncovered layers show the inverse of these catchments.
-        Population from
-        <a
-            className={styles.link}
-            href="https://www.worldpop.org/project/categories?id=3"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            WorldPop 2020 projections.
-        </a>
-        <a
-            className={styles.link}
-            href="http://documents.worldbank.org/curated/en/605991565195559324/Measuring-Inequality-of-Access-Modeling-Physical-Remoteness-in-Nepal"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            Travel time models from Banick and Kawasoe (2019)
-        </a>
-    </span>
-);
 
 const fiveWOptions: FiveWOption[] = [
     {
@@ -130,27 +85,6 @@ const ageGroupKeySelector = (ageGroup: AgeGroup) => ageGroup.key;
 const ageGroupLabelSelector = (ageGroup: AgeGroup) => ageGroup.label;
 const ageGroupTooltipLabelSelector = (ageGroup: AgeGroup) => ageGroup.tooltipLabel;
 
-const hospitalTypeOptions: HospitalType[] = [
-    { key: 'deshosp', label: 'Covid Designated' },
-    { key: 'allcovidhfs', label: 'All' },
-];
-const hospitalTypeKeySelector = (hospitalType: HospitalType) => hospitalType.key;
-const hospitalTypeLabelSelector = (hospitalType: HospitalType) => hospitalType.label;
-
-const seasonOptions: Season[] = [
-    { key: 'dry', label: 'Dry' },
-    { key: 'msn', label: 'Monsoon' },
-];
-const seasonKeySelector = (season: Season) => season.key;
-const seasonLabelSelector = (season: Season) => season.label;
-
-const travelTimeTypeOptions: TravelTimeType[] = [
-    { key: 'catchment', label: 'Catchment' },
-    { key: 'uncovered', label: 'Uncovered' },
-];
-const travelTimeTypeKeySelector = (travelTimeType: TravelTimeType) => travelTimeType.key;
-const travelTimeTypeLabelSelector = (travelTimeType: TravelTimeType) => travelTimeType.label;
-
 const layerKeySelector = (d: Layer) => d.id;
 const layerLabelSelector = (d: Layer) => d.name;
 
@@ -172,13 +106,6 @@ function Covid19(props: Props) {
     const [selectedFiveWOption, setFiveWOption] = useState<CovidFiveWOptionKey | undefined>('component');
     const [selectedIndicator, setSelectedIndicator] = useState<number | undefined>();
     const [selectedAgeGroup, setSelectedAgeGroup] = useState<AgeGroupOption>('belowFourteen');
-
-    const [showHealthResource, setShowHealthResource] = useState<boolean>(true);
-    const [showHealthTravelTime, setShowHealthTravelTime] = useState<boolean>(false);
-    const [selectedHospitals, setSelectedHospitals] = useState<string[]>([]);
-    const [selectedSeason, setSeason] = useState<Season['key']>('dry');
-    const [selectedTravelTimeType, setTravelTimeType] = useState<TravelTimeType['key']>('catchment');
-    const [selectedHospitalType, setHospitalType] = useState<HospitalType['key']>('deshosp');
 
     const [selectedLayer, setSelectedLayer] = useState<number | undefined>(undefined);
 
@@ -240,7 +167,13 @@ function Covid19(props: Props) {
             const options = [
                 ...indicatorListResponse.results,
             ];
-            options.push({ id: -1, fullTitle: 'Age group', abstract: undefined, category: 'Demographics' });
+            options.push({
+                id: -1,
+                fullTitle: 'Age group',
+                abstract: undefined,
+                category: 'Demographics',
+                federalLevel: 'all',
+            });
             return options;
         },
         [indicatorListResponse],
@@ -422,33 +355,6 @@ function Covid19(props: Props) {
         [selectedIndicator, indicatorOptions],
     );
 
-    // FIXME: use useCallback
-    const handleHospitalToggle = (
-        name: string | undefined,
-    ) => {
-        if (!name) {
-            return;
-        }
-        setSelectedHospitals((hospitals) => {
-            const hospitalIndex = hospitals.findIndex(hospital => hospital === name);
-            if (hospitalIndex !== -1) {
-                const newHospitals = [...hospitals];
-                newHospitals.splice(hospitalIndex, 1);
-                return newHospitals;
-            }
-            return [...hospitals, name];
-        });
-    };
-
-    // FIXME: use useCallback
-    const handleHospitalClick = (
-        feature: mapboxgl.MapboxGeoJSONFeature,
-    ) => {
-        type SelectedHospital = GeoJSON.Feature<GeoJSON.Point, DesignatedHospital>;
-        const { properties: { name } } = feature as unknown as SelectedHospital;
-        handleHospitalToggle(name);
-        return true;
-    };
 
     const handleTooltipClose = React.useCallback(
         () => {
@@ -472,18 +378,6 @@ function Covid19(props: Props) {
         [setClickedRegionProperties],
     );
 
-    useEffect(
-        () => {
-            setSelectedHospitals([]);
-        },
-        [selectedHospitalType],
-    );
-
-    const showTravelTimeChoropleth = (
-        showHealthResource
-        && showHealthTravelTime
-    );
-
     const rasterLayers = useMemo(
         () => (mapLayerListResponse?.results.filter(v => v.type === 'raster')),
         [mapLayerListResponse],
@@ -494,18 +388,13 @@ function Covid19(props: Props) {
         [rasterLayers, selectedLayer],
     );
     const [printMode, setPrintMode] = useState(false);
-    const [ttInfoVisibility, setTtInfoVisbility] = useState(false);
 
     const showLegend = (
         bubbleLegend.length > 0
         || Object.keys(mapLegend).length > 0
-        || showTravelTimeChoropleth
         || selectedRasterLayer
     );
 
-    const handleTtInfoVisibilityChange = useCallback(() => {
-        setTtInfoVisbility(!ttInfoVisibility);
-    }, [setTtInfoVisbility, ttInfoVisibility]);
 
     const dfidData = useMemo(
         () => covidFiveWData.find(v => v.id === clickedRegionProperties?.feature.id)?.data,
@@ -555,104 +444,10 @@ function Covid19(props: Props) {
                         />
                     </MapTooltip>
                 )}
-                {showHealthResource && (
-                    <TravelTimeLayer
-                        key={`${selectedSeason}-${selectedHospitalType}`}
-                        prefix={`${selectedSeason}-${selectedHospitalType}`}
-                        season={selectedSeason}
-                        hospitalType={selectedHospitalType}
-                        onHospitalClick={handleHospitalClick}
-                        selectedHospitals={selectedHospitals}
-                        travelTimeShown={showHealthTravelTime}
-                        travelTimeType={selectedTravelTimeType}
-                    />
-                )}
             </IndicatorMap>
             <Stats className={styles.stats} />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />
-                <div className={styles.separator} />
-                <div>
-                    <ToggleButton
-                        className={styles.inputItem}
-                        label="Show health facilities"
-                        value={showHealthResource}
-                        onChange={setShowHealthResource}
-                    />
-                    {showHealthResource && (
-                        <>
-                            <SegmentInput
-                                label="Hospitals"
-                                className={styles.inputItem}
-                                options={hospitalTypeOptions}
-                                onChange={setHospitalType}
-                                value={selectedHospitalType}
-                                optionLabelSelector={hospitalTypeLabelSelector}
-                                optionKeySelector={hospitalTypeKeySelector}
-                            />
-                            {selectedHospitals.length > 0 && (
-                                <div className={styles.hospitals}>
-                                    {selectedHospitals.map(hospital => (
-                                        <Button
-                                            className={styles.button}
-                                            key={hospital}
-                                            name={hospital}
-                                            onClick={handleHospitalToggle}
-                                            icons={(
-                                                <IoIosClose />
-                                            )}
-                                        >
-                                            {hospital}
-                                        </Button>
-                                    ))}
-                                </div>
-                            )}
-                            <div className={styles.travelTimeInputContainer}>
-                                <ToggleButton
-                                    label="Show travel time"
-                                    value={showHealthTravelTime}
-                                    onChange={setShowHealthTravelTime}
-                                />
-                                {showHealthTravelTime && (
-                                    <Button
-                                        onClick={handleTtInfoVisibilityChange}
-                                        transparent
-                                        icons={(
-                                            <IoIosInformationCircleOutline />
-                                        )}
-                                    />
-                                )}
-                            </div>
-                            {showHealthTravelTime && (
-                                <>
-                                    <SegmentInput
-                                        label="Type"
-                                        className={styles.inputItem}
-                                        options={travelTimeTypeOptions}
-                                        onChange={setTravelTimeType}
-                                        value={selectedTravelTimeType}
-                                        optionLabelSelector={travelTimeTypeLabelSelector}
-                                        optionKeySelector={travelTimeTypeKeySelector}
-                                    />
-                                    <SegmentInput
-                                        label="Season"
-                                        className={styles.inputItem}
-                                        options={seasonOptions}
-                                        onChange={setSeason}
-                                        value={selectedSeason}
-                                        optionLabelSelector={seasonLabelSelector}
-                                        optionKeySelector={seasonKeySelector}
-                                    />
-                                    {ttInfoVisibility && (
-                                        <div className={styles.abstract}>
-                                            {travelTimeDetails}
-                                        </div>
-                                    )}
-                                </>
-                            )}
-                        </>
-                    )}
-                </div>
                 <div className={styles.separator} />
                 <SelectInput
                     label="Evidence for Development"
@@ -734,38 +529,6 @@ function Covid19(props: Props) {
                             className={styles.legend}
                             rasterLayer={selectedRasterLayer}
                         />
-                    )}
-                    {showTravelTimeChoropleth && (
-                        <>
-                            {selectedTravelTimeType === 'catchment' && (
-                                <ChoroplethLegend
-                                    title="Catchment"
-                                    className={styles.legend}
-                                    minValue=""
-                                    opacity={0.6}
-                                    unit="hours"
-                                    legend={{
-                                        [fourHourColor]: 4,
-                                        [eightHourColor]: 8,
-                                        [twelveHourColor]: 12,
-                                    }}
-                                />
-                            )}
-                            {selectedTravelTimeType === 'uncovered' && (
-                                <ChoroplethLegend
-                                    title="Uncovered"
-                                    className={styles.legend}
-                                    minValue=""
-                                    opacity={0.6}
-                                    unit="hours"
-                                    legend={{
-                                        [twelveHourUncoveredColor]: '> 12',
-                                        [eightHourUncoveredColor]: '> 8',
-                                        [fourHourUncoveredColor]: '> 4',
-                                    }}
-                                />
-                            )}
-                        </>
                     )}
                 </div>
             )}

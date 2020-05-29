@@ -20,21 +20,6 @@ export interface AgeGroup {
     tooltipLabel: string;
 }
 
-export interface HospitalType {
-    key: 'deshosp' | 'allcovidhfs';
-    label: string;
-}
-
-export interface Season {
-    key: 'msn' | 'dry';
-    label: string;
-}
-
-export interface TravelTimeType {
-    key: 'catchment' | 'uncovered';
-    label: string;
-}
-
 export interface MapStateFiveWData extends MapStateItem {
     data?: CovidFiveW[];
 }
