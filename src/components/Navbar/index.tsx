@@ -29,7 +29,6 @@ const Navbar = (props: Props) => {
     const { className } = props;
 
     const filterRef = useRef<HTMLDivElement>(null);
-    // const [node, setNode] = useState<HTMLDivElement | undefined | null>();
 
     const { setParentNode } = useContext<NavbarContextProps>(NavbarContext);
 
