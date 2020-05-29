@@ -1,14 +1,25 @@
-import React from 'react';
-import {
-    NavLink,
-    useLocation,
-} from 'react-router-dom';
+import React, { useEffect, useRef, useContext } from 'react';
+import ReactDOM from 'react-dom';
+import { NavLink } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
 
-import ProgramSelector from '#components/ProgramSelector';
+import NavbarContext from '#components/NavbarContext';
+import { NavbarContextProps } from '#types';
 
 import dfidLogo from '#resources/DfID-logo.svg';
 import styles from './styles.css';
+
+
+interface ChildProps {
+    children: React.ReactNode;
+}
+export const SubNavbar = ({ children }: ChildProps) => {
+    const { parentNode } = useContext<NavbarContextProps>(NavbarContext);
+    if (!parentNode) {
+        return null;
+    }
+    return ReactDOM.createPortal(children, parentNode);
+};
 
 interface Props {
     className?: string;
@@ -17,8 +28,17 @@ interface Props {
 const Navbar = (props: Props) => {
     const { className } = props;
 
-    const location = useLocation();
-    const isDashboardPage = location.pathname === '/dashboard/';
+    const filterRef = useRef<HTMLDivElement>(null);
+    // const [node, setNode] = useState<HTMLDivElement | undefined | null>();
+
+    const { setParentNode } = useContext<NavbarContextProps>(NavbarContext);
+
+    useEffect(
+        () => {
+            setParentNode(filterRef.current);
+        },
+        [setParentNode],
+    );
 
     return (
         <nav className={_cs(className, styles.navbar)}>
@@ -43,15 +63,6 @@ const Navbar = (props: Props) => {
                         exact
                         className={styles.link}
                         activeClassName={styles.active}
-                        to="/covid19/"
-                    >
-                        COVID-19
-                    </NavLink>
-                    {/*
-                    <NavLink
-                        exact
-                        className={styles.link}
-                        activeClassName={styles.active}
                         to="/glossary/"
                     >
                         Glossary
@@ -64,6 +75,15 @@ const Navbar = (props: Props) => {
                     >
                         Infographics
                     </NavLink>
+                    {/*
+                    <NavLink
+                        exact
+                        className={styles.link}
+                        activeClassName={styles.active}
+                        to="/covid19/"
+                    >
+                        COVID-19
+                    </NavLink>
                     <NavLink
                         exact
                         to="/analytical-tools/"
@@ -74,13 +94,12 @@ const Navbar = (props: Props) => {
                     </NavLink>
                       */}
                 </div>
-                {isDashboardPage && (
-                    <div className={styles.filters}>
-                        <ProgramSelector
-                            className={styles.programSelector}
-                        />
-                    </div>
-                )}
+                <div
+                    // NOTE: do not rename this
+                    // id={subNavbarId}
+                    className={styles.filters}
+                    ref={filterRef}
+                />
             </div>
         </nav>
     );

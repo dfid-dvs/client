@@ -1,8 +1,13 @@
 export type RegionLevelOption = 'province' | 'district' | 'municipality';
 
-export interface NavbarContextProps {
+export interface DomainContextProps {
     regionLevel: RegionLevelOption;
     setRegionLevel: (v: RegionLevelOption) => void;
+}
+
+export interface NavbarContextProps {
+    parentNode: HTMLDivElement | null | undefined;
+    setParentNode: (node: HTMLDivElement | null | undefined) => void;
 }
 
 export interface MultiResponse<T> {

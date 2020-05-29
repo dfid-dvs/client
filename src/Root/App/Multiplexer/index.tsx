@@ -1,11 +1,13 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
 
 import Navbar from '#components/Navbar';
+import DomainContext from '#components/DomainContext';
 import NavbarContext from '#components/NavbarContext';
 import {
     RegionLevelOption,
+    DomainContextProps,
     NavbarContextProps,
 } from '#types';
 
@@ -44,48 +46,57 @@ function Multiplexer(props: Props) {
 
     const [regionLevel, setRegionLevel] = React.useState<RegionLevelOption>('province');
 
-    const navbarContextProvider: NavbarContextProps = {
+    const domainContextProvider: DomainContextProps = {
         regionLevel,
         setRegionLevel,
     };
 
+    const [parentNode, setParentNode] = useState<HTMLDivElement | null | undefined>();
+
+    const navbarContextProvider: NavbarContextProps = {
+        parentNode,
+        setParentNode,
+    };
+
     return (
         <div className={_cs(className, styles.multiplexer)}>
-            <Suspense
-                fallback={(
-                    <Loading message="Please wait..." />
-                )}
-            >
-                <Switch>
-                    {routes.map((route) => {
-                        const {
-                            path,
-                            name,
-                            title,
-                            hideNavbar,
-                            load: Loader,
-                        } = route;
+            <NavbarContext.Provider value={navbarContextProvider}>
+                <Navbar className={styles.navbar} />
+                <DomainContext.Provider value={domainContextProvider}>
+                    <Suspense
+                        fallback={(
+                            <Loading message="Please wait..." />
+                        )}
+                    >
+                        <Switch>
+                            {routes.map((route) => {
+                                const {
+                                    path,
+                                    name,
+                                    title,
+                                    // hideNavbar,
+                                    load: Loader,
+                                } = route;
 
-                        return (
-                            <Route
-                                exact
-                                className={styles.route}
-                                key={name}
-                                path={path}
-                                render={() => (
-                                    <NavbarContext.Provider value={navbarContextProvider}>
-                                        <Title value={title} />
-                                        { !hideNavbar && (
-                                            <Navbar className={styles.navbar} />
+                                return (
+                                    <Route
+                                        exact
+                                        className={styles.route}
+                                        key={name}
+                                        path={path}
+                                        render={() => (
+                                            <>
+                                                <Title value={title} />
+                                                <Loader className={styles.view} />
+                                            </>
                                         )}
-                                        <Loader className={styles.view} />
-                                    </NavbarContext.Provider>
-                                )}
-                            />
-                        );
-                    })}
-                </Switch>
-            </Suspense>
+                                    />
+                                );
+                            })}
+                        </Switch>
+                    </Suspense>
+                </DomainContext.Provider>
+            </NavbarContext.Provider>
         </div>
     );
 }

@@ -6,7 +6,7 @@ import {
 
 import MapTooltip from '#remap/MapTooltip';
 import RegionSelector from '#components/RegionSelector';
-import NavbarContext from '#components/NavbarContext';
+import DomainContext from '#components/DomainContext';
 import ToggleButton from '#components/ToggleButton';
 import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
@@ -15,6 +15,8 @@ import IndicatorMap from '#components/IndicatorMap';
 import PrintButton from '#components/PrintButton';
 import PrintDetailsBar from '#components/PrintDetailsBar';
 import RasterLegend from '#components/RasterLegend';
+import ProgramSelector from '#components/ProgramSelector';
+import { SubNavbar } from '#components/Navbar';
 
 import useRequest from '#hooks/useRequest';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
@@ -93,6 +95,7 @@ const layerLabelSelector = (d: Layer) => d.name;
 export interface Region {
     name: string;
 }
+
 export interface ClickedRegion {
     feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
     lngLat: mapboxgl.LngLatLike;
@@ -104,7 +107,7 @@ interface Props {
 
 const Dashboard = (props: Props) => {
     const { className } = props;
-    const { regionLevel } = useContext(NavbarContext);
+    const { regionLevel } = useContext(DomainContext);
 
     const [
         selectedIndicator,
@@ -374,6 +377,11 @@ const Dashboard = (props: Props) => {
             printMode && styles.printMode,
         )}
         >
+            <SubNavbar>
+                <ProgramSelector
+                    className={styles.programSelector}
+                />
+            </SubNavbar>
             <PrintButton
                 className={styles.printModeButton}
                 printMode={printMode}

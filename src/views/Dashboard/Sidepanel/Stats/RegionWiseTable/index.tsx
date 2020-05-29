@@ -3,7 +3,7 @@ import { IoMdArrowRoundBack, IoMdDownload } from 'react-icons/io';
 import { compareString, compareNumber, _cs, isDefined, listToMap } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
-import NavbarContext from '#components/NavbarContext';
+import DomainContext from '#components/DomainContext';
 import Numeral from '#components/Numeral';
 import Table, { createColumn } from '#components/Table';
 import Cell from '#components/Table/Cell';
@@ -55,7 +55,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         onCloseButtonClick,
     } = props;
 
-    const { regionLevel } = useContext(NavbarContext);
+    const { regionLevel } = useContext(DomainContext);
 
     const [selectedIndicators, setSelectedIndicators] = useState([
         /*
@@ -120,8 +120,6 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         },
         [fiveW, regionIndicatorListResponse, selectedIndicators],
     );
-
-    console.warn(finalFiveW);
 
     const columnOrdering: ColumnOrderingItem[] = [
         { name: 'name' },

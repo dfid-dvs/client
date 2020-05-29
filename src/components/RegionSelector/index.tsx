@@ -4,13 +4,13 @@ import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
 import {
     MultiResponse,
-    NavbarContextProps,
+    DomainContextProps,
     RegionLevelOption,
 } from '#types';
 
 import MultiSelectInput from '#components/MultiSelectInput';
 import SegmentInput from '#components/SegmentInput';
-import NavbarContext from '#components/NavbarContext';
+import DomainContext from '#components/DomainContext';
 
 import styles from './styles.css';
 
@@ -77,7 +77,7 @@ function RegionSelector(props: Props) {
     const {
         regionLevel,
         setRegionLevel,
-    } = React.useContext<NavbarContextProps>(NavbarContext);
+    } = React.useContext<DomainContextProps>(DomainContext);
 
     const setRegionLevelSafely = useCallback(
         (r: RegionLevelOption) => {
