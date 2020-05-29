@@ -1,6 +1,8 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
+import Backdrop from '#components/Backdrop';
+
 import styles from './styles.css';
 
 interface Props {
@@ -12,7 +14,9 @@ function Infographics(props: Props) {
 
     return (
         <div className={_cs(className, styles.infographics)}>
-            Infographics
+            <Backdrop>
+                Infographics
+            </Backdrop>
         </div>
     );
 }

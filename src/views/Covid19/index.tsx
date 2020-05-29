@@ -12,7 +12,7 @@ import MapTooltip from '#remap/MapTooltip';
 
 import RegionSelector from '#components/RegionSelector';
 import SegmentInput from '#components/SegmentInput';
-import NavbarContext from '#components/NavbarContext';
+import DomainContext from '#components/DomainContext';
 import SelectInput from '#components/SelectInput';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import ToggleButton from '#components/ToggleButton';
@@ -167,7 +167,7 @@ interface Props {
 
 function Covid19(props: Props) {
     const { className } = props;
-    const { regionLevel } = useContext(NavbarContext);
+    const { regionLevel } = useContext(DomainContext);
 
     const [selectedFiveWOption, setFiveWOption] = useState<CovidFiveWOptionKey | undefined>('component');
     const [selectedIndicator, setSelectedIndicator] = useState<number | undefined>();
