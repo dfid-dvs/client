@@ -192,6 +192,8 @@ const Dashboard = (props: Props) => {
     const indicatorList = indicatorListResponse?.results.filter(
         indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regionLevel,
     );
+
+    // FIXME: memoize this
     const validSelectedIndicator = (
         isDefined(selectedIndicator)
         && indicatorList?.find(indicator => indicator.id === selectedIndicator)
@@ -545,6 +547,8 @@ const Dashboard = (props: Props) => {
                 </IndicatorMap>
                 <Sidepanel
                     className={styles.sidebar}
+                    indicatorList={indicatorList}
+                    // FIXME: pull this data internally
                     fiveWList={fiveWStats}
                 />
             </div>

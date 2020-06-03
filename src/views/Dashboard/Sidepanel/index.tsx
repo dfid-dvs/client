@@ -10,18 +10,21 @@ import Button from '#components/Button';
 import Summary from './Summary';
 
 import { FiveW } from '../types';
+import { Indicator } from '#types';
 
 import styles from './styles.css';
 
 interface Props {
     className?: string;
     fiveWList: FiveW[];
+    indicatorList?: Indicator[];
 }
 
 function Sidepanel(props: Props) {
     const {
         className,
         fiveWList,
+        indicatorList,
     } = props;
 
     const [statMode, setStatMode] = React.useState<'program' | 'region' | undefined>(undefined);
@@ -65,7 +68,9 @@ function Sidepanel(props: Props) {
             { statMode && (
                 <Stats
                     className={styles.stats}
-                    fiveW={statMode === 'region' ? fiveWList : undefined}
+                    mode={statMode}
+                    indicatorList={indicatorList}
+                    fiveW={fiveWList}
                     onCloseButtonClick={handleStatCloseButtonClick}
                 />
             )}

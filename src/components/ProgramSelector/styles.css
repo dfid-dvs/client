@@ -18,6 +18,5 @@
 .sectors-dropdown,
 .markers-dropdown {
     z-index: 111;
-    min-width: 360px!important;
 }
 

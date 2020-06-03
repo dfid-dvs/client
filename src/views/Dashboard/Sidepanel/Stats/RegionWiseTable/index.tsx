@@ -1,9 +1,10 @@
-import React, { useMemo, useContext, useState } from 'react';
+import React, { useMemo, useContext, useState, useEffect, useCallback } from 'react';
 import { IoMdArrowRoundBack, IoMdDownload } from 'react-icons/io';
-import { compareString, compareNumber, _cs, isDefined, listToMap } from '@togglecorp/fujs';
+import { compareString, compareNumber, _cs, listToMap, isDefined, isNotDefined } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
 import DomainContext from '#components/DomainContext';
+import MultiSelectInput from '#components/MultiSelectInput';
 import Numeral from '#components/Numeral';
 import Table, { createColumn } from '#components/Table';
 import Cell from '#components/Table/Cell';
@@ -14,17 +15,37 @@ import useFiltering, { useFilterState } from '#components/Table/useFiltering';
 import useOrdering, { useOrderState } from '#components/Table/useOrdering';
 import useSorting, { useSortState } from '#components/Table/useSorting';
 
-import { MultiResponse } from '#types';
-import { apiEndPoint } from '#utils/constants';
 import useRequest from '#hooks/useRequest';
+import { MultiResponse, Indicator } from '#types';
 import { ExtractKeys } from '#utils/common';
+import { apiEndPoint } from '#utils/constants';
 
 import { FiveW } from '../../../types';
 
 import styles from './styles.css';
 
+function getIndicatorHeaderName(id: number) {
+    return `indicator_${id}`;
+}
+function getIndicatorIdFromHeaderName(key: string) {
+    const matching = key.match(/^indicator_(\d+)$/);
+    return matching ? +matching[1] : undefined;
+}
+
+interface ColumnOrderingItem {
+    name: string;
+}
+const staticColumnOrdering: ColumnOrderingItem[] = [
+    { name: 'name' },
+    { name: 'allocatedBudget' },
+    { name: 'maleBeneficiary' },
+    { name: 'femaleBeneficiary' },
+    { name: 'totalBeneficiary' },
+];
 
 const fiveWKeySelector = (data: FiveW) => data.id;
+const indicatorTitleSelector = (indicator: Indicator) => indicator.fullTitle;
+const indicatorKeySelector = (indicator: Indicator) => indicator.id;
 
 interface IndicatorValue {
     indicatorId: number;
@@ -34,12 +55,9 @@ interface IndicatorValue {
 
 interface RegionWiseTableProps {
     className?: string;
-    fiveW: FiveW[];
+    fiveW: FiveW[] | undefined;
     onCloseButtonClick: () => void;
-}
-
-interface ColumnOrderingItem {
-    name: string;
+    indicatorList: Indicator[] | undefined;
 }
 
 interface ExtendedFiveW extends FiveW {
@@ -53,45 +71,43 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         className,
         fiveW,
         onCloseButtonClick,
+        indicatorList,
     } = props;
 
     const { regionLevel } = useContext(DomainContext);
 
-    const [selectedIndicators, setSelectedIndicators] = useState([
-        /*
-        25,
-        62,
-        118,
-        132,
-        133,
-        */
-        147,
-        148,
-        149,
-        150,
-        151,
-        152,
-        153,
-        154,
-        155,
-    ]);
+    const [selectedIndicators, setSelectedIndicators] = useState<number[] | undefined>();
+
+    const indicatorMapping = useMemo(
+        () => listToMap(
+            indicatorList,
+            item => item.id,
+            item => item,
+        ),
+        [indicatorList],
+    );
+
+    const validSelectedIndicators = useMemo(
+        () => selectedIndicators?.filter(i => !!indicatorMapping[i]),
+        [selectedIndicators, indicatorMapping],
+    );
 
     const options: RequestInit | undefined = useMemo(
-        () => (selectedIndicators ? {
+        () => (validSelectedIndicators ? {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json; charset=utf-8',
             },
             body: JSON.stringify({
-                indicatorId: selectedIndicators,
+                indicatorId: validSelectedIndicators,
             }),
         } : undefined),
-        [selectedIndicators],
+        [validSelectedIndicators],
     );
 
     let regionIndicatorUrl: string | undefined;
-    if (isDefined(selectedIndicators)) {
+    if (isDefined(validSelectedIndicators) && validSelectedIndicators.length > 0) {
         regionIndicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/`;
     }
     const [
@@ -112,27 +128,69 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             return fiveW.map(item => ({
                 ...item,
                 indicators: listToMap(
-                    selectedIndicators,
+                    validSelectedIndicators,
                     id => id,
                     id => mapping[`${item.code}-${id}`],
                 ),
             }));
         },
-        [fiveW, regionIndicatorListResponse, selectedIndicators],
+        [fiveW, regionIndicatorListResponse, validSelectedIndicators],
     );
-
-    const columnOrdering: ColumnOrderingItem[] = [
-        { name: 'name' },
-        { name: 'allocatedBudget' },
-        { name: 'maleBeneficiary' },
-        { name: 'femaleBeneficiary' },
-        { name: 'totalBeneficiary' },
-        ...selectedIndicators.map(item => ({ name: `indicator${item}` })),
-    ];
 
     const { sortState, setSortState } = useSortState();
     const { filtering, setFilteringItem, getFilteringItem } = useFilterState();
-    const { ordering, moveOrderingItem, setOrderingItemVisibility } = useOrderState(columnOrdering);
+    const { ordering, moveOrderingItem, setOrdering } = useOrderState(
+        staticColumnOrdering,
+    );
+
+    const onUnselectHeader = useCallback(
+        (key: string) => {
+            const indicatorId = getIndicatorIdFromHeaderName(key);
+            if (isDefined(indicatorId)) {
+                // should also remove selected indicator
+                setSelectedIndicators(oldIndicators => oldIndicators?.filter(
+                    item => item !== indicatorId,
+                ));
+            } else {
+                setOrdering(oldOrdering => oldOrdering.filter(
+                    item => item.name !== key,
+                ));
+            }
+        },
+        [setOrdering],
+    );
+
+    // Synchronize selected indicators with ordering
+    useEffect(
+        () => {
+            // only add ordering for now
+            setOrdering((oldOrdering) => {
+                const selectedIndicatorsMapping = new Set(selectedIndicators);
+                const remainingItems = oldOrdering.filter((orderingItem) => {
+                    const indicatorId = getIndicatorIdFromHeaderName(orderingItem.name);
+                    return isNotDefined(indicatorId) || selectedIndicatorsMapping.has(indicatorId);
+                });
+
+                if (!selectedIndicators) {
+                    return remainingItems;
+                }
+
+                const oldIndicators = new Set(
+                    oldOrdering
+                        .map(item => getIndicatorIdFromHeaderName(item.name))
+                        .filter(isDefined),
+                );
+                const newItems = selectedIndicators?.filter(selectedIndicator => (
+                    !oldIndicators.has(selectedIndicator)
+                )).map(item => ({
+                    name: getIndicatorHeaderName(item),
+                }));
+
+                return [...remainingItems, ...newItems];
+            });
+        },
+        [selectedIndicators, setOrdering],
+    );
 
     const columns = useMemo(
         () => {
@@ -154,8 +212,8 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     draggable: true,
                     onReorder: moveOrderingItem,
 
-                    hideable: colName !== 'name',
-                    onVisibilityChange: setOrderingItemVisibility,
+                    hideable: false,
+                    onHide: onUnselectHeader,
                 },
 
                 cellAsHeader: true,
@@ -187,8 +245,8 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     draggable: true,
                     onReorder: moveOrderingItem,
 
-                    hideable: true,
-                    onVisibilityChange: setOrderingItemVisibility,
+                    hideable: false,
+                    onHide: onUnselectHeader,
                 },
 
                 cellRenderer: Numeral,
@@ -203,6 +261,14 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                 ),
                 filterValueSelector: (foo: ExtendedFiveW) => foo[colName],
             });
+
+            const staticColumns = [
+                createColumn(stringColumn, 'name', 'Name', true),
+                createColumn(numberColumn, 'allocatedBudget', 'Allocated Budget'),
+                createColumn(numberColumn, 'maleBeneficiary', 'Male Beneficiary'),
+                createColumn(numberColumn, 'femaleBeneficiary', 'Female Beneficiary'),
+                createColumn(numberColumn, 'totalBeneficiary', 'Total Beneficiary'),
+            ];
 
             // eslint-disable-next-line max-len
             const dynamicNumberColumn = (keySelector: (item: ExtendedFiveW) => number | undefined) => (colName: string) => ({
@@ -222,7 +288,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     onReorder: moveOrderingItem,
 
                     hideable: true,
-                    onVisibilityChange: setOrderingItemVisibility,
+                    onHide: onUnselectHeader,
                 },
 
                 cellRenderer: Numeral,
@@ -238,20 +304,20 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                 filterValueSelector: (foo: ExtendedFiveW) => keySelector(foo),
             });
 
-            return [
-                createColumn(stringColumn, 'name', 'Name', true),
-                createColumn(numberColumn, 'allocatedBudget', 'Allocated Budget'),
-                createColumn(numberColumn, 'maleBeneficiary', 'Male Beneficiary'),
-                createColumn(numberColumn, 'femaleBeneficiary', 'Female Beneficiary'),
-                createColumn(numberColumn, 'totalBeneficiary', 'Total Beneficiary'),
-                ...selectedIndicators.map(id => createColumn(dynamicNumberColumn(item => item.indicators[id]), `indicator${id}`, String(id))),
-            ];
+
+            const dynamicColumns = validSelectedIndicators?.map(id => createColumn(
+                dynamicNumberColumn(item => item.indicators[id]),
+                getIndicatorHeaderName(id),
+                indicatorMapping[id]?.fullTitle,
+            ));
+
+            return dynamicColumns ? [...staticColumns, ...dynamicColumns] : staticColumns;
         },
         [
             sortState, setSortState,
             getFilteringItem, setFilteringItem,
-            moveOrderingItem, setOrderingItemVisibility,
-            selectedIndicators,
+            moveOrderingItem, onUnselectHeader,
+            validSelectedIndicators, indicatorMapping,
         ],
     );
 
@@ -259,21 +325,24 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     const filteredFiveW = useFiltering(filtering, orderedColumns, finalFiveW);
     const sortedFiveW = useSorting(sortState, orderedColumns, filteredFiveW);
 
-    const value = convertTableData(
-        sortedFiveW,
-        orderedColumns,
-        {
-            name: v => v.name,
-            allocatedBudget: v => v.allocatedBudget,
-            maleBeneficiary: v => v.maleBeneficiary,
-            femaleBeneficiary: v => v.femaleBeneficiary,
-            totalBeneficiary: v => v.totalBeneficiary,
-        },
+    const csvValue = useMemo(
+        () => convertTableData(
+            sortedFiveW,
+            orderedColumns,
+            {
+                name: v => v.name,
+                allocatedBudget: v => v.allocatedBudget,
+                maleBeneficiary: v => v.maleBeneficiary,
+                femaleBeneficiary: v => v.femaleBeneficiary,
+                totalBeneficiary: v => v.totalBeneficiary,
+            },
+        ),
+        [sortedFiveW, orderedColumns],
     );
 
     const handleDownload = useDownloading(
         'Region',
-        value,
+        csvValue,
     );
 
     return (
@@ -291,6 +360,17 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     Regions
                 </h3>
                 <div className={styles.actions}>
+                    <MultiSelectInput
+                        label="Indicators"
+                        className={styles.indicatorsInput}
+                        placeholder={`Select from ${indicatorList?.length || 0} indicators`}
+                        options={indicatorList}
+                        onChange={setSelectedIndicators}
+                        value={validSelectedIndicators}
+                        optionLabelSelector={indicatorTitleSelector}
+                        optionKeySelector={indicatorKeySelector}
+                        dropdownContainerClassName={styles.dropdown}
+                    />
                     <Button
                         onClick={handleDownload}
                         icons={(

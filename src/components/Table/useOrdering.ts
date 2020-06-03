@@ -3,7 +3,7 @@ import { listToMap, compareNumber } from '@togglecorp/fujs';
 
 interface OrderStateItem {
     name: string;
-    hidden?: boolean;
+    // hidden?: boolean;
 }
 
 export function useOrderState(keys: OrderStateItem[]) {
@@ -37,6 +37,7 @@ export function useOrderState(keys: OrderStateItem[]) {
         [ordering],
     );
 
+    /*
     const setOrderingItemVisibility = useCallback(
         (itemKey: string, hidden: boolean | undefined) => {
             const itemIndex = ordering.findIndex(o => o.name === itemKey);
@@ -58,12 +59,13 @@ export function useOrderState(keys: OrderStateItem[]) {
         },
         [ordering],
     );
-
+    */
 
     return {
         ordering,
         moveOrderingItem,
-        setOrderingItemVisibility,
+        // setOrderingItemVisibility,
+        setOrdering,
     };
 }
 
@@ -87,7 +89,7 @@ function useOrdering<T extends OrderColumn>(
 
     // NOTE: can memoize this
     return [...columns]
-        .filter(foo => !mapping[foo.id]?.hidden)
+        .filter(foo => !!mapping[foo.id])
         .sort((foo, bar) => {
             // FIXME: this can be optimized
             const fooOrder = mapping[foo.id]?.order;
