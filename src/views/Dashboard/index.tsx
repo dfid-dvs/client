@@ -47,6 +47,7 @@ import {
 
 import TravelTimeLayer, {
     DesignatedHospital,
+    TravelTimeDetails,
 } from './TravelTimeLayer';
 import {
     fourHourColor,
@@ -70,35 +71,6 @@ import {
 } from './types';
 
 import styles from './styles.css';
-
-function TravelTimeDetails() {
-    return (
-        <span>
-            These maps show the catchment areas of COVID hospitals in Nepal based on
-            one-way travel time cutoffs of 4 / 8 / 12 hours using the fastest possible
-            means of transport, which roughly correspond to 1 / 2 / 3 day round trips.
-            The uncovered layers show the inverse of these catchments.
-            Population from
-            <a
-                className={styles.link}
-                href="https://www.worldpop.org/project/categories?id=3"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                WorldPop 2020 projections.
-            </a>
-            <a
-                className={styles.link}
-                href="http://documents.worldbank.org/curated/en/605991565195559324/Measuring-Inequality-of-Access-Modeling-Physical-Remoteness-in-Nepal"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Travel time models from Banick and Kawasoe (2019)
-            </a>
-        </span>
-    );
-}
-
 
 const onClickTooltipOptions: mapboxgl.PopupOptions = {
     closeOnClick: true,

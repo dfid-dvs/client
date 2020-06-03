@@ -1,0 +1,5 @@
+.link {
+    margin: 0 var(--spacing-extra-small);
+    text-decoration: underline;
+    color: var(--color-link);
+}
