@@ -183,7 +183,7 @@ const Dashboard = (props: Props) => {
     const [mapStyleInverted, setMapStyleInverted] = useState(false);
 
     // TODO: use is_covid=true if covidMode after server is fixed
-    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/`;
+    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_covid=${covidMode}`;
     const [
         indicatorListPending,
         indicatorListResponse,
@@ -560,80 +560,79 @@ const Dashboard = (props: Props) => {
                                 value={showHealthResource}
                                 onChange={setShowHealthResource}
                             />
-                            {enableHealthResources && (
-                                <>
-                                    <SegmentInput
-                                        label="Hospitals"
-                                        className={styles.inputItem}
-                                        options={hospitalTypeOptions}
-                                        onChange={setHospitalType}
-                                        value={selectedHospitalType}
-                                        optionLabelSelector={hospitalTypeLabelSelector}
-                                        optionKeySelector={hospitalTypeKeySelector}
-                                    />
-                                    {selectedHospitals.length > 0 && (
-                                        <div className={styles.hospitals}>
-                                            {selectedHospitals.map(hospital => (
-                                                <Button
-                                                    className={styles.button}
-                                                    key={hospital}
-                                                    name={hospital}
-                                                    onClick={handleHospitalToggle}
-                                                    icons={(
-                                                        <IoIosClose />
-                                                    )}
-                                                >
-                                                    {hospital}
-                                                </Button>
-                                            ))}
-                                        </div>
+                            <div className={styles.travelTimeInputContainer}>
+                                <ToggleButton
+                                    label="Show travel time information"
+                                    disabled={!showHealthResource}
+                                    value={showHealthTravelTime && showHealthResource}
+                                    onChange={setShowHealthTravelTime}
+                                />
+                                <Button
+                                    onClick={handleTtInfoVisibilityChange}
+                                    transparent
+                                    icons={(
+                                        <IoIosInformationCircleOutline />
                                     )}
-                                    <div className={styles.travelTimeInputContainer}>
-                                        <ToggleButton
-                                            label="Show travel time"
-                                            value={showHealthTravelTime}
-                                            onChange={setShowHealthTravelTime}
-                                        />
-                                        {showHealthTravelTime && (
-                                            <Button
-                                                onClick={handleTtInfoVisibilityChange}
-                                                transparent
-                                                icons={(
-                                                    <IoIosInformationCircleOutline />
-                                                )}
-                                            />
-                                        )}
-                                    </div>
-                                    {showHealthTravelTime && (
-                                        <>
-                                            <SegmentInput
-                                                label="Type"
-                                                className={styles.inputItem}
-                                                options={travelTimeTypeOptions}
-                                                onChange={setTravelTimeType}
-                                                value={selectedTravelTimeType}
-                                                optionLabelSelector={travelTimeTypeLabelSelector}
-                                                optionKeySelector={travelTimeTypeKeySelector}
-                                            />
-                                            <SegmentInput
-                                                label="Season"
-                                                className={styles.inputItem}
-                                                options={seasonOptions}
-                                                onChange={setSeason}
-                                                value={selectedSeason}
-                                                optionLabelSelector={seasonLabelSelector}
-                                                optionKeySelector={seasonKeySelector}
-                                            />
-                                            {ttInfoVisibility && (
-                                                <div className={styles.abstract}>
-                                                    <TravelTimeDetails />
-                                                </div>
-                                            )}
-                                        </>
-                                    )}
-                                </>
-                            )}
+                                />
+                            </div>
                         </div>
+                        {enableHealthResources && (
+                            <div>
+                                <SegmentInput
+                                    label="Hospitals"
+                                    className={styles.inputItem}
+                                    options={hospitalTypeOptions}
+                                    onChange={setHospitalType}
+                                    value={selectedHospitalType}
+                                    optionLabelSelector={hospitalTypeLabelSelector}
+                                    optionKeySelector={hospitalTypeKeySelector}
+                                />
+                                {selectedHospitals.length > 0 && (
+                                    <div className={styles.hospitals}>
+                                        {selectedHospitals.map(hospital => (
+                                            <Button
+                                                className={styles.button}
+                                                key={hospital}
+                                                name={hospital}
+                                                onClick={handleHospitalToggle}
+                                                icons={(
+                                                    <IoIosClose />
+                                                )}
+                                            >
+                                                {hospital}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        {enableHealthResources && showHealthTravelTime && (
+                            <div>
+                                <SegmentInput
+                                    label="Travel Time Type"
+                                    className={styles.inputItem}
+                                    options={travelTimeTypeOptions}
+                                    onChange={setTravelTimeType}
+                                    value={selectedTravelTimeType}
+                                    optionLabelSelector={travelTimeTypeLabelSelector}
+                                    optionKeySelector={travelTimeTypeKeySelector}
+                                />
+                                <SegmentInput
+                                    label="Travel Time Season"
+                                    className={styles.inputItem}
+                                    options={seasonOptions}
+                                    onChange={setSeason}
+                                    value={selectedSeason}
+                                    optionLabelSelector={seasonLabelSelector}
+                                    optionKeySelector={seasonKeySelector}
+                                />
+                                {ttInfoVisibility && (
+                                    <div className={styles.abstract}>
+                                        <TravelTimeDetails />
+                                    </div>
+                                )}
+                            </div>
+                        )}
                         <div className={styles.separator} />
                     </>
                 )}

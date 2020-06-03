@@ -31,4 +31,3 @@ export interface TravelTimeType {
     key: 'catchment' | 'uncovered';
     label: string;
 }
-
