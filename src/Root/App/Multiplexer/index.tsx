@@ -45,10 +45,13 @@ function Multiplexer(props: Props) {
     const { className } = props;
 
     const [regionLevel, setRegionLevel] = React.useState<RegionLevelOption>('province');
+    const [covidMode, setCovidMode] = React.useState(false);
 
     const domainContextProvider: DomainContextProps = {
         regionLevel,
         setRegionLevel,
+        covidMode,
+        setCovidMode,
     };
 
     const [parentNode, setParentNode] = useState<HTMLDivElement | null | undefined>();

@@ -1,3 +1,21 @@
+.sub-navbar {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    padding: var(--spacing-small) calc(var(--spacing-large) - var(--spacing-small));
+
+    .program-selector {
+        flex-shrink: 0;
+    }
+
+    .actions {
+        display: flex;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+}
+
+
 .dashboard {
     display: flex;
     position: relative;
@@ -45,6 +63,12 @@
         }
 
         .input-item {
+            margin: var(--spacing-medium) 0;
+        }
+
+        .travel-time-input-container {
+            display: flex;
+            align-items: center;
             margin: var(--spacing-medium) 0;
         }
 

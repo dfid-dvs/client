@@ -47,7 +47,6 @@
 
         .filters {
             display: flex;
-            padding: var(--spacing-small) calc(var(--spacing-large) - var(--spacing-small));
         }
     }
 }

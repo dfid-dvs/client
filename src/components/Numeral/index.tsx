@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { _cs, isDefined, formattedNormalize, Lang, addSeparator } from '@togglecorp/fujs';
+import { _cs, isNotDefined, formattedNormalize, Lang, addSeparator } from '@togglecorp/fujs';
 
 import styles from './styles.css';
 
@@ -25,7 +25,7 @@ export function formatNumber(
     normalize?: boolean,
     precision?: number,
 ) {
-    if (!isDefined(value)) {
+    if (isNotDefined(value)) {
         return undefined;
     }
 
@@ -68,6 +68,7 @@ interface NumeralProps {
     normalize?: boolean;
     separatorShown?: boolean;
     prefix?: string;
+    placeholder?: string;
 }
 function Numeral({
     value,
@@ -76,12 +77,21 @@ function Numeral({
     normalize,
     separatorShown = true,
     prefix = '',
+    placeholder = '',
 }: NumeralProps) {
-    if (!isDefined(value)) {
+    const className = _cs(classNameFromProps, styles.numeral);
+
+    if (isNotDefined(value)) {
+        if (placeholder) {
+            return (
+                <div className={className}>
+                    {placeholder}
+                </div>
+            );
+        }
         return null;
     }
 
-    const className = _cs(classNameFromProps, styles.numeral);
     const output = formatNumber(
         value,
         separatorShown,

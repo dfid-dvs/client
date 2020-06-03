@@ -3,6 +3,8 @@ export type RegionLevelOption = 'province' | 'district' | 'municipality';
 export interface DomainContextProps {
     regionLevel: RegionLevelOption;
     setRegionLevel: (v: RegionLevelOption) => void;
+    covidMode: boolean;
+    setCovidMode: (m: boolean) => void;
 }
 
 export interface NavbarContextProps {
