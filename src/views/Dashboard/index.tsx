@@ -182,8 +182,7 @@ const Dashboard = (props: Props) => {
 
     const [mapStyleInverted, setMapStyleInverted] = useState(false);
 
-    // TODO: use is_covid=true if covidMode after server is fixed
-    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_covid=${covidMode}`;
+    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?${covidMode ? 'is_covid=true' : 'is_dashboard=true'}`;
     const [
         indicatorListPending,
         indicatorListResponse,
