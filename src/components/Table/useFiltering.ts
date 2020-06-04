@@ -64,43 +64,47 @@ export function useFiltering<T>(
     columns: FilterColumn<T>[],
     data: T[] | undefined,
 ) {
-    if (!filterParameters || filterParameters.length <= 0) {
-        return data;
-    }
-    // FIXME: use useMemo?
-    const filteredData = data?.filter(datum => (
-        filterParameters.every((filterParameter) => {
-            let test = true;
-
-            const {
-                id,
-                subMatch,
-
-                greaterThanOrEqualTo,
-                lessThanOrEqualTo,
-            } = filterParameter;
-
-            // FIXME: this can be optimized
-            const column = columns.find(col => col.id === id);
-            if (!column?.filterValueSelector) {
-                return test;
+    const filteredData = useMemo(
+        () => {
+            if (!filterParameters || filterParameters.length <= 0) {
+                return data;
             }
+            return data?.filter(datum => (
+                filterParameters.every((filterParameter) => {
+                    let test = true;
 
-            const val = column.filterValueSelector(datum);
+                    const {
+                        id,
+                        subMatch,
 
-            if (isNotDefined(val)) {
-                test = false;
-            } else if (typeof val === 'string') {
-                test = isFalsyString(subMatch) || caseInsensitiveSubmatch(val, subMatch);
-            } else {
-                test = (
-                    (isNotDefined(greaterThanOrEqualTo) || val > greaterThanOrEqualTo)
-                    && (isNotDefined(lessThanOrEqualTo) || val < lessThanOrEqualTo)
-                );
-            }
-            return test;
-        })
-    ));
+                        greaterThanOrEqualTo,
+                        lessThanOrEqualTo,
+                    } = filterParameter;
+
+                    // FIXME: this can be optimized
+                    const column = columns.find(col => col.id === id);
+                    if (!column?.filterValueSelector) {
+                        return test;
+                    }
+
+                    const val = column.filterValueSelector(datum);
+
+                    if (isNotDefined(val)) {
+                        test = false;
+                    } else if (typeof val === 'string') {
+                        test = isFalsyString(subMatch) || caseInsensitiveSubmatch(val, subMatch);
+                    } else {
+                        test = (
+                            (isNotDefined(greaterThanOrEqualTo) || val > greaterThanOrEqualTo)
+                            && (isNotDefined(lessThanOrEqualTo) || val < lessThanOrEqualTo)
+                        );
+                    }
+                    return test;
+                })
+            ));
+        },
+        [columns, data, filterParameters],
+    );
     return filteredData;
 }
 

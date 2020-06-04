@@ -1,12 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { listToMap, compareNumber } from '@togglecorp/fujs';
 
 interface OrderStateItem {
     name: string;
-    // hidden?: boolean;
 }
 
-export function useOrderState(keys: OrderStateItem[]) {
+export function useOrderState<T extends OrderStateItem>(keys: T[]) {
     const [ordering, setOrdering] = useState(keys);
 
     const moveOrderingItem = useCallback(
@@ -37,34 +36,9 @@ export function useOrderState(keys: OrderStateItem[]) {
         [ordering],
     );
 
-    /*
-    const setOrderingItemVisibility = useCallback(
-        (itemKey: string, hidden: boolean | undefined) => {
-            const itemIndex = ordering.findIndex(o => o.name === itemKey);
-            if (itemIndex === -1) {
-                console.error('item could not be found');
-                return;
-            }
-            const item = ordering[itemIndex];
-            const newItem = {
-                ...item,
-                hidden,
-            };
-
-            setOrdering((oldOrdering) => {
-                const newOrdering = [...oldOrdering];
-                newOrdering.splice(itemIndex, 1, newItem);
-                return newOrdering;
-            });
-        },
-        [ordering],
-    );
-    */
-
     return {
         ordering,
         moveOrderingItem,
-        // setOrderingItemVisibility,
         setOrdering,
     };
 }
@@ -73,29 +47,34 @@ interface OrderColumn {
     id: string;
 }
 
-function useOrdering<T extends OrderColumn>(
+function useOrdering<T extends OrderColumn, K extends OrderStateItem>(
     columns: T[],
-    ordering: OrderStateItem[],
+    ordering: K[],
 ) {
-    // NOTE: can memoize this
-    const mapping = listToMap(
-        ordering,
-        item => item.name,
-        (item, __, index) => ({
-            ...item,
-            order: index,
-        }),
+    const filteredData = useMemo(
+        () => {
+            const mapping = listToMap(
+                ordering,
+                item => item.name,
+                (item, __, index) => ({
+                    ...item,
+                    order: index,
+                }),
+            );
+            const sortedColumns = columns
+                .filter(foo => !!mapping[foo.id])
+                .sort((foo, bar) => {
+                    // FIXME: this can be optimized
+                    const fooOrder = mapping[foo.id]?.order;
+                    const barOrder = mapping[bar.id]?.order;
+                    return compareNumber(fooOrder, barOrder);
+                });
+            return sortedColumns;
+        },
+        [ordering, columns],
     );
 
-    // NOTE: can memoize this
-    return [...columns]
-        .filter(foo => !!mapping[foo.id])
-        .sort((foo, bar) => {
-            // FIXME: this can be optimized
-            const fooOrder = mapping[foo.id]?.order;
-            const barOrder = mapping[bar.id]?.order;
-            return compareNumber(fooOrder, barOrder);
-        });
+    return filteredData;
 }
 
 export default useOrdering;

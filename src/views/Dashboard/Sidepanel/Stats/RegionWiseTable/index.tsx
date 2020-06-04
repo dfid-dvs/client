@@ -34,13 +34,14 @@ function getIndicatorIdFromHeaderName(key: string) {
 
 interface ColumnOrderingItem {
     name: string;
+    type: 'string' | 'number';
 }
 const staticColumnOrdering: ColumnOrderingItem[] = [
-    { name: 'name' },
-    { name: 'allocatedBudget' },
-    { name: 'maleBeneficiary' },
-    { name: 'femaleBeneficiary' },
-    { name: 'totalBeneficiary' },
+    { name: 'name', type: 'string' },
+    { name: 'allocatedBudget', type: 'number' },
+    { name: 'maleBeneficiary', type: 'number' },
+    { name: 'femaleBeneficiary', type: 'number' },
+    { name: 'totalBeneficiary', type: 'number' },
 ];
 
 const fiveWKeySelector = (data: FiveW) => data.id;
@@ -180,11 +181,13 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                         .map(item => getIndicatorIdFromHeaderName(item.name))
                         .filter(isDefined),
                 );
-                const newItems = selectedIndicators?.filter(selectedIndicator => (
-                    !oldIndicators.has(selectedIndicator)
-                )).map(item => ({
-                    name: getIndicatorHeaderName(item),
-                }));
+                const newItems: ColumnOrderingItem[] | undefined = selectedIndicators
+                    ?.filter(selectedIndicator => (
+                        !oldIndicators.has(selectedIndicator)
+                    )).map(item => ({
+                        name: getIndicatorHeaderName(item),
+                        type: 'number',
+                    }));
 
                 return [...remainingItems, ...newItems];
             });
@@ -376,7 +379,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                         icons={(
                             <IoMdDownload />
                         )}
-                        disabled={!value}
+                        disabled={!csvValue}
                     >
                         Download
                     </Button>

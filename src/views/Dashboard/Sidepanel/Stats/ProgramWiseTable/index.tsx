@@ -22,12 +22,13 @@ import styles from './styles.css';
 
 interface ColumnOrderingItem {
     name: string;
+    type: 'string' | 'number';
 }
 const staticColumnOrdering: ColumnOrderingItem[] = [
-    { name: 'name' },
-    { name: 'code' },
-    { name: 'budget' },
-    { name: 'description' },
+    { name: 'name', type: 'string' },
+    { name: 'code', type: 'string' },
+    { name: 'budget', type: 'number' },
+    { name: 'description', type: 'number' },
 ];
 
 interface Program {
