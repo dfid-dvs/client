@@ -105,7 +105,7 @@ interface Props<T, K> {
     optionLabelSelector: (d: T) => string;
     optionKeySelector: (d: T) => K;
     value: K[] | undefined;
-    onChange: (d: K[] | undefined) => void;
+    onChange: (d: K[]) => void;
     disabled?: boolean;
     placeholder?: string;
     hideLabel?: boolean;
@@ -245,7 +245,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
 
     const handleClearClick = React.useCallback(
         () => {
-            onChange(undefined);
+            onChange([]);
         },
         [onChange],
     );

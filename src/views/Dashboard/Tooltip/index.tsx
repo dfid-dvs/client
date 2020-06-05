@@ -53,30 +53,6 @@ const Tooltip = ({
                         />
                     )}
                 />
-                <TextOutput
-                    label="Male Beneficiary"
-                    value={(
-                        <Numeral
-                            value={dfidData.maleBeneficiary}
-                        />
-                    )}
-                />
-                <TextOutput
-                    label="Female Beneficiary"
-                    value={(
-                        <Numeral
-                            value={dfidData.femaleBeneficiary}
-                        />
-                    )}
-                />
-                <TextOutput
-                    label="Total Beneficiary"
-                    value={(
-                        <Numeral
-                            value={dfidData.totalBeneficiary}
-                        />
-                    )}
-                />
             </>
         )}
     </div>

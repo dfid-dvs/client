@@ -14,7 +14,7 @@ import useOrdering, { useOrderState } from '#components/Table/useOrdering';
 import useSorting, { useSortState } from '#components/Table/useSorting';
 
 import useRequest from '#hooks/useRequest';
-import { MultiResponse } from '#types';
+import { MultiResponse, Program } from '#types';
 import { ExtractKeys } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
@@ -27,22 +27,9 @@ interface ColumnOrderingItem {
 const staticColumnOrdering: ColumnOrderingItem[] = [
     { name: 'name', type: 'string' },
     { name: 'code', type: 'string' },
-    { name: 'budget', type: 'number' },
+    { name: 'totalBudget', type: 'number' },
     { name: 'description', type: 'number' },
 ];
-
-interface Program {
-    id: number;
-    name: string;
-    description?: string;
-    sector: number[];
-    subsector: number[];
-    markerCategory: number[];
-    markerValue: number[];
-    partner: unknown[];
-    code: string;
-    budget?: number;
-}
 
 const programKeySelector = (data: Program) => data.id;
 
@@ -135,7 +122,7 @@ function ProgramWiseTable(props: Props) {
                 createColumn(stringColumn, 'name', 'Name', true),
                 createColumn(stringColumn, 'code', 'Code'),
                 createColumn(stringColumn, 'description', 'Description'),
-                createColumn(numberColumn, 'budget', 'Budget'),
+                createColumn(numberColumn, 'totalBudget', 'Budget'),
             ];
         },
         [
@@ -156,7 +143,7 @@ function ProgramWiseTable(props: Props) {
             {
                 name: v => v.name,
                 code: v => v.code,
-                budget: v => v.budget,
+                budget: v => v.totalBudget,
                 description: v => v.description,
             },
         ),

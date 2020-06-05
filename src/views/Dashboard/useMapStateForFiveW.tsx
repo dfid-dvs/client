@@ -15,16 +15,31 @@ import {
 
 function useMapStateForFiveW(
     regionLevel: RegionLevelOption,
+    programs: number[],
     selectedFiveWOption: FiveWOptionKey | undefined,
 ): [boolean, MapStateItem[], FiveW[]] {
     const regionFiveWGetUrl = selectedFiveWOption
         ? `${apiEndPoint}/core/fivew-${regionLevel}/`
         : undefined;
 
+    const options: RequestInit | undefined = useMemo(
+        () => ({
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({
+                programId: programs,
+            }),
+        }),
+        [programs],
+    );
+
     const [
         regionFiveWPending,
         regionFiveWListResponse,
-    ] = useRequest<MultiResponse<FiveW>>(regionFiveWGetUrl, 'fivew');
+    ] = useRequest<MultiResponse<FiveW>>(regionFiveWGetUrl, 'fivew', options);
 
     const filteredRegionFivewW = regionFiveWListResponse?.results.filter(item => item.code !== '-1');
 

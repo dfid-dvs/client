@@ -334,11 +334,28 @@ export const generateBubbleMapPaintAndLegend = (
     };
 };
 
+
+export function getVectorTile(baseUrl: string, workspace: string, layer: string) {
+    const vectorTile = [
+        baseUrl,
+        '?REQUEST=GetTile',
+        '&SERVICE=WMTS',
+        '&VERSION=1.0.0',
+        `&LAYER=${workspace}:${layer}`,
+        '&STYLE=',
+        '&TILEMATRIX=EPSG:900913:{z}',
+        '&TILEMATRIXSET=EPSG:900913',
+        '&FORMAT=application/vnd.mapbox-vector-tile',
+        '&TILECOL={x}',
+        '&TILEROW={y}',
+    ].join('');
+    return 'https://apps.naxa.com.np/geoserver/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&LAYER=Naxa:educationpoint&STYLE=&TILEMATRIX=EPSG:900913:{z}&TILEMATRIXSET=EPSG:900913&FORMAT=application/vnd.mapbox-vector-tile&TILECOL={x}&TILEROW={y}';
+}
+
 export function getRasterTile(baseUrl: string, workspace: string, layer: string) {
     const rasterTile = [
         baseUrl, // 'http://34.71.203.97:8080/geoserver/Naxa/wms'
-        '?',
-        '&service=WMS',
+        '?service=WMS',
         '&version=1.1.1',
         '&request=GetMap',
         '&format=image/png',
@@ -357,9 +374,8 @@ export function getRasterTile(baseUrl: string, workspace: string, layer: string)
 export function getRasterLegendUrl(baseUrl: string, workspace: string, layer: string) {
     const legendUrl = [
         baseUrl, // 'http://34.71.203.97:8080/geoserver/Naxa/wms'
-        '?',
+        '?service=WMS',
         '&version=1.0.0',
-        '&service=WMS',
         '&request=GetLegendGraphic',
         `&layer=${workspace}:${layer}`,
         '&format=image/png',

@@ -39,9 +39,6 @@ interface ColumnOrderingItem {
 const staticColumnOrdering: ColumnOrderingItem[] = [
     { name: 'name', type: 'string' },
     { name: 'allocatedBudget', type: 'number' },
-    { name: 'maleBeneficiary', type: 'number' },
-    { name: 'femaleBeneficiary', type: 'number' },
-    { name: 'totalBeneficiary', type: 'number' },
 ];
 
 const fiveWKeySelector = (data: FiveW) => data.id;
@@ -268,9 +265,6 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             const staticColumns = [
                 createColumn(stringColumn, 'name', 'Name', true),
                 createColumn(numberColumn, 'allocatedBudget', 'Allocated Budget'),
-                createColumn(numberColumn, 'maleBeneficiary', 'Male Beneficiary'),
-                createColumn(numberColumn, 'femaleBeneficiary', 'Female Beneficiary'),
-                createColumn(numberColumn, 'totalBeneficiary', 'Total Beneficiary'),
             ];
 
             // eslint-disable-next-line max-len
@@ -335,9 +329,6 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             {
                 name: v => v.name,
                 allocatedBudget: v => v.allocatedBudget,
-                maleBeneficiary: v => v.maleBeneficiary,
-                femaleBeneficiary: v => v.femaleBeneficiary,
-                totalBeneficiary: v => v.totalBeneficiary,
             },
         ),
         [sortedFiveW, orderedColumns],

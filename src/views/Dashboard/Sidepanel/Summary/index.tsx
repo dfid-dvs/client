@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { MdOpenInNew } from 'react-icons/md';
 
@@ -7,6 +7,7 @@ import DomainContext from '#components/DomainContext';
 import LastUpdated from '#components/LastUpdated';
 import Numeral from '#components/Numeral';
 
+import { apiEndPoint } from '#utils/constants';
 import useRequest from '#hooks/useRequest';
 
 import styles from './styles.css';
@@ -31,6 +32,14 @@ interface Status {
         updated_at: string;
         __v: number;
     };
+}
+
+interface Summary {
+    allocatedBudget: number;
+    program: number;
+    partner: number;
+    component: number;
+    sector: number;
 }
 
 interface ExternalLinkProps {
@@ -90,12 +99,31 @@ function Summary(props: Props) {
         onDFIDSummaryMoreClick,
     } = props;
 
-    const { covidMode } = useContext(DomainContext);
+    const { covidMode, programs } = useContext(DomainContext);
 
     const [
         statusPending,
         status,
     ] = useRequest<Status>(covidMode ? 'https://nepalcorona.info/api/v1/data/nepal' : undefined, 'corona-data');
+
+    const summaryUrl = `${apiEndPoint}/core/summary/`;
+    const options: RequestInit | undefined = useMemo(
+        () => ({
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({
+                programId: programs,
+            }),
+        }),
+        [programs],
+    );
+    const [
+        summaryPending,
+        summary,
+    ] = useRequest<Summary>(summaryUrl, 'fivew-summary', options);
 
     return (
         <div className={_cs(className, styles.summary)}>
@@ -182,32 +210,24 @@ function Summary(props: Props) {
                 </header>
                 <div className={styles.content}>
                     <SummaryOutput
-                        label="Allocated Budget (USD)"
-                        value={0}
+                        label="Allocated Budget (£)"
+                        value={summary?.allocatedBudget}
                     />
                     <SummaryOutput
-                        label="Total Beneficiaries"
-                        value={0}
+                        label="Programs"
+                        value={summary?.program}
                     />
                     <SummaryOutput
-                        label="Male Beneficiaries"
-                        value={0}
+                        label="Components"
+                        value={summary?.component}
                     />
                     <SummaryOutput
-                        label="Female Beneficiaries"
-                        value={0}
-                    />
-                    <SummaryOutput
-                        label="Active programs"
-                        value={0}
-                    />
-                    <SummaryOutput
-                        label="Active partners"
-                        value={0}
+                        label="Partners (1st tier)"
+                        value={summary?.partner}
                     />
                     <SummaryOutput
                         label="Sectors"
-                        value={0}
+                        value={summary?.sector}
                     />
                 </div>
                 <div className={styles.links}>

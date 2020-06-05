@@ -9,6 +9,7 @@ import {
     RegionLevelOption,
     DomainContextProps,
     NavbarContextProps,
+    Program,
 } from '#types';
 
 import routes from './routes';
@@ -45,6 +46,7 @@ function Multiplexer(props: Props) {
     const { className } = props;
 
     const [regionLevel, setRegionLevel] = React.useState<RegionLevelOption>('province');
+    const [programs, setPrograms] = React.useState<number[]>([]);
     const [covidMode, setCovidMode] = React.useState(false);
 
     const domainContextProvider: DomainContextProps = {
@@ -52,6 +54,8 @@ function Multiplexer(props: Props) {
         setRegionLevel,
         covidMode,
         setCovidMode,
+        programs,
+        setPrograms,
     };
 
     const [parentNode, setParentNode] = useState<HTMLDivElement | null | undefined>();

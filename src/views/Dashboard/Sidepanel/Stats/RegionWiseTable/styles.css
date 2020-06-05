@@ -12,6 +12,7 @@
         display: flex;
         align-items: center;
         flex-shrink: 0;
+        padding: var(--spacing-small) 0;
 
         .back-button {
             flex-shrink: 0;

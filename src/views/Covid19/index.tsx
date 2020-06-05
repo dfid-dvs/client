@@ -28,6 +28,7 @@ import {
     LegendItem,
     MultiResponse,
     Indicator,
+    isRasterLayer,
 } from '#types';
 
 import {
@@ -379,7 +380,7 @@ function Covid19(props: Props) {
     );
 
     const rasterLayers = useMemo(
-        () => (mapLayerListResponse?.results.filter(v => v.type === 'raster')),
+        () => (mapLayerListResponse?.results.filter(isRasterLayer)),
         [mapLayerListResponse],
     );
 
@@ -429,7 +430,7 @@ function Covid19(props: Props) {
                 rasterLayer={selectedRasterLayer}
                 printMode={printMode}
                 onClick={handleMapRegionOnClick}
-                hideTooltipOnHover
+                // hideTooltipOnHover
             >
                 {clickedRegionProperties && (
                     <MapTooltip

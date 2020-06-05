@@ -42,6 +42,7 @@ interface Props {
     dropdownContainerClassName?: string;
     children: React.ReactNode;
     label: string | undefined;
+    disabled?: boolean;
 }
 
 function DropdownMenu(props: Props) {
@@ -50,6 +51,7 @@ function DropdownMenu(props: Props) {
         dropdownContainerClassName,
         children,
         label,
+        disabled,
     } = props;
 
     const buttonRef = React.useRef(null);
@@ -76,6 +78,7 @@ function DropdownMenu(props: Props) {
                 )}
                 elementRef={buttonRef}
                 onClick={handleShowDropdown}
+                disabled={disabled}
             >
                 { label }
             </RawButton>

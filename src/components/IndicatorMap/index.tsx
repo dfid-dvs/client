@@ -10,11 +10,11 @@ import MapLayer from '#remap/MapSource/MapLayer';
 import MapState from '#remap/MapSource/MapState';
 import { getLayerName } from '#remap/utils';
 
-import {
-    getRasterTile,
-} from '#utils/common';
+import TextOutput from '#components/TextOutput';
+import Numeral from '#components/Numeral';
 
-import { Layer, MapStateItem } from '#types';
+import { getRasterTile, getVectorTile } from '#utils/common';
+import { VectorLayer, RasterLayer, Layer, MapStateItem } from '#types';
 
 import theme, { noneLayout, visibleLayout } from './mapTheme';
 
@@ -50,28 +50,199 @@ interface HoveredRegion {
     lngLat: mapboxgl.LngLatLike;
 }
 
+interface TooltipProps {
+    feature?: mapboxgl.MapboxGeoJSONFeature;
+    popupInfo: VectorLayer['popupInfo'];
+}
 const Tooltip = ({
     feature,
-}: { feature: mapboxgl.MapboxGeoJSONFeature }) => {
+    popupInfo,
+}: TooltipProps) => {
     if (!feature) {
         return null;
     }
 
     return (
         <div className={styles.tooltip}>
-            {feature.properties && (
-                <div className={styles.regionTitle}>
-                    { feature.properties.name }
-                </div>
-            )}
-            {feature.state && (
-                <div className={styles.value}>
-                    { feature.state.value }
-                </div>
-            )}
+            {popupInfo.map(info => (
+                <TextOutput
+                    label={info.title}
+                    value={
+                        info.type === 'number'
+                            ? (<Numeral value={feature.properties?.[info.key]} />)
+                            : feature.properties?.[info.key]
+                    }
+                />
+            ))}
         </div>
     );
 };
+
+interface RasterMapLayerProps {
+    layer: RasterLayer;
+}
+function RasterMapLayer(props: RasterMapLayerProps) {
+    const { layer } = props;
+
+    const tiles = useMemo(
+        () => ([
+            getRasterTile(
+                layer.geoserverUrl,
+                layer.workspace,
+                layer.layerName,
+            ),
+        ]),
+        [layer],
+    );
+
+    return (
+        <MapSource
+            key={layer.layerName}
+            sourceKey={layer.layerName}
+            sourceOptions={{
+                type: 'raster',
+                tiles,
+                tileSize: 256,
+            }}
+        >
+            <MapLayer
+                layerKey="raster-layer"
+                beneath={getLayerName('nepal', 'palika-fill')}
+                layerOptions={{
+                    type: 'raster',
+                    paint: theme.background.rasterPaint,
+                }}
+            />
+        </MapSource>
+    );
+}
+
+// NOTE: just don't propagate click below
+const handleVectorLayerClick = () => true;
+
+interface VectorMapLayerProps {
+    layer: VectorLayer;
+}
+
+function VectorMapLayer(props: VectorMapLayerProps) {
+    const { layer } = props;
+
+    const {
+        geoserverUrl,
+        workspace,
+        layerName,
+
+        geoType,
+        style,
+        popupInfo,
+    } = layer;
+
+    const tiles = useMemo(
+        () => ([
+            getVectorTile(
+                geoserverUrl,
+                workspace,
+                layerName,
+            ),
+        ]),
+        [geoserverUrl, workspace, layerName],
+    );
+
+    const [
+        hoveredRegionProperties,
+        setHoveredRegionProperties,
+    ] = React.useState<HoveredRegion | undefined>();
+
+    const handleMapRegionMouseEnter = React.useCallback(
+        (feature: mapboxgl.MapboxGeoJSONFeature, lngLat: mapboxgl.LngLat) => {
+            setHoveredRegionProperties({
+                feature,
+                lngLat,
+            });
+        },
+        [setHoveredRegionProperties],
+    );
+
+    const handleMapRegionMouseLeave = React.useCallback(
+        () => {
+            setHoveredRegionProperties(undefined);
+        },
+        [setHoveredRegionProperties],
+    );
+
+    const layerOptions: Omit<mapboxgl.Layer, 'id'> | undefined = useMemo(
+        () => {
+            const myStyle = style[0];
+            if (!myStyle) {
+                return undefined;
+            }
+            if (geoType === 'point') {
+                return {
+                    type: 'circle',
+                    'source-layer': layerName,
+                    paint: {
+                        'circle-color': myStyle.circleColor,
+                        'circle-radius': myStyle.circleRadius,
+                        'circle-opacity': 0.4,
+
+                        'circle-stroke-color': 'black',
+                        'circle-stroke-opacity': 0.7,
+                        'circle-stroke-width': [
+                            'case',
+                            ['==', ['feature-state', 'hovered'], true],
+                            2,
+                            0,
+                        ],
+                    },
+                };
+            }
+            return {
+                type: 'fill',
+                'source-layer': layerName,
+                paint: {
+                    'fill-color': myStyle.fillColor,
+                    'fill-opacity': 0.5,
+                },
+            };
+        },
+        [layerName, geoType, style],
+    );
+
+    if (!layerOptions) {
+        return null;
+    }
+
+    return (
+        <MapSource
+            key={layerName}
+            sourceKey="testtest"
+            sourceOptions={{
+                type: 'vector',
+                tiles,
+            }}
+        >
+            <MapLayer
+                layerKey="vector-layer"
+                layerOptions={layerOptions}
+                onMouseEnter={handleMapRegionMouseEnter}
+                onMouseLeave={handleMapRegionMouseLeave}
+                onClick={handleVectorLayerClick}
+            />
+            { hoveredRegionProperties && hoveredRegionProperties.lngLat && (
+                <MapTooltip
+                    coordinates={hoveredRegionProperties.lngLat}
+                    tooltipOptions={tooltipOptions}
+                    trackPointer
+                >
+                    <Tooltip
+                        feature={hoveredRegionProperties.feature}
+                        popupInfo={popupInfo}
+                    />
+                </MapTooltip>
+            )}
+        </MapSource>
+    );
+}
 
 interface Props {
     className?: string;
@@ -84,9 +255,10 @@ interface Props {
     children?: React.ReactNode;
     hideChoropleth?: boolean;
     hideBubble?: boolean;
-    rasterLayer?: Layer;
+    rasterLayer?: RasterLayer;
+    vectorLayers?: VectorLayer[];
     printMode?: boolean;
-    hideTooltipOnHover?: boolean;
+    // hideTooltipOnHover?: boolean;
     onClick?: (
         feature: mapboxgl.MapboxGeoJSONFeature,
         lngLat: mapboxgl.LngLat,
@@ -106,43 +278,11 @@ function IndicatorMap(props: Props) {
         hideChoropleth,
         hideBubble,
         rasterLayer,
+        vectorLayers,
         printMode,
-        hideTooltipOnHover,
+        // hideTooltipOnHover,
         onClick,
     } = props;
-
-    const [
-        hoveredRegionProperties,
-        setHoveredRegionProperties,
-    ] = React.useState<HoveredRegion | undefined>();
-
-    const handleMapRegionMouseEnter = React.useCallback(
-        (feature: mapboxgl.MapboxGeoJSONFeature, lngLat: mapboxgl.LngLat) => {
-            setHoveredRegionProperties({
-                feature,
-                lngLat,
-            });
-        },
-        [setHoveredRegionProperties],
-    );
-
-    const handleMapRegionMouseLeave = React.useCallback(() => {
-        setHoveredRegionProperties(undefined);
-    }, [setHoveredRegionProperties]);
-
-    const rasterTiles = useMemo(
-        () => {
-            if (!rasterLayer) {
-                return undefined;
-            }
-            return [getRasterTile(
-                rasterLayer.geoserverUrl,
-                rasterLayer.workspace,
-                rasterLayer.layerName,
-            )];
-        },
-        [rasterLayer],
-    );
 
     const isProvinceVisible = regionLevel === 'province';
     const isDistrictVisible = regionLevel === 'district';
@@ -192,8 +332,6 @@ function IndicatorMap(props: Props) {
                         layout: (isMunicipalityVisible && !hideChoropleth)
                             ? visibleLayout : noneLayout,
                     }}
-                    onMouseEnter={handleMapRegionMouseEnter}
-                    onMouseLeave={handleMapRegionMouseLeave}
                     onClick={onClick}
                 />
                 <MapLayer
@@ -204,8 +342,6 @@ function IndicatorMap(props: Props) {
                         paint: choroplethMapPaint,
                         layout: (isDistrictVisible && !hideChoropleth) ? visibleLayout : noneLayout,
                     }}
-                    onMouseEnter={handleMapRegionMouseEnter}
-                    onMouseLeave={handleMapRegionMouseLeave}
                     onClick={onClick}
                 />
                 <MapLayer
@@ -216,8 +352,6 @@ function IndicatorMap(props: Props) {
                         paint: choroplethMapPaint,
                         layout: (isProvinceVisible && !hideChoropleth) ? visibleLayout : noneLayout,
                     }}
-                    onMouseEnter={handleMapRegionMouseEnter}
-                    onMouseLeave={handleMapRegionMouseLeave}
                     onClick={onClick}
                 />
                 <MapLayer
@@ -259,19 +393,6 @@ function IndicatorMap(props: Props) {
                     attributeKey="value"
                     sourceLayer={selectedSourceForChoropleth}
                 />
-                {!hideTooltipOnHover
-                    && hoveredRegionProperties
-                    && hoveredRegionProperties.lngLat && (
-                    <MapTooltip
-                        coordinates={hoveredRegionProperties.lngLat}
-                        tooltipOptions={tooltipOptions}
-                        trackPointer
-                    >
-                        <Tooltip
-                            feature={hoveredRegionProperties.feature}
-                        />
-                    </MapTooltip>
-                )}
             </MapSource>
             <MapSource
                 sourceKey="nepal-centroids"
@@ -336,26 +457,6 @@ function IndicatorMap(props: Props) {
                     }}
                 />
                 */}
-                {rasterLayer && (
-                    <MapSource
-                        key={rasterLayer.layerName}
-                        sourceKey={rasterLayer.layerName}
-                        sourceOptions={{
-                            type: 'raster',
-                            tiles: rasterTiles,
-                            tileSize: 256,
-                        }}
-                    >
-                        <MapLayer
-                            layerKey="raster-layer"
-                            beneath={getLayerName('nepal', 'palika-fill')}
-                            layerOptions={{
-                                type: 'raster',
-                                paint: theme.background.rasterPaint,
-                            }}
-                        />
-                    </MapSource>
-                )}
                 <MapState
                     key={selectedSourceForBubble}
                     attributes={bubbleMapState}
@@ -363,6 +464,17 @@ function IndicatorMap(props: Props) {
                     sourceLayer={selectedSourceForBubble}
                 />
             </MapSource>
+            {rasterLayer && (
+                <RasterMapLayer
+                    layer={rasterLayer}
+                />
+            )}
+            {vectorLayers?.filter(vectorLayer => vectorLayer.geoType === 'point').map(vectorLayer => (
+                <VectorMapLayer
+                    layer={vectorLayer}
+                    key={vectorLayer.id}
+                />
+            ))}
             { children }
         </Map>
     );
