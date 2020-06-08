@@ -17,7 +17,8 @@
         "test": "jest",
         "test:watch": "jest --watch",
         "typecheck": "tsc",
-        "lint": "eslint ./src --rule 'import/no-unresolved: 0'",
+        "eslint": "eslint ./src --rule 'import/no-unresolved: 0'",
+        "stylelint": "stylelint ./src/**/*.css",
         "test:coverage": "jest --coverage",
         "deploy:dev": "test -d build && cp -f build/index.html build/200.hml && surge --domain dvs-nepal.surge.sh build/"
     },
@@ -140,7 +141,6 @@
         "stylelint": "^10.1.0",
         "stylelint-config-concentric": "^2.0.2",
         "stylelint-config-recommended": "^3.0.0",
-        "stylelint-no-unused-selectors": "^1.0.28",
         "stylelint-webpack-plugin": "^1.2.3",
         "surge": "^0.21.3",
         "terser-webpack-plugin": "^1.4.1",
@@ -167,6 +167,7 @@
         "react-icons": "^3.9.0",
         "react-router-dom": "^5.0.1",
         "recharts": "^1.8.5",
-        "resize-observer-polyfill": "^1.5.1"
+        "resize-observer-polyfill": "^1.5.1",
+        "stylelint-no-unused-selectors": "https://github.com/toggle-corp/stylelint-no-unused-selectors"
     }
 }

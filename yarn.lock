@@ -11383,10 +11383,9 @@ stylelint-config-recommended@^3.0.0:
   resolved "https://registry.yarnpkg.com/stylelint-config-recommended/-/stylelint-config-recommended-3.0.0.tgz#e0e547434016c5539fe2650afd58049a2fd1d657"
   integrity sha512-F6yTRuc06xr1h5Qw/ykb2LuFynJ2IxkKfCMf+1xqPffkxh0S09Zc902XCffcsw/XMFq/OzQ1w54fLIDtmRNHnQ==
 
-stylelint-no-unused-selectors@^1.0.28:
-  version "1.0.28"
-  resolved "https://registry.yarnpkg.com/stylelint-no-unused-selectors/-/stylelint-no-unused-selectors-1.0.28.tgz#20d6fb154798b15ff76f922809ba7efa8d52964d"
-  integrity sha512-aZaxI2E+lXN23vlJSwnY/uWDQ9mbgBTeV65R03MPk5CNZ7yzz3Prv6cQLaZx2Mm9kI2Kpw9npdY+t1d69ERwew==
+"stylelint-no-unused-selectors@https://github.com/toggle-corp/stylelint-no-unused-selectors":
+  version "1.0.4"
+  resolved "https://github.com/toggle-corp/stylelint-no-unused-selectors#a6dc013f27427bbb4fbc4f3ea1269e415116f4b3"
   dependencies:
     "@babel/parser" "^7.4.4"
     "@babel/traverse" "^7.4.4"
