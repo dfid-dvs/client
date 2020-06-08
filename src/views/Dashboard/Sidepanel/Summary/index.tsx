@@ -1,15 +1,15 @@
 import React, { useContext, useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
-import { MdOpenInNew } from 'react-icons/md';
 
 import Button from '#components/Button';
 import DomainContext from '#components/DomainContext';
 import LastUpdated from '#components/LastUpdated';
-import Numeral from '#components/Numeral';
 
 import { apiEndPoint } from '#utils/constants';
 import useRequest from '#hooks/useRequest';
 
+import SummaryOutput from './SummaryOutput';
+import ExternalLink from './ExternalLink';
 import styles from './styles.css';
 
 interface Status {
@@ -40,50 +40,6 @@ interface Summary {
     partner: number;
     component: number;
     sector: number;
-}
-
-interface ExternalLinkProps {
-    label: string | number;
-    link: string | undefined;
-}
-
-const ExternalLink = ({
-    link,
-    label,
-}: ExternalLinkProps) => (
-    <a
-        href={link}
-        className={styles.externalLink}
-        target="_blank"
-        rel="noopener noreferrer"
-    >
-        <MdOpenInNew className={styles.icon} />
-        <div className={styles.label}>
-            { label }
-        </div>
-    </a>
-);
-
-function SummaryOutput({
-    label,
-    value,
-}: {
-    label: string;
-    value: number | undefined;
-}) {
-    return (
-        <div className={styles.summaryOutput}>
-            <Numeral
-                className={styles.value}
-                value={value}
-                normalize
-                placeholder="-"
-            />
-            <div className={styles.label}>
-                { label }
-            </div>
-        </div>
-    );
 }
 
 interface Props {
@@ -137,22 +93,27 @@ function Summary(props: Props) {
                     </header>
                     <div className={styles.content}>
                         <SummaryOutput
+                            className={styles.summaryOutput}
                             label="Tests performed"
                             value={status?.tested_total}
                         />
                         <SummaryOutput
+                            className={styles.summaryOutput}
                             label="Tested positive"
                             value={status?.tested_positive}
                         />
                         <SummaryOutput
+                            className={styles.summaryOutput}
                             label="Tested negative"
                             value={status?.tested_negative}
                         />
                         <SummaryOutput
+                            className={styles.summaryOutput}
                             label="In isolation"
                             value={status?.in_isolation}
                         />
                         <SummaryOutput
+                            className={styles.summaryOutput}
                             label="Deaths"
                             value={status?.deaths}
                         />
@@ -177,26 +138,32 @@ function Summary(props: Props) {
                 </header>
                 <div className={styles.content}>
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Provinces"
                         value={7}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Districts"
                         value={77}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Municipalities"
                         value={753}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Total population"
                         value={28940000}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="GDP (USD)"
                         value={29040000000}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Per capita income (USD)"
                         value={3110}
                     />
@@ -210,22 +177,27 @@ function Summary(props: Props) {
                 </header>
                 <div className={styles.content}>
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Allocated Budget (£)"
                         value={summary?.allocatedBudget}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Programs"
                         value={summary?.program}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Components"
                         value={summary?.component}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Partners (1st tier)"
                         value={summary?.partner}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Sectors"
                         value={summary?.sector}
                     />
