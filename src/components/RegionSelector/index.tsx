@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState, useContext } from 'react';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -68,16 +68,15 @@ function RegionSelector(props: Props) {
         searchHidden,
     } = props;
 
-    // FIXME: this must be a multi-select input
     const [
         selectedRegions,
         setSelectedRegions,
-    ] = React.useState<number[] | undefined>(undefined);
+    ] = useState<number[] | undefined>(undefined);
 
     const {
         regionLevel,
         setRegionLevel,
-    } = React.useContext<DomainContextProps>(DomainContext);
+    } = useContext<DomainContextProps>(DomainContext);
 
     const setRegionLevelSafely = useCallback(
         (r: RegionLevelOption) => {

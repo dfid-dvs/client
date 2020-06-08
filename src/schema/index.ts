@@ -5,6 +5,16 @@ import { isProduction } from '#config/env';
 
 const userDefinedSchemas: Schema[] = [
     {
+        name: 'fivew-summary',
+        fields: {
+            allocatedBudget: { type: 'number', required: true },
+            program: { type: 'uint', required: true },
+            partner: { type: 'uint', required: true },
+            component: { type: 'uint', required: true },
+            sector: { type: 'uint', required: true },
+        },
+    },
+    {
         name: 'age-group-item',
         fields: {
             provinceId: { type: 'uint' },
@@ -74,10 +84,40 @@ const userDefinedSchemas: Schema[] = [
                         storeName: { type: 'string' },
                         filename: { type: 'string' },
                         description: { type: 'string' },
-                        style: { type: 'unknown' },
                         geoserverUrl: { type: 'string', required: true }, // url
                         type: { type: 'string', required: true }, // enum: raster, vector
-                        category: { type: 'string', required: true },
+
+                        geoType: { type: 'string' }, // enum: point, polygon
+                        identifierKey: { type: 'string' },
+
+                        style: {
+                            arrayType: {
+                                name: 'map-layer-list-item-style',
+                                fields: {
+                                    id: { type: 'uint', required: true },
+                                    layer: { type: 'uint', required: true },
+
+                                    circleColor: { type: 'string', required: true },
+                                    circleRadius: { type: 'uint', required: true },
+                                    fillColor: { type: 'string', required: true },
+                                },
+                            },
+                            required: true,
+                        },
+                        popupInfo: {
+                            arrayType: {
+                                name: 'map-layer-list-item-popup-info',
+                                fields: {
+                                    id: { type: 'uint', required: true },
+                                    layer: { type: 'uint', required: true },
+
+                                    key: { type: 'string', required: true },
+                                    title: { type: 'string', required: true },
+                                    type: { type: 'string', required: true }, // enum: string | number
+                                },
+                            },
+                            required: true,
+                        },
                     },
                 },
                 required: true,
@@ -179,13 +219,14 @@ const userDefinedSchemas: Schema[] = [
                         id: { type: 'uint', required: true },
                         name: { type: 'string', required: true },
                         description: { type: 'string' },
+                        code: { type: 'string', required: true },
+                        totalBudget: { type: 'number' },
+
                         sector: { type: 'array.number', required: true },
                         subSector: { type: 'array.number', required: true },
                         markerCategory: { type: 'array.number', required: true },
                         markerValue: { type: 'array.number', required: true },
                         partner: { type: 'array.number', required: true },
-                        code: { type: 'string', required: true },
-                        budget: { type: 'number' },
                     },
                 },
                 required: true,
@@ -287,9 +328,6 @@ const userDefinedSchemas: Schema[] = [
                         name: { type: 'string', required: true },
 
                         allocatedBudget: { type: 'number' },
-                        maleBeneficiary: { type: 'number' },
-                        femaleBeneficiary: { type: 'number' },
-                        totalBeneficiary: { type: 'number' },
                     },
                 },
                 required: true,

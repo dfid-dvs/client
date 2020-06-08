@@ -88,7 +88,7 @@ interface HeaderCellProps extends BaseHeader {
     onReorder?: (drag: string, drop: string) => void;
 
     hideable?: boolean;
-    onVisibilityChange?: (itemKey: string, hidden: boolean | undefined) => void;
+    onHide?: (itemKey: string) => void;
 }
 
 interface DropInfo {
@@ -118,7 +118,7 @@ function HeaderCell(props: HeaderCellProps) {
         onReorder,
 
         hideable,
-        onVisibilityChange,
+        onHide,
     } = props;
 
     const [dragging, setDragging] = useState(false);
@@ -126,11 +126,11 @@ function HeaderCell(props: HeaderCellProps) {
 
     const handleHideClick = useCallback(
         () => {
-            if (onVisibilityChange) {
-                onVisibilityChange(name, true);
+            if (onHide) {
+                onHide(name);
             }
         },
-        [onVisibilityChange, name],
+        [onHide, name],
     );
 
     const handleSortClick = useCallback(

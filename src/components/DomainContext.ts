@@ -10,6 +10,10 @@ const domainContext = React.createContext<DomainContextProps>({
     setCovidMode: (mode) => {
         console.warn('Trying to set covid mode', mode);
     },
+    programs: [],
+    setPrograms: (programs) => {
+        console.warn('Trying to set programs', programs);
+    },
 });
 
 export default domainContext;

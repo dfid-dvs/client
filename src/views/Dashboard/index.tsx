@@ -21,8 +21,10 @@ import PrintButton from '#components/PrintButton';
 import PrintDetailsBar from '#components/PrintDetailsBar';
 import ProgramSelector from '#components/ProgramSelector';
 import RasterLegend from '#components/RasterLegend';
+import VectorLegend from '#components/VectorLegend';
 import RegionSelector from '#components/RegionSelector';
 import SelectInput from '#components/SelectInput';
+import MultiSelectInput from '#components/MultiSelectInput';
 import ToggleButton from '#components/ToggleButton';
 
 import useRequest from '#hooks/useRequest';
@@ -38,6 +40,8 @@ import {
     LegendItem,
     Layer,
     Indicator,
+    isRasterLayer,
+    isVectorLayer,
 } from '#types';
 
 import {
@@ -72,11 +76,31 @@ import {
 
 import styles from './styles.css';
 
+interface Region {
+    name: string;
+}
+
+interface ClickedRegion {
+    feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
+    lngLat: mapboxgl.LngLatLike;
+}
+
 const onClickTooltipOptions: mapboxgl.PopupOptions = {
     closeOnClick: true,
     closeButton: false,
     offset: 8,
     maxWidth: '480px',
+};
+
+const catchmentLegend = {
+    [fourHourColor]: 4,
+    [eightHourColor]: 8,
+    [twelveHourColor]: 12,
+};
+const uncoveredLegend = {
+    [twelveHourUncoveredColor]: '> 12',
+    [eightHourUncoveredColor]: '> 8',
+    [fourHourUncoveredColor]: '> 4',
 };
 
 const fiveWOptions: FiveWOption[] = [
@@ -85,21 +109,21 @@ const fiveWOptions: FiveWOption[] = [
         label: 'Allocated Budget',
         unit: '£',
     },
-    {
-        key: 'maleBeneficiary',
-        label: 'Male Beneficiary',
-        datatype: 'integer',
-    },
-    {
-        key: 'femaleBeneficiary',
-        label: 'Female Beneficiary',
-        datatype: 'integer',
-    },
-    {
-        key: 'totalBeneficiary',
-        label: 'Total Beneficiary',
-        datatype: 'integer',
-    },
+];
+
+const hospitalTypeOptions: HospitalType[] = [
+    { key: 'deshosp', label: 'Covid Designated' },
+    { key: 'allcovidhfs', label: 'All' },
+];
+
+const seasonOptions: Season[] = [
+    { key: 'dry', label: 'Dry' },
+    { key: 'msn', label: 'Monsoon' },
+];
+
+const travelTimeTypeOptions: TravelTimeType[] = [
+    { key: 'catchment', label: 'Catchment' },
+    { key: 'uncovered', label: 'Uncovered' },
 ];
 
 const fiveWKeySelector = (option: FiveWOption) => option.key;
@@ -116,35 +140,14 @@ const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 const layerKeySelector = (d: Layer) => d.id;
 const layerLabelSelector = (d: Layer) => d.name;
 
-const hospitalTypeOptions: HospitalType[] = [
-    { key: 'deshosp', label: 'Covid Designated' },
-    { key: 'allcovidhfs', label: 'All' },
-];
 const hospitalTypeKeySelector = (hospitalType: HospitalType) => hospitalType.key;
 const hospitalTypeLabelSelector = (hospitalType: HospitalType) => hospitalType.label;
 
-const seasonOptions: Season[] = [
-    { key: 'dry', label: 'Dry' },
-    { key: 'msn', label: 'Monsoon' },
-];
 const seasonKeySelector = (season: Season) => season.key;
 const seasonLabelSelector = (season: Season) => season.label;
 
-const travelTimeTypeOptions: TravelTimeType[] = [
-    { key: 'catchment', label: 'Catchment' },
-    { key: 'uncovered', label: 'Uncovered' },
-];
 const travelTimeTypeKeySelector = (travelTimeType: TravelTimeType) => travelTimeType.key;
 const travelTimeTypeLabelSelector = (travelTimeType: TravelTimeType) => travelTimeType.label;
-
-export interface Region {
-    name: string;
-}
-
-export interface ClickedRegion {
-    feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
-    lngLat: mapboxgl.LngLatLike;
-}
 
 interface Props {
     className?: string;
@@ -152,38 +155,101 @@ interface Props {
 
 const Dashboard = (props: Props) => {
     const { className } = props;
-    const { regionLevel, covidMode, setCovidMode } = useContext(DomainContext);
+    const { regionLevel, covidMode, setCovidMode, programs } = useContext(DomainContext);
 
+    // Filter
     const [
         selectedIndicator,
         setSelectedIndicator,
     ] = useState<number | undefined>(undefined);
-
     const [
         selectedFiveWOption,
         setFiveWOption,
     ] = useState<FiveWOptionKey | undefined>('allocatedBudget');
-
+    const [
+        mapStyleInverted,
+        setMapStyleInverted,
+    ] = useState(false);
+    const [
+        selectedRasterLayer,
+        setSelectedRasterLayer,
+    ] = useState<number | undefined>(undefined);
+    const [
+        selectedVectorLayers,
+        setSelectedVectorLayers,
+    ] = useState<number[] | undefined>([]);
+    // Filter health
+    const [
+        showHealthResource,
+        setShowHealthResource,
+    ] = useState<boolean>(true);
+    const [
+        selectedHospitalType,
+        setHospitalType,
+    ] = useState<HospitalType['key']>('deshosp');
+    const [
+        selectedHospitals,
+        setSelectedHospitals,
+    ] = useState<string[]>([]);
+    const [
+        selectedSeason,
+        setSeason,
+    ] = useState<Season['key']>('dry');
+    const [
+        showHealthTravelTime,
+        setShowHealthTravelTime,
+    ] = useState<boolean>(false);
+    const [
+        selectedTravelTimeType,
+        setTravelTimeType,
+    ] = useState<TravelTimeType['key']>('catchment');
+    // tooltip
     const [
         clickedRegionProperties,
         setClickedRegionProperties,
     ] = useState<ClickedRegion | undefined>();
+    // info visibility
+    const [
+        ttInfoVisibility,
+        setTtInfoVisbility,
+    ] = useState(false);
+    // print
+    const [
+        printMode,
+        setPrintMode,
+    ] = useState(false);
 
-    const [showHealthResource, setShowHealthResource] = useState<boolean>(true);
-    const [showHealthTravelTime, setShowHealthTravelTime] = useState<boolean>(false);
-    const [selectedHospitals, setSelectedHospitals] = useState<string[]>([]);
-    const [selectedSeason, setSeason] = useState<Season['key']>('dry');
-    const [selectedTravelTimeType, setTravelTimeType] = useState<TravelTimeType['key']>('catchment');
-    const [selectedHospitalType, setHospitalType] = useState<HospitalType['key']>('deshosp');
+    const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
+    const [
+        mapLayerListPending,
+        mapLayerListResponse,
+    ] = useRequest<MultiResponse<Layer>>(mapLayerGetUrl, 'map-layer-list');
 
-    const enableHealthResources = showHealthResource && covidMode;
+    const rasterLayers = useMemo(
+        () => (mapLayerListResponse?.results.filter(isRasterLayer)),
+        [mapLayerListResponse],
+    );
 
-    const [selectedLayer, setSelectedLayer] = useState<number | undefined>(undefined);
+    const selectedRasterLayerDetail = useMemo(
+        () => rasterLayers?.find(v => v.id === selectedRasterLayer),
+        [rasterLayers, selectedRasterLayer],
+    );
 
-    const [mapStyleInverted, setMapStyleInverted] = useState(false);
+    const vectorLayers = useMemo(
+        () => (mapLayerListResponse?.results.filter(isVectorLayer)),
+        [mapLayerListResponse],
+    );
 
-    // TODO: use is_covid=true if covidMode after server is fixed
-    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/`;
+    const selectedVectorLayersDetail = useMemo(
+        () => (
+            selectedVectorLayers
+                ? vectorLayers?.filter(v => selectedVectorLayers.includes(v.id))
+                : undefined
+        ),
+        [vectorLayers, selectedVectorLayers],
+    );
+
+    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?${covidMode ? 'is_covid=true' : 'is_dashboard=true'}`;
     const [
         indicatorListPending,
         indicatorListResponse,
@@ -192,18 +258,22 @@ const Dashboard = (props: Props) => {
     const indicatorList = indicatorListResponse?.results.filter(
         indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regionLevel,
     );
-    const validSelectedIndicator = (
-        isDefined(selectedIndicator)
-        && indicatorList?.find(indicator => indicator.id === selectedIndicator)
-    )
-        ? selectedIndicator
-        : undefined;
 
-    const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
-    const [
-        mapLayerListPending,
-        mapLayerListResponse,
-    ] = useRequest<MultiResponse<Layer>>(mapLayerGetUrl, 'map-layer-list');
+    const {
+        selectedIndicator: validSelectedIndicator,
+        selectedIndicatorDetails,
+    } = useMemo(
+        () => {
+            const indicatorDetail = isDefined(selectedIndicator)
+                ? indicatorList?.find(indicator => indicator.id === selectedIndicator)
+                : undefined;
+            return {
+                selectedIndicator: indicatorDetail ? selectedIndicator : undefined,
+                selectedIndicatorDetails: indicatorDetail,
+            };
+        },
+        [indicatorList, selectedIndicator],
+    );
 
     const [
         indicatorMapStatePending,
@@ -214,23 +284,7 @@ const Dashboard = (props: Props) => {
         fiveWMapStatePending,
         fiveWMapState,
         fiveWStats,
-    ] = useMapStateForFiveW(regionLevel, selectedFiveWOption);
-
-
-    // NOTE: clear tooltip on region change
-    useEffect(
-        () => {
-            setClickedRegionProperties(undefined);
-        },
-        [regionLevel],
-    );
-
-    useEffect(
-        () => {
-            setSelectedHospitals([]);
-        },
-        [selectedHospitalType],
-    );
+    ] = useMapStateForFiveW(regionLevel, programs, selectedFiveWOption);
 
     const {
         choroplethMapState,
@@ -245,22 +299,17 @@ const Dashboard = (props: Props) => {
 
         titleForPrintBar,
     } = useMemo(() => {
-        const indicator = indicatorList?.find(
-            i => indicatorKeySelector(i) === validSelectedIndicator,
-        );
-        const indicatorTitle = indicator && indicatorLabelSelector(indicator);
-
         const fiveW = fiveWOptions.find(i => fiveWKeySelector(i) === selectedFiveWOption);
         const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
 
-        const title = [fiveWTitle, indicatorTitle].filter(isDefined).join(' & ');
+        const title = [fiveWTitle, selectedIndicatorDetails?.fullTitle].filter(isDefined).join(' & ');
 
         if (mapStyleInverted) {
             return {
                 choroplethMapState: indicatorMapState,
-                choroplethTitle: indicatorTitle,
-                choroplethInteger: indicator?.datatype === 'integer',
-                choroplethUnit: indicator?.unit,
+                choroplethTitle: selectedIndicatorDetails?.fullTitle,
+                choroplethInteger: selectedIndicatorDetails?.datatype === 'integer',
+                choroplethUnit: selectedIndicatorDetails?.unit,
 
                 bubbleMapState: fiveWMapState,
                 bubbleTitle: fiveWTitle,
@@ -277,9 +326,9 @@ const Dashboard = (props: Props) => {
             choroplethUnit: fiveW?.unit,
 
             bubbleMapState: indicatorMapState,
-            bubbleTitle: indicatorTitle,
-            bubbleInteger: indicator?.datatype === 'integer',
-            bubbleUnit: indicator?.unit,
+            bubbleTitle: selectedIndicatorDetails?.fullTitle,
+            bubbleInteger: selectedIndicatorDetails?.datatype === 'integer',
+            bubbleUnit: selectedIndicatorDetails?.unit,
 
             titleForPrintBar: title,
         };
@@ -287,9 +336,8 @@ const Dashboard = (props: Props) => {
         mapStyleInverted,
         indicatorMapState,
         fiveWMapState,
-        validSelectedIndicator,
         selectedFiveWOption,
-        indicatorList,
+        selectedIndicatorDetails,
     ]);
 
     const {
@@ -314,65 +362,46 @@ const Dashboard = (props: Props) => {
         [choroplethMapState, choroplethInteger, regionLevel],
     );
 
-    // const pending = mapStatePending || indicatorListPending;
     const {
         mapPaint: bubblePaint,
         legend: bubbleLegend,
         legendType: bubbleLegendType,
-    } = useMemo(() => {
-        const valueList = bubbleMapState
-            .map(d => d.value)
-            .filter(isDefined)
-            .map(Math.abs);
-
-        const hasNegativeValues = bubbleMapState.some(v => v.value < 0);
-        const hasPositiveValues = bubbleMapState.some(v => v.value > 0);
-
-        let legendType: BubbleLegendType = 'both';
-        if (hasNegativeValues && !hasPositiveValues) {
-            legendType = 'negative';
-        } else if (!hasNegativeValues && hasPositiveValues) {
-            legendType = 'positive';
-        }
-
-        const min = Math.min(...valueList);
-        const max = Math.max(...valueList);
-
-        let maxRadius = 50;
-        if (regionLevel === 'district') {
-            maxRadius = 40;
-        } else if (regionLevel === 'municipality') {
-            maxRadius = 30;
-        }
-
-        return {
-            legendType,
-            ...generateBubbleMapPaintAndLegend(min, max, maxRadius, bubbleInteger),
-        };
-    }, [bubbleMapState, bubbleInteger, regionLevel]);
-
-    const selectedIndicatorDetails = useMemo(
+    } = useMemo(
         () => {
-            if (validSelectedIndicator) {
-                return indicatorListResponse?.results.find(
-                    d => d.id === validSelectedIndicator,
-                );
+            const valueList = bubbleMapState
+                .map(d => d.value)
+                .filter(isDefined)
+                .map(Math.abs);
+
+            const hasNegativeValues = bubbleMapState.some(v => v.value < 0);
+            const hasPositiveValues = bubbleMapState.some(v => v.value > 0);
+
+            let legendType: BubbleLegendType = 'both';
+            if (hasNegativeValues && !hasPositiveValues) {
+                legendType = 'negative';
+            } else if (!hasNegativeValues && hasPositiveValues) {
+                legendType = 'positive';
             }
-            return undefined;
+
+            const min = Math.min(...valueList);
+            const max = Math.max(...valueList);
+
+            let maxRadius = 50;
+            if (regionLevel === 'district') {
+                maxRadius = 40;
+            } else if (regionLevel === 'municipality') {
+                maxRadius = 30;
+            }
+
+            return {
+                legendType,
+                ...generateBubbleMapPaintAndLegend(min, max, maxRadius, bubbleInteger),
+            };
         },
-        [validSelectedIndicator, indicatorListResponse],
+        [bubbleMapState, bubbleInteger, regionLevel],
     );
 
-    const rasterLayers = useMemo(
-        () => (mapLayerListResponse?.results.filter(v => v.type === 'raster')),
-        [mapLayerListResponse],
-    );
-
-    const selectedRasterLayer = useMemo(
-        () => rasterLayers?.find(v => v.id === selectedLayer),
-        [rasterLayers, selectedLayer],
-    );
-    const [printMode, setPrintMode] = useState(false);
+    const enableHealthResources = showHealthResource && covidMode;
 
     const showTravelTimeChoropleth = (
         enableHealthResources
@@ -383,29 +412,8 @@ const Dashboard = (props: Props) => {
         bubbleLegend.length > 0
         || Object.keys(mapLegend).length > 0
         || showTravelTimeChoropleth
-        || selectedRasterLayer
-    );
-
-    const handleMapRegionOnClick = useCallback(
-        (
-            feature: mapboxgl.MapboxGeoJSONFeature,
-            lngLat: mapboxgl.LngLat,
-        ) => {
-            setClickedRegionProperties({
-                feature: feature as unknown as GeoJSON.Feature<GeoJSON.Polygon, Region>,
-                lngLat,
-            });
-
-            return true;
-        },
-        [setClickedRegionProperties],
-    );
-
-    const handleTooltipClose = useCallback(
-        () => {
-            setClickedRegionProperties(undefined);
-        },
-        [setClickedRegionProperties],
+        || selectedRasterLayerDetail
+        || (selectedVectorLayersDetail && selectedVectorLayersDetail?.length > 0)
     );
 
     const dfidData = useMemo(
@@ -438,7 +446,28 @@ const Dashboard = (props: Props) => {
         [indicatorMapState, selectedIndicatorDetails, clickedRegionProperties],
     );
 
-    const [ttInfoVisibility, setTtInfoVisbility] = useState(false);
+    const handleMapRegionClick = useCallback(
+        (
+            feature: mapboxgl.MapboxGeoJSONFeature,
+            lngLat: mapboxgl.LngLat,
+        ) => {
+            setClickedRegionProperties({
+                feature: feature as unknown as GeoJSON.Feature<GeoJSON.Polygon, Region>,
+                lngLat,
+            });
+
+            return true;
+        },
+        [setClickedRegionProperties],
+    );
+
+    const handleTooltipClose = useCallback(
+        () => {
+            setClickedRegionProperties(undefined);
+        },
+        [setClickedRegionProperties],
+    );
+
     const handleTtInfoVisibilityChange = useCallback(
         () => {
             setTtInfoVisbility(!ttInfoVisibility);
@@ -446,33 +475,52 @@ const Dashboard = (props: Props) => {
         [setTtInfoVisbility, ttInfoVisibility],
     );
 
-    // FIXME: use useCallback
-    const handleHospitalToggle = (
-        name: string | undefined,
-    ) => {
-        if (!name) {
-            return;
-        }
-        setSelectedHospitals((hospitals) => {
-            const hospitalIndex = hospitals.findIndex(hospital => hospital === name);
-            if (hospitalIndex !== -1) {
-                const newHospitals = [...hospitals];
-                newHospitals.splice(hospitalIndex, 1);
-                return newHospitals;
+    const handleHospitalToggle = useCallback(
+        (name: string | undefined) => {
+            if (!name) {
+                return;
             }
-            return [...hospitals, name];
-        });
-    };
+            setSelectedHospitals((hospitals) => {
+                const hospitalIndex = hospitals.findIndex(hospital => hospital === name);
+                if (hospitalIndex !== -1) {
+                    const newHospitals = [...hospitals];
+                    newHospitals.splice(hospitalIndex, 1);
+                    return newHospitals;
+                }
+                return [...hospitals, name];
+            });
+        },
+        [],
+    );
 
-    // FIXME: use useCallback
-    const handleHospitalClick = (
-        feature: mapboxgl.MapboxGeoJSONFeature,
-    ) => {
-        type SelectedHospital = GeoJSON.Feature<GeoJSON.Point, DesignatedHospital>;
-        const { properties: { name } } = feature as unknown as SelectedHospital;
-        handleHospitalToggle(name);
-        return true;
-    };
+    const handleHospitalClick = useCallback(
+        (
+            feature: mapboxgl.MapboxGeoJSONFeature,
+        ) => {
+            type SelectedHospital = GeoJSON.Feature<GeoJSON.Point, DesignatedHospital>;
+            const { properties: { name } } = feature as unknown as SelectedHospital;
+            handleHospitalToggle(name);
+            return true;
+        },
+        [handleHospitalToggle],
+    );
+
+    // NOTE: clear tooltip on region change
+    useEffect(
+        () => {
+            setClickedRegionProperties(undefined);
+        },
+        [regionLevel],
+    );
+
+    // NOTE: clear hospitals on hospital type change
+    useEffect(
+        () => {
+            setSelectedHospitals([]);
+        },
+        [selectedHospitalType],
+    );
+
 
     return (
         <div className={_cs(
@@ -512,10 +560,11 @@ const Dashboard = (props: Props) => {
                     choroplethMapPaint={mapPaint}
                     bubbleMapState={bubbleMapState}
                     bubbleMapPaint={bubblePaint}
-                    rasterLayer={selectedRasterLayer}
-                    onClick={handleMapRegionOnClick}
+                    rasterLayer={selectedRasterLayerDetail}
+                    vectorLayers={selectedVectorLayersDetail}
+                    onClick={handleMapRegionClick}
                     printMode={printMode}
-                    hideTooltipOnHover
+                    // hideTooltipOnHover
                 >
                     {clickedRegionProperties && (
                         <MapTooltip
@@ -545,6 +594,8 @@ const Dashboard = (props: Props) => {
                 </IndicatorMap>
                 <Sidepanel
                     className={styles.sidebar}
+                    indicatorList={indicatorList}
+                    // FIXME: pull this data internally
                     fiveWList={fiveWStats}
                 />
             </div>
@@ -560,80 +611,79 @@ const Dashboard = (props: Props) => {
                                 value={showHealthResource}
                                 onChange={setShowHealthResource}
                             />
-                            {enableHealthResources && (
-                                <>
-                                    <SegmentInput
-                                        label="Hospitals"
-                                        className={styles.inputItem}
-                                        options={hospitalTypeOptions}
-                                        onChange={setHospitalType}
-                                        value={selectedHospitalType}
-                                        optionLabelSelector={hospitalTypeLabelSelector}
-                                        optionKeySelector={hospitalTypeKeySelector}
-                                    />
-                                    {selectedHospitals.length > 0 && (
-                                        <div className={styles.hospitals}>
-                                            {selectedHospitals.map(hospital => (
-                                                <Button
-                                                    className={styles.button}
-                                                    key={hospital}
-                                                    name={hospital}
-                                                    onClick={handleHospitalToggle}
-                                                    icons={(
-                                                        <IoIosClose />
-                                                    )}
-                                                >
-                                                    {hospital}
-                                                </Button>
-                                            ))}
-                                        </div>
+                            <div className={styles.travelTimeInputContainer}>
+                                <ToggleButton
+                                    label="Show travel time information"
+                                    disabled={!showHealthResource}
+                                    value={showHealthTravelTime && showHealthResource}
+                                    onChange={setShowHealthTravelTime}
+                                />
+                                <Button
+                                    onClick={handleTtInfoVisibilityChange}
+                                    transparent
+                                    icons={(
+                                        <IoIosInformationCircleOutline />
                                     )}
-                                    <div className={styles.travelTimeInputContainer}>
-                                        <ToggleButton
-                                            label="Show travel time"
-                                            value={showHealthTravelTime}
-                                            onChange={setShowHealthTravelTime}
-                                        />
-                                        {showHealthTravelTime && (
-                                            <Button
-                                                onClick={handleTtInfoVisibilityChange}
-                                                transparent
-                                                icons={(
-                                                    <IoIosInformationCircleOutline />
-                                                )}
-                                            />
-                                        )}
-                                    </div>
-                                    {showHealthTravelTime && (
-                                        <>
-                                            <SegmentInput
-                                                label="Type"
-                                                className={styles.inputItem}
-                                                options={travelTimeTypeOptions}
-                                                onChange={setTravelTimeType}
-                                                value={selectedTravelTimeType}
-                                                optionLabelSelector={travelTimeTypeLabelSelector}
-                                                optionKeySelector={travelTimeTypeKeySelector}
-                                            />
-                                            <SegmentInput
-                                                label="Season"
-                                                className={styles.inputItem}
-                                                options={seasonOptions}
-                                                onChange={setSeason}
-                                                value={selectedSeason}
-                                                optionLabelSelector={seasonLabelSelector}
-                                                optionKeySelector={seasonKeySelector}
-                                            />
-                                            {ttInfoVisibility && (
-                                                <div className={styles.abstract}>
-                                                    <TravelTimeDetails />
-                                                </div>
-                                            )}
-                                        </>
-                                    )}
-                                </>
-                            )}
+                                />
+                            </div>
                         </div>
+                        {enableHealthResources && (
+                            <div>
+                                <SegmentInput
+                                    label="Hospitals"
+                                    className={styles.inputItem}
+                                    options={hospitalTypeOptions}
+                                    onChange={setHospitalType}
+                                    value={selectedHospitalType}
+                                    optionLabelSelector={hospitalTypeLabelSelector}
+                                    optionKeySelector={hospitalTypeKeySelector}
+                                />
+                                {selectedHospitals.length > 0 && (
+                                    <div className={styles.hospitals}>
+                                        {selectedHospitals.map(hospital => (
+                                            <Button
+                                                className={styles.button}
+                                                key={hospital}
+                                                name={hospital}
+                                                onClick={handleHospitalToggle}
+                                                icons={(
+                                                    <IoIosClose />
+                                                )}
+                                            >
+                                                {hospital}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                        {enableHealthResources && showHealthTravelTime && (
+                            <div>
+                                <SegmentInput
+                                    label="Travel Time Type"
+                                    className={styles.inputItem}
+                                    options={travelTimeTypeOptions}
+                                    onChange={setTravelTimeType}
+                                    value={selectedTravelTimeType}
+                                    optionLabelSelector={travelTimeTypeLabelSelector}
+                                    optionKeySelector={travelTimeTypeKeySelector}
+                                />
+                                <SegmentInput
+                                    label="Travel Time Season"
+                                    className={styles.inputItem}
+                                    options={seasonOptions}
+                                    onChange={setSeason}
+                                    value={selectedSeason}
+                                    optionLabelSelector={seasonLabelSelector}
+                                    optionKeySelector={seasonKeySelector}
+                                />
+                            </div>
+                        )}
+                        {ttInfoVisibility && (
+                            <div className={styles.abstract}>
+                                <TravelTimeDetails />
+                            </div>
+                        )}
                         <div className={styles.separator} />
                     </>
                 )}
@@ -669,13 +719,23 @@ const Dashboard = (props: Props) => {
                     onChange={setMapStyleInverted}
                 />
                 <div className={styles.separator} />
+                <MultiSelectInput
+                    label="Layers"
+                    className={styles.inputItem}
+                    disabled={mapLayerListPending}
+                    options={vectorLayers}
+                    onChange={setSelectedVectorLayers}
+                    value={selectedVectorLayers}
+                    optionKeySelector={layerKeySelector}
+                    optionLabelSelector={layerLabelSelector}
+                />
                 <SelectInput
                     label="Background Layer"
                     className={styles.inputItem}
                     disabled={mapLayerListPending}
                     options={rasterLayers}
-                    onChange={setSelectedLayer}
-                    value={selectedLayer}
+                    onChange={setSelectedRasterLayer}
+                    value={selectedRasterLayer}
                     optionKeySelector={layerKeySelector}
                     optionLabelSelector={layerLabelSelector}
                 />
@@ -701,10 +761,16 @@ const Dashboard = (props: Props) => {
                         legendType={bubbleLegendType}
                         unit={bubbleUnit}
                     />
-                    {selectedRasterLayer && (
+                    {selectedRasterLayerDetail && (
                         <RasterLegend
                             className={styles.legend}
-                            rasterLayer={selectedRasterLayer}
+                            rasterLayer={selectedRasterLayerDetail}
+                        />
+                    )}
+                    {selectedVectorLayersDetail && selectedVectorLayersDetail.length > 0 && (
+                        <VectorLegend
+                            className={styles.legend}
+                            vectorLayers={selectedVectorLayersDetail}
                         />
                     )}
                     {showTravelTimeChoropleth && (
@@ -716,11 +782,7 @@ const Dashboard = (props: Props) => {
                                     minValue=""
                                     opacity={0.6}
                                     unit="hours"
-                                    legend={{
-                                        [fourHourColor]: 4,
-                                        [eightHourColor]: 8,
-                                        [twelveHourColor]: 12,
-                                    }}
+                                    legend={catchmentLegend}
                                 />
                             )}
                             {selectedTravelTimeType === 'uncovered' && (
@@ -730,11 +792,7 @@ const Dashboard = (props: Props) => {
                                     minValue=""
                                     opacity={0.6}
                                     unit="hours"
-                                    legend={{
-                                        [twelveHourUncoveredColor]: '> 12',
-                                        [eightHourUncoveredColor]: '> 8',
-                                        [fourHourUncoveredColor]: '> 4',
-                                    }}
+                                    legend={uncoveredLegend}
                                 />
                             )}
                         </>

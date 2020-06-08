@@ -1,6 +1,6 @@
 .sidepanel {
     position: relative;
-    transition: .6s margin-right ease-in-out;
+    transition: .2s margin-right ease-in-out;
     border-left: var(--width-separator-thin) solid var(--color-separator);
     background-color: var(--color-foreground);
     padding: 0;

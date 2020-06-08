@@ -1,14 +1,15 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
-import { MdOpenInNew } from 'react-icons/md';
 
 import Button from '#components/Button';
 import DomainContext from '#components/DomainContext';
 import LastUpdated from '#components/LastUpdated';
-import Numeral from '#components/Numeral';
 
+import { apiEndPoint } from '#utils/constants';
 import useRequest from '#hooks/useRequest';
 
+import SummaryOutput from './SummaryOutput';
+import ExternalLink from './ExternalLink';
 import styles from './styles.css';
 
 interface Status {
@@ -33,48 +34,12 @@ interface Status {
     };
 }
 
-interface ExternalLinkProps {
-    label: string | number;
-    link: string | undefined;
-}
-
-const ExternalLink = ({
-    link,
-    label,
-}: ExternalLinkProps) => (
-    <a
-        href={link}
-        className={styles.externalLink}
-        target="_blank"
-        rel="noopener noreferrer"
-    >
-        <MdOpenInNew className={styles.icon} />
-        <div className={styles.label}>
-            { label }
-        </div>
-    </a>
-);
-
-function SummaryOutput({
-    label,
-    value,
-}: {
-    label: string;
-    value: number | undefined;
-}) {
-    return (
-        <div className={styles.summaryOutput}>
-            <Numeral
-                className={styles.value}
-                value={value}
-                normalize
-                placeholder="-"
-            />
-            <div className={styles.label}>
-                { label }
-            </div>
-        </div>
-    );
+interface Summary {
+    allocatedBudget: number;
+    program: number;
+    partner: number;
+    component: number;
+    sector: number;
 }
 
 interface Props {
@@ -90,12 +55,31 @@ function Summary(props: Props) {
         onDFIDSummaryMoreClick,
     } = props;
 
-    const { covidMode } = useContext(DomainContext);
+    const { covidMode, programs } = useContext(DomainContext);
 
     const [
         statusPending,
         status,
     ] = useRequest<Status>(covidMode ? 'https://nepalcorona.info/api/v1/data/nepal' : undefined, 'corona-data');
+
+    const summaryUrl = `${apiEndPoint}/core/summary/`;
+    const options: RequestInit | undefined = useMemo(
+        () => ({
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json; charset=utf-8',
+            },
+            body: JSON.stringify({
+                programId: programs,
+            }),
+        }),
+        [programs],
+    );
+    const [
+        summaryPending,
+        summary,
+    ] = useRequest<Summary>(summaryUrl, 'fivew-summary', options);
 
     return (
         <div className={_cs(className, styles.summary)}>
@@ -109,22 +93,27 @@ function Summary(props: Props) {
                     </header>
                     <div className={styles.content}>
                         <SummaryOutput
+                            className={styles.summaryOutput}
                             label="Tests performed"
                             value={status?.tested_total}
                         />
                         <SummaryOutput
+                            className={styles.summaryOutput}
                             label="Tested positive"
                             value={status?.tested_positive}
                         />
                         <SummaryOutput
+                            className={styles.summaryOutput}
                             label="Tested negative"
                             value={status?.tested_negative}
                         />
                         <SummaryOutput
+                            className={styles.summaryOutput}
                             label="In isolation"
                             value={status?.in_isolation}
                         />
                         <SummaryOutput
+                            className={styles.summaryOutput}
                             label="Deaths"
                             value={status?.deaths}
                         />
@@ -149,26 +138,32 @@ function Summary(props: Props) {
                 </header>
                 <div className={styles.content}>
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Provinces"
                         value={7}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Districts"
                         value={77}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Municipalities"
                         value={753}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Total population"
                         value={28940000}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="GDP (USD)"
                         value={29040000000}
                     />
                     <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Per capita income (USD)"
                         value={3110}
                     />
@@ -182,32 +177,29 @@ function Summary(props: Props) {
                 </header>
                 <div className={styles.content}>
                     <SummaryOutput
-                        label="Allocated Budget (USD)"
-                        value={0}
+                        className={styles.summaryOutput}
+                        label="Allocated Budget (£)"
+                        value={summary?.allocatedBudget}
                     />
                     <SummaryOutput
-                        label="Total Beneficiaries"
-                        value={0}
+                        className={styles.summaryOutput}
+                        label="Programs"
+                        value={summary?.program}
                     />
                     <SummaryOutput
-                        label="Male Beneficiaries"
-                        value={0}
+                        className={styles.summaryOutput}
+                        label="Components"
+                        value={summary?.component}
                     />
                     <SummaryOutput
-                        label="Female Beneficiaries"
-                        value={0}
+                        className={styles.summaryOutput}
+                        label="Partners (1st tier)"
+                        value={summary?.partner}
                     />
                     <SummaryOutput
-                        label="Active programs"
-                        value={0}
-                    />
-                    <SummaryOutput
-                        label="Active partners"
-                        value={0}
-                    />
-                    <SummaryOutput
+                        className={styles.summaryOutput}
                         label="Sectors"
-                        value={0}
+                        value={summary?.sector}
                     />
                 </div>
                 <div className={styles.links}>

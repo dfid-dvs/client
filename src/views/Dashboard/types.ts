@@ -3,12 +3,9 @@ export interface FiveW {
     name: string;
     code: string;
     allocatedBudget: number;
-    maleBeneficiary: number;
-    femaleBeneficiary: number;
-    totalBeneficiary: number;
 }
 
-export type FiveWOptionKey = Extract<keyof FiveW, 'allocatedBudget' | 'maleBeneficiary' | 'femaleBeneficiary' | 'totalBeneficiary'>;
+export type FiveWOptionKey = Extract<keyof FiveW, 'allocatedBudget'>;
 
 export interface FiveWOption {
     key: FiveWOptionKey;
@@ -31,4 +28,3 @@ export interface TravelTimeType {
     key: 'catchment' | 'uncovered';
     label: string;
 }
-

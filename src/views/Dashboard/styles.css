@@ -11,7 +11,7 @@
     .actions {
         display: flex;
         flex-grow: 1;
-        justify-content: flex-end;
+        padding: 0 var(--spacing-large);
     }
 }
 
@@ -50,6 +50,8 @@
         background-color: var(--color-foreground);
         padding: var(--spacing-large);
         width: var(--width-config-container);
+        max-height: calc(100% - 2 * var(--spacing-medium));
+        overflow: auto;
 
         .separator {
             margin: var(--spacing-large) 0;
@@ -90,6 +92,7 @@
         max-height: var(--height-max-legend-container);
 
         .legend {
+            margin-left: var(--spacing-medium);
             border: var(--width-separator-thin) solid rgba(0, 0, 0, .1);
             background-color: var(--color-foreground);
             padding: var(--spacing-large);

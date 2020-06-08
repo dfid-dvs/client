@@ -1,10 +1,15 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useContext } from 'react';
 import { _cs, intersection } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
-import { MultiResponse } from '#types';
+import {
+    MultiResponse,
+    Program,
+    DomainContextProps,
+} from '#types';
 
+import DomainContext from '#components/DomainContext';
 import MultiSelectInput from '#components/MultiSelectInput';
 import DropdownMenu from '#components/DropdownMenu';
 import TreeInput from '#components/TreeInput';
@@ -28,19 +33,6 @@ function join<T>(foo: T[] | undefined, bar: T[] | undefined) {
         return foo;
     }
     return [...foo, ...bar];
-}
-
-interface Program {
-    id: number;
-    name: string;
-    description?: string;
-    sector: number[];
-    subSector: number[];
-    markerCategory: number[];
-    markerValue: number[];
-    partner: number[];
-    code: string;
-    budget: number;
 }
 
 const programKeySelector = (p: Program) => p.id;
@@ -91,11 +83,10 @@ function ProgramSelector(props: Props) {
         className,
     } = props;
 
-    // FIXME: change this to selected programmes
-    const [
-        selectedProgram,
-        setSelectedPrograms,
-    ] = React.useState<number[] | undefined>(undefined);
+    const {
+        programs: selectedProgram,
+        setPrograms: setSelectedPrograms,
+    } = useContext<DomainContextProps>(DomainContext);
 
     const [
         selectedSector,
@@ -306,7 +297,8 @@ function ProgramSelector(props: Props) {
             <DropdownMenu
                 label={`Sectors ${selectedSector && selectedSector.length > 0 ? '*' : ''}`}
                 className={styles.sectorInput}
-                dropdownContainerClassName={styles.sectorsDropdown}
+                // FIXME: enable later
+                disabled
             >
                 <TreeInput
                     className={styles.sectorTree}
@@ -324,6 +316,8 @@ function ProgramSelector(props: Props) {
                 label={`Markers ${selectedMarker && selectedMarker.length > 0 ? '*' : ''}`}
                 className={styles.markerInput}
                 dropdownContainerClassName={styles.markersDropdown}
+                // FIXME: enable later
+                disabled
             >
                 <TreeInput
                     className={styles.markerTree}

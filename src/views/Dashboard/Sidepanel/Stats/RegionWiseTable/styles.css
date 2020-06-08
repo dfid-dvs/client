@@ -1,3 +1,7 @@
+.dropdown {
+    z-index: 111;
+}
+
 .region-table {
     display: flex;
     flex-direction: column;
@@ -8,6 +12,7 @@
         display: flex;
         align-items: center;
         flex-shrink: 0;
+        padding: var(--spacing-small) 0;
 
         .back-button {
             flex-shrink: 0;
@@ -20,7 +25,13 @@
         }
 
         .actions {
+            display: flex;
+            align-items: flex-end;
             flex-shrink: 0;
+
+            .indicators-input {
+                margin-right: var(--spacing-medium);
+            }
         }
     }
 

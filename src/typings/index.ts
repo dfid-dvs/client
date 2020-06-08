@@ -5,6 +5,8 @@ export interface DomainContextProps {
     setRegionLevel: (v: RegionLevelOption) => void;
     covidMode: boolean;
     setCovidMode: (m: boolean) => void;
+    programs: number[];
+    setPrograms: (programs: number[]) => void;
 }
 
 export interface NavbarContextProps {
@@ -57,13 +59,40 @@ export interface LegendItem {
     value: number;
 }
 
-export interface Layer {
+interface BaseLayer {
     id: number;
     name: string;
     layerName: string;
     workspace: string;
+    storeName?: string;
+    filename?: string;
+    description?: string;
     geoserverUrl: string;
-    type: 'raster' | 'vector';
+}
+export interface RasterLayer extends BaseLayer {
+    type: 'raster';
+}
+export interface VectorLayer extends BaseLayer {
+    type: 'vector';
+    geoType: 'point' | 'polygon';
+    identifierKey: string;
+    style: {
+        circleColor: string;
+        circleRadius: number;
+        fillColor: string;
+    }[];
+    popupInfo: {
+        key: string;
+        title: string;
+        type: 'string' | 'number';
+    }[];
+}
+export type Layer = VectorLayer | RasterLayer;
+export function isRasterLayer(layer: Layer): layer is RasterLayer {
+    return layer.type === 'raster';
+}
+export function isVectorLayer(layer: Layer): layer is VectorLayer {
+    return layer.type === 'vector';
 }
 
 export interface Indicator {
@@ -75,4 +104,18 @@ export interface Indicator {
     unit?: string;
     datatype?: 'float' | 'integer';
     federalLevel: 'all' | 'province' | 'district' | 'municipality';
+}
+
+export interface Program {
+    id: number;
+    name: string;
+    description?: string;
+    code: string;
+    totalBudget: number;
+
+    sector: number[];
+    subSector: number[];
+    markerCategory: number[];
+    markerValue: number[];
+    partner: number[];
 }

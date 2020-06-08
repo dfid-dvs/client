@@ -11,6 +11,10 @@
     .sector-input,
     .marker-input {
         padding: 0 var(--spacing-medium);
+
+        &:disabled {
+            opacity: 0.5;
+        }
     }
 }
 
@@ -18,6 +22,5 @@
 .sectors-dropdown,
 .markers-dropdown {
     z-index: 111;
-    min-width: 360px!important;
 }
 

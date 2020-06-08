@@ -1,0 +1,30 @@
+.vector-legend {
+    .heading {
+        margin-bottom: var(--spacing-large-medium);
+    }
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: var(--spacing-small) 0;
+    height: var(--font-size-medium);
+    overflow: hidden;
+
+    .color {
+        flex-shrink: 0;
+        opacity: 0.6;
+        margin-right: var(--spacing-small);
+        border-radius: 50%;
+        width: var(--font-size-medium);
+        height: var(--font-size-medium);
+    }
+
+    .value {
+        flex-grow: 1;
+        margin-left: var(--spacing-small);
+        text-transform: capitalize;
+        color: var(--color-text-label);
+    }
+}
