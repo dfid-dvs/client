@@ -41,6 +41,9 @@ function LegendItem(props: LegendItemProps) {
     );
 }
 
+
+const layerKeySelector = (layer: VectorLayer) => layer.id;
+
 interface Props {
     className?: string;
     vectorLayers: VectorLayer[];
@@ -70,7 +73,7 @@ function VectorLegend(props: Props) {
             <List
                 data={vectorLayers.filter(layer => layer.geoType === 'point')}
                 renderer={LegendItem}
-                keySelector={layer => layer.id}
+                keySelector={layerKeySelector}
                 rendererParams={legendItemRendererParams}
             />
         </div>
