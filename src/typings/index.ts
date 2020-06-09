@@ -119,3 +119,16 @@ export interface Program {
     markerValue: number[];
     partner: number[];
 }
+
+interface NodeData {
+    name: string;
+}
+interface LinkData {
+    source: number;
+    target: number;
+    value: number;
+}
+export interface SankeyData {
+    nodes: NodeData[];
+    links: LinkData[];
+}

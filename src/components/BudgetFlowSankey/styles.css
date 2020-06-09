@@ -1,0 +1,12 @@
+.buget-flow-sankey {
+    display: flex;
+}
+
+.sankey-link {
+    fill: var(--color-primary);
+    fill-opacity: 0.4;
+
+    &:hover {
+        fill-opacity: 0.7;
+    }
+}
