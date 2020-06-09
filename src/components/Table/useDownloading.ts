@@ -8,12 +8,10 @@ interface Row {
 export function convertTableData<T>(
     data: T[] | undefined | null,
     columns: {
-        id: string;
+        // id: string;
         title: string;
+        valueSelector?: (foo: T) => string | number | undefined;
     }[],
-    transformers: {
-        [key: string]: (datum: T) => string | number | boolean | undefined | null;
-    },
 ) {
     if (!data) {
         return undefined;
@@ -23,11 +21,10 @@ export function convertTableData<T>(
         const val: Row = {};
         columns.forEach((header) => {
             const {
-                id,
                 title,
+                valueSelector,
             } = header;
-            const transformer = transformers[id];
-            const value = transformer ? transformer(datum) : undefined;
+            const value = valueSelector ? valueSelector(datum) : undefined;
             val[title] = value;
         });
         return val;

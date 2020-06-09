@@ -141,7 +141,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         staticColumnOrdering,
     );
 
-    const onUnselectHeader = useCallback(
+    const handleUnselectHeader = useCallback(
         (key: string) => {
             const indicatorId = getIndicatorIdFromHeaderName(key);
             if (isDefined(indicatorId)) {
@@ -213,7 +213,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     onReorder: moveOrderingItem,
 
                     hideable: false,
-                    onHide: onUnselectHeader,
+                    onHide: handleUnselectHeader,
                 },
 
                 cellAsHeader: true,
@@ -226,7 +226,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     foo[colName],
                     bar[colName],
                 ),
-                filterValueSelector: (foo: ExtendedFiveW) => foo[colName],
+                valueSelector: (foo: ExtendedFiveW) => foo[colName],
             });
 
             const numberColumn = (colName: numericKeys) => ({
@@ -246,7 +246,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     onReorder: moveOrderingItem,
 
                     hideable: false,
-                    onHide: onUnselectHeader,
+                    onHide: handleUnselectHeader,
                 },
 
                 cellRenderer: Numeral,
@@ -259,7 +259,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     foo[colName],
                     bar[colName],
                 ),
-                filterValueSelector: (foo: ExtendedFiveW) => foo[colName],
+                valueSelector: (foo: ExtendedFiveW) => foo[colName],
             });
 
             const staticColumns = [
@@ -285,7 +285,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     onReorder: moveOrderingItem,
 
                     hideable: true,
-                    onHide: onUnselectHeader,
+                    onHide: handleUnselectHeader,
                 },
 
                 cellRenderer: Numeral,
@@ -298,7 +298,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     keySelector(foo),
                     keySelector(bar),
                 ),
-                filterValueSelector: (foo: ExtendedFiveW) => keySelector(foo),
+                valueSelector: keySelector,
             });
 
 
@@ -313,7 +313,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         [
             sortState, setSortState,
             getFilteringItem, setFilteringItem,
-            moveOrderingItem, onUnselectHeader,
+            moveOrderingItem, handleUnselectHeader,
             validSelectedIndicators, indicatorMapping,
         ],
     );
@@ -326,10 +326,6 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         () => convertTableData(
             sortedFiveW,
             orderedColumns,
-            {
-                name: v => v.name,
-                allocatedBudget: v => v.allocatedBudget,
-            },
         ),
         [sortedFiveW, orderedColumns],
     );

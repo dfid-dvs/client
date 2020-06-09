@@ -84,7 +84,7 @@ function ProgramWiseTable(props: Props) {
                     foo[colName],
                     bar[colName],
                 ),
-                filterValueSelector: (foo: Program) => foo[colName],
+                valueSelector: (foo: Program) => foo[colName],
             });
 
             const numberColumn = (colName: numericKeys) => ({
@@ -115,7 +115,7 @@ function ProgramWiseTable(props: Props) {
                     foo[colName],
                     bar[colName],
                 ),
-                filterValueSelector: (foo: Program) => foo[colName],
+                valueSelector: (foo: Program) => foo[colName],
             });
 
             return [
@@ -140,12 +140,6 @@ function ProgramWiseTable(props: Props) {
         () => convertTableData(
             sortedPrograms,
             orderedColumns,
-            {
-                name: v => v.name,
-                code: v => v.code,
-                budget: v => v.totalBudget,
-                description: v => v.description,
-            },
         ),
         [sortedPrograms, orderedColumns],
     );
