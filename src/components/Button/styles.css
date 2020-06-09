@@ -17,6 +17,28 @@
         outline: none;
     }
 
+    &.transparent {
+        &.accent {
+            color: var(--color-accent);
+        }
+
+        &.danger {
+            color: var(--color-danger);
+        }
+
+        &.primary {
+            color: var(--color-primary);
+        }
+
+        &.success {
+            color: var(--color-success);
+        }
+
+        &.warning {
+            color: var(--color-warning);
+        }
+    }
+
     &:not(.transparent) {
         border-radius: 4px;
         padding: 6px 8px;
