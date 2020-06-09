@@ -1,4 +1,5 @@
 import React, { useMemo, useContext, useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { IoMdArrowRoundBack, IoMdDownload } from 'react-icons/io';
 import { compareString, compareNumber, _cs, listToMap, isDefined, isNotDefined } from '@togglecorp/fujs';
 
@@ -54,7 +55,6 @@ interface IndicatorValue {
 interface RegionWiseTableProps {
     className?: string;
     fiveW: FiveW[] | undefined;
-    onCloseButtonClick: () => void;
     indicatorList: Indicator[] | undefined;
 }
 
@@ -68,7 +68,6 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     const {
         className,
         fiveW,
-        onCloseButtonClick,
         indicatorList,
     } = props;
 
@@ -338,14 +337,14 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     return (
         <div className={_cs(styles.regionTable, className)}>
             <header className={styles.header}>
-                <Button
+                <Link
                     className={styles.backButton}
-                    onClick={onCloseButtonClick}
-                    transparent
-                    title="Go back"
+                    to="/dashboard/"
+                    replace
+                    title="Go to dashboard"
                 >
                     <IoMdArrowRoundBack />
-                </Button>
+                </Link>
                 <h3 className={styles.heading}>
                     Regions
                 </h3>

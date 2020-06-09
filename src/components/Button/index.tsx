@@ -16,11 +16,12 @@ export type ButtonVariant = (
     | 'warning'
 );
 
+const defaultVariant: ButtonVariant = 'default';
 // TODO:
 // 1. implement small, medium, big sizes
 // 2. implement outline button
 export interface Props extends RawButtonProps {
-    variant: ButtonVariant;
+    variant?: ButtonVariant;
     children?: React.ReactNode;
     className?: string;
     disabled?: boolean;
@@ -31,7 +32,7 @@ export interface Props extends RawButtonProps {
 
 function Button(props: Props) {
     const {
-        variant,
+        variant = defaultVariant,
         className: classNameFromProps,
         disabled,
         transparent,
@@ -79,9 +80,8 @@ function Button(props: Props) {
     );
 }
 
-const defaultVariant: ButtonVariant = 'default';
 Button.defaultProps = {
-    variant: defaultVariant,
+    // variant: defaultVariant,
     disabled: false,
     pending: false,
     transparent: false,

@@ -1,10 +1,12 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
+import { Indicator } from '#types';
+import useHash from '#hooks/useHash';
+
 import ProgramWiseTable from './ProgramWiseTable';
 import RegionWiseTable from './RegionWiseTable';
 import { FiveW } from '../../types';
-import { Indicator } from '#types';
 
 import styles from './styles.css';
 
@@ -13,7 +15,6 @@ interface Props {
     fiveW: FiveW[] | undefined;
     indicatorList: Indicator[] | undefined;
     onCloseButtonClick: () => void;
-    mode: 'region' | 'program';
 }
 
 function Stats(props: Props) {
@@ -22,23 +23,29 @@ function Stats(props: Props) {
         fiveW,
         indicatorList,
         onCloseButtonClick,
-        mode,
     } = props;
 
+    const hash = useHash();
+
     return (
-        <div className={_cs(className, styles.stats)}>
-            {mode === 'region' ? (
-                <RegionWiseTable
-                    onCloseButtonClick={onCloseButtonClick}
-                    fiveW={fiveW}
-                    indicatorList={indicatorList}
-                />
-            ) : (
-                <ProgramWiseTable
-                    onCloseButtonClick={onCloseButtonClick}
-                />
+        <>
+            {hash === 'regions' && (
+                <div className={_cs(className, styles.stats)}>
+                    <RegionWiseTable
+                        onCloseButtonClick={onCloseButtonClick}
+                        fiveW={fiveW}
+                        indicatorList={indicatorList}
+                    />
+                </div>
             )}
-        </div>
+            {hash === 'programs' && (
+                <div className={_cs(className, styles.stats)}>
+                    <ProgramWiseTable
+                        onCloseButtonClick={onCloseButtonClick}
+                    />
+                </div>
+            )}
+        </>
     );
 }
 export default Stats;

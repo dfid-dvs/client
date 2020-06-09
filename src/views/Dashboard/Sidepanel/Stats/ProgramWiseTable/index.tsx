@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { IoMdArrowRoundBack, IoMdDownload } from 'react-icons/io';
 import { compareString, compareNumber, _cs } from '@togglecorp/fujs';
 
@@ -35,12 +36,10 @@ const programKeySelector = (data: Program) => data.id;
 
 interface Props {
     className?: string;
-    onCloseButtonClick: () => void;
 }
 function ProgramWiseTable(props: Props) {
     const {
         className,
-        onCloseButtonClick,
     } = props;
     const [
         programsPending,
@@ -152,14 +151,14 @@ function ProgramWiseTable(props: Props) {
     return (
         <div className={_cs(styles.programTable, className)}>
             <header className={styles.header}>
-                <Button
+                <Link
                     className={styles.backButton}
-                    onClick={onCloseButtonClick}
-                    title="Go back"
-                    transparent
+                    to="/dashboard/"
+                    replace
+                    title="Go to dashboard"
                 >
                     <IoMdArrowRoundBack />
-                </Button>
+                </Link>
                 <h3 className={styles.heading}>
                     Programs
                 </h3>

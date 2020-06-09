@@ -280,6 +280,7 @@ const userDefinedSchemas: Schema[] = [
                         abstract: { type: 'string' },
                         category: { type: 'string', required: true },
                         source: { type: 'string' },
+                        isDashboard: { type: 'boolean' },
                         isCovid: { type: 'boolean' },
                         unit: { type: 'string' },
                         dataType: { type: 'string' }, // only 'float' for now
