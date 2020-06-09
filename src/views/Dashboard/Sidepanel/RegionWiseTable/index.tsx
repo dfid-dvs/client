@@ -21,7 +21,7 @@ import { MultiResponse, Indicator } from '#types';
 import { ExtractKeys } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
-import { FiveW } from '../../../types';
+import { FiveW } from '../../types';
 
 import styles from './styles.css';
 

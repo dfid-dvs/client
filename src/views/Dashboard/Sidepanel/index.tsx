@@ -5,19 +5,23 @@ import {
     IoIosArrowForward,
     IoIosArrowBack,
 } from 'react-icons/io';
-import Stats from './Stats';
 
 import Button from '#components/Button';
 import DomainContext from '#components/DomainContext';
 import LastUpdated from '#components/LastUpdated';
 
-import { Indicator } from '#types';
-import { apiEndPoint } from '#utils/constants';
+import useHash from '#hooks/useHash';
 import useRequest from '#hooks/useRequest';
 
+import { Indicator } from '#types';
+import { apiEndPoint } from '#utils/constants';
+
 import { FiveW } from '../types';
+import ProgramWiseTable from './ProgramWiseTable';
+import RegionWiseTable from './RegionWiseTable';
 import SummaryOutput from './SummaryOutput';
 import ExternalLink from './ExternalLink';
+
 import styles from './styles.css';
 
 interface Status {
@@ -63,8 +67,11 @@ function Sidepanel(props: Props) {
         indicatorList,
     } = props;
 
-    const [isHidden, setIsHidden] = React.useState(false);
     const { covidMode, programs } = useContext(DomainContext);
+
+    const [isHidden, setIsHidden] = React.useState(false);
+
+    const hash = useHash();
 
     const [
         statusPending,
@@ -92,18 +99,6 @@ function Sidepanel(props: Props) {
 
     const handleToggleVisibilityButtonClick = React.useCallback(() => {
         setIsHidden(prevValue => !prevValue);
-    }, []);
-
-    const handleRegionSummaryMoreClick = React.useCallback(() => {
-        // setStatMode('region');
-    }, []);
-
-    const handleDFIDSummaryMoreClick = React.useCallback(() => {
-        // setStatMode('program');
-    }, []);
-
-    const handleStatCloseButtonClick = React.useCallback(() => {
-        // setStatMode(undefined);
     }, []);
 
     return (
@@ -259,12 +254,19 @@ function Sidepanel(props: Props) {
                     </div>
                 </div>
             </div>
-            <Stats
-                className={styles.stats}
-                indicatorList={indicatorList}
-                fiveW={fiveWList}
-                onCloseButtonClick={handleStatCloseButtonClick}
-            />
+            {hash === 'regions' && (
+                <div className={styles.popup}>
+                    <RegionWiseTable
+                        fiveW={fiveWList}
+                        indicatorList={indicatorList}
+                    />
+                </div>
+            )}
+            {hash === 'programs' && (
+                <div className={styles.popup}>
+                    <ProgramWiseTable />
+                </div>
+            )}
         </>
     );
 }

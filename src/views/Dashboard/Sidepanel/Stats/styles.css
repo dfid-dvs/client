@@ -1,7 +1,0 @@
-.stats {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid green;
-    padding: var(--spacing-large);
-    overflow: auto;
-}
