@@ -1,4 +1,5 @@
 import React, { useMemo, useContext, useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { IoMdArrowRoundBack, IoMdDownload } from 'react-icons/io';
 import { compareString, compareNumber, _cs, listToMap, isDefined, isNotDefined } from '@togglecorp/fujs';
 
@@ -20,7 +21,7 @@ import { MultiResponse, Indicator } from '#types';
 import { ExtractKeys } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
-import { FiveW } from '../../../types';
+import { FiveW } from '../../types';
 
 import styles from './styles.css';
 
@@ -54,7 +55,6 @@ interface IndicatorValue {
 interface RegionWiseTableProps {
     className?: string;
     fiveW: FiveW[] | undefined;
-    onCloseButtonClick: () => void;
     indicatorList: Indicator[] | undefined;
 }
 
@@ -68,7 +68,6 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     const {
         className,
         fiveW,
-        onCloseButtonClick,
         indicatorList,
     } = props;
 
@@ -141,7 +140,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         staticColumnOrdering,
     );
 
-    const onUnselectHeader = useCallback(
+    const handleUnselectHeader = useCallback(
         (key: string) => {
             const indicatorId = getIndicatorIdFromHeaderName(key);
             if (isDefined(indicatorId)) {
@@ -213,7 +212,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     onReorder: moveOrderingItem,
 
                     hideable: false,
-                    onHide: onUnselectHeader,
+                    onHide: handleUnselectHeader,
                 },
 
                 cellAsHeader: true,
@@ -226,7 +225,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     foo[colName],
                     bar[colName],
                 ),
-                filterValueSelector: (foo: ExtendedFiveW) => foo[colName],
+                valueSelector: (foo: ExtendedFiveW) => foo[colName],
             });
 
             const numberColumn = (colName: numericKeys) => ({
@@ -246,7 +245,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     onReorder: moveOrderingItem,
 
                     hideable: false,
-                    onHide: onUnselectHeader,
+                    onHide: handleUnselectHeader,
                 },
 
                 cellRenderer: Numeral,
@@ -259,7 +258,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     foo[colName],
                     bar[colName],
                 ),
-                filterValueSelector: (foo: ExtendedFiveW) => foo[colName],
+                valueSelector: (foo: ExtendedFiveW) => foo[colName],
             });
 
             const staticColumns = [
@@ -285,7 +284,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     onReorder: moveOrderingItem,
 
                     hideable: true,
-                    onHide: onUnselectHeader,
+                    onHide: handleUnselectHeader,
                 },
 
                 cellRenderer: Numeral,
@@ -298,7 +297,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     keySelector(foo),
                     keySelector(bar),
                 ),
-                filterValueSelector: (foo: ExtendedFiveW) => keySelector(foo),
+                valueSelector: keySelector,
             });
 
 
@@ -313,7 +312,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         [
             sortState, setSortState,
             getFilteringItem, setFilteringItem,
-            moveOrderingItem, onUnselectHeader,
+            moveOrderingItem, handleUnselectHeader,
             validSelectedIndicators, indicatorMapping,
         ],
     );
@@ -326,10 +325,6 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         () => convertTableData(
             sortedFiveW,
             orderedColumns,
-            {
-                name: v => v.name,
-                allocatedBudget: v => v.allocatedBudget,
-            },
         ),
         [sortedFiveW, orderedColumns],
     );
@@ -342,14 +337,14 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     return (
         <div className={_cs(styles.regionTable, className)}>
             <header className={styles.header}>
-                <Button
+                <Link
                     className={styles.backButton}
-                    onClick={onCloseButtonClick}
-                    transparent
-                    title="Go back"
+                    to="/dashboard/"
+                    replace
+                    title="Go to dashboard"
                 >
                     <IoMdArrowRoundBack />
-                </Button>
+                </Link>
                 <h3 className={styles.heading}>
                     Regions
                 </h3>

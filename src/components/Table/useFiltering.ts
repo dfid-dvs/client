@@ -56,7 +56,7 @@ export interface FilterParameter {
 
 interface FilterColumn<T> {
     id: string;
-    filterValueSelector?: (foo: T) => string | number | undefined;
+    valueSelector?: (foo: T) => string | number | undefined;
 }
 
 export function useFiltering<T>(
@@ -83,11 +83,11 @@ export function useFiltering<T>(
 
                     // FIXME: this can be optimized
                     const column = columns.find(col => col.id === id);
-                    if (!column?.filterValueSelector) {
+                    if (!column?.valueSelector) {
                         return test;
                     }
 
-                    const val = column.filterValueSelector(datum);
+                    const val = column.valueSelector(datum);
 
                     if (isNotDefined(val)) {
                         test = false;
