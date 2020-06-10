@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { IoMdArrowRoundBack, IoMdDownload } from 'react-icons/io';
+import React, { useMemo, useCallback } from 'react';
+import { IoMdDownload } from 'react-icons/io';
 import { compareString, compareNumber, _cs } from '@togglecorp/fujs';
 
+import PopupPage from '#components/PopupPage';
 import Button from '#components/Button';
 import Numeral from '#components/Numeral';
 import Table, { createColumn } from '#components/Table';
@@ -70,7 +70,6 @@ function ProgramWiseTable(props: Props) {
                     onReorder: moveOrderingItem,
 
                     hideable: false,
-                    // hideable: colName !== 'name',
                 },
 
                 cellAsHeader: true,
@@ -135,7 +134,7 @@ function ProgramWiseTable(props: Props) {
     const filteredPrograms = useFiltering(filtering, orderedColumns, programListResponse?.results);
     const sortedPrograms = useSorting(sortState, orderedColumns, filteredPrograms);
 
-    const csvValue = useMemo(
+    const getCsvValue = useCallback(
         () => convertTableData(
             sortedPrograms,
             orderedColumns,
@@ -145,43 +144,34 @@ function ProgramWiseTable(props: Props) {
 
     const handleDownload = useDownloading(
         'Program',
-        csvValue,
+        getCsvValue,
     );
 
     return (
-        <div className={_cs(styles.programTable, className)}>
-            <header className={styles.header}>
-                <Link
-                    className={styles.backButton}
-                    to="/dashboard/"
-                    replace
-                    title="Go to dashboard"
+        <PopupPage
+            className={className}
+            title="Programs"
+            parentLink="/dashboard/"
+            parentName="dashboard"
+        >
+            <div className={styles.tableActions}>
+                <Button
+                    onClick={handleDownload}
+                    icons={(
+                        <IoMdDownload />
+                    )}
+                    disabled={!sortedPrograms || !orderedColumns}
                 >
-                    <IoMdArrowRoundBack />
-                </Link>
-                <h3 className={styles.heading}>
-                    Programs
-                </h3>
-                <div className={styles.actions}>
-                    <Button
-                        onClick={handleDownload}
-                        icons={(
-                            <IoMdDownload />
-                        )}
-                        disabled={!csvValue}
-                    >
-                        Download
-                    </Button>
-                </div>
-            </header>
-            <div className={styles.content}>
-                <Table
-                    data={sortedPrograms}
-                    keySelector={programKeySelector}
-                    columns={orderedColumns}
-                />
+                    Download as csv
+                </Button>
             </div>
-        </div>
+            <Table
+                className={styles.table}
+                data={sortedPrograms}
+                keySelector={programKeySelector}
+                columns={orderedColumns}
+            />
+        </PopupPage>
     );
 }
 

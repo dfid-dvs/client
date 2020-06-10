@@ -1,12 +1,13 @@
 import React, { useMemo, useContext, useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { IoMdArrowRoundBack, IoMdDownload } from 'react-icons/io';
-import { compareString, compareNumber, _cs, listToMap, isDefined, isNotDefined } from '@togglecorp/fujs';
+import { IoMdDownload } from 'react-icons/io';
+import { compareString, compareNumber, listToMap, isDefined, isNotDefined } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
 import DomainContext from '#components/DomainContext';
 import MultiSelectInput from '#components/MultiSelectInput';
 import Numeral from '#components/Numeral';
+import PopupPage from '#components/PopupPage';
+import RegionSelector from '#components/RegionSelector';
 import Table, { createColumn } from '#components/Table';
 import Cell from '#components/Table/Cell';
 import HeaderCell from '#components/Table/HeaderCell';
@@ -321,7 +322,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     const filteredFiveW = useFiltering(filtering, orderedColumns, finalFiveW);
     const sortedFiveW = useSorting(sortState, orderedColumns, filteredFiveW);
 
-    const csvValue = useMemo(
+    const getCsvValue = useCallback(
         () => convertTableData(
             sortedFiveW,
             orderedColumns,
@@ -331,54 +332,45 @@ function RegionWiseTable(props: RegionWiseTableProps) {
 
     const handleDownload = useDownloading(
         'Region',
-        csvValue,
+        getCsvValue,
     );
 
     return (
-        <div className={_cs(styles.regionTable, className)}>
-            <header className={styles.header}>
-                <Link
-                    className={styles.backButton}
-                    to="/dashboard/"
-                    replace
-                    title="Go to dashboard"
-                >
-                    <IoMdArrowRoundBack />
-                </Link>
-                <h3 className={styles.heading}>
-                    Regions
-                </h3>
-                <div className={styles.actions}>
-                    <MultiSelectInput
-                        label="Indicators"
-                        className={styles.indicatorsInput}
-                        placeholder={`Select from ${indicatorList?.length || 0} indicators`}
-                        options={indicatorList}
-                        onChange={setSelectedIndicators}
-                        value={validSelectedIndicators}
-                        optionLabelSelector={indicatorTitleSelector}
-                        optionKeySelector={indicatorKeySelector}
-                        dropdownContainerClassName={styles.dropdown}
-                    />
-                    <Button
-                        onClick={handleDownload}
-                        icons={(
-                            <IoMdDownload />
-                        )}
-                        disabled={!csvValue}
-                    >
-                        Download
-                    </Button>
-                </div>
-            </header>
-            <div className={styles.content}>
-                <Table
-                    data={sortedFiveW}
-                    keySelector={fiveWKeySelector}
-                    columns={orderedColumns}
+        <PopupPage
+            className={className}
+            title="Regions"
+            parentLink="/dashboard/"
+            parentName="dashboard"
+        >
+            <div className={styles.tableActions}>
+                <RegionSelector searchHidden />
+                <MultiSelectInput
+                    label="Indicators"
+                    placeholder={`Select from ${indicatorList?.length || 0} indicators`}
+                    options={indicatorList}
+                    onChange={setSelectedIndicators}
+                    value={validSelectedIndicators}
+                    optionLabelSelector={indicatorTitleSelector}
+                    optionKeySelector={indicatorKeySelector}
+                    dropdownContainerClassName={styles.dropdown}
                 />
+                <Button
+                    onClick={handleDownload}
+                    icons={(
+                        <IoMdDownload />
+                    )}
+                    disabled={!sortedFiveW || !orderedColumns}
+                >
+                    Download as csv
+                </Button>
             </div>
-        </div>
+            <Table
+                className={styles.table}
+                data={sortedFiveW}
+                keySelector={fiveWKeySelector}
+                columns={orderedColumns}
+            />
+        </PopupPage>
     );
 }
 

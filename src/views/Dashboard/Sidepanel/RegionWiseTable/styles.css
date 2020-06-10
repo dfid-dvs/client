@@ -2,41 +2,18 @@
     z-index: 111;
 }
 
-.region-table {
+.table-actions {
     display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    overflow: auto;
+    align-items: flex-end;
+    padding: var(--spacing-small) 0;
 
-    .header {
-        display: flex;
-        align-items: center;
-        flex-shrink: 0;
-        padding: var(--spacing-small) 0;
-
-        .back-button {
-            flex-shrink: 0;
-            font-size: var(--font-size-large);
-        }
-
-        .heading {
-            flex-grow: 1;
-            padding: var(--spacing-medium);
-        }
-
-        .actions {
-            display: flex;
-            align-items: flex-end;
-            flex-shrink: 0;
-
-            .indicators-input {
-                margin-right: var(--spacing-medium);
-            }
+    >* {
+        &:not(:last-child) {
+            margin-right: var(--spacing-medium);
         }
     }
+}
 
-    .content {
-        flex-grow: 1;
-        overflow: auto;
-    }
+.table {
+    max-height: 500px;
 }
