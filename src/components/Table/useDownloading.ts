@@ -67,8 +67,9 @@ export function convertJsonToCsv(
     return result;
 }
 
-function useDownloading(name: string, value: Row[] | undefined | null) {
+function useDownloading(name: string, valueCreator: () => Row[] | undefined | null) {
     const handleClick = () => {
+        const value = valueCreator();
         const csv = convertJsonToCsv(value);
         if (!csv) {
             return;

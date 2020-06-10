@@ -255,17 +255,13 @@ function Sidepanel(props: Props) {
                 </div>
             </div>
             {hash === 'regions' && (
-                <div className={styles.popup}>
-                    <RegionWiseTable
-                        fiveW={fiveWList}
-                        indicatorList={indicatorList}
-                    />
-                </div>
+                <RegionWiseTable
+                    fiveW={fiveWList}
+                    indicatorList={indicatorList}
+                />
             )}
             {hash === 'programs' && (
-                <div className={styles.popup}>
-                    <ProgramWiseTable />
-                </div>
+                <ProgramWiseTable />
             )}
         </>
     );
