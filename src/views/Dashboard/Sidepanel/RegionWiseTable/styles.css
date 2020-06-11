@@ -33,3 +33,9 @@
     margin: var(--spacing-small) var(--spacing-medium);
     /* overflow-y: auto; */
 }
+
+.charts {
+    display: flex;
+    flex-wrap: wrap;
+    padding: var(--spacing-large) 0;
+}

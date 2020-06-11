@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import styles from './styles.css';
@@ -16,23 +16,57 @@ function RawInput<T=string>(props: Props<T>) {
         onChange,
         onBlur,
         elementRef,
+        value,
         ...otherProps
     } = props;
+
+    const timeoutRef = useRef<number | undefined>();
+    const [stateValue, setStateValue] = useState(value);
 
     const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
         const {
             currentTarget: {
-                value,
+                value: val,
                 name,
             },
         } = e;
 
-        onChange(
-            value,
-            name,
-            e,
+        setStateValue(val);
+
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = undefined;
+        }
+        timeoutRef.current = window.setTimeout(
+            () => onChange(
+                val,
+                name,
+                e,
+            ),
+            500,
         );
     };
+
+    useEffect(
+        () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = undefined;
+            }
+            setStateValue(value);
+        },
+        [value],
+    );
+
+    useEffect(
+        () => () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+                timeoutRef.current = undefined;
+            }
+        },
+        [],
+    );
 
     const handleBlur = (e: React.FormEvent<HTMLInputElement>) => {
         const {
@@ -54,6 +88,7 @@ function RawInput<T=string>(props: Props<T>) {
             onChange={handleChange}
             onBlur={onBlur ? handleBlur : undefined}
             className={_cs(className, styles.rawInput)}
+            value={stateValue}
             {...otherProps}
         />
     );

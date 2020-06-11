@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback, useContext, useState } from 'react';
 import { IoMdDownload } from 'react-icons/io';
-import { compareString, compareNumber, _cs, isTruthyString } from '@togglecorp/fujs';
+import { compareString, compareNumber, isTruthyString } from '@togglecorp/fujs';
 
 import DomainContext from '#components/DomainContext';
 import SegmentInput from '#components/SegmentInput';
@@ -47,14 +47,13 @@ interface Node {
 
 interface ColumnOrderingItem {
     name: string;
-    type: 'string' | 'number';
 }
 
 const staticColumnOrdering: ColumnOrderingItem[] = [
-    { name: 'name', type: 'string' },
-    { name: 'code', type: 'string' },
-    { name: 'totalBudget', type: 'number' },
-    { name: 'description', type: 'number' },
+    { name: 'name' },
+    { name: 'code' },
+    { name: 'totalBudget' },
+    { name: 'description' },
 ];
 
 const programKeySelector = (data: Program) => data.id;
@@ -135,6 +134,7 @@ function ProgramWiseTable(props: Props) {
                     bar[colName],
                 ),
                 valueSelector: (foo: Program) => foo[colName],
+                valueType: 'string',
             });
 
             const numberColumn = (colName: numericKeys) => ({
@@ -166,6 +166,7 @@ function ProgramWiseTable(props: Props) {
                     bar[colName],
                 ),
                 valueSelector: (foo: Program) => foo[colName],
+                valueType: 'number',
             });
 
             return [
@@ -182,9 +183,20 @@ function ProgramWiseTable(props: Props) {
         ],
     );
 
-    const orderedColumns = useOrdering(columns, ordering);
-    const filteredPrograms = useFiltering(filtering, orderedColumns, programListResponse?.results);
-    const sortedPrograms = useSorting(sortState, orderedColumns, filteredPrograms);
+    const orderedColumns = useOrdering(
+        columns,
+        ordering,
+    );
+    const filteredPrograms = useFiltering(
+        filtering,
+        orderedColumns,
+        programListResponse?.results,
+    );
+    const sortedPrograms = useSorting(
+        sortState,
+        orderedColumns,
+        filteredPrograms,
+    );
 
     const getCsvValue = useCallback(
         () => convertTableData(
