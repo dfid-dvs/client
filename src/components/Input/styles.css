@@ -3,7 +3,18 @@
 
     .main {
         display: flex;
-        background-color: var(--color-background);
+        border-radius: 4px;
+        /* background-color: var(--color-background); */
+        background-color: #e5eaf0;
+
+        &.disabled {
+            background-color: #e5eaf0;
+        }
+
+        &.errored {
+            background-color: #f1e1e3;
+        }
+
         padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-extra-small));
 
         .icons {
@@ -11,6 +22,8 @@
             align-items: center;
             flex-shrink: 0;
             padding: 0 var(--spacing-extra-small);
+
+            color: #e5eaf0;
         }
 
         .input {
