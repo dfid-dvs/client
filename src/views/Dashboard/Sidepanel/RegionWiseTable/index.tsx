@@ -97,13 +97,19 @@ interface ExtendedFiveW extends FiveW {
     };
 }
 
-/*
 const one: BarChartSettings<ExtendedFiveW> = {
     type: 'bar-chart',
-    title: 'Budget information',
+    title: 'Top 10 budget spend',
     id: 'budget-information',
     keySelector: item => item.name,
-    layout: 'horizontal',
+    // layout: 'horizontal',
+
+    limit: {
+        count: 10,
+        method: 'max',
+        valueSelector: item => item.allocatedBudget,
+    },
+
     bars: [
         {
             title: 'Allocated Budget',
@@ -114,10 +120,10 @@ const one: BarChartSettings<ExtendedFiveW> = {
 };
 const two: BarChartSettings<ExtendedFiveW> = {
     type: 'bar-chart',
-    title: 'Health and Finance',
+    title: 'Health and Finance for Top 10 budget spend',
     id: 'financial-information',
     keySelector: item => item.name,
-    layout: 'horizontal',
+    // layout: 'horizontal',
     bars: [
         {
             title: 'Health Facilities',
@@ -130,34 +136,26 @@ const two: BarChartSettings<ExtendedFiveW> = {
             valueSelector: item => item.indicators[118] || null,
         },
     ],
+
+    limit: {
+        count: 10,
+        method: 'max',
+        valueSelector: item => item.allocatedBudget,
+    },
 };
-const three: BarChartSettings<ExtendedFiveW> = {
+const twopointfive: BarChartSettings<ExtendedFiveW> = {
     type: 'bar-chart',
-    title: 'Health and Finance',
-    id: 'financial-information-stacked',
+    title: 'Bottom 10 budget spend',
+    id: 'budget-information',
     keySelector: item => item.name,
-    layout: 'horizontal',
-    bars: [
-        {
-            title: 'Health Facilities',
-            color: 'red',
-            valueSelector: item => item.indicators[119] || null,
-            stackId: 'facilities',
-        },
-        {
-            title: 'Financial Institutions',
-            color: 'blue',
-            valueSelector: item => item.indicators[118] || null,
-            stackId: 'facilities',
-        },
-    ],
-};
-const oneV: BarChartSettings<ExtendedFiveW> = {
-    type: 'bar-chart',
-    title: 'Budget information',
-    id: 'budget-information-v',
-    keySelector: item => item.name,
-    layout: 'vertical',
+    // layout: 'horizontal',
+
+    limit: {
+        count: 10,
+        method: 'min',
+        valueSelector: item => item.allocatedBudget,
+    },
+
     bars: [
         {
             title: 'Allocated Budget',
@@ -166,31 +164,12 @@ const oneV: BarChartSettings<ExtendedFiveW> = {
         },
     ],
 };
-const twoV: BarChartSettings<ExtendedFiveW> = {
+const three: BarChartSettings<ExtendedFiveW> = {
     type: 'bar-chart',
-    title: 'Health and Finance',
-    id: 'financial-information-v',
+    title: 'Health and Finance for Bottom 10 budget spend',
+    id: 'financial-information-stacked',
     keySelector: item => item.name,
-    layout: 'vertical',
-    bars: [
-        {
-            title: 'Health Facilities',
-            color: 'red',
-            valueSelector: item => item.indicators[119] || null,
-        },
-        {
-            title: 'Financial Institutions',
-            color: 'blue',
-            valueSelector: item => item.indicators[118] || null,
-        },
-    ],
-};
-const threeV: BarChartSettings<ExtendedFiveW> = {
-    type: 'bar-chart',
-    title: 'Health and Finance',
-    id: 'financial-information-stacked-v',
-    keySelector: item => item.name,
-    layout: 'vertical',
+    // layout: 'horizontal',
     bars: [
         {
             title: 'Health Facilities',
@@ -205,19 +184,26 @@ const threeV: BarChartSettings<ExtendedFiveW> = {
             stackId: 'facilities',
         },
     ],
+
+    limit: {
+        count: 10,
+        method: 'min',
+        valueSelector: item => item.allocatedBudget,
+    },
 };
 
 const defaultChartSettings = [
-    one, two, three, oneV, twoV, threeV,
+    one, two, twopointfive, three,
 ];
 const defaultIndicators = [
     119,
     118,
 ];
-*/
 
+/*
 const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [];
 const defaultIndicators: number[] = [];
+*/
 
 function RegionWiseTable(props: RegionWiseTableProps) {
     const {
@@ -255,7 +241,6 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>(
         defaultChartSettings,
     );
-
 
     const indicatorMapping = useMemo(
         () => listToMap(
@@ -310,11 +295,11 @@ function RegionWiseTable(props: RegionWiseTableProps) {
 
     const finalFiveW = useMemo(
         (): ExtendedFiveW[] | undefined => {
-            if (!fiveW || !regionIndicatorListResponse?.results) {
+            if (!fiveW) {
                 return undefined;
             }
             const mapping = listToMap(
-                regionIndicatorListResponse.results,
+                regionIndicatorListResponse?.results,
                 item => `${item.code}-${item.indicatorId}`,
                 item => item.value,
             );
@@ -587,7 +572,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     </div>
                     <Table
                         className={styles.table}
-                        data={sortedFiveW}
+                        data={finalFiveW}
                         keySelector={fiveWKeySelector}
                         columns={orderedColumns}
                     />
@@ -610,6 +595,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     <div className={styles.charts}>
                         {chartSettings.map(item => (
                             <Chart
+                                className={styles.chart}
                                 key={item.id}
                                 data={sortedFiveW}
                                 settings={item}

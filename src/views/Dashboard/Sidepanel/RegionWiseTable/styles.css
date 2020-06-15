@@ -23,19 +23,19 @@
 }
 
 .charts {
+    display: flex;
     flex-grow: 1;
+    flex-wrap: wrap;
     margin: var(--spacing-small) var(--spacing-medium);
     overflow-y: auto;
+
+    .chart {
+        padding: var(--spacing-medium);
+    }
 }
 
 .sankey {
     flex-grow: 1;
     margin: var(--spacing-small) var(--spacing-medium);
     /* overflow-y: auto; */
-}
-
-.charts {
-    display: flex;
-    flex-wrap: wrap;
-    padding: var(--spacing-large) 0;
 }
