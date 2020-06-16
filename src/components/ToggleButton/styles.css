@@ -3,21 +3,22 @@
 
     display: flex;
     align-items: center;
+    transition: .2s background-color ease-in-out;
     border: var(--width-separator-thin) solid var(--color-separator);
     border-radius: .5em;
     background-color: var(--color-text-disabled);
     padding: var(--gap);
-    width: calc(2em - 4 * var(--gap));
-    height: 0.8em;
+    width: calc(2em - 2 * var(--gap));
+    height: 1em;
 
     .knob {
         transition: .2s transform ease-in-out, .2s background-color ease-in-out;
         border: var(--width-separator-thin) solid var(--color-separator);
         border-radius: calc(calc(1em - var(--gap) * 2) / 2);
         background-color: var(--color-accent);
-        background-color: #fff;
-        width: calc(0.8em - var(--gap) * 2);
-        height: calc(0.8em - var(--gap) * 2);
+        background-color: var(--color-foreground);
+        width: calc(1em - var(--gap) * 2);
+        height: calc(1em - var(--gap) * 2);
     }
 
     &.on {
@@ -28,7 +29,7 @@
         }
 
         .knob {
-            transform: translateX(calc(100% + var(--gap)));
+            transform: translateX(calc(100% - var(--gap)));
         }
     }
 }
@@ -42,7 +43,7 @@
     }
 
     .switch {
-        font-size: 1.6em;
+        font-size: 1.4em;
     }
 
     .label {

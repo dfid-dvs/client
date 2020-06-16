@@ -1,5 +1,6 @@
 .text-input{
     .clear-button {
+        padding: 0;
         font-size: var(--font-size-medium);
     }
 

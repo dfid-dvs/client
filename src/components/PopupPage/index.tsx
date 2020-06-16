@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { IoMdArrowRoundBack } from 'react-icons/io';
+import { MdArrowBack } from 'react-icons/md';
 import { _cs } from '@togglecorp/fujs';
 
 import styles from './styles.css';
@@ -40,7 +40,7 @@ function PopupPage(props: Props) {
                     replace
                     title={`Go to ${parentName}`}
                 >
-                    <IoMdArrowRoundBack />
+                    <MdArrowBack />
                 </Link>
                 <h3 className={_cs(styles.heading, titleClassName)}>
                     {title}

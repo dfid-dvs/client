@@ -28,7 +28,11 @@ import MultiSelectInput from '#components/MultiSelectInput';
 import ToggleButton from '#components/ToggleButton';
 
 import useRequest from '#hooks/useRequest';
+import useHash from '#hooks/useHash';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
+
+import ProgramWiseTable from './Sidepanel/ProgramWiseTable';
+import RegionWiseTable from './Sidepanel/RegionWiseTable';
 
 import {
     generateChoroplethMapPaintAndLegend,
@@ -408,6 +412,8 @@ const Dashboard = (props: Props) => {
         && showHealthTravelTime
     );
 
+    const hash = useHash();
+
     const showLegend = (
         bubbleLegend.length > 0
         || Object.keys(mapLegend).length > 0
@@ -542,11 +548,6 @@ const Dashboard = (props: Props) => {
                     </div>
                 </div>
             </SubNavbar>
-            <PrintButton
-                className={styles.printModeButton}
-                printMode={printMode}
-                onPrintModeChange={setPrintMode}
-            />
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
                     <LoadingAnimation />
@@ -592,13 +593,13 @@ const Dashboard = (props: Props) => {
                         />
                     )}
                 </IndicatorMap>
-                <Sidepanel
-                    className={styles.sidebar}
-                    indicatorList={indicatorList}
-                    // FIXME: pull this data internally
-                    fiveWList={fiveWStats}
-                />
+                <Sidepanel className={styles.sidebar} />
             </div>
+            <PrintButton
+                className={styles.printModeButton}
+                printMode={printMode}
+                onPrintModeChange={setPrintMode}
+            />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector searchHidden />
                 <div className={styles.separator} />
@@ -804,6 +805,15 @@ const Dashboard = (props: Props) => {
                 title={titleForPrintBar}
                 description={selectedIndicatorDetails?.abstract}
             />
+            {hash === 'regions' && (
+                <RegionWiseTable
+                    fiveW={fiveWStats}
+                    indicatorList={indicatorList}
+                />
+            )}
+            {hash === 'programs' && (
+                <ProgramWiseTable />
+            )}
         </div>
     );
 };

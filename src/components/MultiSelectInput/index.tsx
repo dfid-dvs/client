@@ -126,7 +126,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
         value,
         onChange,
         disabled,
-        placeholder = 'Select an option',
+        placeholder = 'Select options',
         groupKeySelector,
         hideLabel,
         label,
