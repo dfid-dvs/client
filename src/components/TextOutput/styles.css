@@ -15,7 +15,7 @@
     .null-value {
         display: table-cell;
         padding: 0 var(--spacing-small);
-        color: rgba(0, 0, 0, .4);
+        color: var(--color-text-disabled);
         font-size: var(--font-size-small);
     }
 }

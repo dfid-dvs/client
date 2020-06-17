@@ -20,7 +20,6 @@
     display: flex;
     position: relative;
     flex-direction: column;
-    background-color: var(--color-background-alt);
 
     .main-content {
         display: flex;
@@ -93,7 +92,7 @@
 
         .legend {
             margin-left: var(--spacing-medium);
-            border: var(--width-separator-thin) solid rgba(0, 0, 0, .1);
+            border: var(--width-separator-thin) solid var(--color-separator);
             background-color: var(--color-foreground);
             padding: var(--spacing-large);
         }

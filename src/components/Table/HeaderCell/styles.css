@@ -1,18 +1,18 @@
 .header-cell {
     display: flex;
     flex-direction: column;
-    border-right: 2px solid transparent;
-    border-left: 2px solid transparent;
+    border-right: var(--width-separator-medium) solid transparent;
+    border-left: var(--width-separator-medium) solid transparent;
 
     &.dragging {
         opacity: 0.5;
     }
 
     &.dropping {
-        border-left: 2px solid var(--color-accent);
+        border-left: var(--width-separator-medium) solid var(--color-accent);
     }
     &.dropping-behind {
-        border-right: 2px solid var(--color-accent);
+        border-right: var(--width-separator-medium) solid var(--color-accent);
     }
 
     .title-container {

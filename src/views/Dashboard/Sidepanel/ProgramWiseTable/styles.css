@@ -1,13 +1,5 @@
 .table-actions {
-    display: flex;
-    align-items: flex-end;
     padding: var(--spacing-small) 0;
-
-    >* {
-        &:not(:last-child) {
-            margin-right: var(--spacing-medium);
-        }
-    }
 }
 
 .table {

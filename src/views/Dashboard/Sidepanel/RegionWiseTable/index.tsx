@@ -4,6 +4,7 @@ import { compareString, compareNumber, listToMap, isDefined, isNotDefined } from
 
 import Button from '#components/Button';
 import DomainContext from '#components/DomainContext';
+import Modal from '#components/Modal';
 import MultiSelectInput from '#components/MultiSelectInput';
 import Numeral from '#components/Numeral';
 import PopupPage from '#components/PopupPage';
@@ -71,6 +72,16 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         fiveW,
         indicatorList,
     } = props;
+
+    const [showModal, setModalVisibility] = useState(false);
+
+    const handleModalShow = useCallback(() => {
+        setModalVisibility(true);
+    }, [setModalVisibility]);
+
+    const handleModalClose = useCallback(() => {
+        setModalVisibility(false);
+    }, [setModalVisibility]);
 
     const { regionLevel } = useContext(DomainContext);
 
@@ -363,6 +374,11 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                 >
                     Download as csv
                 </Button>
+                <Button
+                    onClick={handleModalShow}
+                >
+                    Add chart
+                </Button>
             </div>
             <Table
                 className={styles.table}
@@ -370,6 +386,11 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                 keySelector={fiveWKeySelector}
                 columns={orderedColumns}
             />
+            {showModal && (
+                <Modal onClose={handleModalClose}>
+                    This is the body
+                </Modal>
+            )}
         </PopupPage>
     );
 }

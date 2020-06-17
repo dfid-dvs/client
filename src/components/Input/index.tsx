@@ -14,6 +14,8 @@ export interface Props<T> extends Omit<RawInputProps<T>, 'elementRef'> {
     inputRef?: React.RefObject<HTMLInputElement>;
     elementRef?: React.RefObject<HTMLDivElement>;
     error?: string;
+    iconContainerClassName?: string;
+    actionContainerClassName?: string;
 }
 
 function Input<T>(props: Props<T>) {
@@ -25,6 +27,8 @@ function Input<T>(props: Props<T>) {
         actions,
         inputRef,
         inputContainerClassName,
+        iconContainerClassName,
+        actionContainerClassName,
         inputClassName,
         disabled,
         error,
@@ -45,9 +49,11 @@ function Input<T>(props: Props<T>) {
                     { label }
                 </Label>
             )}
-            <div className={_cs(styles.main, inputContainerClassName)}>
+            <div
+                className={_cs(styles.main, inputContainerClassName, disabled && styles.disabled)}
+            >
                 { icons && (
-                    <div className={styles.icons}>
+                    <div className={_cs(iconContainerClassName, styles.icons)}>
                         { icons }
                     </div>
                 )}
@@ -58,7 +64,7 @@ function Input<T>(props: Props<T>) {
                     {...otherProps}
                 />
                 { actions && (
-                    <div className={styles.actions}>
+                    <div className={_cs(actionContainerClassName, styles.actions)}>
                         { actions }
                     </div>
                 )}

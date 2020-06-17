@@ -1,9 +1,15 @@
 .option {
-    background-color: var(--color-background);
+    border-radius: var(--radius-input);
+    background-color: var(--color-input-background);
     cursor: pointer;
     padding: var(--spacing-small) var(--spacing-medium);
 
+    &:not(:last-child) {
+        margin-right: var(--spacing-small);
+    }
+
     &.disabled {
+        background-color: var(--color-input-background-disabled);
         color: var(--color-text-disabled);
     }
 
@@ -12,9 +18,7 @@
         color: var(--color-text);
     }
 
-    &:not(.active) {
-        &:hover {
-            background-color: var(--color-background-hover);
-        }
+    &:hover {
+        filter: brightness(90%)
     }
 }

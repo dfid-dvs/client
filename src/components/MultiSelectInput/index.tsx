@@ -126,7 +126,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
         value,
         onChange,
         disabled,
-        placeholder = 'Select an option',
+        placeholder = 'Select options',
         groupKeySelector,
         hideLabel,
         label,
@@ -298,12 +298,13 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                 onChange={handleInputValueChange}
                 placeholder={placeholder}
                 disabled={disabled}
-                actions={value && (
+                actions={value && value.length > 0 && (
                     <Button
                         className={styles.clearButton}
                         transparent
                         name="close"
                         onClick={handleClearClick}
+                        variant="danger"
                         icons={(
                             <IoMdClose />
                         )}

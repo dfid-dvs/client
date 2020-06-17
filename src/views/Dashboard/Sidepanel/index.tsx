@@ -10,15 +10,10 @@ import Button from '#components/Button';
 import DomainContext from '#components/DomainContext';
 import LastUpdated from '#components/LastUpdated';
 
-import useHash from '#hooks/useHash';
 import useRequest from '#hooks/useRequest';
 
-import { Indicator } from '#types';
 import { apiEndPoint } from '#utils/constants';
 
-import { FiveW } from '../types';
-import ProgramWiseTable from './ProgramWiseTable';
-import RegionWiseTable from './RegionWiseTable';
 import SummaryOutput from './SummaryOutput';
 import ExternalLink from './ExternalLink';
 
@@ -56,22 +51,14 @@ interface Summary {
 
 interface Props {
     className?: string;
-    fiveWList: FiveW[];
-    indicatorList?: Indicator[];
 }
 
 function Sidepanel(props: Props) {
-    const {
-        className,
-        fiveWList,
-        indicatorList,
-    } = props;
-
+    const { className } = props;
     const { covidMode, programs } = useContext(DomainContext);
 
     const [isHidden, setIsHidden] = React.useState(false);
 
-    const hash = useHash();
 
     const [
         statusPending,
@@ -115,7 +102,7 @@ function Sidepanel(props: Props) {
                     icons={isHidden ? <IoIosArrowBack /> : <IoIosArrowForward />}
                     transparent
                 />
-                <div className={_cs(className, styles.summary)}>
+                <div className={styles.summary}>
                     {covidMode && (
                         <div className={styles.covidSummary}>
                             <header className={styles.header}>
@@ -235,7 +222,7 @@ function Sidepanel(props: Props) {
                                 value={summary?.sector}
                             />
                         </div>
-                        <div className={styles.links}>
+                        <div className={styles.actions}>
                             <Link
                                 className={styles.link}
                                 to="#regions"
@@ -254,15 +241,6 @@ function Sidepanel(props: Props) {
                     </div>
                 </div>
             </div>
-            {hash === 'regions' && (
-                <RegionWiseTable
-                    fiveW={fiveWList}
-                    indicatorList={indicatorList}
-                />
-            )}
-            {hash === 'programs' && (
-                <ProgramWiseTable />
-            )}
         </>
     );
 }

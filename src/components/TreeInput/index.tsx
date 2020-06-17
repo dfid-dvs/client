@@ -8,11 +8,11 @@ import { _cs, isNotDefined, Obj } from '@togglecorp/fujs';
 
 import { OptionKey } from '../types';
 
-import Button from '../Button';
-import List from '../List';
-import Checkbox from '../Checkbox';
-import HintAndError from '../HintAndError';
-import Label from '../Label';
+import Button from '#components/Button';
+import List from '#components/List';
+import CheckboxButton from '#components/CheckboxButton';
+import HintAndError from '#components/HintAndError';
+import Label from '#components/Label';
 import { generateExtendedRelations, ExtendedRelation } from './utils';
 
 import styles from './styles.css';
@@ -167,17 +167,16 @@ function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T, K>) {
                 )}
             </div>
             <div className={styles.right}>
-                <Checkbox
+                <CheckboxButton
                     className={styles.checkbox}
-                    labelClassName={styles.label}
-                    checkIconClassName={styles.checkIcon}
                     value={checked}
-                    label={nodeLabel}
                     disabled={disabled}
                     readOnly={readOnly}
                     onChange={handleCheckboxChange}
                     indeterminate={someSelected}
-                />
+                >
+                    {nodeLabel}
+                </CheckboxButton>
                 { !isLeaf && (
                     <TreeNodeList
                         relations={relations}

@@ -2,7 +2,6 @@
     display: flex;
     position: relative;
     flex-direction: column;
-    background-color: var(--color-background-alt);
 
     .map-container {
         flex-grow: 1;
@@ -14,7 +13,7 @@
         bottom: var(--spacing-medium);
         left: var(--spacing-medium);
         border: var(--width-separator-thin) solid var(--color-separator);
-        background-color: #fff;
+        background-color: var(--color-foreground);
         padding: var(--spacing-medium);
         width: 400px;
 
@@ -69,8 +68,8 @@
 
         .legend {
             margin: 0 var(--spacing-small);
-            border: 1px solid rgba(0, 0, 0, .1);
-            background-color: #fff;
+            border: var(--width-separator-thin) solid var(--color-separator);
+            background-color: var(--color-foreground);
             padding: var(--spacing-medium);
         }
     }
@@ -79,8 +78,8 @@
         position: absolute;
         top: var(--spacing-medium);
         right: var(--spacing-medium);
-        border: 1px solid rgba(0, 0, 0, .1);
-        background-color: #fff;
+        border: var(--width-separator-thin) solid var(--color-separator);
+        background-color: var(--color-foreground);
         padding: var(--spacing-medium);
         width: 300px;
     }
@@ -89,7 +88,7 @@
         position: absolute;
         top: 10px;
         left: 10px;
-        z-index: 1111111;
+        z-index: 1;
     }
 
     &.print-mode {

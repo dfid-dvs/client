@@ -1,12 +1,7 @@
 .text-input{
     .clear-button {
+        padding: 0;
         font-size: var(--font-size-medium);
-    }
-
-    &:hover {
-        .clear-button {
-            color: var(--color-danger);
-        }
     }
 }
 
@@ -16,39 +11,37 @@
     left: 50%;
     z-index: 1;
     border: var(--width-separator-thin) solid var(--color-separator);
-    box-shadow: 0 0 5px 0 rgba(0, 0, 0, .3);
-    background-color: #fff;
+    box-shadow: 0 0 5px 0 var(--color-shadow);
+    background-color: var(--color-foreground);
     max-width: 90vw;
     max-height: 50vh;
     overflow: auto;
 
     .message {
-        padding: 6px;
+        padding: var(--spacing-small);
         color: var(--color-text-disabled);
     }
 
     .group {
         display: block;
-        padding: 6px 10px;
+        padding: var(--spacing-small) var(--spacing-medium);
         width: 100%;
         text-align: left;
 
-        color: var(--color-accent);
+        color: var(--color-primary);
     }
 
     .option {
-        padding: 6px 10px;
+        padding: var(--spacing-small) var(--spacing-medium);
         width: 100%;
         text-align: left;
 
         &.selected {
-            background-color: var(--color-background-accent-hint);
+            color: var(--color-accent);
         }
 
-        &:not(.selected) {
-            &:hover {
-                background-color: var(--color-background-hover);
-            }
+        &:hover {
+            background-color: var(--color-foreground-dark);
         }
     }
 }

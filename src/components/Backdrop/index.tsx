@@ -7,6 +7,7 @@ export interface Props {
     className?: string;
     parentRef?: React.RefObject<HTMLButtonElement>;
     children?: React.ReactNode;
+    dark?: boolean;
 }
 
 function Backdrop(props: Props) {
@@ -14,6 +15,7 @@ function Backdrop(props: Props) {
         className,
         parentRef,
         children,
+        dark,
     } = props;
 
     const ref = React.useRef<HTMLDivElement>(null);
@@ -34,7 +36,11 @@ function Backdrop(props: Props) {
     return (
         <div
             ref={ref}
-            className={_cs(className, styles.backdrop)}
+            className={_cs(
+                className,
+                styles.backdrop,
+                dark && styles.dark,
+            )}
         >
             { children }
         </div>

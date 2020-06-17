@@ -1,0 +1,30 @@
+.modal {
+    z-index: 1;
+    border: var(--width-separator-thin) solid var(--color-separator);
+    border-radius: var(--radius-modal);
+    background-color: var(--color-foreground);
+    width: 640px;
+    height: 640px;
+
+    .modal-header {
+        display: flex;
+        align-items: center;
+        padding: var(--spacing-medium);
+
+        .title-container {
+            flex-grow: 1;
+        }
+
+        .close-button {
+            flex-shrink: 0;
+        }
+    }
+
+    .modal-body {
+        padding: var(--spacing-extra-small) var(--spacing-medium);
+    }
+
+    .modal-footer {
+        padding: var(--spacing-extra-small) var(--spacing-medium);
+    }
+}

@@ -219,7 +219,7 @@ const userDefinedSchemas: Schema[] = [
                         id: { type: 'uint', required: true },
                         name: { type: 'string', required: true },
                         description: { type: 'string' },
-                        code: { type: 'string', required: true },
+                        code: { type: 'string' },
                         totalBudget: { type: 'number' },
 
                         sector: { type: 'array.number', required: true },

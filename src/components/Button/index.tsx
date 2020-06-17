@@ -72,9 +72,11 @@ function Button(props: Props) {
                     { icons }
                 </div>
             )}
-            <div className={styles.children}>
-                { children }
-            </div>
+            { children && (
+                <div className={styles.children}>
+                    { children }
+                </div>
+            )}
         </RawButton>
 
     );
