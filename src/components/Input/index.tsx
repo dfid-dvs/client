@@ -49,7 +49,9 @@ function Input<T>(props: Props<T>) {
                     { label }
                 </Label>
             )}
-            <div className={_cs(styles.main, inputContainerClassName)}>
+            <div
+                className={_cs(styles.main, inputContainerClassName, disabled && styles.disabled)}
+            >
                 { icons && (
                     <div className={_cs(iconContainerClassName, styles.icons)}>
                         { icons }

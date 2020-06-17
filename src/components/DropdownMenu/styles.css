@@ -11,8 +11,8 @@
     top: 50%;
     left: 50%;
     z-index: 1;
-    box-shadow: 0 0 5px 0 rgba(0, 0, 0, .3);
-    background-color: #fff;
+    box-shadow: 0 0 5px 0 var(--color-shadow);
+    background-color: var(--color-foreground);
     max-width: 90vw;
     max-height: 50vh;
     overflow: auto;

@@ -297,8 +297,6 @@ function ProgramSelector(props: Props) {
             <DropdownMenu
                 label={`Sectors ${selectedSector && selectedSector.length > 0 ? '*' : ''}`}
                 className={styles.sectorInput}
-                // FIXME: enable later
-                disabled
             >
                 <TreeInput
                     className={styles.sectorTree}
@@ -316,8 +314,6 @@ function ProgramSelector(props: Props) {
                 label={`Markers ${selectedMarker && selectedMarker.length > 0 ? '*' : ''}`}
                 className={styles.markerInput}
                 dropdownContainerClassName={styles.markersDropdown}
-                // FIXME: enable later
-                disabled
             >
                 <TreeInput
                     className={styles.markerTree}

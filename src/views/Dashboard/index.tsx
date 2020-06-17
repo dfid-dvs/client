@@ -647,6 +647,7 @@ const Dashboard = (props: Props) => {
                                                 key={hospital}
                                                 name={hospital}
                                                 onClick={handleHospitalToggle}
+                                                variant="danger"
                                                 icons={(
                                                     <IoIosClose />
                                                 )}

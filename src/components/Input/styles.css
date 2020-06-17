@@ -3,16 +3,15 @@
 
     .main {
         display: flex;
-        border-radius: 4px;
-        /* background-color: var(--color-background); */
-        background-color: #e5eaf0;
+        border-radius: var(--radius-input);
+        background-color: var(--color-input-background);
 
         &.disabled {
-            background-color: #e5eaf0;
+            background-color: var(--color-input-background-disabled);
         }
 
         &.errored {
-            background-color: #f1e1e3;
+            background-color: var(--color-input-background-errored);
         }
 
         padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-extra-small));
@@ -23,7 +22,7 @@
             flex-shrink: 0;
             padding: 0 var(--spacing-extra-small);
 
-            color: #e5eaf0;
+            color: var(--color-input-actions);
         }
 
         .input {

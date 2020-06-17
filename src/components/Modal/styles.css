@@ -1,6 +1,7 @@
 .modal {
     z-index: 1;
     border: var(--width-separator-thin) solid var(--color-separator);
+    border-radius: var(--radius-modal);
     background-color: var(--color-foreground);
     width: 640px;
     height: 640px;
