@@ -2,24 +2,48 @@ import React, { useMemo, useCallback } from 'react';
 import { IoMdDownload } from 'react-icons/io';
 import { compareString, compareNumber, _cs } from '@togglecorp/fujs';
 
-import PopupPage from '#components/PopupPage';
+import BudgetFlowSankey from '#components/BudgetFlowSankey';
 import Button from '#components/Button';
-import Numeral from '#components/Numeral';
-import Table, { createColumn } from '#components/Table';
 import Cell from '#components/Table/Cell';
 import HeaderCell from '#components/Table/HeaderCell';
-import { SortDirection, FilterType } from '#components/Table/types';
+import Numeral from '#components/Numeral';
+import PopupPage from '#components/PopupPage';
+import Table, { createColumn } from '#components/Table';
 import useDownloading, { convertTableData } from '#components/Table/useDownloading';
 import useFiltering, { useFilterState } from '#components/Table/useFiltering';
 import useOrdering, { useOrderState } from '#components/Table/useOrdering';
 import useSorting, { useSortState } from '#components/Table/useSorting';
+import { SortDirection, FilterType } from '#components/Table/types';
 
 import useRequest from '#hooks/useRequest';
-import { MultiResponse, Program } from '#types';
+import { MultiResponse, Program, SankeyData } from '#types';
 import { ExtractKeys } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
 import styles from './styles.css';
+
+const sankeyData: SankeyData = {
+    nodes: [
+        { name: 'Program A' },
+        { name: 'Program B' },
+
+        { name: 'Component A.1' },
+        { name: 'Component A.2' },
+        { name: 'Component B.1' },
+
+        { name: 'Partner X' },
+        { name: 'Partner Y' },
+    ],
+    links: [
+        { source: 0, target: 2, value: 200 },
+        { source: 0, target: 3, value: 100 },
+        { source: 1, target: 4, value: 50 },
+
+        { source: 2, target: 5, value: 200 },
+        { source: 3, target: 6, value: 95 },
+        { source: 4, target: 5, value: 50 },
+    ],
+};
 
 interface ColumnOrderingItem {
     name: string;
@@ -44,7 +68,12 @@ function ProgramWiseTable(props: Props) {
     const [
         programsPending,
         programListResponse,
-    ] = useRequest<MultiResponse<Program>>(`${apiEndPoint}/core/program/`, 'program-list');
+    ] = useRequest<MultiResponse<Program>>(`${apiEndPoint}/core/program/?program=1`, 'program-list');
+
+    const [
+        sankeyPending,
+        sankeyResponse,
+    ] = useRequest<SankeyData>(`${apiEndPoint}/core/sankey-program/`, 'sankey-data');
 
     const { sortState, setSortState } = useSortState();
     const { filtering, setFilteringItem, getFilteringItem } = useFilterState();
@@ -165,11 +194,19 @@ function ProgramWiseTable(props: Props) {
                     Download as csv
                 </Button>
             </div>
-            <Table
+            <div
                 className={styles.table}
-                data={sortedPrograms}
-                keySelector={programKeySelector}
-                columns={orderedColumns}
+            >
+                <Table
+                    data={sortedPrograms}
+                    keySelector={programKeySelector}
+                    columns={orderedColumns}
+                />
+            </div>
+            <BudgetFlowSankey
+                className={styles.budgetFlow}
+                // data={sankeyResponse}
+                data={sankeyData}
             />
         </PopupPage>
     );

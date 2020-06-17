@@ -1,5 +1,4 @@
 .table {
-    display: block;
     position: relative;
     background-color: var(--color-background);
     overflow: auto;
@@ -11,7 +10,7 @@
         .header-cell {
             position: sticky;
             top: 0;
-            z-index: 2;
+            z-index: 2 !important;
             border: var(--width-separator-thin) solid var(--color-separator);
             background-color: var(--color-background);
 
@@ -21,7 +20,7 @@
 
             &.stick-left {
                 left: 0;
-                z-index: 3;
+                z-index: 3 !important;
             }
 
             .header-component {
@@ -34,7 +33,7 @@
         .row-header-cell {
             position: sticky;
             left: 0;
-            z-index: 1;
+            z-index: 1 !important;
             border: var(--width-separator-thin) solid var(--color-separator);
             border-top: 0px;
             background-color: var(--color-foreground);

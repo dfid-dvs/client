@@ -3,5 +3,10 @@
 }
 
 .table {
-    max-height: 500px;
+    flex-shrink: 0;
+}
+
+.budget-flow {
+    flex-shrink: 0;
+    height: 400px;
 }

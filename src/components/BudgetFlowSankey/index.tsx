@@ -38,7 +38,7 @@ interface Link {
 
 interface Props {
     className?: string;
-    data: SankeyData;
+    data: SankeyData | undefined;
 }
 
 function SankeyNode(node: Node) {
@@ -87,21 +87,22 @@ function SankeyLink(link: Link) {
         index,
     } = link;
 
+    const d = `
+    M${sourceX},${sourceY + linkWidth / 2}
+    C${sourceControlX},${sourceY + linkWidth / 2}
+    ${targetControlX},${targetY + linkWidth / 2}
+    ${targetX},${targetY + linkWidth / 2}
+    L${targetX},${targetY - linkWidth / 2}
+    C${targetControlX},${targetY - linkWidth / 2}
+    ${sourceControlX},${sourceY - linkWidth / 2}
+    ${sourceX},${sourceY - linkWidth / 2}
+    Z`;
+
     return (
         <Layer key={`CustomLink${index}`}>
             <path
                 className={styles.sankeyLink}
-                d={`
-            M${sourceX},${sourceY + linkWidth / 2}
-            C${sourceControlX},${sourceY + linkWidth / 2}
-              ${targetControlX},${targetY + linkWidth / 2}
-              ${targetX},${targetY + linkWidth / 2}
-            L${targetX},${targetY - linkWidth / 2}
-            C${targetControlX},${targetY - linkWidth / 2}
-              ${sourceControlX},${sourceY - linkWidth / 2}
-              ${sourceX},${sourceY - linkWidth / 2}
-            Z
-                `}
+                d={d}
                 strokeWidth={0}
             />
         </Layer>
@@ -118,16 +119,21 @@ function BudgetFlowSankey(props: Props) {
         <div
             className={_cs(className, styles.budgetFlowSankey)}
         >
-            <ResponsiveContainer>
-                <Sankey
-                    data={data}
-                    link={SankeyLink}
-                    node={SankeyNode}
-                >
-                    <Tooltip />
-                    <Label />
-                </Sankey>
-            </ResponsiveContainer>
+            {data && (
+                <ResponsiveContainer>
+                    <Sankey
+                        data={data}
+                        link={SankeyLink}
+                        node={SankeyNode}
+                        margin={{
+                            right: 100,
+                        }}
+                    >
+                        <Tooltip />
+                        <Label />
+                    </Sankey>
+                </ResponsiveContainer>
+            )}
         </div>
     );
 }
