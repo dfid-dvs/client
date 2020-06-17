@@ -16,7 +16,7 @@ interface Props {
     bodyClassName?: string;
     headerClassName?: string;
     footerClassName?: string;
-    onClose?: () => void;
+    onClose: () => void;
 }
 
 function Modal(props: Props) {
@@ -33,15 +33,6 @@ function Modal(props: Props) {
         onClose,
     } = props;
 
-    const handleCloseButtonClick = useCallback(
-        () => {
-            if (onClose) {
-                onClose();
-            }
-        },
-        [onClose],
-    );
-
     return (
         <Portal>
             <Backdrop dark>
@@ -57,7 +48,7 @@ function Modal(props: Props) {
                         </div>
                         <Button
                             className={styles.closeButton}
-                            onClick={handleCloseButtonClick}
+                            onClick={onClose}
                             transparent
                             variant="danger"
                             title="Close"
