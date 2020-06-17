@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+    TooltipFormatter,
 } from 'recharts';
-import { compareNumber, isNotDefined } from '@togglecorp/fujs';
+import { compareNumber, isNotDefined, isDefined } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import SegmentInput from '#components/SegmentInput';
@@ -26,6 +27,8 @@ export interface BarChartSettings<T> {
         method: 'min' | 'max';
         valueSelector: (value: T) => number | null;
     };
+
+    dependencies?: number[];
 }
 export interface PieChartSettings<T> {
     id: string;
@@ -36,6 +39,8 @@ export interface PieChartSettings<T> {
     valueSelector: (value: T) => string;
 
     colorPalette?: string[];
+
+    dependencies?: [];
 }
 
 export type ChartSettings<T> = BarChartSettings<T> | PieChartSettings<T>;
@@ -52,7 +57,7 @@ const orientations: {
     { key: 'vertical', label: 'V' },
 ];
 
-const valueTickFormatter = (value: number | string | undefined) => {
+const valueTickFormatter: TooltipFormatter = (value) => {
     if (isNotDefined(value)) {
         return '';
     }
@@ -93,7 +98,8 @@ function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
             if (!limit || !data) {
                 return data;
             }
-            return [...data]
+            return data
+                .filter(datum => isDefined(limit.valueSelector(datum)))
                 .sort((foo, bar) => compareNumber(
                     limit.valueSelector(foo),
                     limit.valueSelector(bar),

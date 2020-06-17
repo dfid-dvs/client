@@ -1,6 +1,6 @@
 import React, { useMemo, useContext, useState, useEffect, useCallback } from 'react';
 import { IoMdDownload } from 'react-icons/io';
-import { compareString, compareNumber, listToMap, isDefined, isNotDefined, isTruthyString } from '@togglecorp/fujs';
+import { compareString, compareNumber, listToMap, isDefined, isNotDefined, unique, isTruthyString } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
@@ -142,6 +142,9 @@ const two: BarChartSettings<ExtendedFiveW> = {
         method: 'max',
         valueSelector: item => item.allocatedBudget,
     },
+
+    // meta
+    dependencies: [119, 118],
 };
 const twopointfive: BarChartSettings<ExtendedFiveW> = {
     type: 'bar-chart',
@@ -190,19 +193,21 @@ const three: BarChartSettings<ExtendedFiveW> = {
         method: 'min',
         valueSelector: item => item.allocatedBudget,
     },
+
+    dependencies: [119, 118],
 };
 
 const defaultChartSettings = [
     one, two, twopointfive, three,
 ];
+const defaultIndicators: number[] = [];
+
+/*
 const defaultIndicators = [
     119,
     118,
 ];
-
-/*
 const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [];
-const defaultIndicators: number[] = [];
 */
 
 function RegionWiseTable(props: RegionWiseTableProps) {
@@ -235,7 +240,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         setModalVisibility(false);
     }, [setModalVisibility]);
 
-    const [selectedIndicators, setSelectedIndicators] = useState<number[] | undefined>(
+    const [selectedIndicators, setSelectedIndicators] = useState<number[]>(
         defaultIndicators,
     );
     const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>(
@@ -252,7 +257,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     );
 
     const validSelectedIndicators = useMemo(
-        () => selectedIndicators?.filter(i => !!indicatorMapping[i]),
+        () => selectedIndicators.filter(i => !!indicatorMapping[i]),
         [selectedIndicators, indicatorMapping],
     );
 
@@ -270,22 +275,37 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         sankeyResponse,
     ] = useRequest<SankeyData<Node>>(sankeyUrl, 'sankey-data');
 
+    // FIXME: get unique values from valid selected indicators too
+    const allValidSelectedInidcators = useMemo(
+        () => unique(
+            [
+                ...selectedIndicators,
+                ...chartSettings
+                    .map(item => item.dependencies)
+                    .filter(isDefined)
+                    .flat(),
+            ].filter(i => !!indicatorMapping[i]),
+            item => item,
+        ).sort(),
+        [selectedIndicators, indicatorMapping, chartSettings],
+    );
+
     const options: RequestInit | undefined = useMemo(
-        () => (validSelectedIndicators ? {
+        () => (allValidSelectedInidcators ? {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json; charset=utf-8',
             },
             body: JSON.stringify({
-                indicatorId: validSelectedIndicators,
+                indicatorId: allValidSelectedInidcators,
             }),
         } : undefined),
-        [validSelectedIndicators],
+        [allValidSelectedInidcators],
     );
 
     let regionIndicatorUrl: string | undefined;
-    if (isDefined(validSelectedIndicators) && validSelectedIndicators.length > 0) {
+    if (allValidSelectedInidcators.length > 0) {
         regionIndicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/`;
     }
     const [
@@ -306,13 +326,13 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             return fiveW.map(item => ({
                 ...item,
                 indicators: listToMap(
-                    validSelectedIndicators,
+                    allValidSelectedInidcators,
                     id => id,
                     id => mapping[`${item.code}-${id}`],
                 ),
             }));
         },
-        [fiveW, regionIndicatorListResponse, validSelectedIndicators],
+        [fiveW, regionIndicatorListResponse, allValidSelectedInidcators],
     );
 
     const { sortState, setSortState } = useSortState();
@@ -358,7 +378,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                         .map(item => getIndicatorIdFromHeaderName(item.name))
                         .filter(isDefined),
                 );
-                const newItems: ColumnOrderingItem[] | undefined = selectedIndicators
+                const newItems: ColumnOrderingItem[] = selectedIndicators
                     ?.filter(selectedIndicator => (
                         !oldIndicators.has(selectedIndicator)
                     )).map(item => ({
@@ -487,7 +507,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             });
 
 
-            const dynamicColumns = validSelectedIndicators?.map(id => createColumn(
+            const dynamicColumns = validSelectedIndicators.map(id => createColumn(
                 dynamicNumberColumn(item => item.indicators[id]),
                 getIndicatorHeaderName(id),
                 indicatorMapping[id]?.fullTitle,
