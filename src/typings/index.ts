@@ -120,15 +120,12 @@ export interface Program {
     partner: number[];
 }
 
-interface NodeData {
-    name: string;
-}
 interface LinkData {
     source: number;
     target: number;
     value: number;
 }
-export interface SankeyData {
-    nodes: NodeData[];
+export interface SankeyData<T> {
+    nodes: T[];
     links: LinkData[];
 }

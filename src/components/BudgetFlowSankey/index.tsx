@@ -1,5 +1,5 @@
 import React from 'react';
-import { _cs } from '@togglecorp/fujs';
+import { _cs, isDefined } from '@togglecorp/fujs';
 import {
     ResponsiveContainer,
     Sankey,
@@ -9,23 +9,26 @@ import {
     Rectangle,
 } from 'recharts';
 import { SankeyData } from '#types';
+import { typedMemo } from '#utils/common';
 
 import styles from './styles.css';
 
-interface Node {
+type ExtendedData<T> = T & {
+    value: number;
+    depth: number;
+}
+
+interface Node<T> {
     x: number;
     y: number;
     width: number;
     height: number;
     index: number;
-    payload: {
-        name: string;
-        value: number;
-    };
+    payload: ExtendedData<T>;
     containerWidth: number;
 }
 
-interface Link {
+interface Link<T> {
     sourceX: number;
     targetX: number;
     sourceY: number;
@@ -34,108 +37,172 @@ interface Link {
     targetControlX: number;
     linkWidth: number;
     index: number;
+    payload: {
+        source: ExtendedData<T>;
+        target: ExtendedData<T>;
+    };
 }
 
-interface Props {
+function getNode<T>(
+    labelSelector: (val: ExtendedData<T>) => string,
+    colorSelector: (val: ExtendedData<T>) => string,
+) {
+    return (node: Node<T>) => {
+        const {
+            x,
+            y,
+            width,
+            height,
+            index,
+            payload,
+            // containerWidth,
+        } = node;
+
+        const {
+            value,
+            depth,
+        } = payload;
+
+        if (value <= 0) {
+            return null;
+        }
+
+        // FIXME: containerWidth is not defined idk why, need to fix this
+        // const isOut = (x + width) + 6 > containerWidth;
+        const isOut = depth >= 3 - 1;
+
+        const label = labelSelector(payload);
+        const color = colorSelector(payload);
+        return (
+            <Layer key={`sankey-node-${index}`}>
+                <Rectangle
+                    x={x}
+                    y={y}
+                    width={width}
+                    height={height}
+                    fill={color}
+                    fillOpacity="1"
+                />
+                <text
+                    textAnchor={isOut ? 'end' : 'start'}
+                    x={isOut ? x - 6 : x + width + 6}
+                    y={y + height / 2 + 4}
+                    fontSize="14"
+                    fill="var(--color-text)"
+                    strokeWidth={0}
+                    pointerEvents="none"
+                >
+                    {label}
+                </text>
+            </Layer>
+        );
+    };
+}
+
+function getLink<T>(
+    colorSelector: (val: ExtendedData<T>) => string,
+) {
+    return (link: Link<T>) => {
+        const {
+            sourceX,
+            targetX,
+            sourceY,
+            targetY,
+            sourceControlX,
+            targetControlX,
+            linkWidth,
+            index,
+            payload,
+        } = link;
+
+        const d = `
+        M${sourceX},${sourceY + linkWidth / 2}
+        C${sourceControlX},${sourceY + linkWidth / 2}
+        ${targetControlX},${targetY + linkWidth / 2}
+        ${targetX},${targetY + linkWidth / 2}
+        L${targetX},${targetY - linkWidth / 2}
+        C${targetControlX},${targetY - linkWidth / 2}
+        ${sourceControlX},${sourceY - linkWidth / 2}
+        ${sourceX},${sourceY - linkWidth / 2}
+        Z`;
+
+        const id = `gradient-id-${index}`;
+
+        const colorFoo = colorSelector(payload.source);
+        const colorBar = colorSelector(payload.target);
+
+        return (
+            <Layer key={`custom-link-${index}`}>
+                <defs>
+                    <linearGradient id={id}>
+                        <stop offset="5%" stopColor={colorFoo} />
+                        <stop offset="95%" stopColor={colorBar} />
+                    </linearGradient>
+                </defs>
+                <path
+                    className={styles.sankeyLink}
+                    d={d}
+                    fill={`url('#${id}')`}
+                    strokeWidth={0}
+                />
+            </Layer>
+        );
+    };
+}
+
+interface Props<T> {
     className?: string;
-    data: SankeyData | undefined;
+    data: SankeyData<T> | undefined;
+    colorSelector: (val: ExtendedData<T>) => string;
+    nameSelector: (val: ExtendedData<T>) => string;
 }
 
-function SankeyNode(node: Node) {
-    const { x, y, width, height, index, payload, containerWidth } = node;
-    if (payload.value === 0) {
-        return null;
-    }
-    const isOut = (x + width) + 6 > containerWidth;
-    return (
-        <Layer key={`sankey-node-${index}`}>
-            <Rectangle
-                x={x}
-                y={y}
-                width={width}
-                height={height}
-                fill="#5192ca"
-                fillOpacity="1"
-            />
-            <text
-                textAnchor={isOut ? 'end' : 'start'}
-                x={isOut ? x - 6 : x + width + 6}
-                y={y + height / 2 + 4}
-                fontSize="12"
-                fill="#000"
-                strokeWidth={0}
-                pointerEvents="none"
-            >
-                {payload.name}
-                (
-                {payload.value}
-                )
-            </text>
-        </Layer>
-    );
-}
-
-function SankeyLink(link: Link) {
-    const {
-        sourceX,
-        targetX,
-        sourceY,
-        targetY,
-        sourceControlX,
-        targetControlX,
-        linkWidth,
-        index,
-    } = link;
-
-    const d = `
-    M${sourceX},${sourceY + linkWidth / 2}
-    C${sourceControlX},${sourceY + linkWidth / 2}
-    ${targetControlX},${targetY + linkWidth / 2}
-    ${targetX},${targetY + linkWidth / 2}
-    L${targetX},${targetY - linkWidth / 2}
-    C${targetControlX},${targetY - linkWidth / 2}
-    ${sourceControlX},${sourceY - linkWidth / 2}
-    ${sourceX},${sourceY - linkWidth / 2}
-    Z`;
-
-    return (
-        <Layer key={`CustomLink${index}`}>
-            <path
-                className={styles.sankeyLink}
-                d={d}
-                strokeWidth={0}
-            />
-        </Layer>
-    );
-}
-
-function BudgetFlowSankey(props: Props) {
+function BudgetFlowSankey<T>(props: Props<T>) {
     const {
         className,
         data,
+        colorSelector,
+        nameSelector,
     } = props;
+
+    if (!data) {
+        return null;
+    }
+
+    const node = getNode(
+        nameSelector,
+        colorSelector,
+    );
+
+    const link = getLink(
+        colorSelector,
+    );
 
     return (
         <div
             className={_cs(className, styles.budgetFlowSankey)}
         >
-            {data && (
-                <ResponsiveContainer>
-                    <Sankey
-                        data={data}
-                        link={SankeyLink}
-                        node={SankeyNode}
-                        margin={{
-                            right: 100,
-                        }}
-                    >
-                        <Tooltip />
-                        <Label />
-                    </Sankey>
-                </ResponsiveContainer>
-            )}
+            <ResponsiveContainer>
+                <Sankey
+                    data={data}
+                    nameKey={nameSelector}
+                    link={link}
+                    node={node}
+                    curvature={0.1}
+                    // FIXME: make this customizable
+                    margin={{
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                    }}
+                >
+                    <Tooltip />
+                    <Label />
+                </Sankey>
+            </ResponsiveContainer>
         </div>
     );
 }
 
-export default React.memo(BudgetFlowSankey);
+export default typedMemo(BudgetFlowSankey);

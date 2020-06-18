@@ -3,10 +3,9 @@
 }
 
 .sankey-link {
-    fill: var(--color-primary);
-    fill-opacity: 0.4;
+    fill-opacity: 0.3;
 
     &:hover {
-        fill-opacity: 0.7;
+        fill-opacity: 0.4;
     }
 }

@@ -22,17 +22,22 @@ import { apiEndPoint } from '#utils/constants';
 
 import styles from './styles.css';
 
-const sankeyData: SankeyData = {
+interface Node {
+    name: string;
+}
+
+/*
+const sankeyData: SankeyData<Node> = {
     nodes: [
-        { name: 'Program A' },
-        { name: 'Program B' },
+        { title: 'Program A', color: 'red' },
+        { title: 'Program B', color: 'red' },
 
-        { name: 'Component A.1' },
-        { name: 'Component A.2' },
-        { name: 'Component B.1' },
+        { title: 'Component A.1', color: 'blue' },
+        { title: 'Component A.2', color: 'blue' },
+        { title: 'Component B.1', color: 'blue' },
 
-        { name: 'Partner X' },
-        { name: 'Partner Y' },
+        { title: 'Partner X', color: 'green' },
+        { title: 'Partner Y', color: 'green' },
     ],
     links: [
         { source: 0, target: 2, value: 200 },
@@ -42,6 +47,271 @@ const sankeyData: SankeyData = {
         { source: 2, target: 5, value: 200 },
         { source: 3, target: 6, value: 95 },
         { source: 4, target: 5, value: 50 },
+    ],
+};
+*/
+
+const sankeyData: SankeyData<Node> = {
+    nodes: [
+        {
+            name: 'Family Planning Project',
+        },
+        {
+            name: 'Access to Finance Programme',
+        },
+        {
+            name: 'Strengthening Disaster Resilience in Nepal',
+        },
+        {
+            name: 'Family Planning Project - Monitoring and Evaluation',
+        },
+        {
+            name: 'Family Planning Project - Financial Assistance',
+        },
+        {
+            name: 'Family Planning Project - UNFPA Implementation',
+        },
+        {
+            name: 'Family Planning Project - MSI Implementation',
+        },
+        {
+            name: 'Access to Finance for the Poor Programme',
+        },
+        {
+            name: 'Promoting safer schools in Nepal (resource, non-...',
+        },
+        {
+            name: 'Monitoring and Evaluations Learning Unit (MEL) -...',
+        },
+        {
+            name: 'Strengthening urban resilience in disaster prone...',
+        },
+        {
+            name: 'Policy and Institutions Facility (PIF) - (resour...',
+        },
+        {
+            name: 'Disaster resilience institution strengthening an...',
+        },
+        {
+            name: 'Responding to Humanitarian emergencies and suppo...',
+        },
+        {
+            name: "WFP's Emergency logistics preparedness (resource...",
+        },
+        {
+            name: "UNICEF's Supporting the use of cash in emergency...",
+        },
+        {
+            name: 'Adventist Dev & Relief Agency',
+        },
+        {
+            name: 'BRITISH RED CROSS',
+        },
+        {
+            name: 'CARE NEPAL',
+        },
+        {
+            name: 'Crown Agents Ltd',
+        },
+        {
+            name: 'Government of Nepal Health Sector Programme 2',
+        },
+        {
+            name: 'ICF Consulting Services Ltd',
+        },
+        {
+            name: 'IOD PARC',
+        },
+        {
+            name: 'Louis Berger Group, Inc',
+        },
+        {
+            name: 'Marie Stopes International MSI',
+        },
+        {
+            name: 'MOTT MACDONALD LTD',
+        },
+        {
+            name: 'OXFAM INSTITUTIONAL INCOME ACCOUNT',
+        },
+        {
+            name: 'OXFORD POLICY MANAGEMENT',
+        },
+        {
+            name: 'THE SAVE THE CHILDREN FUND',
+        },
+        {
+            name: 'UNDP',
+        },
+        {
+            name: 'UNDP GBP Contributions',
+        },
+        {
+            name: 'UNFPA',
+        },
+        {
+            name: 'UNICEF',
+        },
+        {
+            name: 'WFP CONTRIBUTIONS UNIT',
+        },
+    ],
+    links: [
+        {
+            source: 0,
+            target: 3,
+            value: 405585,
+        },
+        {
+            source: 0,
+            target: 4,
+            value: 4872020,
+        },
+        {
+            source: 0,
+            target: 5,
+            value: 2845955,
+        },
+        {
+            source: 0,
+            target: 6,
+            value: 1027308.14653,
+        },
+        {
+            source: 1,
+            target: 7,
+            value: 14758404.7721015,
+        },
+        {
+            source: 2,
+            target: 8,
+            value: 11995657.70994,
+        },
+        {
+            source: 2,
+            target: 9,
+            value: 1392893,
+        },
+        {
+            source: 2,
+            target: 10,
+            value: 6441095.75001,
+        },
+        {
+            source: 2,
+            target: 11,
+            value: 1669200,
+        },
+        {
+            source: 2,
+            target: 12,
+            value: 5110873.99998,
+        },
+        {
+            source: 2,
+            target: 13,
+            value: 3870580,
+        },
+        {
+            source: 2,
+            target: 14,
+            value: 4254325.99998,
+        },
+        {
+            source: 2,
+            target: 15,
+            value: 586264,
+        },
+        {
+            source: 10,
+            target: 16,
+            value: 73914.75,
+        },
+        {
+            source: 12,
+            target: 17,
+            value: 5510874,
+        },
+        {
+            source: 13,
+            target: 18,
+            value: 549324,
+        },
+        {
+            source: 8,
+            target: 19,
+            value: 11995657.70994,
+        },
+        {
+            source: 4,
+            target: 20,
+            value: 4872020,
+        },
+        {
+            source: 10,
+            target: 21,
+            value: 6367181.00001,
+        },
+        {
+            source: 9,
+            target: 22,
+            value: 1392893,
+        },
+        {
+            source: 7,
+            target: 23,
+            value: 14758404.7721015,
+        },
+        {
+            source: 6,
+            target: 24,
+            value: 1027308.14653,
+        },
+        {
+            source: 3,
+            target: 25,
+            value: 405585,
+        },
+        {
+            source: 13,
+            target: 26,
+            value: 172374,
+        },
+        {
+            source: 11,
+            target: 27,
+            value: 1669200,
+        },
+        {
+            source: 13,
+            target: 28,
+            value: 300000,
+        },
+        {
+            source: 14,
+            target: 29,
+            value: 692262,
+        },
+        {
+            source: 13,
+            target: 30,
+            value: 148882,
+        },
+        {
+            source: 5,
+            target: 31,
+            value: 2845955,
+        },
+        {
+            source: 13,
+            target: 32,
+            value: 1386263.99998,
+        },
+        {
+            source: 13,
+            target: 33,
+            value: 5062063.99998,
+        },
     ],
 };
 
@@ -73,7 +343,7 @@ function ProgramWiseTable(props: Props) {
     const [
         sankeyPending,
         sankeyResponse,
-    ] = useRequest<SankeyData>(`${apiEndPoint}/core/sankey-program/`, 'sankey-data');
+    ] = useRequest<SankeyData<Node>>(`${apiEndPoint}/core/sankey-program/`, 'sankey-data');
 
     const { sortState, setSortState } = useSortState();
     const { filtering, setFilteringItem, getFilteringItem } = useFilterState();
@@ -194,6 +464,12 @@ function ProgramWiseTable(props: Props) {
                     Download as csv
                 </Button>
             </div>
+            <BudgetFlowSankey
+                className={styles.budgetFlow}
+                data={sankeyData}
+                colorSelector={item => ['red', 'blue', 'green'][item.depth]}
+                nameSelector={item => item.name}
+            />
             <div
                 className={styles.table}
             >
@@ -203,11 +479,6 @@ function ProgramWiseTable(props: Props) {
                     columns={orderedColumns}
                 />
             </div>
-            <BudgetFlowSankey
-                className={styles.budgetFlow}
-                // data={sankeyResponse}
-                data={sankeyData}
-            />
         </PopupPage>
     );
 }
