@@ -1,8 +1,9 @@
-import React, { useMemo, useCallback, useContext } from 'react';
+import React, { useMemo, useCallback, useContext, useState } from 'react';
 import { IoMdDownload } from 'react-icons/io';
 import { compareString, compareNumber, _cs } from '@togglecorp/fujs';
 
 import DomainContext from '#components/DomainContext';
+import SegmentInput from '#components/SegmentInput';
 import BudgetFlowSankey from '#components/BudgetFlowSankey';
 import Button from '#components/Button';
 import Cell from '#components/Table/Cell';
@@ -27,6 +28,18 @@ import { ExtractKeys } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
 import styles from './styles.css';
+
+// TODO: move sankey and table in different pages with their own request handling
+
+type TabOptionKeys = 'table' | 'sankey';
+interface TabOption {
+    key: TabOptionKeys;
+    label: string;
+}
+const tabOptions: TabOption[] = [
+    { key: 'table', label: 'Table' },
+    { key: 'sankey', label: 'Sankey' },
+];
 
 interface Node {
     name: string;
@@ -59,6 +72,8 @@ function ProgramWiseTable(props: Props) {
     const {
         programs,
     } = useContext<DomainContextProps>(DomainContext);
+
+    const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('table');
 
     const [
         programsPending,
@@ -182,32 +197,48 @@ function ProgramWiseTable(props: Props) {
             parentLink="/dashboard/"
             parentName="dashboard"
         >
-            <div className={styles.tableActions}>
-                <Button
-                    onClick={handleDownload}
-                    icons={(
-                        <IoMdDownload />
-                    )}
-                    disabled={!sortedPrograms || !orderedColumns}
-                >
-                    Download as csv
-                </Button>
-            </div>
-            <BudgetFlowSankey
-                className={styles.budgetFlow}
-                data={sankeyResponse}
-                colorSelector={sankeyColorSelector}
-                nameSelector={sankeyNameSelector}
-            />
-            <div
-                className={styles.table}
-            >
-                <Table
-                    data={sortedPrograms}
-                    keySelector={programKeySelector}
-                    columns={orderedColumns}
+            <div className={styles.tabActions}>
+                <SegmentInput
+                    options={tabOptions}
+                    optionKeySelector={item => item.key}
+                    optionLabelSelector={item => item.label}
+                    value={selectedTab}
+                    onChange={setSelectedTab}
                 />
             </div>
+            {selectedTab === 'sankey' && (
+                <div className={styles.sankey}>
+                    <BudgetFlowSankey
+                        data={sankeyResponse}
+                        colorSelector={sankeyColorSelector}
+                        nameSelector={sankeyNameSelector}
+                    />
+                </div>
+            )}
+            {selectedTab === 'table' && (
+                <>
+                    <div className={styles.tableActions}>
+                        <Button
+                            onClick={handleDownload}
+                            icons={(
+                                <IoMdDownload />
+                            )}
+                            disabled={!sortedPrograms || !orderedColumns}
+                        >
+                            Download as csv
+                        </Button>
+                    </div>
+                    <div
+                        className={styles.table}
+                    >
+                        <Table
+                            data={sortedPrograms}
+                            keySelector={programKeySelector}
+                            columns={orderedColumns}
+                        />
+                    </div>
+                </>
+            )}
         </PopupPage>
     );
 }

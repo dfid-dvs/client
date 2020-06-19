@@ -1,12 +1,22 @@
+.tab-actions {
+    flex-shrink: 0;
+    padding: var(--spacing-small) var(--spacing-medium);
+}
+
+
 .table-actions {
-    padding: var(--spacing-small) 0;
+    flex-shrink: 0;
+    padding: var(--spacing-small) var(--spacing-medium);
 }
 
 .table {
-    flex-shrink: 0;
+    flex-grow: 1;
+    margin: var(--spacing-small) var(--spacing-medium);
+    overflow-y: auto;
 }
 
-.budget-flow {
-    flex-shrink: 0;
-    height: 800px;
+.sankey {
+    flex-grow: 1;
+    margin: var(--spacing-small) var(--spacing-medium);
+    /* overflow-y: auto; */
 }

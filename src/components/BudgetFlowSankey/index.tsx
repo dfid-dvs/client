@@ -1,12 +1,12 @@
 import React from 'react';
 import { _cs, isDefined } from '@togglecorp/fujs';
 import {
-    ResponsiveContainer,
     Sankey,
     Tooltip,
     Layer,
     Label,
     Rectangle,
+    ResponsiveContainer,
 } from 'recharts';
 import { SankeyData } from '#types';
 import { typedMemo } from '#utils/common';
@@ -153,7 +153,6 @@ function getLink<T>(
 }
 
 interface Props<T> {
-    className?: string;
     data: SankeyData<T> | undefined;
     colorSelector: (val: ExtendedData<T>) => string;
     nameSelector: (val: ExtendedData<T>) => string;
@@ -161,13 +160,12 @@ interface Props<T> {
 
 function BudgetFlowSankey<T>(props: Props<T>) {
     const {
-        className,
         data,
         colorSelector,
         nameSelector,
     } = props;
 
-    if (!data) {
+    if (!data || data.links.length <= 0 || data.nodes.length <= 0) {
         return null;
     }
 
@@ -181,29 +179,25 @@ function BudgetFlowSankey<T>(props: Props<T>) {
     );
 
     return (
-        <div
-            className={_cs(className, styles.budgetFlowSankey)}
-        >
-            <ResponsiveContainer>
-                <Sankey
-                    data={data}
-                    nameKey={nameSelector}
-                    link={link}
-                    node={node}
-                    // FIXME: make this customizable
-                    margin={{
-                        top: 14,
-                        left: 14,
-                        right: 14,
-                        bottom: 14,
-                    }}
-                    danglingLeaf
-                >
-                    <Tooltip />
-                    <Label />
-                </Sankey>
-            </ResponsiveContainer>
-        </div>
+        <ResponsiveContainer>
+            <Sankey
+                data={data}
+                nameKey={nameSelector}
+                link={link}
+                node={node}
+                // FIXME: make this customizable
+                margin={{
+                    top: 14,
+                    left: 14,
+                    right: 14,
+                    bottom: 14,
+                }}
+                danglingLeaf
+            >
+                <Tooltip />
+                <Label />
+            </Sankey>
+        </ResponsiveContainer>
     );
 }
 
