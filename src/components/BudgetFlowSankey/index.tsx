@@ -83,17 +83,19 @@ function getNode<T>(
                     fill={color}
                     fillOpacity="1"
                 />
-                <text
-                    textAnchor={isOut ? 'end' : 'start'}
-                    x={isOut ? x - 6 : x + width + 6}
-                    y={y + height / 2 + 4}
-                    fontSize="14"
-                    fill="var(--color-text)"
-                    strokeWidth={0}
-                    pointerEvents="none"
-                >
-                    {label}
-                </text>
+                {height >= 14 && (
+                    <text
+                        textAnchor={isOut ? 'end' : 'start'}
+                        x={isOut ? x - 6 : x + width + 6}
+                        y={y + height / 2 + 4}
+                        fontSize="14"
+                        fill="var(--color-text)"
+                        strokeWidth={0}
+                        pointerEvents="none"
+                    >
+                        {label}
+                    </text>
+                )}
             </Layer>
         );
     };
@@ -188,14 +190,14 @@ function BudgetFlowSankey<T>(props: Props<T>) {
                     nameKey={nameSelector}
                     link={link}
                     node={node}
-                    curvature={0.1}
                     // FIXME: make this customizable
                     margin={{
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
+                        top: 14,
+                        left: 14,
+                        right: 14,
+                        bottom: 14,
                     }}
+                    danglingLeaf
                 >
                     <Tooltip />
                     <Label />

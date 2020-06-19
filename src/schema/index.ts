@@ -5,6 +5,13 @@ import { isProduction } from '#config/env';
 
 const userDefinedSchemas: Schema[] = [
     {
+        name: 'base-entity',
+        fields: {
+            id: { type: 'number', required: true },
+            name: { type: 'string', required: true },
+        },
+    },
+    {
         name: 'fivew-summary',
         fields: {
             allocatedBudget: { type: 'number', required: true },
@@ -222,11 +229,11 @@ const userDefinedSchemas: Schema[] = [
                         code: { type: 'string' },
                         totalBudget: { type: 'number' },
 
-                        sector: { type: 'array.number', required: true },
-                        subSector: { type: 'array.number', required: true },
-                        markerCategory: { type: 'array.number', required: true },
-                        markerValue: { type: 'array.number', required: true },
-                        partner: { type: 'array.number', required: true },
+                        sector: { type: 'array.base-entity', required: true },
+                        subSector: { type: 'array.base-entity', required: true },
+                        markerCategory: { type: 'array.base-entity', required: true },
+                        markerValue: { type: 'array.base-entity', required: true },
+                        component: { type: 'array.base-entity', required: true },
                     },
                 },
                 required: true,
@@ -329,6 +336,12 @@ const userDefinedSchemas: Schema[] = [
                         name: { type: 'string', required: true },
 
                         allocatedBudget: { type: 'number' },
+                        component: { type: 'array.string', required: true },
+                        partner: { type: 'array.string', required: true },
+                        sector: { type: 'array.string', required: true },
+                        subSector: { type: 'array.string', required: true },
+                        // markerCategory: { type: 'array.string', required: true },
+                        // markerValue: { type: 'array.string', required: true },
                     },
                 },
                 required: true,

@@ -10,7 +10,7 @@
         .header-cell {
             position: sticky;
             top: 0;
-            z-index: 2 !important;
+            z-index: 2;
             border: var(--width-separator-thin) solid var(--color-separator);
             background-color: var(--color-background);
 
@@ -20,7 +20,7 @@
 
             &.stick-left {
                 left: 0;
-                z-index: 3 !important;
+                z-index: 3;
             }
 
             .header-component {
@@ -33,7 +33,7 @@
         .row-header-cell {
             position: sticky;
             left: 0;
-            z-index: 1 !important;
+            z-index: 1;
             border: var(--width-separator-thin) solid var(--color-separator);
             border-top: 0px;
             background-color: var(--color-foreground);

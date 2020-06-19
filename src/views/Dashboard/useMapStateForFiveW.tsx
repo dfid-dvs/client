@@ -10,6 +10,7 @@ import useRequest from '#hooks/useRequest';
 
 import {
     FiveW,
+    OriginalFiveW,
     FiveWOptionKey,
 } from './types';
 
@@ -39,9 +40,16 @@ function useMapStateForFiveW(
     const [
         regionFiveWPending,
         regionFiveWListResponse,
-    ] = useRequest<MultiResponse<FiveW>>(regionFiveWGetUrl, 'fivew', options);
+    ] = useRequest<MultiResponse<OriginalFiveW>>(regionFiveWGetUrl, 'fivew', options);
 
-    const filteredRegionFivewW = regionFiveWListResponse?.results.filter(item => item.code !== '-1');
+    const filteredRegionFivewW = regionFiveWListResponse?.results
+        .filter(item => item.code !== '-1')
+        .map(item => ({
+            ...item,
+            partnerCount: item.partner.length,
+            componentCount: item.component.length,
+            sectorCount: item.sector.length,
+        }));
 
     const fiveWMapState: MapStateItem[] = useMemo(
         () => {

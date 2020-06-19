@@ -1,7 +1,8 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useContext } from 'react';
 import { IoMdDownload } from 'react-icons/io';
 import { compareString, compareNumber, _cs } from '@togglecorp/fujs';
 
+import DomainContext from '#components/DomainContext';
 import BudgetFlowSankey from '#components/BudgetFlowSankey';
 import Button from '#components/Button';
 import Cell from '#components/Table/Cell';
@@ -16,7 +17,12 @@ import useSorting, { useSortState } from '#components/Table/useSorting';
 import { SortDirection, FilterType } from '#components/Table/types';
 
 import useRequest from '#hooks/useRequest';
-import { MultiResponse, Program, SankeyData } from '#types';
+import {
+    MultiResponse,
+    Program,
+    SankeyData,
+    DomainContextProps,
+} from '#types';
 import { ExtractKeys } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
@@ -51,6 +57,7 @@ const sankeyData: SankeyData<Node> = {
 };
 */
 
+/*
 const sankeyData: SankeyData<Node> = {
     nodes: [
         {
@@ -314,6 +321,7 @@ const sankeyData: SankeyData<Node> = {
         },
     ],
 };
+*/
 
 interface ColumnOrderingItem {
     name: string;
@@ -335,15 +343,24 @@ function ProgramWiseTable(props: Props) {
     const {
         className,
     } = props;
+
+    const {
+        programs,
+    } = useContext<DomainContextProps>(DomainContext);
+
     const [
         programsPending,
         programListResponse,
     ] = useRequest<MultiResponse<Program>>(`${apiEndPoint}/core/program/?program=1`, 'program-list');
 
+    const url = programs.length > 0
+        ? `${apiEndPoint}/core/sankey-program/?program=${programs.join(',')}`
+        : `${apiEndPoint}/core/sankey-program/`;
+
     const [
         sankeyPending,
         sankeyResponse,
-    ] = useRequest<SankeyData<Node>>(`${apiEndPoint}/core/sankey-program/`, 'sankey-data');
+    ] = useRequest<SankeyData<Node>>(url, 'sankey-data');
 
     const { sortState, setSortState } = useSortState();
     const { filtering, setFilteringItem, getFilteringItem } = useFilterState();
@@ -466,7 +483,7 @@ function ProgramWiseTable(props: Props) {
             </div>
             <BudgetFlowSankey
                 className={styles.budgetFlow}
-                data={sankeyData}
+                data={sankeyResponse}
                 colorSelector={item => ['red', 'blue', 'green'][item.depth]}
                 nameSelector={item => item.name}
             />

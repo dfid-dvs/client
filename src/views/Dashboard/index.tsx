@@ -113,6 +113,21 @@ const fiveWOptions: FiveWOption[] = [
         label: 'Allocated Budget',
         unit: '£',
     },
+    {
+        key: 'partnerCount',
+        label: 'Partners',
+        datatype: 'integer',
+    },
+    {
+        key: 'componentCount',
+        label: 'Components',
+        datatype: 'integer',
+    },
+    {
+        key: 'sectorCount',
+        label: 'Sectors',
+        datatype: 'integer',
+    },
 ];
 
 const hospitalTypeOptions: HospitalType[] = [
@@ -647,7 +662,6 @@ const Dashboard = (props: Props) => {
                                                 key={hospital}
                                                 name={hospital}
                                                 onClick={handleHospitalToggle}
-                                                variant="danger"
                                                 icons={(
                                                     <IoIosClose />
                                                 )}
