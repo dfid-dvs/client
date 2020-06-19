@@ -159,12 +159,12 @@ interface Props<T> {
 
 function BudgetFlowSankey<T>(props: Props<T>) {
     const {
-        data,
+        data: newData,
         colorSelector,
         nameSelector,
     } = props;
 
-    // FIXME: we should not need this code
+    /*
     const newData = useMemo(
         () => {
             if (!data) {
@@ -203,6 +203,7 @@ function BudgetFlowSankey<T>(props: Props<T>) {
         },
         [data],
     );
+    */
 
     if (!newData || newData.links.length <= 0 || newData.nodes.length <= 0) {
         return null;
