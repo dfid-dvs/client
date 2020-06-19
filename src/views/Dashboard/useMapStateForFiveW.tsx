@@ -17,11 +17,9 @@ import {
 function useMapStateForFiveW(
     regionLevel: RegionLevelOption,
     programs: number[],
-    selectedFiveWOption: FiveWOptionKey | undefined,
+    selectedFiveWOption?: FiveWOptionKey,
 ): [boolean, MapStateItem[], FiveW[]] {
-    const regionFiveWGetUrl = selectedFiveWOption
-        ? `${apiEndPoint}/core/fivew-${regionLevel}/`
-        : undefined;
+    const regionFiveWGetUrl = `${apiEndPoint}/core/fivew-${regionLevel}/`;
 
     const options: RequestInit | undefined = useMemo(
         () => ({
@@ -51,6 +49,8 @@ function useMapStateForFiveW(
             sectorCount: item.sector.length,
         }));
 
+    const fiveW: FiveW[] = filteredRegionFivewW || [];
+
     const fiveWMapState: MapStateItem[] = useMemo(
         () => {
             if (!filteredRegionFivewW || !selectedFiveWOption) {
@@ -64,8 +64,6 @@ function useMapStateForFiveW(
         },
         [filteredRegionFivewW, selectedFiveWOption],
     );
-
-    const fiveW: FiveW[] = filteredRegionFivewW || [];
 
     return [regionFiveWPending, fiveWMapState, fiveW];
 }

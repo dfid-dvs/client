@@ -174,7 +174,13 @@ interface Props {
 
 const Dashboard = (props: Props) => {
     const { className } = props;
-    const { regionLevel, covidMode, setCovidMode, programs } = useContext(DomainContext);
+    const {
+        regionLevel,
+        setRegionLevel,
+        covidMode,
+        setCovidMode,
+        programs,
+    } = useContext(DomainContext);
 
     // Filter
     const [
@@ -616,7 +622,11 @@ const Dashboard = (props: Props) => {
                 onPrintModeChange={setPrintMode}
             />
             <div className={styles.mapStyleConfigContainer}>
-                <RegionSelector searchHidden />
+                <RegionSelector
+                    onRegionLevelChange={setRegionLevel}
+                    regionLevel={regionLevel}
+                    searchHidden
+                />
                 <div className={styles.separator} />
                 {covidMode && (
                     <>
@@ -822,7 +832,6 @@ const Dashboard = (props: Props) => {
             />
             {hash === 'regions' && (
                 <RegionWiseTable
-                    fiveW={fiveWStats}
                     indicatorList={indicatorList}
                 />
             )}

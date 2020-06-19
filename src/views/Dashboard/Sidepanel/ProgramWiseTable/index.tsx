@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback, useContext, useState } from 'react';
 import { IoMdDownload } from 'react-icons/io';
-import { compareString, compareNumber, _cs } from '@togglecorp/fujs';
+import { compareString, compareNumber, _cs, isTruthyString } from '@togglecorp/fujs';
 
 import DomainContext from '#components/DomainContext';
 import SegmentInput from '#components/SegmentInput';
@@ -24,7 +24,7 @@ import {
     SankeyData,
     DomainContextProps,
 } from '#types';
-import { ExtractKeys } from '#utils/common';
+import { ExtractKeys, prepareUrlParams as p } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
 import styles from './styles.css';
@@ -75,19 +75,28 @@ function ProgramWiseTable(props: Props) {
 
     const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('table');
 
+
+    const params = p({
+        program: programs,
+    });
+
+    const programUrl = isTruthyString(params)
+        ? `${apiEndPoint}/core/program/?${params}`
+        : `${apiEndPoint}/core/program/`;
+
     const [
         programsPending,
         programListResponse,
-    ] = useRequest<MultiResponse<Program>>(`${apiEndPoint}/core/program/?program=1`, 'program-list');
+    ] = useRequest<MultiResponse<Program>>(programUrl, 'program-list');
 
-    const url = programs.length > 0
-        ? `${apiEndPoint}/core/sankey-program/?program=${programs.join(',')}`
+    const sankeyUrl = isTruthyString(params)
+        ? `${apiEndPoint}/core/sankey-program/?${params}`
         : `${apiEndPoint}/core/sankey-program/`;
 
     const [
         sankeyPending,
         sankeyResponse,
-    ] = useRequest<SankeyData<Node>>(url, 'sankey-data');
+    ] = useRequest<SankeyData<Node>>(sankeyUrl, 'sankey-data');
 
     const { sortState, setSortState } = useSortState();
     const { filtering, setFilteringItem, getFilteringItem } = useFilterState();

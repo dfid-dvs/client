@@ -1,5 +1,4 @@
-import React from 'react';
-import { _cs, isDefined } from '@togglecorp/fujs';
+import React, { useMemo } from 'react';
 import {
     Sankey,
     Tooltip,
@@ -165,7 +164,47 @@ function BudgetFlowSankey<T>(props: Props<T>) {
         nameSelector,
     } = props;
 
-    if (!data || data.links.length <= 0 || data.nodes.length <= 0) {
+    // FIXME: we should not need this code
+    const newData = useMemo(
+        () => {
+            if (!data) {
+                return data;
+            }
+            const allReferencedNodes = new Set<number>();
+            data.links.forEach((item) => {
+                allReferencedNodes.add(item.source);
+                allReferencedNodes.add(item.target);
+            });
+
+            const usedNodes = data.nodes.map((item, index) => ({
+                ...item,
+                prevIndex: index,
+                used: allReferencedNodes.has(index),
+            }));
+            const onlyUsedNodes = usedNodes.filter(item => item.used);
+
+            const mapping: { [key: number]: number } = onlyUsedNodes.reduce(
+                (acc, val, index) => ({
+                    ...acc,
+                    [val.prevIndex]: index,
+                }),
+                {},
+            );
+            const mappedLinks = data.links.map(item => ({
+                ...item,
+                source: mapping[item.source],
+                target: mapping[item.target],
+            }));
+
+            return {
+                nodes: onlyUsedNodes,
+                links: mappedLinks,
+            };
+        },
+        [data],
+    );
+
+    if (!newData || newData.links.length <= 0 || newData.nodes.length <= 0) {
         return null;
     }
 
@@ -181,8 +220,8 @@ function BudgetFlowSankey<T>(props: Props<T>) {
     return (
         <ResponsiveContainer>
             <Sankey
-                data={data}
                 nameKey={nameSelector}
+                data={newData}
                 link={link}
                 node={node}
                 // FIXME: make this customizable
@@ -192,6 +231,7 @@ function BudgetFlowSankey<T>(props: Props<T>) {
                     right: 14,
                     bottom: 14,
                 }}
+                iterations={2000}
                 danglingLeaf
             >
                 <Tooltip />

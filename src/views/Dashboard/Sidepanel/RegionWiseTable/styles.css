@@ -1,11 +1,13 @@
-.dropdown {
-    z-index: 111;
+.tab-actions {
+    flex-shrink: 0;
+    margin: var(--spacing-small) var(--spacing-medium);
 }
 
 .table-actions {
     display: flex;
     align-items: flex-end;
-    padding: var(--spacing-small) 0;
+    flex-shrink: 0;
+    margin: var(--spacing-small) var(--spacing-medium);
 
     >* {
         &:not(:last-child) {
@@ -15,5 +17,19 @@
 }
 
 .table {
-    max-height: 500px;
+    flex-grow: 1;
+    margin: var(--spacing-small) var(--spacing-medium);
+    overflow-y: auto;
+}
+
+.charts {
+    flex-grow: 1;
+    margin: var(--spacing-small) var(--spacing-medium);
+    overflow-y: auto;
+}
+
+.sankey {
+    flex-grow: 1;
+    margin: var(--spacing-small) var(--spacing-medium);
+    /* overflow-y: auto; */
 }

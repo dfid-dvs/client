@@ -1,12 +1,11 @@
 .tab-actions {
     flex-shrink: 0;
-    padding: var(--spacing-small) var(--spacing-medium);
+    margin: var(--spacing-small) var(--spacing-medium);
 }
-
 
 .table-actions {
     flex-shrink: 0;
-    padding: var(--spacing-small) var(--spacing-medium);
+    margin: var(--spacing-small) var(--spacing-medium);
 }
 
 .table {
