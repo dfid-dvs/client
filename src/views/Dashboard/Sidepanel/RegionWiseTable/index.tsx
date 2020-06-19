@@ -47,6 +47,7 @@ const staticColumnOrdering: ColumnOrderingItem[] = [
 const fiveWKeySelector = (data: FiveW) => data.id;
 const indicatorTitleSelector = (indicator: Indicator) => indicator.fullTitle;
 const indicatorKeySelector = (indicator: Indicator) => indicator.id;
+const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 
 interface IndicatorValue {
     indicatorId: number;
@@ -363,6 +364,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     value={validSelectedIndicators}
                     optionLabelSelector={indicatorTitleSelector}
                     optionKeySelector={indicatorKeySelector}
+                    groupKeySelector={indicatorGroupKeySelector}
                     dropdownContainerClassName={styles.dropdown}
                 />
                 <Button
