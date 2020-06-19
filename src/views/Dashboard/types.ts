@@ -1,11 +1,23 @@
-export interface FiveW {
+export interface OriginalFiveW {
     id: number;
     name: string;
     code: string;
-    allocatedBudget: number;
+    allocatedBudget: number; // this may be undefined
+    component: string[];
+    partner: string[];
+    sector: string[];
+    subSector: string[];
+    // markerCategory: string[];
+    // markerValue: string[];
 }
 
-export type FiveWOptionKey = Extract<keyof FiveW, 'allocatedBudget'>;
+export interface FiveW extends OriginalFiveW {
+    partnerCount: number;
+    componentCount: number;
+    sectorCount: number;
+}
+
+export type FiveWOptionKey = Extract<keyof FiveW, 'allocatedBudget' | 'partnerCount' | 'componentCount' | 'sectorCount'>;
 
 export interface FiveWOption {
     key: FiveWOptionKey;

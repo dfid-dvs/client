@@ -1,7 +1,21 @@
+.tab-actions {
+    flex-shrink: 0;
+    margin: var(--spacing-small) var(--spacing-medium);
+}
+
 .table-actions {
-    padding: var(--spacing-small) 0;
+    flex-shrink: 0;
+    margin: var(--spacing-small) var(--spacing-medium);
 }
 
 .table {
-    max-height: 500px;
+    flex-grow: 1;
+    margin: var(--spacing-small) var(--spacing-medium);
+    overflow-y: auto;
+}
+
+.sankey {
+    flex-grow: 1;
+    margin: var(--spacing-small) var(--spacing-medium);
+    /* overflow-y: auto; */
 }

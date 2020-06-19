@@ -58,6 +58,12 @@
             width: 100%;
         }
 
+        .hospitals {
+            .button {
+                margin: var(--spacing-extra-small);
+            }
+        }
+
         .heading {
             padding: var(--spacing-medium);
             color: var(--color-accent);

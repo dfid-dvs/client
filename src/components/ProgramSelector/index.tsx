@@ -251,19 +251,19 @@ function ProgramSelector(props: Props) {
 
                 const isSelectedSectorsGood = (
                     !sectorOrSubSectorSelected
-                    || commonCount(selectedSectors, program.sector) > 0
+                    || commonCount(selectedSectors, program.sector.map(item => item.id)) > 0
                 );
                 const isSelectedSubSectorsGood = (
                     !sectorOrSubSectorSelected
-                    || commonCount(selectedSubSectors, program.subSector) > 0
+                    || commonCount(selectedSubSectors, program.subSector.map(item => item.id)) > 0
                 );
                 const isSelectedMarkersGood = (
                     !markerOrSubMarkerSelected
-                    || commonCount(selectedMarkers, program.markerCategory) > 0
+                    || commonCount(selectedMarkers, program.markerCategory.map(item => item.id)) > 0
                 );
                 const isSelectedSubMarkersGood = (
                     !markerOrSubMarkerSelected
-                    || commonCount(selectedSubMarkers, program.markerValue) > 0
+                    || commonCount(selectedSubMarkers, program.markerValue.map(item => item.id)) > 0
                 );
                 return (
                     (isSelectedSectorsGood || isSelectedSubSectorsGood)

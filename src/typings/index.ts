@@ -1,5 +1,10 @@
 export type RegionLevelOption = 'province' | 'district' | 'municipality';
 
+export interface BaseEntity {
+    id: number;
+    name: string;
+}
+
 export interface DomainContextProps {
     regionLevel: RegionLevelOption;
     setRegionLevel: (v: RegionLevelOption) => void;
@@ -113,9 +118,19 @@ export interface Program {
     code: string;
     totalBudget: number;
 
-    sector: number[];
-    subSector: number[];
-    markerCategory: number[];
-    markerValue: number[];
-    partner: number[];
+    sector: BaseEntity[];
+    subSector: BaseEntity[];
+    markerCategory: BaseEntity[];
+    markerValue: BaseEntity[];
+    // partner: BaseEntity[];
+}
+
+interface LinkData {
+    source: number;
+    target: number;
+    value: number;
+}
+export interface SankeyData<T> {
+    nodes: T[];
+    links: LinkData[];
 }

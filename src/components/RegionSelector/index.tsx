@@ -1,16 +1,14 @@
-import React, { useMemo, useCallback, useState, useContext } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
 import {
     MultiResponse,
-    DomainContextProps,
     RegionLevelOption,
 } from '#types';
 
 import MultiSelectInput from '#components/MultiSelectInput';
 import SegmentInput from '#components/SegmentInput';
-import DomainContext from '#components/DomainContext';
 
 import styles from './styles.css';
 
@@ -61,29 +59,35 @@ const regionLevelOptionList: RegionLevelOptionListItem[] = [
 interface Props {
     className?: string;
     searchHidden?: boolean;
+    selectionHidden?: boolean;
+
+    regionLevel: RegionLevelOption;
+    onRegionLevelChange?: (regionLevel: RegionLevelOption) => void;
+
+    regions?: number[] | undefined;
+    onRegionsChange?: (item: number[]) => void;
 }
 function RegionSelector(props: Props) {
     const {
         className,
         searchHidden,
-    } = props;
-
-    const [
-        selectedRegions,
-        setSelectedRegions,
-    ] = useState<number[] | undefined>(undefined);
-
-    const {
+        selectionHidden,
+        onRegionLevelChange,
         regionLevel,
-        setRegionLevel,
-    } = useContext<DomainContextProps>(DomainContext);
+        regions: selectedRegions,
+        onRegionsChange: setSelectedRegions,
+    } = props;
 
     const setRegionLevelSafely = useCallback(
         (r: RegionLevelOption) => {
-            setRegionLevel(r);
-            setSelectedRegions(undefined);
+            if (onRegionLevelChange) {
+                onRegionLevelChange(r);
+                if (setSelectedRegions) {
+                    setSelectedRegions([]);
+                }
+            }
         },
-        [setRegionLevel],
+        [onRegionLevelChange, setSelectedRegions],
     );
 
     const regionLevelLabel = useMemo(
@@ -103,17 +107,20 @@ function RegionSelector(props: Props) {
 
     return (
         <div className={className}>
-            <SegmentInput
-                className={styles.regionLevelSelection}
-                label="Admin Level"
-                options={regionLevelOptionList}
-                optionKeySelector={regionLevelOptionListKeySelector}
-                optionLabelSelector={regionLevelOptionListLabelSelector}
-                value={regionLevel}
-                onChange={setRegionLevelSafely}
-            />
-            {!searchHidden && (
+            {!selectionHidden && (
+                <SegmentInput
+                    className={styles.regionLevelSelection}
+                    label="Admin Level"
+                    options={regionLevelOptionList}
+                    optionKeySelector={regionLevelOptionListKeySelector}
+                    optionLabelSelector={regionLevelOptionListLabelSelector}
+                    value={regionLevel}
+                    onChange={setRegionLevelSafely}
+                />
+            )}
+            {!searchHidden && setSelectedRegions && (
                 <MultiSelectInput
+                    label={regionLevelLabel}
                     placeholder={`Select ${regionLevelLabel}`}
                     className={styles.regionSelectInput}
                     disabled={regionListPending}

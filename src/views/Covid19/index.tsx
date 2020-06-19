@@ -35,6 +35,7 @@ import {
     generateChoroplethMapPaintAndLegend,
     generateBubbleMapPaintAndLegend,
     filterMapState,
+    prepareUrlParams as p,
 } from '#utils/common';
 import {
     colorDomain,
@@ -102,7 +103,10 @@ interface Props {
 
 function Covid19(props: Props) {
     const { className } = props;
-    const { regionLevel } = useContext(DomainContext);
+    const {
+        regionLevel,
+        setRegionLevel,
+    } = useContext(DomainContext);
 
     const [selectedFiveWOption, setFiveWOption] = useState<CovidFiveWOptionKey | undefined>('component');
     const [selectedIndicator, setSelectedIndicator] = useState<number | undefined>();
@@ -110,7 +114,8 @@ function Covid19(props: Props) {
 
     const [selectedLayer, setSelectedLayer] = useState<number | undefined>(undefined);
 
-    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_covid=1`;
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?${p({ is_covid: 1 })}`;
     const [indicatorListPending, indicatorListResponse] = useRequest<MultiResponse<Indicator>>(
         indicatorListGetUrl,
         'indicator-list',
@@ -448,7 +453,11 @@ function Covid19(props: Props) {
             </IndicatorMap>
             <Stats className={styles.stats} />
             <div className={styles.mapStyleConfigContainer}>
-                <RegionSelector searchHidden />
+                <RegionSelector
+                    onRegionLevelChange={setRegionLevel}
+                    regionLevel={regionLevel}
+                    searchHidden
+                />
                 <div className={styles.separator} />
                 <SelectInput
                     label="Evidence for Development"

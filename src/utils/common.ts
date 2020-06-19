@@ -3,8 +3,10 @@ import { memo } from 'react';
 import {
     isDefined,
     isObject,
+    isNotDefined,
     isList,
     listToMap,
+    isFalsyString,
 } from '@togglecorp/fujs';
 
 import {
@@ -14,6 +16,59 @@ import {
 } from '#types';
 
 import { getPrecision } from '#components/Numeral';
+
+export interface UrlParams {
+    [key: string]: string | number | boolean | (string | number | boolean)[] | undefined | null;
+}
+
+/*
+ * Parse url params and return an key-value pair
+ * Input: stringParams (this.props.location.search.replace('?', ''))
+ * Output: {'param': 'value', ....}
+ */
+export function parseUrlParams(stringParams: string) {
+    const params = decodeURIComponent(stringParams).split('&');
+    let paramsJson = {};
+    params.forEach((param) => {
+        const split = param.split('=');
+        paramsJson = {
+            ...paramsJson,
+            [split[0]]: split[1],
+        };
+    });
+    return paramsJson;
+}
+
+/*
+ * Accept a key-value pair and transform to query string
+ */
+export function prepareUrlParams(params: UrlParams, encode = true) {
+    return Object.keys(params)
+        .filter(k => isDefined(params[k]))
+        .map((k) => {
+            const param = params[k];
+            if (isNotDefined(param)) {
+                return undefined;
+            }
+            let val: string;
+            if (Array.isArray(param)) {
+                val = param.join(',');
+            } else if (typeof param === 'number' || typeof param === 'boolean') {
+                val = String(param);
+            } else {
+                val = param;
+            }
+            if (isFalsyString(val)) {
+                return undefined;
+            }
+            if (encode) {
+                return `${encodeURIComponent(k)}=${encodeURIComponent(val)}`;
+            }
+            return `${k}=${val}`;
+        })
+        .filter(isDefined)
+        .join('&');
+}
 
 const forEach = (obj: object, func: (key: string, val: unknown) => void) => {
     Object.keys(obj).forEach((key) => {
@@ -336,54 +391,49 @@ export const generateBubbleMapPaintAndLegend = (
 
 
 export function getVectorTile(baseUrl: string, workspace: string, layer: string) {
-    const vectorTile = [
-        baseUrl,
-        '?REQUEST=GetTile',
-        '&SERVICE=WMTS',
-        '&VERSION=1.0.0',
-        `&LAYER=${workspace}:${layer}`,
-        '&STYLE=',
-        '&TILEMATRIX=EPSG:900913:{z}',
-        '&TILEMATRIXSET=EPSG:900913',
-        '&FORMAT=application/vnd.mapbox-vector-tile',
-        '&TILECOL={x}',
-        '&TILEROW={y}',
-    ].join('');
-    return 'https://apps.naxa.com.np/geoserver/gwc/service/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&LAYER=Naxa:educationpoint&STYLE=&TILEMATRIX=EPSG:900913:{z}&TILEMATRIXSET=EPSG:900913&FORMAT=application/vnd.mapbox-vector-tile&TILECOL={x}&TILEROW={y}';
+    const params = prepareUrlParams({
+        service: 'WMTS',
+        version: '1.0.0',
+        request: 'GetTile',
+        layer: `${workspace}:${layer}`,
+        tilematrix: 'EPSG:900913:{z}',
+        tilematrixset: 'EPSG:900913',
+
+        format: 'application/vnd.mapbox-vector-tile',
+        tilecol: '{x}',
+        tilerow: '{y}',
+    }, false);
+    return `${baseUrl}?${params}`;
 }
 
 export function getRasterTile(baseUrl: string, workspace: string, layer: string) {
-    const rasterTile = [
-        baseUrl, // 'http://34.71.203.97:8080/geoserver/Naxa/wms'
-        '?service=WMS',
-        '&version=1.1.1',
-        '&request=GetMap',
-        '&format=image/png',
-        '&transparent=true',
-        '&tiled=true',
-        `&layers=${workspace}:${layer}`,
-        '&exceptions=application/vnd.ogc.se_inimage',
-        '&width=256',
-        '&height=256',
-        '&srs=EPSG:3857',
-        '&bbox={bbox-epsg-3857}',
-    ].join('');
-    return rasterTile;
+    const params = prepareUrlParams({
+        service: 'WMS',
+        version: '1.1.1',
+        request: 'GetMap',
+        format: 'image/png',
+        transparent: true,
+        layers: `${workspace}:${layer}`,
+        exceptions: 'application/vnd.ogc.se_inimage',
+        width: 256,
+        height: 256,
+        srs: 'EPSG:3857',
+        bbox: '{bbox-epsg-3857}',
+    }, false);
+    return `${baseUrl}?${params}`;
 }
 
 export function getRasterLegendUrl(baseUrl: string, workspace: string, layer: string) {
-    const legendUrl = [
-        baseUrl, // 'http://34.71.203.97:8080/geoserver/Naxa/wms'
-        '?service=WMS',
-        '&version=1.0.0',
-        '&request=GetLegendGraphic',
-        `&layer=${workspace}:${layer}`,
-        '&format=image/png',
-        '&width=20',
-        '&height=20',
-    ].join('');
-
-    return legendUrl;
+    const params = prepareUrlParams({
+        service: 'WMS',
+        version: '1.0.0',
+        request: 'GetLegendGraphic',
+        layer: `${workspace}:${layer}`,
+        format: 'image/png',
+        width: 20,
+        height: 20,
+    }, false);
+    return `${baseUrl}?${params}`;
 }
 
 export const imageUrlToDataUrl = (

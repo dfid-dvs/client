@@ -1,5 +1,4 @@
 .table {
-    display: block;
     position: relative;
     background-color: var(--color-background);
     overflow: auto;

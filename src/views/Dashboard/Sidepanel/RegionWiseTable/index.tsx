@@ -1,8 +1,10 @@
 import React, { useMemo, useContext, useState, useEffect, useCallback } from 'react';
 import { IoMdDownload } from 'react-icons/io';
-import { compareString, compareNumber, listToMap, isDefined, isNotDefined } from '@togglecorp/fujs';
+import { compareString, compareNumber, listToMap, isDefined, isNotDefined, isTruthyString } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
+import SegmentInput from '#components/SegmentInput';
+import BudgetFlowSankey from '#components/BudgetFlowSankey';
 import DomainContext from '#components/DomainContext';
 import Modal from '#components/Modal';
 import MultiSelectInput from '#components/MultiSelectInput';
@@ -19,13 +21,36 @@ import useOrdering, { useOrderState } from '#components/Table/useOrdering';
 import useSorting, { useSortState } from '#components/Table/useSorting';
 
 import useRequest from '#hooks/useRequest';
-import { MultiResponse, Indicator } from '#types';
-import { ExtractKeys } from '#utils/common';
+import {
+    MultiResponse,
+    Indicator,
+    SankeyData,
+} from '#types';
+
+import { ExtractKeys, prepareUrlParams as p } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
+import useMapStateForFiveW from '../../useMapStateForFiveW';
 import { FiveW } from '../../types';
 
 import styles from './styles.css';
+
+// TODO: move sankey and table in different pages with their own request handling
+
+type TabOptionKeys = 'table' | 'charts' | 'sankey';
+interface TabOption {
+    key: TabOptionKeys;
+    label: string;
+}
+const tabOptions: TabOption[] = [
+    { key: 'table', label: 'Table' },
+    { key: 'charts', label: 'Charts' },
+    { key: 'sankey', label: 'Sankey' },
+];
+
+interface Node {
+    name: string;
+}
 
 function getIndicatorHeaderName(id: number) {
     return `indicator_${id}`;
@@ -42,11 +67,17 @@ interface ColumnOrderingItem {
 const staticColumnOrdering: ColumnOrderingItem[] = [
     { name: 'name', type: 'string' },
     { name: 'allocatedBudget', type: 'number' },
+    { name: 'componentCount', type: 'number' },
+    { name: 'partnerCount', type: 'number' },
+    { name: 'sectorCount', type: 'number' },
 ];
 
+const sankeyColorSelector = (item: { depth: number }) => ['red', 'blue', 'green'][item.depth];
+const sankeyNameSelector = (item: { name: string }) => item.name;
 const fiveWKeySelector = (data: FiveW) => data.id;
 const indicatorTitleSelector = (indicator: Indicator) => indicator.fullTitle;
 const indicatorKeySelector = (indicator: Indicator) => indicator.id;
+const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 
 interface IndicatorValue {
     indicatorId: number;
@@ -56,7 +87,6 @@ interface IndicatorValue {
 
 interface RegionWiseTableProps {
     className?: string;
-    fiveW: FiveW[] | undefined;
     indicatorList: Indicator[] | undefined;
 }
 
@@ -69,11 +99,24 @@ interface ExtendedFiveW extends FiveW {
 function RegionWiseTable(props: RegionWiseTableProps) {
     const {
         className,
-        fiveW,
         indicatorList,
     } = props;
 
+    const { regionLevel: regionLevelFromContext, programs } = useContext(DomainContext);
+    const [regionLevel, setRegionLevel] = useState(regionLevelFromContext);
+    const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('table');
     const [showModal, setModalVisibility] = useState(false);
+
+    const [
+        selectedRegions,
+        setSelectedRegions,
+    ] = useState<number[]>([]);
+
+    const [
+        fiveWMapStatePending,
+        fiveWMapState,
+        fiveW,
+    ] = useMapStateForFiveW(regionLevel, programs);
 
     const handleModalShow = useCallback(() => {
         setModalVisibility(true);
@@ -82,8 +125,6 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     const handleModalClose = useCallback(() => {
         setModalVisibility(false);
     }, [setModalVisibility]);
-
-    const { regionLevel } = useContext(DomainContext);
 
     const [selectedIndicators, setSelectedIndicators] = useState<number[] | undefined>();
 
@@ -100,6 +141,20 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         () => selectedIndicators?.filter(i => !!indicatorMapping[i]),
         [selectedIndicators, indicatorMapping],
     );
+
+    const params = p({
+        program: programs,
+        province: selectedRegions,
+    });
+
+    const sankeyUrl = isTruthyString(params)
+        ? `${apiEndPoint}/core/sankey-region/?${params}`
+        : `${apiEndPoint}/core/sankey-region/`;
+
+    const [
+        sankeyPending,
+        sankeyResponse,
+    ] = useRequest<SankeyData<Node>>(sankeyUrl, 'sankey-data');
 
     const options: RequestInit | undefined = useMemo(
         () => (validSelectedIndicators ? {
@@ -276,6 +331,9 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             const staticColumns = [
                 createColumn(stringColumn, 'name', 'Name', true),
                 createColumn(numberColumn, 'allocatedBudget', 'Allocated Budget'),
+                createColumn(numberColumn, 'componentCount', '# of components'),
+                createColumn(numberColumn, 'partnerCount', '# of partners'),
+                createColumn(numberColumn, 'sectorCount', '# of sectors'),
             ];
 
             // eslint-disable-next-line max-len
@@ -353,43 +411,93 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             parentLink="/dashboard/"
             parentName="dashboard"
         >
-            <div className={styles.tableActions}>
-                <RegionSelector searchHidden />
-                <MultiSelectInput
-                    label="Indicators"
-                    placeholder={`Select from ${indicatorList?.length || 0} indicators`}
-                    options={indicatorList}
-                    onChange={setSelectedIndicators}
-                    value={validSelectedIndicators}
-                    optionLabelSelector={indicatorTitleSelector}
-                    optionKeySelector={indicatorKeySelector}
-                    dropdownContainerClassName={styles.dropdown}
+            <div className={styles.tabActions}>
+                <SegmentInput
+                    options={tabOptions}
+                    optionKeySelector={item => item.key}
+                    optionLabelSelector={item => item.label}
+                    value={selectedTab}
+                    onChange={setSelectedTab}
                 />
-                <Button
-                    onClick={handleDownload}
-                    icons={(
-                        <IoMdDownload />
-                    )}
-                    disabled={!sortedFiveW || !orderedColumns}
-                >
-                    Download as csv
-                </Button>
-                <Button
-                    onClick={handleModalShow}
-                >
-                    Add chart
-                </Button>
             </div>
-            <Table
-                className={styles.table}
-                data={sortedFiveW}
-                keySelector={fiveWKeySelector}
-                columns={orderedColumns}
-            />
-            {showModal && (
-                <Modal onClose={handleModalClose}>
-                    This is the body
-                </Modal>
+            {selectedTab === 'table' && (
+                <>
+                    <div className={styles.tableActions}>
+                        <RegionSelector
+                            onRegionLevelChange={setRegionLevel}
+                            regionLevel={regionLevel}
+                            searchHidden
+                        />
+                        <MultiSelectInput
+                            label="Indicators"
+                            placeholder={`Select from ${indicatorList?.length || 0} indicators`}
+                            options={indicatorList}
+                            onChange={setSelectedIndicators}
+                            value={validSelectedIndicators}
+                            optionLabelSelector={indicatorTitleSelector}
+                            optionKeySelector={indicatorKeySelector}
+                            groupKeySelector={indicatorGroupKeySelector}
+                            dropdownContainerClassName={styles.dropdown}
+                        />
+                        <Button
+                            onClick={handleDownload}
+                            icons={(
+                                <IoMdDownload />
+                            )}
+                            disabled={!sortedFiveW || !orderedColumns}
+                        >
+                            Download as csv
+                        </Button>
+                        <Button
+                            onClick={handleModalShow}
+                        >
+                            Add chart
+                        </Button>
+                    </div>
+                    <Table
+                        className={styles.table}
+                        data={sortedFiveW}
+                        keySelector={fiveWKeySelector}
+                        columns={orderedColumns}
+                    />
+                    {showModal && (
+                        <Modal onClose={handleModalClose}>
+                            This is the body
+                        </Modal>
+                    )}
+                </>
+            )}
+            {selectedTab === 'charts' && (
+                <>
+                    <div className={styles.tableActions}>
+                        <RegionSelector
+                            onRegionLevelChange={setRegionLevel}
+                            regionLevel={regionLevel}
+                            searchHidden
+                        />
+                    </div>
+                    <div className={styles.charts} />
+                </>
+            )}
+            {selectedTab === 'sankey' && (
+                <>
+                    <div className={styles.tableActions}>
+                        <RegionSelector
+                            onRegionLevelChange={setRegionLevel}
+                            regionLevel="province"
+                            selectionHidden
+                            regions={selectedRegions}
+                            onRegionsChange={setSelectedRegions}
+                        />
+                    </div>
+                    <div className={styles.sankey}>
+                        <BudgetFlowSankey
+                            data={sankeyResponse}
+                            colorSelector={sankeyColorSelector}
+                            nameSelector={sankeyNameSelector}
+                        />
+                    </div>
+                </>
             )}
         </PopupPage>
     );

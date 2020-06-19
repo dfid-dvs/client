@@ -53,6 +53,30 @@ const Tooltip = ({
                         />
                     )}
                 />
+                <TextOutput
+                    label="Sectors"
+                    value={(
+                        <Numeral
+                            value={dfidData.sector.length}
+                        />
+                    )}
+                />
+                <TextOutput
+                    label="Components"
+                    value={(
+                        <Numeral
+                            value={dfidData.component.length}
+                        />
+                    )}
+                />
+                <TextOutput
+                    label="Partners"
+                    value={(
+                        <Numeral
+                            value={dfidData.partner.length}
+                        />
+                    )}
+                />
             </>
         )}
     </div>

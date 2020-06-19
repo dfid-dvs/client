@@ -1,0 +1,7 @@
+.sankey-link {
+    fill-opacity: 0.3;
+
+    &:hover {
+        fill-opacity: 0.4;
+    }
+}
