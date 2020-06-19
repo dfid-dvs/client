@@ -67,6 +67,9 @@ interface ColumnOrderingItem {
 const staticColumnOrdering: ColumnOrderingItem[] = [
     { name: 'name', type: 'string' },
     { name: 'allocatedBudget', type: 'number' },
+    { name: 'componentCount', type: 'number' },
+    { name: 'partnerCount', type: 'number' },
+    { name: 'sectorCount', type: 'number' },
 ];
 
 const sankeyColorSelector = (item: { depth: number }) => ['red', 'blue', 'green'][item.depth];
@@ -328,6 +331,9 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             const staticColumns = [
                 createColumn(stringColumn, 'name', 'Name', true),
                 createColumn(numberColumn, 'allocatedBudget', 'Allocated Budget'),
+                createColumn(numberColumn, 'componentCount', '# of components'),
+                createColumn(numberColumn, 'partnerCount', '# of partners'),
+                createColumn(numberColumn, 'sectorCount', '# of sectors'),
             ];
 
             // eslint-disable-next-line max-len
