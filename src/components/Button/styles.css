@@ -5,6 +5,7 @@
     padding: var(--spacing-small) calc(var(--spacing-small) - var(--spacing-extra-small));
     overflow: hidden;
     font-family: inherit;
+    font-weight: var(--font-weight-bold);
 
     .icons {
         display: flex;
@@ -47,6 +48,7 @@
     }
 
     &:not(.transparent) {
+        border: var(--width-separator-thin) solid var(--color-separator-light);
         border-radius: var(--radius-button);
         padding: var(--spacing-small) var(--spacing-medium);
 

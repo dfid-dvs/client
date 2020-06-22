@@ -546,16 +546,18 @@ function RegionDetails(props: RegionDetailsProps) {
             title="Regions"
             parentLink="/dashboard/"
             parentName="dashboard"
+            actions={(
+                <div className={styles.tabActions}>
+                    <SegmentInput
+                        options={tabOptions}
+                        optionKeySelector={item => item.key}
+                        optionLabelSelector={item => item.label}
+                        value={selectedTab}
+                        onChange={setSelectedTab}
+                    />
+                </div>
+            )}
         >
-            <div className={styles.tabActions}>
-                <SegmentInput
-                    options={tabOptions}
-                    optionKeySelector={item => item.key}
-                    optionLabelSelector={item => item.label}
-                    value={selectedTab}
-                    onChange={setSelectedTab}
-                />
-            </div>
             {selectedTab === 'table' && (
                 <>
                     <div className={styles.tableActions}>

@@ -1,4 +1,5 @@
 import React, { useMemo, useRef, useCallback, useEffect } from 'react';
+import { GrCheckmark } from 'react-icons/gr';
 // import { IoIosSearch } from 'react-icons/io';
 import { IoMdClose } from 'react-icons/io';
 import {
@@ -251,13 +252,20 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
     const rendererParams = useCallback(
         (key: K, datum: T) => {
             const selected = key === value;
+            const optionLabel = optionLabelSelector(datum);
+
             return {
                 selected,
                 className: _cs(styles.option, selected && styles.selected),
                 name: String(key),
                 onClick: handleOptionClick,
                 disabled: disabled || selected,
-                children: optionLabelSelector(datum),
+                children: selected ? (
+                    <>
+                        { optionLabel }
+                        <GrCheckmark />
+                    </>
+                ) : optionLabel,
             };
         },
         [disabled, handleOptionClick, optionLabelSelector, value],

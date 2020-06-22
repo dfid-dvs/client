@@ -56,11 +56,11 @@ text-placeholder: #7a8898
     --width-scrollbar: 7px;
 
     /* FONT SIZE */
-    --font-size-extra-small: 10px;
-    --font-size-small: 11px;
-    --font-size-small-medium: 12px;
-    --font-size-medium: 13px;
-    --font-size-large-medium: 15px;
+    --font-size-extra-small: 11px;
+    --font-size-small: 12px;
+    --font-size-small-medium: 13px;
+    --font-size-medium: 14px;
+    --font-size-large-medium: 16px;
     --font-size-large: 18px;
     --font-size-extra-large: 24px;
 
@@ -71,7 +71,7 @@ text-placeholder: #7a8898
 
     /* COLOR PALETTE */
     --color-primary: #05367d;
-    --color-accent: #18cc9c;
+    --color-accent: #289f8c;
     --color-danger: firebrick;
     --color-success: forestgreen;
     --color-warning: tomato;
@@ -91,7 +91,7 @@ text-placeholder: #7a8898
     --color-backdrop-dark: rgba(0, 0, 0, .5);
 
     /* COLOR INPUT */
-    --color-input-background: #dae0e7;
+    --color-input-background: #eff0f7;
     --color-input-background-errored: #f1e1e3;
     --color-input-background-disabled: #e4e9ef;
     --color-input-actions: #6d798a;
@@ -128,6 +128,8 @@ text-placeholder: #7a8898
 
     /* COLOR SEPARATOR */
     --color-separator: #b8c2cd;
+
+    --color-separator-light: rgba(160, 180, 190, 0.3);
 }
 
 body {
