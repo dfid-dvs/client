@@ -1,14 +1,12 @@
 import React, { useMemo, useContext, useState, useEffect, useCallback } from 'react';
 import { IoMdDownload } from 'react-icons/io';
-import { compareString, compareNumber, listToMap, isDefined, isNotDefined, unique, isTruthyString } from '@togglecorp/fujs';
+import { compareString, compareNumber, listToMap, isDefined, isNotDefined } from '@togglecorp/fujs';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
-import BudgetFlowSankey from '#components/BudgetFlowSankey';
 import DomainContext from '#components/DomainContext';
-import Modal from '#components/Modal';
 import MultiSelectInput from '#components/MultiSelectInput';
 import Numeral from '#components/Numeral';
 import PopupPage from '#components/PopupPage';
@@ -26,16 +24,16 @@ import useRequest from '#hooks/useRequest';
 import {
     MultiResponse,
     Indicator,
-    SankeyData,
 } from '#types';
 
-import { ExtractKeys, prepareUrlParams as p } from '#utils/common';
+import { ExtractKeys } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
 import useMapStateForFiveW from '../useMapStateForFiveW';
 import { FiveW } from '../types';
 
-import Chart, { ChartSettings, BarChartSettings } from './Chart';
+import Charts from './Charts';
+import Sankey from './Sankey';
 
 import styles from './styles.css';
 
@@ -75,8 +73,6 @@ const staticColumnOrdering: ColumnOrderingItem[] = [
     { name: 'sectorCount' },
 ];
 
-const sankeyColorSelector = (item: { depth: number }) => ['red', 'blue', 'green'][item.depth];
-const sankeyNameSelector = (item: { name: string }) => item.name;
 const fiveWKeySelector = (data: FiveW) => data.id;
 const indicatorTitleSelector = (indicator: Indicator) => indicator.fullTitle;
 const indicatorKeySelector = (indicator: Indicator) => indicator.id;
@@ -100,119 +96,6 @@ interface ExtendedFiveW extends FiveW {
     };
 }
 
-const one: BarChartSettings<ExtendedFiveW> = {
-    type: 'bar-chart',
-    title: 'Top 10 budget spend',
-    id: 'budget-information',
-    keySelector: item => item.name,
-    // layout: 'horizontal',
-
-    limit: {
-        count: 10,
-        method: 'max',
-        valueSelector: item => item.allocatedBudget,
-    },
-
-    bars: [
-        {
-            title: 'Allocated Budget',
-            color: 'purple',
-            valueSelector: item => item.allocatedBudget,
-        },
-    ],
-};
-const two: BarChartSettings<ExtendedFiveW> = {
-    type: 'bar-chart',
-    title: 'Health and Finance for Top 10 budget spend',
-    id: 'financial-information',
-    keySelector: item => item.name,
-    // layout: 'horizontal',
-    bars: [
-        {
-            title: 'Health Facilities',
-            color: 'red',
-            valueSelector: item => item.indicators[119] || null,
-        },
-        {
-            title: 'Financial Institutions',
-            color: 'blue',
-            valueSelector: item => item.indicators[118] || null,
-        },
-    ],
-
-    limit: {
-        count: 10,
-        method: 'max',
-        valueSelector: item => item.allocatedBudget,
-    },
-
-    // meta
-    dependencies: [119, 118],
-};
-const twopointfive: BarChartSettings<ExtendedFiveW> = {
-    type: 'bar-chart',
-    title: 'Bottom 10 budget spend',
-    id: 'budget-information',
-    keySelector: item => item.name,
-    // layout: 'horizontal',
-
-    limit: {
-        count: 10,
-        method: 'min',
-        valueSelector: item => item.allocatedBudget,
-    },
-
-    bars: [
-        {
-            title: 'Allocated Budget',
-            color: 'purple',
-            valueSelector: item => item.allocatedBudget,
-        },
-    ],
-};
-const three: BarChartSettings<ExtendedFiveW> = {
-    type: 'bar-chart',
-    title: 'Health and Finance for Bottom 10 budget spend',
-    id: 'financial-information-stacked',
-    keySelector: item => item.name,
-    // layout: 'horizontal',
-    bars: [
-        {
-            title: 'Health Facilities',
-            color: 'red',
-            valueSelector: item => item.indicators[119] || null,
-            stackId: 'facilities',
-        },
-        {
-            title: 'Financial Institutions',
-            color: 'blue',
-            valueSelector: item => item.indicators[118] || null,
-            stackId: 'facilities',
-        },
-    ],
-
-    limit: {
-        count: 10,
-        method: 'min',
-        valueSelector: item => item.allocatedBudget,
-    },
-
-    dependencies: [119, 118],
-};
-
-const defaultChartSettings = [
-    one, two, twopointfive, three,
-];
-const defaultIndicators: number[] = [];
-
-/*
-const defaultIndicators = [
-    119,
-    118,
-];
-const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [];
-*/
-
 function RegionDetails(props: RegionDetailsProps) {
     const {
         className,
@@ -221,9 +104,9 @@ function RegionDetails(props: RegionDetailsProps) {
     } = props;
 
     const { regionLevel: regionLevelFromContext, programs } = useContext(DomainContext);
+
     const [regionLevel, setRegionLevel] = useState(regionLevelFromContext);
     const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('table');
-    const [showModal, setModalVisibility] = useState(false);
 
     const [
         selectedRegions,
@@ -232,24 +115,10 @@ function RegionDetails(props: RegionDetailsProps) {
 
     const [
         fiveWMapStatePending,
-        fiveWMapState,
         fiveW,
     ] = useMapStateForFiveW(regionLevel, programs);
 
-    const handleModalShow = useCallback(() => {
-        setModalVisibility(true);
-    }, [setModalVisibility]);
-
-    const handleModalClose = useCallback(() => {
-        setModalVisibility(false);
-    }, [setModalVisibility]);
-
-    const [selectedIndicators, setSelectedIndicators] = useState<number[]>(
-        defaultIndicators,
-    );
-    const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>(
-        defaultChartSettings,
-    );
+    const [selectedIndicators, setSelectedIndicators] = useState<number[]>([]);
 
     const indicatorMapping = useMemo(
         () => listToMap(
@@ -265,32 +134,9 @@ function RegionDetails(props: RegionDetailsProps) {
         [selectedIndicators, indicatorMapping],
     );
 
-    const params = p({
-        program: programs,
-        province: selectedRegions,
-        threshold: 1,
-    });
-
-    const sankeyUrl = `${apiEndPoint}/core/sankey-region/?${params}`;
-
-    const [
-        sankeyPending,
-        sankeyResponse,
-    ] = useRequest<SankeyData<Node>>(sankeyUrl, 'sankey-data');
-
-    // FIXME: get unique values from valid selected indicators too
     const allValidSelectedInidcators = useMemo(
-        () => unique(
-            [
-                ...selectedIndicators,
-                ...chartSettings
-                    .map(item => item.dependencies)
-                    .filter(isDefined)
-                    .flat(),
-            ].filter(i => !!indicatorMapping[i]),
-            item => item,
-        ).sort(),
-        [selectedIndicators, indicatorMapping, chartSettings],
+        () => selectedIndicators.filter(i => !!indicatorMapping[i]),
+        [selectedIndicators, indicatorMapping],
     );
 
     const options: RequestInit | undefined = useMemo(
@@ -604,69 +450,22 @@ function RegionDetails(props: RegionDetailsProps) {
                             columns={orderedColumns}
                         />
                     </div>
-                    {showModal && (
-                        <Modal onClose={handleModalClose}>
-                            This is the body
-                        </Modal>
-                    )}
                 </>
             )}
             {selectedTab === 'charts' && (
-                <>
-                    <div className={styles.tableActions}>
-                        <RegionSelector
-                            onRegionLevelChange={setRegionLevel}
-                            regionLevel={regionLevel}
-                            searchHidden
-                        />
-                        <Button
-                            onClick={handleModalShow}
-                            disabled
-                        >
-                            Add chart
-                        </Button>
-                    </div>
-                    <div className={styles.charts}>
-                        {(fiveWMapStatePending || regionIndicatorListPending) && (
-                            <Backdrop>
-                                <LoadingAnimation />
-                            </Backdrop>
-                        )}
-                        {chartSettings.map(item => (
-                            <Chart
-                                className={styles.chart}
-                                key={item.id}
-                                data={sortedFiveW}
-                                settings={item}
-                            />
-                        ))}
-                    </div>
-                </>
+                <Charts
+                    programs={programs}
+                    regionLevel={regionLevel}
+                    onRegionLevelChange={setRegionLevel}
+                    indicatorMapping={indicatorMapping}
+                />
             )}
             {selectedTab === 'sankey' && (
-                <>
-                    <div className={styles.tableActions}>
-                        <RegionSelector
-                            onRegionLevelChange={setRegionLevel}
-                            regionLevel="province"
-                            selectionHidden
-                            regions={selectedRegions}
-                            onRegionsChange={setSelectedRegions}
-                        />
-                    </div>
-                    <div className={styles.sankey}>
-                        {sankeyPending && (
-                            <Backdrop>
-                                <LoadingAnimation />
-                            </Backdrop>
-                        )}
-                        <BudgetFlowSankey
-                            data={sankeyResponse}
-                            colorSelector={sankeyColorSelector}
-                            nameSelector={sankeyNameSelector}
-                        />
-                    </div>
-                </>
+                <Sankey
+                    programs={programs}
+                    regions={selectedRegions}
+                    onRegionsChange={setSelectedRegions}
+                />
             )}
         </PopupPage>
     );

@@ -162,7 +162,7 @@ interface Props<T> {
     className?: string;
 }
 
-function Chart<T extends object>(props: Props<T>) {
+function PolyChart<T extends object>(props: Props<T>) {
     const { settings, data, className } = props;
     if (isBarChart(settings)) {
         return (
@@ -175,4 +175,4 @@ function Chart<T extends object>(props: Props<T>) {
     }
     return null;
 }
-export default Chart;
+export default PolyChart;
