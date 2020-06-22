@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
+import { AiOutlinePrinter } from 'react-icons/ai';
 
 import Button from '#components/Button';
 import styles from './styles.css';
@@ -36,6 +37,7 @@ function PrintButton(props: Props) {
                     <Button
                         className={styles.print}
                         onClick={handlePrintClick}
+                        icons={<AiOutlinePrinter />}
                         variant="primary"
                     >
                         Print
@@ -46,10 +48,11 @@ function PrintButton(props: Props) {
                 </>
             ) : (
                 <Button
+                    className={styles.printPreview}
                     onClick={handlePrintPreviewClick}
-                    variant="primary"
+                    icons={<AiOutlinePrinter />}
                 >
-                    Print Preview
+                    Print preview
                 </Button>
             )}
         </div>

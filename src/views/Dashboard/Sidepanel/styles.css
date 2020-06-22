@@ -54,9 +54,19 @@
                 padding: calc(var(--spacing-medium) - var(--spacing-small)) 0;
 
                 .link {
-                    margin: var(--spacing-small) var(--spacing-medium);
+                    margin: var(--spacing-small);
+                    border: var(--width-separator-thin) solid var(--color-separator);
+                    border-radius: var(--radius-input);
+                    background-color: var(--color-button-background);
+                    padding: var(--spacing-small) var(--spacing-medium);
                     text-decoration: none;
+                    color: var(--color-text-label);
                     font-weight: var(--font-weight-bold);
+
+                    &:hover {
+                        filter: brightness(90%)
+                    }
+
                     /*
                     padding: calc(var(--spacing-medium) - var(--spacing-small));
                     text-transform: capitalize;

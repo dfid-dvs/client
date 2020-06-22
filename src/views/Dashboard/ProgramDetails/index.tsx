@@ -217,16 +217,18 @@ function ProgramDetails(props: Props) {
             title="Programs"
             parentLink="/dashboard/"
             parentName="dashboard"
+            actions={(
+                <div className={styles.tabActions}>
+                    <SegmentInput
+                        options={tabOptions}
+                        optionKeySelector={item => item.key}
+                        optionLabelSelector={item => item.label}
+                        value={selectedTab}
+                        onChange={setSelectedTab}
+                    />
+                </div>
+            )}
         >
-            <div className={styles.tabActions}>
-                <SegmentInput
-                    options={tabOptions}
-                    optionKeySelector={item => item.key}
-                    optionLabelSelector={item => item.label}
-                    value={selectedTab}
-                    onChange={setSelectedTab}
-                />
-            </div>
             {selectedTab === 'sankey' && (
                 <div className={styles.sankey}>
                     <BudgetFlowSankey

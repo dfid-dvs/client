@@ -623,6 +623,7 @@ const Dashboard = (props: Props) => {
             />
             <div className={styles.mapStyleConfigContainer}>
                 <RegionSelector
+                    className={styles.regionSelector}
                     onRegionLevelChange={setRegionLevel}
                     regionLevel={regionLevel}
                     searchHidden
