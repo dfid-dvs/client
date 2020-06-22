@@ -1,14 +1,14 @@
 import React from 'react';
+import { isDefined } from '@togglecorp/fujs';
 
+import Numeral from '#components/Numeral';
 import RegionSelector from '#components/RegionSelector';
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import BudgetFlowSankey from '#components/BudgetFlowSankey';
 
 import useRequest from '#hooks/useRequest';
-import {
-    SankeyData,
-} from '#types';
+import { SankeyData } from '#types';
 import { prepareUrlParams as p } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
@@ -58,6 +58,18 @@ function RegionSankey(props: Props) {
                     regions={regions}
                     onRegionsChange={onRegionsChange}
                 />
+                {sankeyResponse && isDefined(sankeyResponse.MaxThreshold) && (
+                    <div className={styles.info}>
+                        <span>
+                            Only showing budget flow greater than
+                        </span>
+                        <Numeral
+                            className={styles.numeral}
+                            value={sankeyResponse.MaxThreshold}
+                            prefix="£"
+                        />
+                    </div>
+                )}
             </div>
             <div className={styles.sankey}>
                 {sankeyPending && (

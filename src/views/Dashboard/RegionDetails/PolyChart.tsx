@@ -137,7 +137,6 @@ function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                     tickFormatter={valueTickFormatter}
                 />
                 <Tooltip
-                    allowEscapeViewBox={{ x: true, y: true }}
                     offset={20}
                     formatter={valueTickFormatter}
                 />

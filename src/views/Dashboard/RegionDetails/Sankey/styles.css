@@ -9,6 +9,16 @@
             margin-right: var(--spacing-medium);
         }
     }
+
+    .info {
+        display: flex;
+        align-items: baseline;
+        padding: var(--spacing-small);
+
+        .numeral {
+            margin: 0 var(--spacing-small);
+        }
+    }
 }
 
 .sankey {
