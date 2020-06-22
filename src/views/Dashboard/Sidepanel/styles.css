@@ -55,26 +55,17 @@
 
                 .link {
                     margin: var(--spacing-small);
-                    border: var(--width-separator-thin) solid var(--color-separator);
+                    border: var(--width-separator-thin) solid var(--color-separator-light);
                     border-radius: var(--radius-input);
                     background-color: var(--color-button-background);
                     padding: var(--spacing-small) var(--spacing-medium);
                     text-decoration: none;
-                    color: var(--color-text-label);
+                    color: var(--color-text);
                     font-weight: var(--font-weight-bold);
 
                     &:hover {
                         filter: brightness(90%)
                     }
-
-                    /*
-                    padding: calc(var(--spacing-medium) - var(--spacing-small));
-                    text-transform: capitalize;
-                    text-decoration: none;
-                    color: var(--color-primary);
-                    font-size: var(--font-size-extra-small);
-                    font-weight: var(--font-weight-bold);
-                    */
                 }
             }
         }

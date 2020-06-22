@@ -5,16 +5,6 @@
     .print {
         margin-right: var(--spacing-small);
     }
-
-    .print-preview {
-        border: var(--width-separator-thin) solid var(--color-separator);
-        font-weight: var(--font-weight-bold);
-    }
-
-    button {
-        border: var(--width-separator-thin) solid var(--color-separator);
-        font-weight: var(--font-weight-bold);
-    }
 }
 
 @media print {

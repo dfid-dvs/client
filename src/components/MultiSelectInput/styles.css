@@ -3,9 +3,9 @@
         align-self: center;
         margin-right: var(--spacing-extra-small);
         border-radius: 10px;
-        background-color: var(--color-background-accent-hint);
-        padding: 0 var(--spacing-extra-small);
-        color: var(--color-text);
+        background-color: var(--color-primary);
+        padding: 0 var(--spacing-small);
+        color: var(--color-text-on-primary);
     }
 
     .clear-button {
