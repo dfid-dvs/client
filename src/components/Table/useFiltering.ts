@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
-import { caseInsensitiveSubmatch, isNotDefined, isFalsyString } from '@togglecorp/fujs';
+import { caseInsensitiveSubmatch, isNotDefined, isFalsyString, listToMap } from '@togglecorp/fujs';
 
 export function useFilterState(defaultValue?: FilterParameter[]) {
     const [filtering, setFiltering] = useState<FilterParameter[] | undefined>(defaultValue);
@@ -69,6 +69,11 @@ export function useFiltering<T>(
             if (!filterParameters || filterParameters.length <= 0) {
                 return data;
             }
+            const columnsMapping = listToMap(
+                columns,
+                column => column.id,
+                column => column,
+            );
             return data?.filter(datum => (
                 filterParameters.every((filterParameter) => {
                     let test = true;
@@ -81,17 +86,28 @@ export function useFiltering<T>(
                         lessThanOrEqualTo,
                     } = filterParameter;
 
-                    // FIXME: this can be optimized
-                    const column = columns.find(col => col.id === id);
-                    if (!column?.valueSelector) {
-                        return test;
+                    // Identify if filtering is applied
+                    if (
+                        isNotDefined(greaterThanOrEqualTo)
+                        && isNotDefined(lessThanOrEqualTo)
+                        && isNotDefined(subMatch)
+                    ) {
+                        return true;
                     }
 
-                    const val = column.valueSelector(datum);
+                    // Filter out if we dont't have a column.valueSelector
+                    const column = columnsMapping[id];
+                    if (!column?.valueSelector) {
+                        return false;
+                    }
 
+                    // Filter out if value is undefined
+                    const val = column.valueSelector(datum);
                     if (isNotDefined(val)) {
-                        test = false;
-                    } else if (typeof val === 'string') {
+                        return false;
+                    }
+
+                    if (typeof val === 'string') {
                         test = isFalsyString(subMatch) || caseInsensitiveSubmatch(val, subMatch);
                     } else {
                         test = (

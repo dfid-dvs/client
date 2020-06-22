@@ -23,9 +23,15 @@
 }
 
 .charts {
+    display: flex;
     flex-grow: 1;
+    flex-wrap: wrap;
     margin: var(--spacing-small) var(--spacing-medium);
     overflow-y: auto;
+
+    .chart {
+        padding: var(--spacing-medium);
+    }
 }
 
 .sankey {

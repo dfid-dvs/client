@@ -31,8 +31,8 @@ import useRequest from '#hooks/useRequest';
 import useHash from '#hooks/useHash';
 import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
 
-import ProgramWiseTable from './Sidepanel/ProgramWiseTable';
-import RegionWiseTable from './Sidepanel/RegionWiseTable';
+import ProgramDetails from './ProgramDetails';
+import RegionDetails from './RegionDetails';
 
 import {
     generateChoroplethMapPaintAndLegend,
@@ -831,12 +831,12 @@ const Dashboard = (props: Props) => {
                 description={selectedIndicatorDetails?.abstract}
             />
             {hash === 'regions' && (
-                <RegionWiseTable
+                <RegionDetails
                     indicatorList={indicatorList}
                 />
             )}
             {hash === 'programs' && (
-                <ProgramWiseTable />
+                <ProgramDetails />
             )}
         </div>
     );

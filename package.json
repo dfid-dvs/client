@@ -153,7 +153,7 @@
         "workbox-webpack-plugin": "^4.3.1"
     },
     "dependencies": {
-        "@togglecorp/fujs": "^1.8.0",
+        "@togglecorp/fujs": "^1.9.2-beta.0",
         "@togglecorp/ravl": "^2.0.0",
         "@togglecorp/react-rest-request": "^2.4.5",
         "abort-controller": "^3.0.0",

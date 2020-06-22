@@ -1,6 +1,6 @@
 import React, { useMemo, useContext, useState, useEffect, useCallback } from 'react';
 import { IoMdDownload } from 'react-icons/io';
-import { compareString, compareNumber, listToMap, isDefined, isNotDefined, isTruthyString } from '@togglecorp/fujs';
+import { compareString, compareNumber, listToMap, isDefined, isNotDefined, unique, isTruthyString } from '@togglecorp/fujs';
 
 import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
@@ -30,12 +30,14 @@ import {
 import { ExtractKeys, prepareUrlParams as p } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
-import useMapStateForFiveW from '../../useMapStateForFiveW';
-import { FiveW } from '../../types';
+import useMapStateForFiveW from '../useMapStateForFiveW';
+import { FiveW } from '../types';
+
+import Chart, { ChartSettings, BarChartSettings } from './Chart';
 
 import styles from './styles.css';
 
-// TODO: move sankey and table in different pages with their own request handling
+// TODO: move sankey, charts, table in different pages with their own request handling
 
 type TabOptionKeys = 'table' | 'charts' | 'sankey';
 interface TabOption {
@@ -62,14 +64,13 @@ function getIndicatorIdFromHeaderName(key: string) {
 
 interface ColumnOrderingItem {
     name: string;
-    type: 'string' | 'number';
 }
 const staticColumnOrdering: ColumnOrderingItem[] = [
-    { name: 'name', type: 'string' },
-    { name: 'allocatedBudget', type: 'number' },
-    { name: 'componentCount', type: 'number' },
-    { name: 'partnerCount', type: 'number' },
-    { name: 'sectorCount', type: 'number' },
+    { name: 'name' },
+    { name: 'allocatedBudget' },
+    { name: 'componentCount' },
+    { name: 'partnerCount' },
+    { name: 'sectorCount' },
 ];
 
 const sankeyColorSelector = (item: { depth: number }) => ['red', 'blue', 'green'][item.depth];
@@ -85,7 +86,7 @@ interface IndicatorValue {
     value: number;
 }
 
-interface RegionWiseTableProps {
+interface RegionDetailsProps {
     className?: string;
     indicatorList: Indicator[] | undefined;
 }
@@ -96,7 +97,120 @@ interface ExtendedFiveW extends FiveW {
     };
 }
 
-function RegionWiseTable(props: RegionWiseTableProps) {
+const one: BarChartSettings<ExtendedFiveW> = {
+    type: 'bar-chart',
+    title: 'Top 10 budget spend',
+    id: 'budget-information',
+    keySelector: item => item.name,
+    // layout: 'horizontal',
+
+    limit: {
+        count: 10,
+        method: 'max',
+        valueSelector: item => item.allocatedBudget,
+    },
+
+    bars: [
+        {
+            title: 'Allocated Budget',
+            color: 'purple',
+            valueSelector: item => item.allocatedBudget,
+        },
+    ],
+};
+const two: BarChartSettings<ExtendedFiveW> = {
+    type: 'bar-chart',
+    title: 'Health and Finance for Top 10 budget spend',
+    id: 'financial-information',
+    keySelector: item => item.name,
+    // layout: 'horizontal',
+    bars: [
+        {
+            title: 'Health Facilities',
+            color: 'red',
+            valueSelector: item => item.indicators[119] || null,
+        },
+        {
+            title: 'Financial Institutions',
+            color: 'blue',
+            valueSelector: item => item.indicators[118] || null,
+        },
+    ],
+
+    limit: {
+        count: 10,
+        method: 'max',
+        valueSelector: item => item.allocatedBudget,
+    },
+
+    // meta
+    dependencies: [119, 118],
+};
+const twopointfive: BarChartSettings<ExtendedFiveW> = {
+    type: 'bar-chart',
+    title: 'Bottom 10 budget spend',
+    id: 'budget-information',
+    keySelector: item => item.name,
+    // layout: 'horizontal',
+
+    limit: {
+        count: 10,
+        method: 'min',
+        valueSelector: item => item.allocatedBudget,
+    },
+
+    bars: [
+        {
+            title: 'Allocated Budget',
+            color: 'purple',
+            valueSelector: item => item.allocatedBudget,
+        },
+    ],
+};
+const three: BarChartSettings<ExtendedFiveW> = {
+    type: 'bar-chart',
+    title: 'Health and Finance for Bottom 10 budget spend',
+    id: 'financial-information-stacked',
+    keySelector: item => item.name,
+    // layout: 'horizontal',
+    bars: [
+        {
+            title: 'Health Facilities',
+            color: 'red',
+            valueSelector: item => item.indicators[119] || null,
+            stackId: 'facilities',
+        },
+        {
+            title: 'Financial Institutions',
+            color: 'blue',
+            valueSelector: item => item.indicators[118] || null,
+            stackId: 'facilities',
+        },
+    ],
+
+    limit: {
+        count: 10,
+        method: 'min',
+        valueSelector: item => item.allocatedBudget,
+    },
+
+    dependencies: [119, 118],
+};
+
+const defaultChartSettings = [
+    one, two, twopointfive, three,
+];
+const defaultIndicators: number[] = [];
+
+/*
+const defaultIndicators = [
+    119,
+    118,
+];
+const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [];
+*/
+
+function RegionDetails(props: RegionDetailsProps) {
     const {
         className,
         indicatorList,
@@ -126,7 +240,12 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         setModalVisibility(false);
     }, [setModalVisibility]);
 
-    const [selectedIndicators, setSelectedIndicators] = useState<number[] | undefined>();
+    const [selectedIndicators, setSelectedIndicators] = useState<number[]>(
+        defaultIndicators,
+    );
+    const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>(
+        defaultChartSettings,
+    );
 
     const indicatorMapping = useMemo(
         () => listToMap(
@@ -138,7 +257,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     );
 
     const validSelectedIndicators = useMemo(
-        () => selectedIndicators?.filter(i => !!indicatorMapping[i]),
+        () => selectedIndicators.filter(i => !!indicatorMapping[i]),
         [selectedIndicators, indicatorMapping],
     );
 
@@ -156,22 +275,37 @@ function RegionWiseTable(props: RegionWiseTableProps) {
         sankeyResponse,
     ] = useRequest<SankeyData<Node>>(sankeyUrl, 'sankey-data');
 
+    // FIXME: get unique values from valid selected indicators too
+    const allValidSelectedInidcators = useMemo(
+        () => unique(
+            [
+                ...selectedIndicators,
+                ...chartSettings
+                    .map(item => item.dependencies)
+                    .filter(isDefined)
+                    .flat(),
+            ].filter(i => !!indicatorMapping[i]),
+            item => item,
+        ).sort(),
+        [selectedIndicators, indicatorMapping, chartSettings],
+    );
+
     const options: RequestInit | undefined = useMemo(
-        () => (validSelectedIndicators ? {
+        () => (allValidSelectedInidcators ? {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json; charset=utf-8',
             },
             body: JSON.stringify({
-                indicatorId: validSelectedIndicators,
+                indicatorId: allValidSelectedInidcators,
             }),
         } : undefined),
-        [validSelectedIndicators],
+        [allValidSelectedInidcators],
     );
 
     let regionIndicatorUrl: string | undefined;
-    if (isDefined(validSelectedIndicators) && validSelectedIndicators.length > 0) {
+    if (allValidSelectedInidcators.length > 0) {
         regionIndicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/`;
     }
     const [
@@ -192,13 +326,13 @@ function RegionWiseTable(props: RegionWiseTableProps) {
             return fiveW.map(item => ({
                 ...item,
                 indicators: listToMap(
-                    validSelectedIndicators,
+                    allValidSelectedInidcators,
                     id => id,
                     id => mapping[`${item.code}-${id}`],
                 ),
             }));
         },
-        [fiveW, regionIndicatorListResponse, validSelectedIndicators],
+        [fiveW, regionIndicatorListResponse, allValidSelectedInidcators],
     );
 
     const { sortState, setSortState } = useSortState();
@@ -244,12 +378,11 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                         .map(item => getIndicatorIdFromHeaderName(item.name))
                         .filter(isDefined),
                 );
-                const newItems: ColumnOrderingItem[] | undefined = selectedIndicators
+                const newItems: ColumnOrderingItem[] = selectedIndicators
                     ?.filter(selectedIndicator => (
                         !oldIndicators.has(selectedIndicator)
                     )).map(item => ({
                         name: getIndicatorHeaderName(item),
-                        type: 'number',
                     }));
 
                 return [...remainingItems, ...newItems];
@@ -293,6 +426,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     bar[colName],
                 ),
                 valueSelector: (foo: ExtendedFiveW) => foo[colName],
+                valueType: 'string',
             });
 
             const numberColumn = (colName: numericKeys) => ({
@@ -326,6 +460,7 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     bar[colName],
                 ),
                 valueSelector: (foo: ExtendedFiveW) => foo[colName],
+                valueType: 'number',
             });
 
             const staticColumns = [
@@ -368,10 +503,11 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                     keySelector(bar),
                 ),
                 valueSelector: keySelector,
+                valueType: 'number',
             });
 
 
-            const dynamicColumns = validSelectedIndicators?.map(id => createColumn(
+            const dynamicColumns = validSelectedIndicators.map(id => createColumn(
                 dynamicNumberColumn(item => item.indicators[id]),
                 getIndicatorHeaderName(id),
                 indicatorMapping[id]?.fullTitle,
@@ -448,15 +584,10 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                         >
                             Download as csv
                         </Button>
-                        <Button
-                            onClick={handleModalShow}
-                        >
-                            Add chart
-                        </Button>
                     </div>
                     <Table
                         className={styles.table}
-                        data={sortedFiveW}
+                        data={finalFiveW}
                         keySelector={fiveWKeySelector}
                         columns={orderedColumns}
                     />
@@ -475,8 +606,23 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                             regionLevel={regionLevel}
                             searchHidden
                         />
+                        <Button
+                            onClick={handleModalShow}
+                            disabled
+                        >
+                            Add chart
+                        </Button>
                     </div>
-                    <div className={styles.charts} />
+                    <div className={styles.charts}>
+                        {chartSettings.map(item => (
+                            <Chart
+                                className={styles.chart}
+                                key={item.id}
+                                data={sortedFiveW}
+                                settings={item}
+                            />
+                        ))}
+                    </div>
                 </>
             )}
             {selectedTab === 'sankey' && (
@@ -503,4 +649,4 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     );
 }
 
-export default RegionWiseTable;
+export default RegionDetails;

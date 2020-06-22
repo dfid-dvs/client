@@ -1492,6 +1492,13 @@
   dependencies:
     "@babel/runtime" "^7.7.7"
 
+"@togglecorp/fujs@^1.9.2-beta.0":
+  version "1.9.2-beta.0"
+  resolved "https://registry.yarnpkg.com/@togglecorp/fujs/-/fujs-1.9.2-beta.0.tgz#f2a63a35e463f8f8b3b6b64ca3e9e290f9787b3f"
+  integrity sha512-Zdo3XBkJftTJ0GUESbONeHlFDLxZe29eMdIU5J6SIedOSD1LLgYu3mCw/tvmncikw0z4uhW7sMs+X3+L0FqeSw==
+  dependencies:
+    "@babel/runtime" "^7.7.7"
+
 "@togglecorp/ravl@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@togglecorp/ravl/-/ravl-2.0.0.tgz#b030fcb9a29dc091bfe1a70147a027f4d0ba1c45"

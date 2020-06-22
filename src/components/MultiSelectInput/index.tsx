@@ -299,16 +299,24 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                 placeholder={placeholder}
                 disabled={disabled}
                 actions={value && value.length > 0 && (
-                    <Button
-                        className={styles.clearButton}
-                        transparent
-                        name="close"
-                        onClick={handleClearClick}
-                        variant="danger"
-                        icons={(
-                            <IoMdClose />
-                        )}
-                    />
+                    <>
+                        <div
+                            className={styles.countBadge}
+                            title={`${value.length} selected`}
+                        >
+                            {value.length}
+                        </div>
+                        <Button
+                            className={styles.clearButton}
+                            transparent
+                            name="close"
+                            onClick={handleClearClick}
+                            variant="danger"
+                            icons={(
+                                <IoMdClose />
+                            )}
+                        />
+                    </>
                 )}
             />
             { showDropdown && (
