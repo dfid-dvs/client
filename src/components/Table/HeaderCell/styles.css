@@ -53,6 +53,10 @@
         display: flex;
         padding: var(--spacing-extra-small);
 
+        >:not(:last-child) {
+            margin-right: var(--spacing-small);
+        }
+
         .text-input,
         .number-input {
             .icon {
