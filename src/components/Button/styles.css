@@ -82,7 +82,7 @@
 
         &:disabled {
             background-color: var(--color-button-background-disabled);
-            color: var(--color-text);
+            color: var(--color-text-disabled);
         }
 
         &:not(:disabled) {

@@ -584,11 +584,6 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                         >
                             Download as csv
                         </Button>
-                        <Button
-                            onClick={handleModalShow}
-                        >
-                            Add chart
-                        </Button>
                     </div>
                     <Table
                         className={styles.table}
@@ -611,6 +606,12 @@ function RegionWiseTable(props: RegionWiseTableProps) {
                             regionLevel={regionLevel}
                             searchHidden
                         />
+                        <Button
+                            onClick={handleModalShow}
+                            disabled
+                        >
+                            Add chart
+                        </Button>
                     </div>
                     <div className={styles.charts}>
                         {chartSettings.map(item => (
