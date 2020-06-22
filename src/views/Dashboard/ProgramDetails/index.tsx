@@ -63,7 +63,7 @@ const sankeyNameSelector = (item: { name: string }) => item.name;
 interface Props {
     className?: string;
 }
-function ProgramWiseTable(props: Props) {
+function ProgramDetails(props: Props) {
     const {
         className,
     } = props;
@@ -264,4 +264,4 @@ function ProgramWiseTable(props: Props) {
     );
 }
 
-export default ProgramWiseTable;
+export default ProgramDetails;

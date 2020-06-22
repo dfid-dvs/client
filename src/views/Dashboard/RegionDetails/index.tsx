@@ -30,8 +30,8 @@ import {
 import { ExtractKeys, prepareUrlParams as p } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
-import useMapStateForFiveW from '../../useMapStateForFiveW';
-import { FiveW } from '../../types';
+import useMapStateForFiveW from '../useMapStateForFiveW';
+import { FiveW } from '../types';
 
 import Chart, { ChartSettings, BarChartSettings } from './Chart';
 
@@ -86,7 +86,7 @@ interface IndicatorValue {
     value: number;
 }
 
-interface RegionWiseTableProps {
+interface RegionDetailsProps {
     className?: string;
     indicatorList: Indicator[] | undefined;
 }
@@ -210,7 +210,7 @@ const defaultIndicators = [
 const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [];
 */
 
-function RegionWiseTable(props: RegionWiseTableProps) {
+function RegionDetails(props: RegionDetailsProps) {
     const {
         className,
         indicatorList,
@@ -649,4 +649,4 @@ function RegionWiseTable(props: RegionWiseTableProps) {
     );
 }
 
-export default RegionWiseTable;
+export default RegionDetails;

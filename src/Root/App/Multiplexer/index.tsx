@@ -9,7 +9,6 @@ import {
     RegionLevelOption,
     DomainContextProps,
     NavbarContextProps,
-    Program,
 } from '#types';
 
 import routes from './routes';
