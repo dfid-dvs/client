@@ -3,7 +3,6 @@ import { listToMap } from '@togglecorp/fujs';
 import {
     MultiResponse,
     RegionLevelOption,
-    MapStateItem,
 } from '#types';
 import { apiEndPoint } from '#utils/constants';
 
@@ -14,7 +13,7 @@ import {
     OriginalFiveW,
 } from './types';
 
-interface ExtendedFiveW extends FiveW {
+export interface ExtendedFiveW extends FiveW {
     indicators: {
         [key: number]: number | undefined;
     };
@@ -30,7 +29,7 @@ function useExtendedFiveW(
     programs: number[],
     indicators: number[],
     preserveResponse = true,
-): [boolean, MapStateItem[], FiveW[]] {
+): [boolean, ExtendedFiveW[]] {
     const regionFiveWGetUrl = `${apiEndPoint}/core/fivew-${regionLevel}/`;
     const regionFiveWGetOptions: RequestInit | undefined = useMemo(
         () => ({
@@ -53,10 +52,9 @@ function useExtendedFiveW(
         'fivew',
         regionFiveWGetOptions,
         preserveResponse,
-        true,
     );
 
-    const fiveWList = regionFiveWListResponse?.results
+    const fiveWList: FiveW[] | undefined = regionFiveWListResponse?.results
         .filter(item => item.code !== '-1')
         .map(item => ({
             ...item,
@@ -89,10 +87,10 @@ function useExtendedFiveW(
         regionIndicatorListResponse,
     ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl, 'indicator', regionIndicatorOptions);
 
-    const extendedFiveW: ExtendedFiveW[] | undefined = useMemo(
+    const extendedFiveW: ExtendedFiveW[] = useMemo(
         () => {
             if (!fiveWList) {
-                return undefined;
+                return [];
             }
             const mapping = listToMap(
                 regionIndicatorListResponse?.results,

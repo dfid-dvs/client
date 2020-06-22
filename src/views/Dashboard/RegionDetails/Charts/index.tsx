@@ -12,14 +12,13 @@ import {
     RegionLevelOption,
 } from '#types';
 
-import useExtendedFiveW from '../../useExtendedFiveW';
-import { FiveW } from '../../types';
+import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
 
 import PolyChart, { ChartSettings, BarChartSettings } from '../PolyChart';
 
 import styles from './styles.css';
 
-const defaultChartSettings: BarChartSettings<ExtendedFiveW> = [
+const defaultChartSettings: BarChartSettings<ExtendedFiveW>[] = [
     {
         id: 'budget-information-top',
         type: 'bar-chart',

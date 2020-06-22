@@ -18,7 +18,7 @@ function useRequest<T>(
     preserveResponse = true,
     // debug = false,
 ): [boolean, T | undefined] {
-    const [response, setResponse] = useState<T>();
+    const [response, setResponse] = useState<T | undefined>();
     const [pending, setPending] = useState(!!url);
 
     const clientIdRef = useRef<number>(-1);
@@ -40,7 +40,7 @@ function useRequest<T>(
         [],
     );
     const setResponseSafe = useCallback(
-        (value: T, clientId) => {
+        (value: T | undefined, clientId) => {
             if (clientId >= responseSetByRef.current) {
                 responseSetByRef.current = clientId;
                 /*

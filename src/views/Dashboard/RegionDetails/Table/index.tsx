@@ -23,7 +23,7 @@ import {
 } from '#types';
 import { ExtractKeys } from '#utils/common';
 
-import useExtendedFiveW from '../../useExtendedFiveW';
+import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
 import { FiveW } from '../../types';
 import styles from './styles.css';
 
@@ -55,7 +55,7 @@ interface Props {
     programs: number[];
 
     indicators: number[];
-    onIndicatorsChange: (value: number[]) => void;
+    onIndicatorsChange: (value: number[] | ((v: number[]) => number[])) => void;
 
     regionLevel: RegionLevelOption;
     onRegionLevelChange: (v: RegionLevelOption) => void;

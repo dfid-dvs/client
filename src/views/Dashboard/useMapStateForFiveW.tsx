@@ -50,6 +50,8 @@ function useMapStateForFiveW(
             sectorCount: item.sector.length,
         }));
 
+    const fiveW: FiveW[] = filteredRegionFivewW || [];
+
     const fiveWMapState: MapStateItem[] = useMemo(
         () => {
             if (!filteredRegionFivewW || !selectedFiveWOption) {
@@ -64,7 +66,7 @@ function useMapStateForFiveW(
         [filteredRegionFivewW, selectedFiveWOption],
     );
 
-    return [regionFiveWPending, fiveWMapState];
+    return [regionFiveWPending, fiveWMapState, fiveW];
 }
 
 export default useMapStateForFiveW;

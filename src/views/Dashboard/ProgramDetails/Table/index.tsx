@@ -28,6 +28,9 @@ import styles from './styles.css';
 
 const programKeySelector = (data: Program) => data.id;
 
+interface ColumnOrderingItem {
+    name: string;
+}
 const staticColumnOrdering: ColumnOrderingItem[] = [
     { name: 'name' },
     { name: 'code' },
@@ -36,7 +39,7 @@ const staticColumnOrdering: ColumnOrderingItem[] = [
 ];
 
 interface Props {
-    projects: number[];
+    programs: number[];
 }
 
 function ProgramTable(props: Props) {
