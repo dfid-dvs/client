@@ -731,6 +731,12 @@ const Dashboard = (props: Props) => {
                         <div className={styles.separator} />
                     </>
                 )}
+                <ToggleButton
+                    label="Toggle Choropleth/Bubble"
+                    className={styles.inputItem}
+                    value={mapStyleInverted}
+                    onChange={setMapStyleInverted}
+                />
                 <SelectInput
                     label="DFID Data"
                     className={styles.inputItem}
@@ -757,12 +763,6 @@ const Dashboard = (props: Props) => {
                         { selectedIndicatorDetails.abstract }
                     </div>
                 )}
-                <ToggleButton
-                    label="Toggle Choropleth/Bubble"
-                    className={styles.inputItem}
-                    value={mapStyleInverted}
-                    onChange={setMapStyleInverted}
-                />
                 <div className={styles.separator} />
                 <MultiSelectInput
                     label="Layers"

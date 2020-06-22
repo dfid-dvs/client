@@ -251,7 +251,7 @@ function Charts(props: Props) {
             </div>
             <div className={styles.charts}>
                 {(fiveWListPending || regionIndicatorListPending) && (
-                    <Backdrop>
+                    <Backdrop className={styles.backdrop}>
                         <LoadingAnimation />
                     </Backdrop>
                 )}

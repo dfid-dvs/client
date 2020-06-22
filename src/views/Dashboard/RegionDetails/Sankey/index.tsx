@@ -61,7 +61,7 @@ function RegionSankey(props: Props) {
             </div>
             <div className={styles.sankey}>
                 {sankeyPending && (
-                    <Backdrop>
+                    <Backdrop className={styles.backdrop}>
                         <LoadingAnimation />
                     </Backdrop>
                 )}

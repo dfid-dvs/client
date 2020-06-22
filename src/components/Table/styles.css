@@ -1,11 +1,8 @@
 .table {
-    position: relative;
-    background-color: var(--color-background);
-    overflow: auto;
     table-layout: fixed;
     border-collapse: separate;
     border-spacing: 0;
-    font-size: var(--font-size-medium);
+    font-size: inherit;
 
     .header-row {
         .header-cell {

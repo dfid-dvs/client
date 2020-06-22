@@ -1,6 +1,8 @@
 .multiplexer {
     display: flex;
+    position: relative;
     flex-direction: column;
+    z-index: auto;
     width: 100vw;
     height: 100vh;
 
@@ -9,6 +11,7 @@
     }
 
     .view {
+        position: relative;
         flex-grow: 1;
         overflow: auto;
     }

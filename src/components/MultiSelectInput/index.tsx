@@ -320,7 +320,6 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                                     transparent
                                     name="close"
                                     onClick={handleClearClick}
-                                    variant="danger"
                                     icons={(
                                         <IoMdClose />
                                     )}

@@ -15,5 +15,8 @@
     position: relative;
     flex-grow: 1;
     margin: var(--spacing-small) var(--spacing-medium);
-    /* overflow-y: auto; */
+
+    .backdrop {
+        z-index: 1;
+    }
 }

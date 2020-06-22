@@ -437,18 +437,20 @@ function RegionDetails(props: RegionDetailsProps) {
                             Download as csv
                         </Button>
                     </div>
-                    <div className={styles.table}>
+                    <div className={styles.tableContainer}>
                         {(fiveWMapStatePending || regionIndicatorListPending) && (
-                            <Backdrop>
+                            <Backdrop className={styles.backdrop}>
                                 <LoadingAnimation />
                             </Backdrop>
                         )}
-                        <Table
-                            className={styles.table}
-                            data={finalFiveW}
-                            keySelector={fiveWKeySelector}
-                            columns={orderedColumns}
-                        />
+                        <div className={styles.overflowContainer}>
+                            <Table
+                                className={styles.table}
+                                data={finalFiveW}
+                                keySelector={fiveWKeySelector}
+                                columns={orderedColumns}
+                            />
+                        </div>
                     </div>
                 </>
             )}

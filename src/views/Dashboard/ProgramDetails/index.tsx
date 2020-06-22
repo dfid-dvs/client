@@ -60,9 +60,7 @@ function ProgramDetails(props: Props) {
                 />
             )}
             {selectedTab === 'table' && (
-                <Table
-                    programs={programs}
-                />
+                <Table programs={programs} />
             )}
         </PopupPage>
     );

@@ -4,9 +4,25 @@
     margin: var(--spacing-small) var(--spacing-medium);
 }
 
-.table {
+.table-container {
+    display: flex;
     position: relative;
+    flex-direction: column;
     flex-grow: 1;
-    margin: var(--spacing-small) var(--spacing-medium);
-    overflow-y: auto;
+    padding: var(--spacing-medium);
+    overflow: auto;
+
+    .backdrop {
+        z-index: 1;
+    }
+
+    .overflow-container {
+        flex-grow: 1;
+        z-index: 0;
+        overflow: auto;
+
+        .table {
+            min-width: 100%;
+        }
+    }
 }

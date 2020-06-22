@@ -184,19 +184,20 @@ function ProgramTable(props: Props) {
                     Download as csv
                 </Button>
             </div>
-            <div
-                className={styles.table}
-            >
+            <div className={styles.tableContainer}>
                 {programsPending && (
                     <Backdrop>
                         <LoadingAnimation />
                     </Backdrop>
                 )}
-                <Table
-                    data={sortedPrograms}
-                    keySelector={programKeySelector}
-                    columns={orderedColumns}
-                />
+                <div className={styles.overflowContainer}>
+                    <Table
+                        className={styles.table}
+                        data={sortedPrograms}
+                        keySelector={programKeySelector}
+                        columns={orderedColumns}
+                    />
+                </div>
             </div>
         </>
     );
