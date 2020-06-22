@@ -29,7 +29,6 @@ import ToggleButton from '#components/ToggleButton';
 
 import useRequest from '#hooks/useRequest';
 import useHash from '#hooks/useHash';
-import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
 
 import ProgramDetails from './ProgramDetails';
 import RegionDetails from './RegionDetails';
@@ -68,7 +67,9 @@ import {
 
 import Tooltip from './Tooltip';
 import Sidepanel from './Sidepanel';
+
 import useMapStateForFiveW from './useMapStateForFiveW';
+import useMapStateForIndicator from './useMapStateForIndicator';
 
 import {
     FiveWOptionKey,
@@ -303,13 +304,13 @@ const Dashboard = (props: Props) => {
     const [
         indicatorMapStatePending,
         indicatorMapState,
-    ] = useMapStateForIndicator(regionLevel, validSelectedIndicator, false);
+    ] = useMapStateForIndicator(regionLevel, validSelectedIndicator);
 
     const [
         fiveWMapStatePending,
         fiveWMapState,
         fiveWStats,
-    ] = useMapStateForFiveW(regionLevel, programs, selectedFiveWOption, false);
+    ] = useMapStateForFiveW(regionLevel, programs, selectedFiveWOption);
 
     const {
         choroplethSelected,

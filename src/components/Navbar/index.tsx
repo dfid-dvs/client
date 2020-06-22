@@ -60,42 +60,14 @@ const Navbar = (props: Props) => {
                     </NavLink>
                     <NavLink
                         exact
-                        className={styles.link}
-                        activeClassName={styles.active}
-                        to="/glossary/"
-                    >
-                        Glossary
-                    </NavLink>
-                    <NavLink
-                        exact
                         to="/infographics/"
                         className={styles.link}
                         activeClassName={styles.active}
                     >
                         Infographics
                     </NavLink>
-                    {/*
-                    <NavLink
-                        exact
-                        className={styles.link}
-                        activeClassName={styles.active}
-                        to="/covid19/"
-                    >
-                        COVID-19
-                    </NavLink>
-                    <NavLink
-                        exact
-                        to="/analytical-tools/"
-                        className={styles.link}
-                        activeClassName={styles.active}
-                    >
-                        Analytical tools
-                    </NavLink>
-                      */}
                 </div>
                 <div
-                    // NOTE: do not rename this
-                    // id={subNavbarId}
                     className={styles.filters}
                     ref={filterRef}
                 />

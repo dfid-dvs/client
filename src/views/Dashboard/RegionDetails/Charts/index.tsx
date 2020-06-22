@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { listToMap, isDefined, unique } from '@togglecorp/fujs';
+import { isDefined, unique, listToMap } from '@togglecorp/fujs';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
@@ -7,32 +7,17 @@ import Button from '#components/Button';
 import Modal from '#components/Modal';
 import RegionSelector from '#components/RegionSelector';
 
-import useRequest from '#hooks/useRequest';
 import {
-    MultiResponse,
     Indicator,
     RegionLevelOption,
 } from '#types';
 
-import { apiEndPoint } from '#utils/constants';
-
-import useMapStateForFiveW from '../../useMapStateForFiveW';
+import useExtendedFiveW from '../../useExtendedFiveW';
 import { FiveW } from '../../types';
 
 import PolyChart, { ChartSettings, BarChartSettings } from '../PolyChart';
 
 import styles from './styles.css';
-
-interface IndicatorValue {
-    indicatorId: number;
-    code: string;
-    value: number;
-}
-interface ExtendedFiveW extends FiveW {
-    indicators: {
-        [key: number]: number | undefined;
-    };
-}
 
 const defaultChartSettings: BarChartSettings<ExtendedFiveW> = [
     {
@@ -138,11 +123,12 @@ const defaultChartSettings: BarChartSettings<ExtendedFiveW> = [
 
 interface Props {
     programs: number[];
-    indicatorMapping?: {
-        [key: string]: Indicator;
-    };
+
     regionLevel: RegionLevelOption;
     onRegionLevelChange: (v: RegionLevelOption) => void;
+
+    indicatorList: Indicator[] | undefined;
+    indicatorListPending: boolean | undefined;
 }
 
 function Charts(props: Props) {
@@ -150,7 +136,8 @@ function Charts(props: Props) {
         programs,
         regionLevel,
         onRegionLevelChange,
-        indicatorMapping,
+        indicatorList,
+        indicatorListPending,
     } = props;
 
     const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>(
@@ -159,8 +146,17 @@ function Charts(props: Props) {
 
     const [showModal, setModalVisibility] = useState(false);
 
+    const indicatorMapping = useMemo(
+        () => listToMap(
+            indicatorList,
+            item => item.id,
+            item => item,
+        ),
+        [indicatorList],
+    );
+
     // Valid indicators for chart
-    const indicators = useMemo(
+    const validSelectedIndicators = useMemo(
         () => unique(
             [...chartSettings
                 .map(item => item.dependencies)
@@ -180,58 +176,10 @@ function Charts(props: Props) {
         setModalVisibility(false);
     }, [setModalVisibility]);
 
-    // Get fiveW
-
-    const [
-        fiveWListPending,
-        _,
-        fiveWList,
-    ] = useMapStateForFiveW(regionLevel, programs);
-
-    // Get indicator value
-    const regionIndicatorOptions: RequestInit | undefined = useMemo(
-        () => (indicators.length > 0 ? {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-                indicatorId: indicators,
-            }),
-        } : undefined),
-        [indicators],
-    );
-
-    let regionIndicatorUrl: string | undefined;
-    if (indicators.length > 0) {
-        regionIndicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/`;
-    }
-    const [
-        regionIndicatorListPending,
-        regionIndicatorListResponse,
-    ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl, 'indicator', regionIndicatorOptions);
-
-    const extendedFiveW: ExtendedFiveW[] | undefined = useMemo(
-        () => {
-            if (!fiveWList) {
-                return undefined;
-            }
-            const mapping = listToMap(
-                regionIndicatorListResponse?.results,
-                item => `${item.code}-${item.indicatorId}`,
-                item => item.value,
-            );
-            return fiveWList.map(item => ({
-                ...item,
-                indicators: listToMap(
-                    indicators,
-                    id => id,
-                    id => mapping[`${item.code}-${id}`],
-                ),
-            }));
-        },
-        [fiveWList, regionIndicatorListResponse, indicators],
+    const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
+        regionLevel,
+        programs,
+        validSelectedIndicators,
     );
 
     return (
@@ -250,7 +198,7 @@ function Charts(props: Props) {
                 </Button>
             </div>
             <div className={styles.charts}>
-                {(fiveWListPending || regionIndicatorListPending) && (
+                {extendedFiveWPending && (
                     <Backdrop className={styles.backdrop}>
                         <LoadingAnimation />
                     </Backdrop>
@@ -259,7 +207,7 @@ function Charts(props: Props) {
                     <PolyChart
                         className={styles.chart}
                         key={item.id}
-                        data={extendedFiveW}
+                        data={extendedFiveWList}
                         settings={item}
                     />
                 ))}

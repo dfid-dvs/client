@@ -8,7 +8,7 @@ import {
 
 import { apiEndPoint } from '#utils/constants';
 
-import useRequest from './useRequest';
+import useRequest from '#hooks/useRequest';
 
 interface IndicatorValue {
     code: string;
@@ -18,7 +18,7 @@ interface IndicatorValue {
 function useMapStateForIndicator(
     regionLevel: RegionLevelOption,
     selectedIndicator: number | undefined,
-    preserveResponse = true,
+    preserveResponse = false,
 ): [boolean, MapStateItem[]] {
     let regionIndicatorUrl: string | undefined;
 
