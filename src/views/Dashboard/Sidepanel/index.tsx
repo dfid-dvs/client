@@ -6,6 +6,8 @@ import {
     IoIosArrowBack,
 } from 'react-icons/io';
 
+import LoadingAnimation from '#components/LoadingAnimation';
+import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
 import DomainContext from '#components/DomainContext';
 import LastUpdated from '#components/LastUpdated';
@@ -105,6 +107,11 @@ function Sidepanel(props: Props) {
                 <div className={styles.summary}>
                     {covidMode && (
                         <div className={styles.covidSummary}>
+                            {statusPending && (
+                                <Backdrop>
+                                    <LoadingAnimation />
+                                </Backdrop>
+                            )}
                             <header className={styles.header}>
                                 <h2 className={styles.heading}>
                                     COVID-19 Summary
@@ -196,6 +203,11 @@ function Sidepanel(props: Props) {
                             </h2>
                         </header>
                         <div className={styles.content}>
+                            {summaryPending && (
+                                <Backdrop>
+                                    <LoadingAnimation />
+                                </Backdrop>
+                            )}
                             <SummaryOutput
                                 className={styles.summaryOutput}
                                 label="Allocated Budget (£)"

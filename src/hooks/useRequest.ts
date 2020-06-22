@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { isFalsyString } from '@togglecorp/fujs';
 import AbortController from 'abort-controller';
 
 import schema from '../schema';
@@ -14,10 +15,10 @@ function useRequest<T>(
     url: string | undefined,
     schemaName: string,
     options: RequestInit = requestOption,
+    preserveResponse = true,
 ): [boolean, T | undefined] {
     const [response, setResponse] = useState<T>();
     const [pending, setPending] = useState(!!url);
-    const [lastUrl, setLastUrl] = useState<string | undefined>();
 
     // NOTE: for warning only
     useEffect(
@@ -31,11 +32,15 @@ function useRequest<T>(
 
     useEffect(
         () => {
-            if (!url) {
-                setLastUrl(undefined);
+            if (isFalsyString(url)) {
+                setResponse(undefined);
+                setPending(false);
                 return () => {};
             }
 
+            if (!preserveResponse) {
+                setResponse(undefined);
+            }
             setPending(true);
 
             const controller = new AbortController();
@@ -50,6 +55,8 @@ function useRequest<T>(
                     setPending(false);
                     if (!signal.aborted) {
                         console.error(`An error occured while fetching ${myUrl}`, e);
+                    } else {
+                        setResponse(undefined);
                     }
                     return;
                 }
@@ -61,6 +68,7 @@ function useRequest<T>(
                         resBody = JSON.parse(resText);
                     }
                 } catch (e) {
+                    setResponse(undefined);
                     setPending(false);
                     console.error(`An error occured while parsing data from ${myUrl}`, e);
                     return;
@@ -75,7 +83,6 @@ function useRequest<T>(
                         }
                     }
                     setResponse(resBody);
-                    setLastUrl(url);
                     setPending(false);
                 }
             }
@@ -83,12 +90,13 @@ function useRequest<T>(
             fetchResource(url, options);
 
             return () => {
+                setPending(false);
                 controller.abort();
             };
         },
-        [url, options, schemaName],
+        [url, options, schemaName, preserveResponse],
     );
 
-    return [pending, url === lastUrl ? response : undefined];
+    return [pending, response];
 }
 export default useRequest;

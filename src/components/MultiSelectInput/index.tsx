@@ -13,6 +13,7 @@ import {
 import { getFloatPlacement } from '#utils/common';
 import useBlurEffect from '#hooks/useBlurEffect';
 
+import LoadingAnimation from '#components/LoadingAnimation';
 import List from '#components/List';
 import Button from '#components/Button';
 import Portal from '#components/Portal';
@@ -29,6 +30,7 @@ interface OptionProps {
     onClick: (name: string) => void;
     className?: string;
     disabled?: boolean;
+    pending?: boolean;
     children?: React.ReactNode;
 }
 function Option(props: OptionProps) {
@@ -107,6 +109,7 @@ interface Props<T, K> {
     value: K[] | undefined;
     onChange: (d: K[]) => void;
     disabled?: boolean;
+    pending?: boolean;
     placeholder?: string;
     hideLabel?: boolean;
     error?: string;
@@ -126,6 +129,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
         value,
         onChange,
         disabled,
+        pending,
         placeholder = 'Select options',
         groupKeySelector,
         hideLabel,
@@ -298,24 +302,31 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                 onChange={handleInputValueChange}
                 placeholder={placeholder}
                 disabled={disabled}
-                actions={value && value.length > 0 && (
+                actions={(
                     <>
-                        <div
-                            className={styles.countBadge}
-                            title={`${value.length} selected`}
-                        >
-                            {value.length}
-                        </div>
-                        <Button
-                            className={styles.clearButton}
-                            transparent
-                            name="close"
-                            onClick={handleClearClick}
-                            variant="danger"
-                            icons={(
-                                <IoMdClose />
-                            )}
-                        />
+                        {pending && (
+                            <LoadingAnimation />
+                        )}
+                        {value && value.length > 0 && (
+                            <>
+                                <div
+                                    className={styles.countBadge}
+                                    title={`${value.length} selected`}
+                                >
+                                    {value.length}
+                                </div>
+                                <Button
+                                    className={styles.clearButton}
+                                    transparent
+                                    name="close"
+                                    onClick={handleClearClick}
+                                    variant="danger"
+                                    icons={(
+                                        <IoMdClose />
+                                    )}
+                                />
+                            </>
+                        )}
                     </>
                 )}
             />

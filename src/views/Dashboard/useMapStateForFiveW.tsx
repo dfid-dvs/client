@@ -18,6 +18,7 @@ function useMapStateForFiveW(
     regionLevel: RegionLevelOption,
     programs: number[],
     selectedFiveWOption?: FiveWOptionKey,
+    preserveResponse = true,
 ): [boolean, MapStateItem[], FiveW[]] {
     const regionFiveWGetUrl = `${apiEndPoint}/core/fivew-${regionLevel}/`;
 
@@ -38,7 +39,7 @@ function useMapStateForFiveW(
     const [
         regionFiveWPending,
         regionFiveWListResponse,
-    ] = useRequest<MultiResponse<OriginalFiveW>>(regionFiveWGetUrl, 'fivew', options);
+    ] = useRequest<MultiResponse<OriginalFiveW>>(regionFiveWGetUrl, 'fivew', options, preserveResponse);
 
     const filteredRegionFivewW = regionFiveWListResponse?.results
         .filter(item => item.code !== '-1')

@@ -17,6 +17,7 @@
 }
 
 .table {
+    position: relative;
     flex-grow: 1;
     margin: var(--spacing-small) var(--spacing-medium);
     overflow-y: auto;
@@ -24,6 +25,7 @@
 
 .charts {
     display: flex;
+    position: relative;
     flex-grow: 1;
     flex-wrap: wrap;
     margin: var(--spacing-small) var(--spacing-medium);
@@ -35,6 +37,7 @@
 }
 
 .sankey {
+    position: relative;
     flex-grow: 1;
     margin: var(--spacing-small) var(--spacing-medium);
     /* overflow-y: auto; */

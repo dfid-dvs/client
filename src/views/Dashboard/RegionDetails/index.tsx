@@ -2,6 +2,8 @@ import React, { useMemo, useContext, useState, useEffect, useCallback } from 're
 import { IoMdDownload } from 'react-icons/io';
 import { compareString, compareNumber, listToMap, isDefined, isNotDefined, unique, isTruthyString } from '@togglecorp/fujs';
 
+import LoadingAnimation from '#components/LoadingAnimation';
+import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
 import BudgetFlowSankey from '#components/BudgetFlowSankey';
@@ -89,6 +91,7 @@ interface IndicatorValue {
 interface RegionDetailsProps {
     className?: string;
     indicatorList: Indicator[] | undefined;
+    indicatorListPending: boolean | undefined;
 }
 
 interface ExtendedFiveW extends FiveW {
@@ -214,6 +217,7 @@ function RegionDetails(props: RegionDetailsProps) {
     const {
         className,
         indicatorList,
+        indicatorListPending,
     } = props;
 
     const { regionLevel: regionLevelFromContext, programs } = useContext(DomainContext);
@@ -264,11 +268,10 @@ function RegionDetails(props: RegionDetailsProps) {
     const params = p({
         program: programs,
         province: selectedRegions,
+        threshold: 1,
     });
 
-    const sankeyUrl = isTruthyString(params)
-        ? `${apiEndPoint}/core/sankey-region/?${params}`
-        : `${apiEndPoint}/core/sankey-region/`;
+    const sankeyUrl = `${apiEndPoint}/core/sankey-region/?${params}`;
 
     const [
         sankeyPending,
@@ -576,6 +579,7 @@ function RegionDetails(props: RegionDetailsProps) {
                             optionKeySelector={indicatorKeySelector}
                             groupKeySelector={indicatorGroupKeySelector}
                             dropdownContainerClassName={styles.dropdown}
+                            pending={indicatorListPending}
                         />
                         <Button
                             onClick={handleDownload}
@@ -587,12 +591,19 @@ function RegionDetails(props: RegionDetailsProps) {
                             Download as csv
                         </Button>
                     </div>
-                    <Table
-                        className={styles.table}
-                        data={finalFiveW}
-                        keySelector={fiveWKeySelector}
-                        columns={orderedColumns}
-                    />
+                    <div className={styles.table}>
+                        {(fiveWMapStatePending || regionIndicatorListPending) && (
+                            <Backdrop>
+                                <LoadingAnimation />
+                            </Backdrop>
+                        )}
+                        <Table
+                            className={styles.table}
+                            data={finalFiveW}
+                            keySelector={fiveWKeySelector}
+                            columns={orderedColumns}
+                        />
+                    </div>
                     {showModal && (
                         <Modal onClose={handleModalClose}>
                             This is the body
@@ -616,6 +627,11 @@ function RegionDetails(props: RegionDetailsProps) {
                         </Button>
                     </div>
                     <div className={styles.charts}>
+                        {(fiveWMapStatePending || regionIndicatorListPending) && (
+                            <Backdrop>
+                                <LoadingAnimation />
+                            </Backdrop>
+                        )}
                         {chartSettings.map(item => (
                             <Chart
                                 className={styles.chart}
@@ -639,6 +655,11 @@ function RegionDetails(props: RegionDetailsProps) {
                         />
                     </div>
                     <div className={styles.sankey}>
+                        {sankeyPending && (
+                            <Backdrop>
+                                <LoadingAnimation />
+                            </Backdrop>
+                        )}
                         <BudgetFlowSankey
                             data={sankeyResponse}
                             colorSelector={sankeyColorSelector}

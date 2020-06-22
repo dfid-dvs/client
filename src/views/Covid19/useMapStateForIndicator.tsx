@@ -13,7 +13,11 @@ function useMapStateForIndicatorWithAgeGroup(
     selectedIndicator: number | undefined,
     selectedAgeGroup: AgeGroupOption | undefined,
 ): [boolean, MapStateItem[]] {
-    const [pendingIndicator, response] = useMapStateForIndicator(regionLevel, selectedIndicator);
+    const [pendingIndicator, response] = useMapStateForIndicator(
+        regionLevel,
+        selectedIndicator,
+        false,
+    );
 
     const [
         ageGroupListPending,

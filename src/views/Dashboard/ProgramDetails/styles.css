@@ -2,20 +2,3 @@
     flex-shrink: 0;
     margin: var(--spacing-small) var(--spacing-medium);
 }
-
-.table-actions {
-    flex-shrink: 0;
-    margin: var(--spacing-small) var(--spacing-medium);
-}
-
-.table {
-    flex-grow: 1;
-    margin: var(--spacing-small) var(--spacing-medium);
-    overflow-y: auto;
-}
-
-.sankey {
-    flex-grow: 1;
-    margin: var(--spacing-small) var(--spacing-medium);
-    /* overflow-y: auto; */
-}

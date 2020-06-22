@@ -18,6 +18,7 @@ interface IndicatorValue {
 function useMapStateForIndicator(
     regionLevel: RegionLevelOption,
     selectedIndicator: number | undefined,
+    preserveResponse = true,
 ): [boolean, MapStateItem[]] {
     let regionIndicatorUrl: string | undefined;
 
@@ -42,7 +43,7 @@ function useMapStateForIndicator(
     const [
         regionIndicatorListPending,
         regionIndicatorListResponse,
-    ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl, 'indicator', options);
+    ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl, 'indicator', options, preserveResponse);
 
     let mapState: MapStateItem[] = [];
     if (regionIndicatorListResponse && isDefined(selectedIndicator)) {

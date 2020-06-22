@@ -1,0 +1,12 @@
+.table-actions {
+    display: flex;
+    flex-shrink: 0;
+    margin: var(--spacing-small) var(--spacing-medium);
+}
+
+.table {
+    position: relative;
+    flex-grow: 1;
+    margin: var(--spacing-small) var(--spacing-medium);
+    overflow-y: auto;
+}
