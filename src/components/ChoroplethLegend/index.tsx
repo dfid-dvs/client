@@ -1,6 +1,8 @@
 import React, { memo } from 'react';
 import { _cs, isDefined } from '@togglecorp/fujs';
 
+import LoadingAnimation from '#components/LoadingAnimation';
+import Backdrop from '#components/Backdrop';
 import Numeral from '#components/Numeral';
 
 import styles from './styles.css';
@@ -61,6 +63,7 @@ interface ChoroplethLegend {
     unit?: string;
     minExceeds?: boolean;
     maxExceeds?: boolean;
+    pending?: boolean;
 }
 function ChoroplethLegend(
     {
@@ -72,43 +75,48 @@ function ChoroplethLegend(
         unit,
         minExceeds,
         maxExceeds,
+        pending,
     }: ChoroplethLegend,
 ) {
     const colors = Object.keys(legend);
-    if (colors.length <= 0) {
-        return null;
-    }
 
     return (
         <div className={_cs(styles.legendContainer, className)}>
+            {pending && (
+                <Backdrop>
+                    <LoadingAnimation />
+                </Backdrop>
+            )}
             {title && (
                 <h5 className={styles.heading}>
                     {unit ? `${title} (${unit})` : title}
                 </h5>
             )}
-            <div className={styles.choroplethLegend}>
-                {isDefined(minValue) && (
-                    <LegendElement
-                        value={minValue}
-                        color="white"
-                        opacity={0}
-                        suffix={minExceeds ? 'or less' : undefined}
-                    />
-                )}
-                {colors.map((color, index) => {
-                    const value = legend[color];
-                    const isLastElement = index === colors.length - 1;
-                    return (
+            {colors.length > 0 && (
+                <div className={styles.choroplethLegend}>
+                    {isDefined(minValue) && (
                         <LegendElement
-                            key={color}
-                            value={value}
-                            color={color}
-                            opacity={opacity}
-                            suffix={isLastElement && maxExceeds ? 'or more' : undefined}
+                            value={minValue}
+                            color="white"
+                            opacity={0}
+                            suffix={minExceeds ? 'or less' : undefined}
                         />
-                    );
-                })}
-            </div>
+                    )}
+                    {colors.map((color, index) => {
+                        const value = legend[color];
+                        const isLastElement = index === colors.length - 1;
+                        return (
+                            <LegendElement
+                                key={color}
+                                value={value}
+                                color={color}
+                                opacity={opacity}
+                                suffix={isLastElement && maxExceeds ? 'or more' : undefined}
+                            />
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }

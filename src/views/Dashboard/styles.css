@@ -30,6 +30,10 @@
         .map-container {
             flex-grow: 1;
             font-family: inherit;
+
+            * {
+                z-index: unset;
+            }
         }
 
         .sidebar {
@@ -114,7 +118,6 @@
         position: absolute;
         top: var(--spacing-medium);
         left: var(--spacing-medium);
-        z-index: 1;
     }
 
     &.print-mode {

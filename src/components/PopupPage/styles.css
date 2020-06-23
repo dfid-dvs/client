@@ -4,7 +4,6 @@
     top: 0;
     left: 0;
     flex-direction: column;
-    z-index: 11;
     background-color: var(--color-foreground);
     padding: calc(var(--spacing-large) - var(--spacing-small)) calc(var(--spacing-large) - var(--spacing-medium));
     width: 100%;

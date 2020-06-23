@@ -25,10 +25,11 @@ export type SomeRoute = Route | FallbackRoute;
 
 const routeSettings: SomeRoute[] = [
     {
-        path: '/glossary/',
-        name: 'glossary',
-        title: 'Glossary',
-        load: lazy(() => import('../../../views/Glossary')),
+        path: '/',
+        name: 'dashboard',
+        title: 'Dashboard',
+        load: () => <Redirect to="/dashboard/" />,
+        hideOnNavbar: true,
     },
     {
         path: '/dashboard/',
@@ -37,23 +38,10 @@ const routeSettings: SomeRoute[] = [
         load: lazy(() => import('../../../views/Dashboard')),
     },
     {
-        path: '/covid19/',
-        name: 'covid19',
-        title: 'COVID-19',
-        load: lazy(() => import('../../../views/Covid19')),
-    },
-    {
         path: '/infographics/',
         name: 'infographics',
         title: 'Infographics',
         load: lazy(() => import('../../../views/Infographics')),
-    },
-    {
-        path: '/',
-        name: 'dashboard',
-        title: 'Dashboard',
-        load: () => <Redirect to="/dashboard/" />,
-        hideOnNavbar: true,
     },
     {
         path: '/403/',

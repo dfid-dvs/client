@@ -2,10 +2,12 @@
     .count-badge {
         align-self: center;
         margin-right: var(--spacing-extra-small);
-        border-radius: 10px;
-        background-color: var(--color-primary);
+        border: var(--width-separator-thin) solid var(--color-input-actions);
+        border-radius: 0.5rem;
         padding: 0 var(--spacing-small);
-        color: var(--color-text-on-primary);
+        color: var(--color-input-actions);
+        font-size: var(--font-size-extra-small);
+        font-weight: var(--font-weight-bold);
     }
 
     .clear-button {
@@ -18,7 +20,6 @@
     position: fixed;
     top: 50%;
     left: 50%;
-    z-index: 1;
     border: var(--width-separator-thin) solid var(--color-separator);
     box-shadow: 0 0 5px 0 var(--color-shadow);
     background-color: var(--color-foreground);

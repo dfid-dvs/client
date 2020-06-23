@@ -27,6 +27,7 @@
         .covid-summary,
         .region-summary,
         .DFID-summary {
+            position: relative;
             padding: calc(var(--spacing-large) - var(--spacing-medium));
 
             .header {

@@ -29,7 +29,6 @@ import ToggleButton from '#components/ToggleButton';
 
 import useRequest from '#hooks/useRequest';
 import useHash from '#hooks/useHash';
-import useMapStateForIndicator from '#hooks/useMapStateForIndicator';
 
 import ProgramDetails from './ProgramDetails';
 import RegionDetails from './RegionDetails';
@@ -68,7 +67,9 @@ import {
 
 import Tooltip from './Tooltip';
 import Sidepanel from './Sidepanel';
+
 import useMapStateForFiveW from './useMapStateForFiveW';
+import useMapStateForIndicator from './useMapStateForIndicator';
 
 import {
     FiveWOptionKey,
@@ -312,12 +313,16 @@ const Dashboard = (props: Props) => {
     ] = useMapStateForFiveW(regionLevel, programs, selectedFiveWOption);
 
     const {
+        choroplethSelected,
         choroplethMapState,
+        choroplethPending,
         choroplethTitle,
         choroplethInteger,
         choroplethUnit,
 
+        bubbleSelected,
         bubbleMapState,
+        bubblePending,
         bubbleTitle,
         bubbleInteger,
         bubbleUnit,
@@ -332,25 +337,33 @@ const Dashboard = (props: Props) => {
         if (mapStyleInverted) {
             return {
                 choroplethMapState: indicatorMapState,
+                choroplethPending: indicatorMapStatePending,
                 choroplethTitle: selectedIndicatorDetails?.fullTitle,
                 choroplethInteger: selectedIndicatorDetails?.datatype === 'integer',
                 choroplethUnit: selectedIndicatorDetails?.unit,
+                choroplethSelected: isDefined(selectedIndicator),
 
                 bubbleMapState: fiveWMapState,
+                bubblePending: fiveWMapStatePending,
                 bubbleTitle: fiveWTitle,
                 bubbleInteger: fiveW?.datatype === 'integer',
                 bubbleUnit: fiveW?.unit,
+                bubbleSelected: isDefined(selectedFiveWOption),
 
                 titleForPrintBar: title,
             };
         }
         return {
+            choroplethSelected: isDefined(selectedFiveWOption),
             choroplethMapState: fiveWMapState,
+            choroplethPending: fiveWMapStatePending,
             choroplethTitle: fiveWTitle,
             choroplethInteger: fiveW?.datatype === 'integer',
             choroplethUnit: fiveW?.unit,
 
+            bubbleSelected: isDefined(selectedIndicator),
             bubbleMapState: indicatorMapState,
+            bubblePending: indicatorMapStatePending,
             bubbleTitle: selectedIndicatorDetails?.fullTitle,
             bubbleInteger: selectedIndicatorDetails?.datatype === 'integer',
             bubbleUnit: selectedIndicatorDetails?.unit,
@@ -361,7 +374,10 @@ const Dashboard = (props: Props) => {
         mapStyleInverted,
         indicatorMapState,
         fiveWMapState,
+        indicatorMapStatePending,
+        fiveWMapStatePending,
         selectedFiveWOption,
+        selectedIndicator,
         selectedIndicatorDetails,
     ]);
 
@@ -435,6 +451,7 @@ const Dashboard = (props: Props) => {
 
     const hash = useHash();
 
+    /*
     const showLegend = (
         bubbleLegend.length > 0
         || Object.keys(mapLegend).length > 0
@@ -442,6 +459,7 @@ const Dashboard = (props: Props) => {
         || selectedRasterLayerDetail
         || (selectedVectorLayersDetail && selectedVectorLayersDetail?.length > 0)
     );
+    */
 
     const dfidData = useMemo(
         () => {
@@ -714,6 +732,12 @@ const Dashboard = (props: Props) => {
                         <div className={styles.separator} />
                     </>
                 )}
+                <ToggleButton
+                    label="Toggle Choropleth/Bubble"
+                    className={styles.inputItem}
+                    value={mapStyleInverted}
+                    onChange={setMapStyleInverted}
+                />
                 <SelectInput
                     label="DFID Data"
                     className={styles.inputItem}
@@ -733,18 +757,13 @@ const Dashboard = (props: Props) => {
                     optionLabelSelector={indicatorLabelSelector}
                     optionKeySelector={indicatorKeySelector}
                     groupKeySelector={indicatorGroupKeySelector}
+                    pending={indicatorListPending}
                 />
                 {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
                     <div className={styles.abstract}>
                         { selectedIndicatorDetails.abstract }
                     </div>
                 )}
-                <ToggleButton
-                    label="Toggle Choropleth/Bubble"
-                    className={styles.inputItem}
-                    value={mapStyleInverted}
-                    onChange={setMapStyleInverted}
-                />
                 <div className={styles.separator} />
                 <MultiSelectInput
                     label="Layers"
@@ -767,8 +786,8 @@ const Dashboard = (props: Props) => {
                     optionLabelSelector={layerLabelSelector}
                 />
             </div>
-            {showLegend && (
-                <div className={styles.legendContainer}>
+            <div className={styles.legendContainer}>
+                {choroplethSelected && (
                     <ChoroplethLegend
                         className={styles.legend}
                         title={choroplethTitle}
@@ -777,7 +796,10 @@ const Dashboard = (props: Props) => {
                         unit={choroplethUnit}
                         minExceeds={dataMinExceeds}
                         maxExceeds={dataMaxExceeds}
+                        pending={choroplethPending}
                     />
+                )}
+                {bubbleSelected && (
                     <BubbleLegend
                         className={styles.legend}
                         title={bubbleTitle}
@@ -787,45 +809,46 @@ const Dashboard = (props: Props) => {
                         radiusSelector={legendRadiusSelector}
                         legendType={bubbleLegendType}
                         unit={bubbleUnit}
+                        pending={bubblePending}
                     />
-                    {selectedRasterLayerDetail && (
-                        <RasterLegend
-                            className={styles.legend}
-                            rasterLayer={selectedRasterLayerDetail}
-                        />
-                    )}
-                    {selectedVectorLayersDetail && selectedVectorLayersDetail.length > 0 && (
-                        <VectorLegend
-                            className={styles.legend}
-                            vectorLayers={selectedVectorLayersDetail}
-                        />
-                    )}
-                    {showTravelTimeChoropleth && (
-                        <>
-                            {selectedTravelTimeType === 'catchment' && (
-                                <ChoroplethLegend
-                                    title="Catchment"
-                                    className={styles.legend}
-                                    minValue=""
-                                    opacity={0.6}
-                                    unit="hours"
-                                    legend={catchmentLegend}
-                                />
-                            )}
-                            {selectedTravelTimeType === 'uncovered' && (
-                                <ChoroplethLegend
-                                    title="Uncovered"
-                                    className={styles.legend}
-                                    minValue=""
-                                    opacity={0.6}
-                                    unit="hours"
-                                    legend={uncoveredLegend}
-                                />
-                            )}
-                        </>
-                    )}
-                </div>
-            )}
+                )}
+                {selectedRasterLayerDetail && (
+                    <RasterLegend
+                        className={styles.legend}
+                        rasterLayer={selectedRasterLayerDetail}
+                    />
+                )}
+                {selectedVectorLayersDetail && selectedVectorLayersDetail.length > 0 && (
+                    <VectorLegend
+                        className={styles.legend}
+                        vectorLayers={selectedVectorLayersDetail}
+                    />
+                )}
+                {showTravelTimeChoropleth && (
+                    <>
+                        {selectedTravelTimeType === 'catchment' && (
+                            <ChoroplethLegend
+                                title="Catchment"
+                                className={styles.legend}
+                                minValue=""
+                                opacity={0.6}
+                                unit="hours"
+                                legend={catchmentLegend}
+                            />
+                        )}
+                        {selectedTravelTimeType === 'uncovered' && (
+                            <ChoroplethLegend
+                                title="Uncovered"
+                                className={styles.legend}
+                                minValue=""
+                                opacity={0.6}
+                                unit="hours"
+                                legend={uncoveredLegend}
+                            />
+                        )}
+                    </>
+                )}
+            </div>
             <PrintDetailsBar
                 show={printMode}
                 title={titleForPrintBar}
@@ -833,6 +856,7 @@ const Dashboard = (props: Props) => {
             />
             {hash === 'regions' && (
                 <RegionDetails
+                    indicatorListPending={indicatorListPending}
                     indicatorList={indicatorList}
                 />
             )}

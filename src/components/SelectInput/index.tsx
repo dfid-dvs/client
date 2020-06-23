@@ -11,6 +11,7 @@ import {
     isDefined,
 } from '@togglecorp/fujs';
 
+import LoadingAnimation from '#components/LoadingAnimation';
 import { getFloatPlacement } from '#utils/common';
 import useBlurEffect from '#hooks/useBlurEffect';
 
@@ -119,6 +120,7 @@ interface Props<T, K> {
     value: K | undefined;
     onChange: (d: K | undefined) => void;
     disabled?: boolean;
+    pending?: boolean;
     placeholder?: string;
     hideLabel?: boolean;
     error?: string;
@@ -135,6 +137,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         value,
         onChange,
         disabled,
+        pending,
         placeholder = 'Select an option',
         groupKeySelector,
         label,
@@ -286,17 +289,23 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                 onChange={handleInputValueChange}
                 placeholder={placeholder}
                 disabled={disabled}
-                actions={value && (
-                    <Button
-                        className={styles.clearButton}
-                        transparent
-                        name="close"
-                        onClick={handleClearClick}
-                        variant="danger"
-                        icons={(
-                            <IoMdClose />
+                actions={(
+                    <>
+                        {pending && (
+                            <LoadingAnimation />
                         )}
-                    />
+                        {value && (
+                            <Button
+                                className={styles.clearButton}
+                                transparent
+                                name="close"
+                                onClick={handleClearClick}
+                                icons={(
+                                    <IoMdClose />
+                                )}
+                            />
+                        )}
+                    </>
                 )}
             />
             { showDropdown && (

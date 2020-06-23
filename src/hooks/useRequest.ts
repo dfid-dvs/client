@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { isFalsyString } from '@togglecorp/fujs';
 import AbortController from 'abort-controller';
 
 import schema from '../schema';
@@ -14,10 +15,44 @@ function useRequest<T>(
     url: string | undefined,
     schemaName: string,
     options: RequestInit = requestOption,
+    preserveResponse = true,
+    // debug = false,
 ): [boolean, T | undefined] {
-    const [response, setResponse] = useState<T>();
+    const [response, setResponse] = useState<T | undefined>();
     const [pending, setPending] = useState(!!url);
-    const [lastUrl, setLastUrl] = useState<string | undefined>();
+
+    const clientIdRef = useRef<number>(-1);
+    const pendingSetByRef = useRef<number>(-1);
+    const responseSetByRef = useRef<number>(-1);
+
+    const setPendingSafe = useCallback(
+        (value: boolean, clientId) => {
+            if (clientId >= pendingSetByRef.current) {
+                pendingSetByRef.current = clientId;
+                /*
+                if (debug) {
+                    console.warn('setting pending', value, 'by client', clientId);
+                }
+                */
+                setPending(value);
+            }
+        },
+        [],
+    );
+    const setResponseSafe = useCallback(
+        (value: T | undefined, clientId) => {
+            if (clientId >= responseSetByRef.current) {
+                responseSetByRef.current = clientId;
+                /*
+                if (debug) {
+                    console.warn('setting response', value, 'by client', clientId);
+                }
+                */
+                setResponse(value);
+            }
+        },
+        [],
+    );
 
     // NOTE: for warning only
     useEffect(
@@ -31,25 +66,41 @@ function useRequest<T>(
 
     useEffect(
         () => {
-            if (!url) {
-                setLastUrl(undefined);
+            if (isFalsyString(url)) {
+                setResponseSafe(undefined, clientIdRef.current);
+                setPendingSafe(false, clientIdRef.current);
                 return () => {};
             }
+            if (!preserveResponse) {
+                setResponseSafe(undefined, clientIdRef.current);
+            }
 
-            setPending(true);
+            // console.warn('Creating new request', url);
+            clientIdRef.current += 1;
+
+            setPendingSafe(true, clientIdRef.current);
 
             const controller = new AbortController();
 
-            async function fetchResource(myUrl: string, myOptions: RequestInit | undefined) {
+            async function fetchResource(
+                myUrl: string,
+                myOptions: RequestInit | undefined,
+                clientId: number,
+            ) {
                 const { signal } = controller;
 
                 let res;
                 try {
                     res = await fetch(myUrl, { ...myOptions, signal });
                 } catch (e) {
-                    setPending(false);
+                    // console.warn('Errored fetch', url);
+                    setPendingSafe(false, clientId);
+
                     if (!signal.aborted) {
                         console.error(`An error occured while fetching ${myUrl}`, e);
+                        setResponseSafe(undefined, clientId);
+                    } else {
+                        // console.warn('Clearing response on network error');
                     }
                     return;
                 }
@@ -61,7 +112,9 @@ function useRequest<T>(
                         resBody = JSON.parse(resText);
                     }
                 } catch (e) {
-                    setPending(false);
+                    // console.warn('Clearing response on parse error');
+                    setResponseSafe(undefined, clientId);
+                    setPendingSafe(false, clientId);
                     console.error(`An error occured while parsing data from ${myUrl}`, e);
                     return;
                 }
@@ -74,21 +127,20 @@ function useRequest<T>(
                             console.error(url, options.method, resBody, e.message);
                         }
                     }
-                    setResponse(resBody);
-                    setLastUrl(url);
-                    setPending(false);
+                    setResponseSafe(resBody, clientId);
+                    setPendingSafe(false, clientId);
                 }
             }
 
-            fetchResource(url, options);
+            fetchResource(url, options, clientIdRef.current);
 
             return () => {
                 controller.abort();
             };
         },
-        [url, options, schemaName],
+        [url, options, schemaName, preserveResponse, setPendingSafe, setResponseSafe],
     );
 
-    return [pending, url === lastUrl ? response : undefined];
+    return [pending, response];
 }
 export default useRequest;

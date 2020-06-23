@@ -2,6 +2,8 @@ import React, { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { typedMemo } from '#utils/common';
 
+import LoadingAnimation from '#components/LoadingAnimation';
+import Backdrop from '#components/Backdrop';
 import List from '#components/List';
 import Numeral from '#components/Numeral';
 
@@ -60,6 +62,7 @@ interface Props<T, K> {
     positiveColor?: string;
     negativeColor?: string;
     unit?: string;
+    pending?: boolean;
 }
 
 function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
@@ -75,6 +78,7 @@ function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
         positiveColor,
         legendType,
         unit,
+        pending,
     } = props;
 
     const legendItemRendererParams = useCallback((_: K, d: T, i: number, allData: T[]) => {
@@ -107,40 +111,45 @@ function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
         legendType,
     ]);
 
-    if (data.length <= 0) {
-        return null;
-    }
-
     return (
         <div className={_cs(styles.bubbleLegend, className)}>
+            {pending && (
+                <Backdrop>
+                    <LoadingAnimation />
+                </Backdrop>
+            )}
             {title && (
                 <h5 className={styles.heading}>
                     {unit ? `${title} (${unit})` : title}
                 </h5>
             )}
-            <List
-                data={data}
-                renderer={LegendItem}
-                keySelector={keySelector}
-                rendererParams={legendItemRendererParams}
-            />
-            {legendType === 'both' && (
-                <div className={styles.footer}>
-                    <div className={styles.negative}>
-                        <span
-                            className={styles.circle}
-                            style={{ backgroundColor: negativeColor }}
-                        />
-                        Less than 0
-                    </div>
-                    <div className={styles.positive}>
-                        <span
-                            className={styles.circle}
-                            style={{ backgroundColor: positiveColor }}
-                        />
-                        Greater than 0
-                    </div>
-                </div>
+            {data.length > 0 && (
+                <>
+                    <List
+                        data={data}
+                        renderer={LegendItem}
+                        keySelector={keySelector}
+                        rendererParams={legendItemRendererParams}
+                    />
+                    {legendType === 'both' && (
+                        <div className={styles.footer}>
+                            <div className={styles.negative}>
+                                <span
+                                    className={styles.circle}
+                                    style={{ backgroundColor: negativeColor }}
+                                />
+                                Less than 0
+                            </div>
+                            <div className={styles.positive}>
+                                <span
+                                    className={styles.circle}
+                                    style={{ backgroundColor: positiveColor }}
+                                />
+                                Greater than 0
+                            </div>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );

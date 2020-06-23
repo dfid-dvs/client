@@ -1,3 +1,10 @@
+:global {
+    #dfid-root {
+        position: relative;
+        z-index: 0;
+    }
+}
+
 .no-spinners {
     -moz-appearance:textfield;
 }
@@ -136,3 +143,4 @@ body {
     color: var(--color-text);
     font-size: var(--font-size-medium);
 }
+

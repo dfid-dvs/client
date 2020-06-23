@@ -9,6 +9,8 @@ import {
     DomainContextProps,
 } from '#types';
 
+import LoadingAnimation from '#components/LoadingAnimation';
+import Backdrop from '#components/Backdrop';
 import DomainContext from '#components/DomainContext';
 import MultiSelectInput from '#components/MultiSelectInput';
 import DropdownMenu from '#components/DropdownMenu';
@@ -286,7 +288,7 @@ function ProgramSelector(props: Props) {
             <MultiSelectInput
                 placeholder={`Select from ${filteredPrograms?.length || 0} programs`}
                 className={styles.indicatorSelectInput}
-                disabled={programListPending}
+                pending={programListPending}
                 options={filteredPrograms}
                 onChange={setSelectedPrograms}
                 value={selectedProgram}
@@ -298,6 +300,11 @@ function ProgramSelector(props: Props) {
                 label={`Sectors ${selectedSector && selectedSector.length > 0 ? '*' : ''}`}
                 className={styles.sectorInput}
             >
+                {(sectorListPending || subSectorListPending) && (
+                    <Backdrop>
+                        <LoadingAnimation />
+                    </Backdrop>
+                )}
                 <TreeInput
                     className={styles.sectorTree}
                     // label="Sector"
@@ -315,6 +322,11 @@ function ProgramSelector(props: Props) {
                 className={styles.markerInput}
                 dropdownContainerClassName={styles.markersDropdown}
             >
+                {(markerListPending || subMarkerListPending) && (
+                    <Backdrop>
+                        <LoadingAnimation />
+                    </Backdrop>
+                )}
                 <TreeInput
                     className={styles.markerTree}
                     // label="Marker"

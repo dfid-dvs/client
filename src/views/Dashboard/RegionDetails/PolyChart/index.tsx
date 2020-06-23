@@ -3,10 +3,12 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
     TooltipFormatter,
 } from 'recharts';
-import { compareNumber, isNotDefined, isDefined } from '@togglecorp/fujs';
+import { compareNumber, isNotDefined, isDefined, _cs } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import SegmentInput from '#components/SegmentInput';
+
+import styles from './styles.css';
 
 export interface BarChartSettings<T> {
     id: string;
@@ -72,6 +74,13 @@ interface BarChartUnitProps<T> {
     className?: string;
 }
 
+const chartMargin = {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+};
+
 function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     const {
         settings,
@@ -111,33 +120,41 @@ function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     );
 
     return (
-        <div className={className}>
-            <h3>{title}</h3>
-            <SegmentInput
-                label="Orientation"
-                options={orientations}
-                optionKeySelector={item => item.key}
-                optionLabelSelector={item => item.label}
-                value={layout}
-                onChange={setLayout}
-            />
+        <div className={_cs(styles.chartContainer, className)}>
+            <header className={styles.header}>
+                <h3 className={styles.heading}>
+                    {title}
+                </h3>
+                <div className={styles.actions}>
+                    <SegmentInput
+                        options={orientations}
+                        optionKeySelector={item => item.key}
+                        optionLabelSelector={item => item.label}
+                        value={layout}
+                        onChange={setLayout}
+                    />
+                </div>
+            </header>
             <BarChart
-                width={300}
-                height={200}
+                className={styles.chart}
+                width={400}
+                height={300}
                 data={finalData}
                 layout={layout}
+                margin={chartMargin}
             >
                 <CartesianGrid strokeDasharray="3 3" />
                 <Xcomp
                     dataKey={keySelector}
                     type="category"
+                    width={layout === 'vertical' ? 86 : undefined}
                 />
                 <Ycomp
                     type="number"
                     tickFormatter={valueTickFormatter}
+                    width={layout === 'horizontal' ? 36 : undefined}
                 />
                 <Tooltip
-                    allowEscapeViewBox={{ x: true, y: true }}
                     offset={20}
                     formatter={valueTickFormatter}
                 />
@@ -162,7 +179,7 @@ interface Props<T> {
     className?: string;
 }
 
-function Chart<T extends object>(props: Props<T>) {
+function PolyChart<T extends object>(props: Props<T>) {
     const { settings, data, className } = props;
     if (isBarChart(settings)) {
         return (
@@ -175,4 +192,4 @@ function Chart<T extends object>(props: Props<T>) {
     }
     return null;
 }
-export default Chart;
+export default PolyChart;

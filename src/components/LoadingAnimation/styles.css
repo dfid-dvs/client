@@ -1,7 +1,8 @@
 .loading-animation {
     display: flex;
-    --circle-radius: 5px;
-    --circle-spacing: 3px;
+    --circle-radius: 0.2em;
+    --circle-spacing: 0.1em;
+
     --animation-duration: 1s;
 
     .circle {

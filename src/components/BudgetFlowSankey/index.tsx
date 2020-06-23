@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React from 'react';
+import { isNotDefined } from '@togglecorp/fujs';
 import {
     Sankey,
     Tooltip,
@@ -7,10 +8,21 @@ import {
     Rectangle,
     ResponsiveContainer,
 } from 'recharts';
+
 import { SankeyData } from '#types';
 import { typedMemo } from '#utils/common';
+import { formatNumber, getPrecision } from '#components/Numeral';
 
 import styles from './styles.css';
+
+const valueTickFormatter: TooltipFormatter = (value) => {
+    if (isNotDefined(value)) {
+        return '';
+    }
+    const numberValue = +value;
+    const str = formatNumber(numberValue, true, true, getPrecision(numberValue));
+    return str;
+};
 
 type ExtendedData<T> = T & {
     value: number;
@@ -235,7 +247,9 @@ function BudgetFlowSankey<T>(props: Props<T>) {
                 iterations={2000}
                 danglingLeaf
             >
-                <Tooltip />
+                <Tooltip
+                    formatter={valueTickFormatter}
+                />
                 <Label />
             </Sankey>
         </ResponsiveContainer>
