@@ -1,0 +1,43 @@
+.chart-container {
+    .header {
+        display: flex;
+        align-items: center;
+        padding: calc(var(--spacing-medium) - var(--spacing-small));
+
+        .heading {
+            flex-grow: 1;
+            padding: var(--spacing-small);
+        }
+
+        .actions {
+            flex-shrink: 0;
+            padding: var(--spacing-small);
+        }
+    }
+
+    .chart {
+        margin: var(--spacing-medium);
+
+        :global {
+            .recharts-cartesian-axis-ticks {
+                text {
+                    font-size: var(--font-size-extra-small);
+                }
+            }
+
+            .recharts-legend-wrapper {
+                .recharts-surface {
+                    margin-right: var(--spacing-small)!important;
+                }
+                
+                .recharts-legend-item-text {
+                    vertical-align: middle;
+                    color: var(--color-text-label);
+                    font-family: inherit;
+                    font-size: var(--font-size-small);
+                    font-weight: var(--font-weight-bold);
+                }
+            }
+        }
+    }
+}

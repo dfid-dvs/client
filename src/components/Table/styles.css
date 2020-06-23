@@ -22,7 +22,7 @@
             }
 
             .header-component {
-                padding: var(--spacing-small);
+                padding: var(--spacing-medium);
             }
         }
     }
@@ -42,7 +42,7 @@
             }
 
             .cell-component {
-                padding: var(--spacing-small);
+                padding: var(--spacing-medium);
             }
         }
 
@@ -56,7 +56,7 @@
             }
 
             .cell-component {
-                padding: var(--spacing-small);
+                padding: var(--spacing-medium);
             }
         }
     }

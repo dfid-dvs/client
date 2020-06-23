@@ -1,4 +1,4 @@
 .tab-actions {
     flex-shrink: 0;
-    margin: var(--spacing-small) var(--spacing-medium);
+    padding: 0 var(--spacing-medium);
 }
