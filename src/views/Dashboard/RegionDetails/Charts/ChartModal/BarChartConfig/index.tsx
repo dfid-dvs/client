@@ -19,11 +19,16 @@ import styles from './styles.css';
 type numericKeys = ExtractKeys<ExtendedFiveW, number>;
 
 const colors = [
-    '#003f5c',
-    '#58508d',
-    '#bc5090',
-    '#ff6361',
-    '#ffa600',
+    '#4e79a7',
+    '#f28e2c',
+    '#e15759',
+    '#76b7b2',
+    '#59a14f',
+    '#edc949',
+    '#af7aa1',
+    '#ff9da7',
+    '#9c755f',
+    '#bab0ab',
 ];
 
 interface NumericOption {
@@ -175,13 +180,20 @@ function BarChartConfig(props: Props) {
 
     const handleBarAdd = useCallback(
         () => {
-            setBars(oldBars => [
-                ...oldBars,
-                {
-                    id: randomString(),
-                    color: getRandomFromList(colors),
-                },
-            ]);
+            setBars((oldBars) => {
+                const usedColors = new Set(
+                    oldBars.map(item => item.color).filter(isDefined),
+                );
+                const unusedColors = colors.filter(color => !usedColors.has(color));
+
+                return [
+                    ...oldBars,
+                    {
+                        id: randomString(),
+                        color: getRandomFromList(unusedColors),
+                    },
+                ];
+            });
         },
         [],
     );
