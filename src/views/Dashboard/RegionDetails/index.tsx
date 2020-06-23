@@ -39,7 +39,7 @@ function RegionDetails(props: RegionDetailsProps) {
     const { regionLevel: regionLevelFromContext, programs } = useContext(DomainContext);
 
     const [regionLevel, setRegionLevel] = useState(regionLevelFromContext);
-    const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('table');
+    const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('charts');
 
     const [
         selectedRegions,

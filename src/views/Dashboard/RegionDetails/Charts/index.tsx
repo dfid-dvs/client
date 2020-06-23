@@ -4,7 +4,6 @@ import { isDefined, unique, listToMap } from '@togglecorp/fujs';
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
-import Modal from '#components/Modal';
 import RegionSelector from '#components/RegionSelector';
 
 import {
@@ -13,8 +12,10 @@ import {
 } from '#types';
 
 import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
+import { FiveW } from '../../types';
 
-import PolyChart, { ChartSettings, BarChartSettings } from '../PolyChart';
+import PolyChart, { ChartSettings, BarChartSettings } from './PolyChart';
+import ChartModal from './ChartModal';
 
 import styles from './styles.css';
 
@@ -175,6 +176,16 @@ function Charts(props: Props) {
         setModalVisibility(false);
     }, [setModalVisibility]);
 
+    const handleChartAdd = useCallback(
+        (settings: ChartSettings<FiveW>) => {
+            setChartSettings(currentChartSettings => [
+                ...currentChartSettings,
+                settings,
+            ]);
+        },
+        [],
+    );
+
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
         regionLevel,
         programs,
@@ -191,7 +202,6 @@ function Charts(props: Props) {
                 />
                 <Button
                     onClick={handleModalShow}
-                    disabled
                 >
                     Add chart
                 </Button>
@@ -212,9 +222,10 @@ function Charts(props: Props) {
                 ))}
             </div>
             {showModal && (
-                <Modal onClose={handleModalClose}>
-                    This is the body
-                </Modal>
+                <ChartModal
+                    onClose={handleModalClose}
+                    onSave={handleChartAdd}
+                />
             )}
         </>
     );

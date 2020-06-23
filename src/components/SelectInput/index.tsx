@@ -125,6 +125,7 @@ interface Props<T, K> {
     hideLabel?: boolean;
     error?: string;
     groupKeySelector?: (d: T) => string;
+    nonClearable?: boolean;
 }
 
 function SelectInput<T, K extends string | number>(props: Props<T, K>) {
@@ -141,6 +142,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         placeholder = 'Select an option',
         groupKeySelector,
         label,
+        nonClearable,
     } = props;
 
     const inputContainerRef = React.useRef<HTMLDivElement>(null);
@@ -294,7 +296,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                         {pending && (
                             <LoadingAnimation />
                         )}
-                        {value && (
+                        {isDefined(value) && nonClearable && (
                             <Button
                                 className={styles.clearButton}
                                 transparent

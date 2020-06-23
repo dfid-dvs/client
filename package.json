@@ -19,7 +19,7 @@
         "typecheck": "tsc",
         "lint": "eslint ./src --rule 'import/no-unresolved: 0'",
         "test:coverage": "jest --coverage",
-        "deploy:dev": "test -d build && cp -f build/index.html build/200.hml && surge --domain dvs-nepal.surge.sh build/"
+        "deploy:dev": "test -d build && cp -f build/index.html build/200.html && surge --domain dvs-nepal.surge.sh build/"
     },
     "jest": {
         "setupFiles": [
