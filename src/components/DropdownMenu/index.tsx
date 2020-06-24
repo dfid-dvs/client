@@ -1,41 +1,13 @@
 import React, { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import { getFloatPlacement } from '#utils/common';
 import useBlurEffect from '#hooks/useBlurEffect';
 
 import Portal from '#components/Portal';
 import RawButton from '#components/RawButton';
+import Dropdown from '#components/Dropdown';
 
 import styles from './styles.css';
-
-interface DropdownProps {
-    className?: string;
-    parentRef: React.RefObject<HTMLElement>;
-    elementRef: React.RefObject<HTMLDivElement>;
-    children: React.ReactNode;
-}
-
-function Dropdown(props: DropdownProps) {
-    const {
-        parentRef,
-        elementRef,
-        children,
-        className,
-    } = props;
-
-    const style = getFloatPlacement(parentRef);
-
-    return (
-        <div
-            ref={elementRef}
-            style={style}
-            className={_cs(styles.dropdownContainer, className)}
-        >
-            { children }
-        </div>
-    );
-}
 
 interface Props {
     className?: string;
@@ -44,7 +16,6 @@ interface Props {
     label: string | undefined;
     disabled?: boolean;
 }
-
 function DropdownMenu(props: Props) {
     const {
         className,
@@ -76,7 +47,7 @@ function DropdownMenu(props: Props) {
                     styles.dropdownMenu,
                     showDropdown && styles.dropdownShown,
                 )}
-                elementRef={buttonRef}
+                ref={buttonRef}
                 onClick={handleShowDropdown}
                 disabled={disabled}
             >
@@ -85,7 +56,7 @@ function DropdownMenu(props: Props) {
             {showDropdown && (
                 <Portal>
                     <Dropdown
-                        elementRef={dropdownRef}
+                        ref={dropdownRef}
                         className={dropdownContainerClassName}
                         parentRef={buttonRef}
                     >

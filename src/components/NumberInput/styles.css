@@ -1,0 +1,14 @@
+.number-input {
+    color: inherit;
+
+    .input {
+        flex-grow: 1;
+        padding: 0 var(--spacing-extra-small);
+
+        -moz-appearance:textfield;
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+    }
+}

@@ -17,8 +17,6 @@ export interface Props {
 
     label?: React.ReactNode;
     disabled?: boolean;
-    // inputClassName?: string;
-    // inputRef?: React.RefObject<HTMLInputElement>;
 }
 
 function Input(props: Props) {
@@ -34,9 +32,6 @@ function Input(props: Props) {
         disabled,
         error,
         children,
-        // inputRef,
-        // inputClassName,
-        // ...otherProps
     } = props;
 
     return (
@@ -56,20 +51,12 @@ function Input(props: Props) {
             <div
                 className={_cs(styles.main, inputContainerClassName, disabled && styles.disabled)}
             >
-                { icons && (
+                {icons && (
                     <div className={_cs(iconContainerClassName, styles.icons)}>
                         { icons }
                     </div>
                 )}
                 {children}
-                {/*
-                <RawInput
-                    elementRef={inputRef}
-                    className={_cs(styles.input, inputClassName)}
-                    disabled={disabled}
-                    {...otherProps}
-                />
-                */}
                 { actions && (
                     <div className={_cs(actionContainerClassName, styles.actions)}>
                         { actions }

@@ -11,10 +11,10 @@ import {
     isDefined,
 } from '@togglecorp/fujs';
 
-import LoadingAnimation from '#components/LoadingAnimation';
-import { getFloatPlacement } from '#utils/common';
 import useBlurEffect from '#hooks/useBlurEffect';
 
+import Dropdown from '#components/Dropdown';
+import LoadingAnimation from '#components/LoadingAnimation';
 import List from '#components/List';
 import Button from '#components/Button';
 import Portal from '#components/Portal';
@@ -25,15 +25,15 @@ import styles from './styles.css';
 
 // use memo
 function Option(props: RawButtonProps & { selected: boolean }) {
-    const divRef = useRef<HTMLButtonElement>(null);
+    const ref = useRef<HTMLButtonElement>(null);
     const focusedByMouse = useRef(false);
 
     const { selected, ...otherProps } = props;
 
     useEffect(
         () => {
-            if (selected && !focusedByMouse.current && divRef.current) {
-                divRef.current.scrollIntoView({
+            if (selected && !focusedByMouse.current && ref.current) {
+                ref.current.scrollIntoView({
                     // behavior: 'smooth',
                     block: 'center',
                 });
@@ -58,38 +58,11 @@ function Option(props: RawButtonProps & { selected: boolean }) {
 
     return (
         <RawButton
-            elementRef={divRef}
+            ref={ref}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             {...otherProps}
         />
-    );
-}
-
-interface DropdownProps {
-    className?: string;
-    parentRef: React.RefObject<HTMLElement>;
-    elementRef: React.RefObject<HTMLDivElement>;
-    children: React.ReactNode;
-}
-function Dropdown(props: DropdownProps) {
-    const {
-        parentRef,
-        elementRef,
-        children,
-        className,
-    } = props;
-
-    const style = getFloatPlacement(parentRef);
-
-    return (
-        <div
-            ref={elementRef}
-            style={style}
-            className={_cs(styles.dropdownContainer, className)}
-        >
-            { children }
-        </div>
     );
 }
 
@@ -126,6 +99,7 @@ interface Props<T, K> {
     error?: string;
     groupKeySelector?: (d: T) => string;
     nonClearable?: boolean;
+    autoFocus?: boolean;
 }
 
 function SelectInput<T, K extends string | number>(props: Props<T, K>) {
@@ -143,6 +117,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         groupKeySelector,
         label,
         nonClearable,
+        autoFocus,
     } = props;
 
     const inputContainerRef = React.useRef<HTMLDivElement>(null);
@@ -291,12 +266,13 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                 onChange={handleInputValueChange}
                 placeholder={placeholder}
                 disabled={disabled}
+                autoFocus={autoFocus}
                 actions={(
                     <>
                         {pending && (
                             <LoadingAnimation />
                         )}
-                        {isDefined(value) && nonClearable && (
+                        {isDefined(value) && !nonClearable && (
                             <Button
                                 className={styles.clearButton}
                                 transparent
@@ -313,8 +289,8 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
             { showDropdown && (
                 <Portal>
                     <Dropdown
-                        elementRef={dropdownRef}
-                        className={dropdownContainerClassName}
+                        ref={dropdownRef}
+                        className={_cs(dropdownContainerClassName, styles.dropdownContainer)}
                         parentRef={inputContainerRef}
                     >
                         {(!filteredOptions || filteredOptions.length <= 0) && (

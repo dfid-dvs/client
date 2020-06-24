@@ -16,6 +16,7 @@ import {
 
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
+import NumberInput from '#components/NumberInput';
 
 import { BaseHeader, SortDirection, FilterType } from '../types';
 import { SortParameter } from '../useSorting';
@@ -300,7 +301,7 @@ function HeaderCell(props: HeaderCellProps) {
                 )}
                 {filterType === FilterType.number && (
                     <>
-                        <TextInput
+                        <NumberInput
                             icons={<FaGreaterThanEqual className={styles.icon} />}
                             className={styles.numberInput}
                             inputContainerClassName={styles.rawInputContainer}
@@ -316,13 +317,12 @@ function HeaderCell(props: HeaderCellProps) {
                                 );
                             }}
                         />
-                        <TextInput
+                        <NumberInput
                             icons={<FaLessThanEqual className={styles.icon} />}
                             className={styles.numberInput}
                             inputContainerClassName={styles.rawInputContainer}
                             inputClassName={styles.rawInput}
                             value={filterValue?.lessThanOrEqualTo}
-                            type="number"
                             placeholder="Max"
                             onChange={(value: string) => {
                                 const numericValue = isTruthyString(value) ? +value : undefined;

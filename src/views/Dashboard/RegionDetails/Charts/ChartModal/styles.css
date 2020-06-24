@@ -7,4 +7,8 @@
         flex-direction: column;
         padding: var(--spacing-medium);
     }
+
+    .chart-type-input {
+        margin-bottom: var(--spacing-large);
+    }
 }

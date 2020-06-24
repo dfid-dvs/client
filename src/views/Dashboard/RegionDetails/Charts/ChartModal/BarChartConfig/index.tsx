@@ -13,6 +13,7 @@ import SelectInput from '#components/SelectInput';
 import SegmentInput from '#components/SegmentInput';
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
+import NumberInput from '#components/NumberInput';
 import { ExtractKeys } from '#utils/common';
 import { Indicator } from '#types';
 
@@ -55,6 +56,21 @@ const barTypeOptions: BarTypeOption[] = [
 
 const barTypeKeySelector = (item: BarTypeOption) => item.key;
 const barTypeLabelSelector = (item: BarTypeOption) => item.title;
+
+type OrderOptionKey = 'asc' | 'dsc';
+
+interface OrderOption {
+    key: OrderOptionKey;
+    title: string;
+}
+
+const orderOptions: OrderOption[] = [
+    { key: 'asc', title: 'ascending' },
+    { key: 'dsc', title: 'descending' },
+];
+
+const orderKeySelector = (item: OrderOption) => item.key;
+const orderLabelSelector = (item: OrderOption) => item.title;
 
 interface NumericOption {
     key: string;
@@ -166,6 +182,7 @@ function BarItem(props: BarItemProps) {
                 optionLabelSelector={labelSelector}
                 optionKeySelector={keySelector}
                 groupKeySelector={groupSelector}
+                nonClearable
             />
             <TextInput
                 className={styles.colorSelect}
@@ -210,6 +227,14 @@ function BarChartConfig(props: Props) {
             color: getRandomFromList(colors),
         },
     ]);
+    const [limitValue, setLimitValue] = useState<string>('7');
+    const [order, setOrder] = useState<OrderOptionKey | undefined>('asc');
+    const [orderField, setOrderField] = useState<string | undefined>();
+
+    // NOTE: there is always at least one bar
+    const autoOrderField = isDefined(orderField)
+        ? orderField
+        : bars[0].optionName;
 
     const options: NumericOption[] = useMemo(
         () => {
@@ -236,7 +261,7 @@ function BarChartConfig(props: Props) {
     const handleSave = useCallback(
         () => {
             if (isFalsyString(title)) {
-                setError('Title is required');
+                setError('Title field is required.');
                 return;
             }
 
@@ -258,8 +283,30 @@ function BarChartConfig(props: Props) {
                 };
             }).filter(isDefined);
 
-            if (bars.length <= 0) {
-                setError('At least one bar is required');
+            if (properBars.length <= 0) {
+                setError('At least one bar should be set.');
+                return;
+            }
+
+            if (isFalsyString(limitValue)) {
+                setError('Limit value on data points is required.');
+                return;
+            }
+
+            const limit = +limitValue;
+            if (limit <= 0) {
+                setError('Limit value must be greater than zero.');
+                return;
+            }
+
+            if (isFalsyString(autoOrderField)) {
+                setError('Field to order data points is required.');
+                return;
+            }
+
+            const orderOption = options.find(item => item.key === autoOrderField);
+            if (!orderOption) {
+                setError('Field to order data points is required.');
                 return;
             }
 
@@ -276,13 +323,11 @@ function BarChartConfig(props: Props) {
 
                 keySelector: item => item.name,
 
-                /*
                 limit: {
-                    count: 10,
-                    method: 'max',
-                    valueSelector: option.valueSelector,
+                    count: limit,
+                    method: order === 'asc' ? 'min' : 'max',
+                    valueSelector: orderOption.valueSelector,
                 },
-                */
 
                 bars: properBars,
 
@@ -291,7 +336,7 @@ function BarChartConfig(props: Props) {
 
             onSave(settings);
         },
-        [onSave, bars, title, options, barType],
+        [onSave, bars, title, options, barType, limitValue, order, autoOrderField],
     );
 
     const handleBarAdd = useCallback(
@@ -331,33 +376,81 @@ function BarChartConfig(props: Props) {
                     optionLabelSelector={barTypeLabelSelector}
                     optionKeySelector={barTypeKeySelector}
                 />
-                {bars.map((bar, index) => (
-                    <BarItem
-                        key={bar.id}
-                        index={index}
-                        value={bar}
-                        onValueChange={setBars}
-                        options={options}
-                    />
-                ))}
-                <Button
-                    className={styles.addButton}
-                    disabled={bars.length > maxRow}
-                    onClick={handleBarAdd}
+                <div className={styles.barsHeader}>
+                    <h3 className={styles.header}>
+                        Bars
+                    </h3>
+                    <Button
+                        className={styles.addButton}
+                        disabled={bars.length > maxRow}
+                        onClick={handleBarAdd}
+                    >
+                        Add Bar
+                    </Button>
+                </div>
+                <div className={styles.bars}>
+                    {bars.map((bar, index) => (
+                        <BarItem
+                            key={bar.id}
+                            index={index}
+                            value={bar}
+                            onValueChange={setBars}
+                            options={options}
+                        />
+                    ))}
+                </div>
+                <div
+                    className={styles.checkboxLabel}
                 >
-                    Add Bar
-                </Button>
+                    <span>
+                        Show
+                    </span>
+                    <NumberInput
+                        inputContainerClassName={styles.limitInput}
+                        onChange={setLimitValue}
+                        value={limitValue}
+                        placeholder="N"
+                    />
+                    <span>
+                        data points in
+                    </span>
+                    <SelectInput
+                        className={styles.orderInput}
+                        options={orderOptions}
+                        onChange={setOrder}
+                        value={order}
+                        optionLabelSelector={orderLabelSelector}
+                        optionKeySelector={orderKeySelector}
+                        nonClearable
+                    />
+                    <span>
+                        order by
+                    </span>
+                    <SelectInput
+                        className={styles.fieldInput}
+                        options={options}
+                        onChange={setOrderField}
+                        value={autoOrderField}
+                        optionLabelSelector={labelSelector}
+                        optionKeySelector={keySelector}
+                        groupKeySelector={groupSelector}
+                        nonClearable
+                    />
+                </div>
             </div>
             <div className={styles.footer}>
+                <div className={styles.error}>
+                    {isTruthyString(error) && (
+                        <span>{error}</span>
+                    )}
+                </div>
                 <Button
+                    className={styles.submitButton}
                     onClick={handleSave}
                     variant="primary"
                 >
                     Save
                 </Button>
-                {isTruthyString(error) && (
-                    <span>{error}</span>
-                )}
             </div>
         </div>
     );

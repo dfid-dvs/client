@@ -60,8 +60,14 @@ function ChartModal(props: Props) {
             className={styles.modal}
             bodyClassName={styles.body}
             onClose={onClose}
+            header={(
+                <h2>
+                    Add Chart
+                </h2>
+            )}
         >
             <SelectInput
+                className={styles.chartTypeInput}
                 label="Chart Type"
                 options={chartTypeOptions}
                 onChange={setChartType}
@@ -69,6 +75,7 @@ function ChartModal(props: Props) {
                 optionLabelSelector={chartLabelSelector}
                 optionKeySelector={chartKeySelector}
                 nonClearable
+                autoFocus
             />
             {chartType === 'bar-chart' && (
                 <BarChartConfig

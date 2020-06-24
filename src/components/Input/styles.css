@@ -5,6 +5,7 @@
         display: flex;
         border-radius: var(--radius-input);
         background-color: var(--color-input-background);
+        padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-extra-small));
 
         &.disabled {
             background-color: var(--color-input-background-disabled);
@@ -13,8 +14,6 @@
         &.errored {
             background-color: var(--color-input-background-errored);
         }
-
-        padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-extra-small));
 
         .icons {
             display: flex;

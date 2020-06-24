@@ -1,0 +1,12 @@
+.dropdown-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    border: var(--width-separator-thin) solid var(--color-separator);
+    box-shadow: 0 0 5px 0 var(--color-shadow);
+    background-color: var(--color-foreground);
+    padding: calc(var(--spacing-large) - var(--spacing-small)) calc(var(--spacing-large) - var(--spacing-medium));
+    max-width: 90vw;
+    max-height: 50vh;
+    overflow: auto;
+}

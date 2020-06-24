@@ -10,55 +10,60 @@ import RawButton, { Props as RawButtonProps } from '#components/RawButton';
 
 import styles from './styles.css';
 
-export interface Props extends Omit<RawButtonProps, 'value' | 'onChange' | 'onClick'> {
+export interface Props extends Omit<RawButtonProps, 'ref' | 'value' | 'onChange' | 'onClick'> {
     value?: boolean;
     onChange: (val: boolean) => void;
 
     // NOTE: if value is false and indeterminate is true, show a filled checkbox
     indeterminate?: boolean;
+    labelClassName?: string;
 }
 
-function CheckboxButton(props: Props) {
-    const {
-        className,
-        children,
-        value,
-        onChange,
-        indeterminate,
-    } = props;
+const CheckboxButton = React.forwardRef<HTMLButtonElement, Props>(
+    (props, ref) => {
+        const {
+            className,
+            children,
+            value,
+            onChange,
+            indeterminate,
+            labelClassName,
+        } = props;
 
-    const handleClick = React.useCallback(() => {
-        if (onChange) {
-            onChange(!value);
-        }
-    }, [value, onChange]);
+        const handleClick = React.useCallback(() => {
+            if (onChange) {
+                onChange(!value);
+            }
+        }, [value, onChange]);
 
-    return (
-        <RawButton
-            className={_cs(
-                className,
-                styles.checkbox,
-                value && styles.checked,
-                indeterminate && styles.indeterminate,
-            )}
-            onClick={handleClick}
-        >
-            <div className={styles.icon}>
-                {value && (
-                    <MdCheckBox />
+        return (
+            <RawButton
+                ref={ref}
+                className={_cs(
+                    className,
+                    styles.checkbox,
+                    value && styles.checked,
+                    indeterminate && styles.indeterminate,
                 )}
-                {!value && indeterminate && (
-                    <MdIndeterminateCheckBox />
-                )}
-                {!value && !indeterminate && (
-                    <MdCheckBoxOutlineBlank />
-                )}
-            </div>
-            <div className={styles.label}>
-                {children}
-            </div>
-        </RawButton>
-    );
-}
+                onClick={handleClick}
+            >
+                <div className={styles.icon}>
+                    {value && (
+                        <MdCheckBox />
+                    )}
+                    {!value && indeterminate && (
+                        <MdIndeterminateCheckBox />
+                    )}
+                    {!value && !indeterminate && (
+                        <MdCheckBoxOutlineBlank />
+                    )}
+                </div>
+                <div className={_cs(styles.label, labelClassName)}>
+                    {children}
+                </div>
+            </RawButton>
+        );
+    },
+);
 
 export default CheckboxButton;
