@@ -1,4 +1,39 @@
 .bar-chart {
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
+
+    .content {
+        flex-grow: 1;
+
+        .bar {
+            display: flex;
+            align-items: flex-end;
+
+            .select {
+                flex-grow: 1;
+            }
+
+            .color-select {
+                flex-shrink: 0;
+            }
+
+            .trash-button {
+                flex-shrink: 0;
+            }
+
+            >:not(:last-child) {
+                margin-right: var(--spacing-small);
+            }
+        }
+
+        .add-button {
+            margin: var(--spacing-small) 0;
+        }
+    }
+
+    .footer {
+        display: flex;
+        flex-shrink: 0;
+    }
 }

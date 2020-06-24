@@ -1,38 +1,42 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import RawInput, { Props as RawInputProps } from '../RawInput';
 import Label from '../Label';
 import styles from './styles.css';
 
-export interface Props<T> extends Omit<RawInputProps<T>, 'elementRef'> {
+export interface Props {
     className?: string;
     inputContainerClassName?: string;
-    inputClassName?: string;
     icons?: React.ReactNode;
     actions?: React.ReactNode;
-    inputRef?: React.RefObject<HTMLInputElement>;
     elementRef?: React.RefObject<HTMLDivElement>;
     error?: string;
     iconContainerClassName?: string;
     actionContainerClassName?: string;
+    children?: React.ReactNode;
+
+    label?: React.ReactNode;
+    disabled?: boolean;
+    // inputClassName?: string;
+    // inputRef?: React.RefObject<HTMLInputElement>;
 }
 
-function Input<T>(props: Props<T>) {
+function Input(props: Props) {
     const {
         elementRef,
         className,
         label,
         icons,
         actions,
-        inputRef,
         inputContainerClassName,
         iconContainerClassName,
         actionContainerClassName,
-        inputClassName,
         disabled,
         error,
-        ...otherProps
+        children,
+        // inputRef,
+        // inputClassName,
+        // ...otherProps
     } = props;
 
     return (
@@ -40,7 +44,7 @@ function Input<T>(props: Props<T>) {
             ref={elementRef}
             className={_cs(styles.inputContainer, className)}
         >
-            { label && (
+            {label && (
                 <Label
                     className={styles.label}
                     disabled={disabled}
@@ -57,12 +61,15 @@ function Input<T>(props: Props<T>) {
                         { icons }
                     </div>
                 )}
+                {children}
+                {/*
                 <RawInput
                     elementRef={inputRef}
                     className={_cs(styles.input, inputClassName)}
                     disabled={disabled}
                     {...otherProps}
                 />
+                */}
                 { actions && (
                     <div className={_cs(actionContainerClassName, styles.actions)}>
                         { actions }

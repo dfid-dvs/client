@@ -2,6 +2,9 @@ import React, { useState, useCallback } from 'react';
 
 import Modal from '#components/Modal';
 import SelectInput from '#components/SelectInput';
+import {
+    Indicator,
+} from '#types';
 
 import { ChartSettings } from '../PolyChart';
 import BarChartConfig from './BarChartConfig';
@@ -33,12 +36,14 @@ const chartKeySelector = (item: ChartTypeOption) => item.type;
 interface Props {
     onSave: (settings: ChartSettings<ExtendedFiveW>) => void;
     onClose: () => void;
+    indicatorList: Indicator[] | undefined;
 }
 
 function ChartModal(props: Props) {
     const {
         onClose,
         onSave,
+        indicatorList,
     } = props;
 
     const [chartType, setChartType] = useState<ChartType | undefined>();
@@ -53,6 +58,7 @@ function ChartModal(props: Props) {
     return (
         <Modal
             className={styles.modal}
+            bodyClassName={styles.body}
             onClose={onClose}
         >
             <SelectInput
@@ -66,6 +72,7 @@ function ChartModal(props: Props) {
             />
             {chartType === 'bar-chart' && (
                 <BarChartConfig
+                    indicatorList={indicatorList}
                     onSave={handleSave}
                 />
             )}

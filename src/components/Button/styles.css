@@ -45,6 +45,10 @@
         &.warning {
             color: var(--color-warning);
         }
+
+        &:disabled {
+            color: var(--color-text-disabled);
+        }
     }
 
     &:not(.transparent) {

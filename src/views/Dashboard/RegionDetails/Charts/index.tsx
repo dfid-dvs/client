@@ -177,7 +177,7 @@ function Charts(props: Props) {
     }, [setModalVisibility]);
 
     const handleChartAdd = useCallback(
-        (settings: ChartSettings<FiveW>) => {
+        (settings: ChartSettings<ExtendedFiveW>) => {
             setChartSettings(currentChartSettings => [
                 ...currentChartSettings,
                 settings,
@@ -225,6 +225,7 @@ function Charts(props: Props) {
                 <ChartModal
                     onClose={handleModalClose}
                     onSave={handleChartAdd}
+                    indicatorList={indicatorList}
                 />
             )}
         </>

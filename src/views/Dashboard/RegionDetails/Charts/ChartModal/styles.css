@@ -1,4 +1,10 @@
 .modal {
     min-width: 300px;
     min-height: 300px;
+
+    .body {
+        display: flex;
+        flex-direction: column;
+        padding: var(--spacing-medium);
+    }
 }
