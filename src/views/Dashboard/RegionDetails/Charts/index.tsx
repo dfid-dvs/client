@@ -12,9 +12,9 @@ import {
 } from '#types';
 
 import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
-import { FiveW } from '../../types';
 
-import PolyChart, { ChartSettings, BarChartSettings } from './PolyChart';
+import PolyChart from './PolyChart';
+import { ChartSettings, BarChartSettings } from './types';
 import ChartModal from './ChartModal';
 
 import styles from './styles.css';

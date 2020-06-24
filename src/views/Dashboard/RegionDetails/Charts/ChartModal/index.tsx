@@ -6,10 +6,11 @@ import {
     Indicator,
 } from '#types';
 
-import { ChartSettings } from '../PolyChart';
-import BarChartConfig from './BarChartConfig';
 
+import { ChartSettings } from '../types';
 import { ExtendedFiveW } from '../../../useExtendedFiveW';
+
+import BarChartConfig from './BarChartConfig';
 import styles from './styles.css';
 
 type ChartType = 'bar-chart' | 'pie-chart';

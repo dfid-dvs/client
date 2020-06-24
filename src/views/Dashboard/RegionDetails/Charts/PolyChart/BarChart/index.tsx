@@ -7,49 +7,9 @@ import { compareNumber, isNotDefined, isDefined, _cs } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import SegmentInput from '#components/SegmentInput';
+import { BarChartSettings } from '../../types';
 
 import styles from './styles.css';
-
-export interface BarChartSettings<T> {
-    id: string;
-    type: 'bar-chart';
-    title: string;
-
-    // layout: 'vertical' | 'horizontal';
-    keySelector: (value: T) => string;
-    bars: {
-        title: string;
-        valueSelector: (value: T) => number | null;
-        color: string;
-        stackId?: string;
-    }[];
-
-    limit?: {
-        count: number;
-        method: 'min' | 'max';
-        valueSelector: (value: T) => number | null;
-    };
-
-    dependencies?: number[];
-}
-export interface PieChartSettings<T> {
-    id: string;
-    type: 'pie-chart';
-    title: string;
-
-    keySelector: (value: T) => string;
-    valueSelector: (value: T) => string;
-
-    colorPalette?: string[];
-
-    dependencies?: [];
-}
-
-export type ChartSettings<T> = BarChartSettings<T> | PieChartSettings<T>;
-
-function isBarChart<T>(settings: ChartSettings<T>): settings is BarChartSettings<T> {
-    return settings.type === 'bar-chart';
-}
 
 const orientations: {
     key: 'horizontal' | 'vertical';
@@ -81,7 +41,7 @@ const chartMargin = {
     left: 0,
 };
 
-function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
+export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     const {
         settings,
         data,
@@ -172,24 +132,4 @@ function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         </div>
     );
 }
-
-interface Props<T> {
-    settings: ChartSettings<T>;
-    data: T[] | undefined;
-    className?: string;
-}
-
-function PolyChart<T extends object>(props: Props<T>) {
-    const { settings, data, className } = props;
-    if (isBarChart(settings)) {
-        return (
-            <BarChartUnit
-                data={data}
-                settings={settings}
-                className={className}
-            />
-        );
-    }
-    return null;
-}
-export default PolyChart;
+export default BarChartUnit;

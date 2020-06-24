@@ -18,7 +18,7 @@ import { ExtractKeys } from '#utils/common';
 import { Indicator } from '#types';
 
 import { ExtendedFiveW } from '../../../../useExtendedFiveW';
-import { BarChartSettings } from '../../PolyChart';
+import { BarChartSettings } from '../../types';
 import styles from './styles.css';
 
 type numericKeys = ExtractKeys<ExtendedFiveW, number>;
