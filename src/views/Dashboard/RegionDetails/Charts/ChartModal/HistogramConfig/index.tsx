@@ -4,11 +4,13 @@ import {
     isFalsyString,
     isTruthyString,
     getRandomFromList,
+    _cs,
 } from '@togglecorp/fujs';
 
 import SelectInput from '#components/SelectInput';
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
+import ColorInput from '#components/ColorInput';
 import NumberInput from '#components/NumberInput';
 import { ExtractKeys } from '#utils/common';
 import { Indicator } from '#types';
@@ -81,6 +83,7 @@ function HistogramConfig(props: Props) {
     const {
         onSave,
         indicatorList,
+        className,
     } = props;
 
     const [error, setError] = useState<string | undefined>(undefined);
@@ -170,7 +173,7 @@ function HistogramConfig(props: Props) {
     );
 
     return (
-        <div className={styles.barChart}>
+        <div className={_cs(className, styles.histogramConfig)}>
             <div className={styles.content}>
                 <TextInput
                     label="Title"
@@ -189,16 +192,18 @@ function HistogramConfig(props: Props) {
                     groupKeySelector={groupSelector}
                     nonClearable
                 />
-                <NumberInput
-                    label="Total bins"
-                    value={binCount}
-                    onChange={setBinCount}
-                />
-                <TextInput
-                    label="Color"
-                    value={color}
-                    onChange={setColor}
-                />
+                <div className={styles.group}>
+                    <NumberInput
+                        label="Total bins"
+                        value={binCount}
+                        onChange={setBinCount}
+                    />
+                    <ColorInput
+                        label="Color"
+                        value={color}
+                        onChange={setColor}
+                    />
+                </div>
             </div>
             <div className={styles.footer}>
                 <div className={styles.error}>

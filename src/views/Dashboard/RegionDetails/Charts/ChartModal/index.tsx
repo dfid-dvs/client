@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { FiBarChart2 } from 'react-icons/fi';
 import { TiChartPie } from 'react-icons/ti';
+import { GiHistogram } from 'react-icons/gi';
 
 import Modal from '#components/Modal';
-import SelectInput from '#components/SelectInput';
 import SegmentInput from '#components/SegmentInput';
 import {
     Indicator,
@@ -48,7 +48,13 @@ const chartTypeOptions: ChartTypeOption[] = [
     },
     {
         type: 'histogram',
-        name: 'Histogram',
+        name: (
+            <>
+                <GiHistogram />
+                &nbsp;
+                Histogram
+            </>
+        ),
     },
 
 ];
@@ -114,6 +120,7 @@ function ChartModal(props: Props) {
             )}
             {chartType === 'histogram' && (
                 <HistogramConfig
+                    className={styles.chartConfig}
                     indicatorList={indicatorList}
                     onSave={handleSave}
                 />

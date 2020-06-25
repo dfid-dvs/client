@@ -1,0 +1,10 @@
+.color-input {
+    color: inherit;
+
+    .input {
+        flex-grow: 1;
+        outline: none;
+        cursor: pointer;
+        padding: 0 var(--spacing-extra-small);
+    }
+}

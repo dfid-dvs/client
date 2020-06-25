@@ -14,6 +14,7 @@ import SelectInput from '#components/SelectInput';
 import SegmentInput from '#components/SegmentInput';
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
+import ColorInput from '#components/ColorInput';
 import NumberInput from '#components/NumberInput';
 import { ExtractKeys } from '#utils/common';
 import { Indicator } from '#types';
@@ -186,7 +187,7 @@ function BarItem(props: BarItemProps) {
                 groupKeySelector={groupSelector}
                 nonClearable
             />
-            <TextInput
+            <ColorInput
                 className={styles.colorSelect}
                 label="Color"
                 onChange={handleColorChange}
@@ -367,7 +368,7 @@ function BarChartConfig(props: Props) {
     );
 
     return (
-        <div className={_cs(className, styles.barChart)}>
+        <div className={_cs(className, styles.barChartConfig)}>
             <div className={styles.content}>
                 <section className={styles.topSection}>
                     <TextInput
