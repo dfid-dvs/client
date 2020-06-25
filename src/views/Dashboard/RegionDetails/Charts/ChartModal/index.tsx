@@ -12,9 +12,10 @@ import { ExtendedFiveW } from '../../../useExtendedFiveW';
 
 import BarChartConfig from './BarChartConfig';
 import PieChartConfig from './PieChartConfig';
+import HistogramConfig from './HistogramConfig';
 import styles from './styles.css';
 
-type ChartType = 'bar-chart' | 'pie-chart';
+type ChartType = 'bar-chart' | 'pie-chart' | 'histogram';
 
 interface ChartTypeOption {
     type: ChartType;
@@ -30,6 +31,11 @@ const chartTypeOptions: ChartTypeOption[] = [
         type: 'pie-chart',
         name: 'Pie Chart',
     },
+    {
+        type: 'histogram',
+        name: 'Histogram',
+    },
+
 ];
 
 const chartLabelSelector = (item: ChartTypeOption) => item.name;
@@ -87,6 +93,12 @@ function ChartModal(props: Props) {
             )}
             {chartType === 'pie-chart' && (
                 <PieChartConfig
+                    indicatorList={indicatorList}
+                    onSave={handleSave}
+                />
+            )}
+            {chartType === 'histogram' && (
+                <HistogramConfig
                     indicatorList={indicatorList}
                     onSave={handleSave}
                 />

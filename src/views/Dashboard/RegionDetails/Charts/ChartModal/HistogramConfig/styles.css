@@ -1,0 +1,90 @@
+.bar-chart {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+
+        .checkbox-label {
+            display: flex;
+            align-items: baseline;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            padding: var(--spacing-small) 0;
+
+            >:not(:last-child) {
+                margin-right: var(--spacing-small);
+            }
+
+            .order-input {
+                input {
+                    width: 80px;
+                }
+            }
+            .limit-input {
+                input {
+                    width: 32px;
+                }
+            }
+        }
+
+        .bars-header {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            padding: var(--spacing-small) 0;
+
+            .header {
+                flex-grow: 1;
+            }
+
+            .add-button {
+                flex-shrink: 0;
+            }
+        }
+
+        .bars {
+            flex-grow: 1;
+            padding: var(--spacing-small) 0;
+            overflow: auto;
+
+            .bar {
+                display: flex;
+                align-items: flex-end;
+
+                .select {
+                    flex-grow: 1;
+                }
+
+                .color-select {
+                    flex-shrink: 0;
+                }
+
+                .trash-button {
+                    flex-shrink: 0;
+                }
+
+                >:not(:last-child) {
+                    margin-right: var(--spacing-small);
+                }
+            }
+        }
+    }
+
+    .footer {
+        display: flex;
+        flex-shrink: 0;
+
+        .error {
+            flex-grow: 1;
+            color: var(--color-danger);
+        }
+
+        .submit-button {
+            flex-shrink: 0;
+        }
+    }
+}

@@ -3,19 +3,35 @@ import {
     randomString,
     isFalsyString,
     isTruthyString,
+    getRandomFromList,
 } from '@togglecorp/fujs';
 
 import SelectInput from '#components/SelectInput';
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
+import NumberInput from '#components/NumberInput';
 import { ExtractKeys } from '#utils/common';
 import { Indicator } from '#types';
 
 import { ExtendedFiveW } from '../../../../useExtendedFiveW';
-import { PieChartSettings } from '../../types';
+import { HistogramSettings } from '../../types';
 import styles from './styles.css';
 
 type numericKeys = ExtractKeys<ExtendedFiveW, number>;
+
+// FIXME: move this somewhere
+const colors = [
+    '#4e79a7',
+    '#f28e2c',
+    '#e15759',
+    '#76b7b2',
+    '#59a14f',
+    '#edc949',
+    '#af7aa1',
+    '#ff9da7',
+    '#9c755f',
+    '#bab0ab',
+];
 
 interface NumericOption {
     key: string;
@@ -57,11 +73,11 @@ const labelSelector = (item: NumericOption) => item.title;
 const groupSelector = (item: NumericOption) => item.category;
 
 interface Props {
-    onSave: (settings: PieChartSettings<ExtendedFiveW>) => void;
+    onSave: (settings: HistogramSettings<ExtendedFiveW>) => void;
     indicatorList: Indicator[] | undefined;
 }
 
-function PieChartConfig(props: Props) {
+function HistogramConfig(props: Props) {
     const {
         onSave,
         indicatorList,
@@ -71,6 +87,8 @@ function PieChartConfig(props: Props) {
 
     const [title, setTitle] = useState('');
     const [orderField, setOrderField] = useState<string | undefined>();
+    const [color, setColor] = useState(() => getRandomFromList(colors));
+    const [binCount, setBinCount] = useState('10');
 
     const options: NumericOption[] = useMemo(
         () => {
@@ -114,23 +132,41 @@ function PieChartConfig(props: Props) {
                 return;
             }
 
+            if (isFalsyString(color)) {
+                setError('Color field is required.');
+                return;
+            }
+
+            if (isFalsyString(binCount)) {
+                setError('Total Bins field is required.');
+                return;
+            }
+
+            const bins = +binCount;
+            if (bins <= 1) {
+                setError('Total Bins must be greater than one.');
+                return;
+            }
+
             const dependencies = option.dependency
                 ? [option.dependency]
                 : undefined;
 
-            const settings: PieChartSettings<ExtendedFiveW> = {
+            const settings: HistogramSettings<ExtendedFiveW> = {
                 id: chartId,
-                type: 'pie-chart',
+                type: 'histogram',
                 title,
 
-                keySelector: item => item.name,
+                binCount: bins,
+                color,
+
                 valueSelector: option.valueSelector,
                 dependencies,
             };
 
             onSave(settings);
         },
-        [onSave, options, orderField, title],
+        [onSave, options, orderField, title, binCount, color],
     );
 
     return (
@@ -153,6 +189,16 @@ function PieChartConfig(props: Props) {
                     groupKeySelector={groupSelector}
                     nonClearable
                 />
+                <NumberInput
+                    label="Total bins"
+                    value={binCount}
+                    onChange={setBinCount}
+                />
+                <TextInput
+                    label="Color"
+                    value={color}
+                    onChange={setColor}
+                />
             </div>
             <div className={styles.footer}>
                 <div className={styles.error}>
@@ -171,4 +217,4 @@ function PieChartConfig(props: Props) {
         </div>
     );
 }
-export default PieChartConfig;
+export default HistogramConfig;

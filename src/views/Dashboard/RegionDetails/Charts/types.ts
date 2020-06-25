@@ -40,6 +40,7 @@ export interface HistogramSettings<T> {
     valueSelector: (value: T) => number;
     color: string;
     dependencies?: number[];
+    binCount: number;
 }
 
 export type ChartSettings<T> = BarChartSettings<T> | PieChartSettings<T> | HistogramSettings<T>;

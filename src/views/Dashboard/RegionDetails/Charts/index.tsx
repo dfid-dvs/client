@@ -25,6 +25,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         type: 'histogram',
         title: 'Histogram',
         color: 'red',
+        binCount: 10,
         // valueSelector: item => item.allocatedBudget,
         valueSelector: item => item.indicators[118] || 0,
         dependencies: [118],

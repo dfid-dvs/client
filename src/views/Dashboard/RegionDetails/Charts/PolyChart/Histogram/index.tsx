@@ -1,12 +1,8 @@
-import React, { useMemo, useState } from 'react';
-import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-    TooltipFormatter,
-} from 'recharts';
-import { compareNumber, isNotDefined, isDefined, _cs, sum, listToGroupList } from '@togglecorp/fujs';
+import React, { useMemo } from 'react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
-import SegmentInput from '#components/SegmentInput';
 import { HistogramSettings } from '../../types';
 
 import styles from './styles.css';
@@ -44,6 +40,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         title,
         valueSelector,
         color,
+        binCount,
     } = settings;
 
     const finalData = useMemo(
@@ -57,8 +54,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
             if (values.length <= 1 || min === max) {
                 return undefined;
             }
-            const categories = 20;
-            const gap = (max - min) / (categories - 1);
+            const gap = (max - min) / (binCount - 1);
 
             const valuesWithBin = values.map(item => ({
                 bin: Math.round((item - min) / gap),
@@ -71,14 +67,14 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                 item => item.value,
             );
 
-            const finalValues = (Array.from({ length: categories })).map((_, index) => ({
+            const finalValues = (Array.from({ length: binCount })).map((_, index) => ({
                 key: `${valueTickFormatter(min + (gap * index))} - ${valueTickFormatter(min + (gap * (index + 1)))}`,
                 value: binnedValues[index] ? binnedValues[index].length : 0,
             }));
 
             return finalValues;
         },
-        [data, valueSelector],
+        [data, valueSelector, binCount],
     );
 
     return (
@@ -101,18 +97,20 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                 <XAxis
                     dataKey="key"
                     type="category"
-                    // tickFormatter={valueTickFormatter}
                 />
                 <YAxis
                     type="number"
+                    label={{
+                        value: 'Frequency',
+                        angle: -90,
+                        position: 'insideLeft',
+                    }}
                 />
                 <Tooltip
                     offset={20}
-                    // labelFormatter={valueTickFormatter}
                 />
-                <Legend />
                 <Bar
-                    name="Occurrence"
+                    name="Frequency"
                     dataKey="value"
                     fill={color}
                 />
