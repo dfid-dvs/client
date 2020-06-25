@@ -11,6 +11,7 @@ import { ChartSettings } from '../types';
 import { ExtendedFiveW } from '../../../useExtendedFiveW';
 
 import BarChartConfig from './BarChartConfig';
+import PieChartConfig from './PieChartConfig';
 import styles from './styles.css';
 
 type ChartType = 'bar-chart' | 'pie-chart';
@@ -80,6 +81,12 @@ function ChartModal(props: Props) {
             />
             {chartType === 'bar-chart' && (
                 <BarChartConfig
+                    indicatorList={indicatorList}
+                    onSave={handleSave}
+                />
+            )}
+            {chartType === 'pie-chart' && (
+                <PieChartConfig
                     indicatorList={indicatorList}
                     onSave={handleSave}
                 />

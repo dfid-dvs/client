@@ -23,6 +23,7 @@ import styles from './styles.css';
 
 type numericKeys = ExtractKeys<ExtendedFiveW, number>;
 
+// FIXME: move this somewhere
 const colors = [
     '#4e79a7',
     '#f28e2c',
@@ -310,12 +311,15 @@ function BarChartConfig(props: Props) {
                 return;
             }
 
+            const nonUniqueDependencies = properBars.map(item => item.dependency);
+            if (orderOption) {
+                nonUniqueDependencies.push(orderOption.dependency);
+            }
             const dependencies = unique(
-                properBars.map(item => item.dependency).filter(isDefined),
+                nonUniqueDependencies.filter(isDefined),
                 item => item,
             );
 
-            // TODO: add indicators
             const settings: BarChartSettings<ExtendedFiveW> = {
                 id: chartId,
                 type: 'bar-chart',

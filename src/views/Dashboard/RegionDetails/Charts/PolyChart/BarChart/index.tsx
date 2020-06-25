@@ -61,7 +61,6 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     const Xcomp = layout === 'vertical' ? YAxis : XAxis;
     const Ycomp = layout === 'vertical' ? XAxis : YAxis;
 
-    // FIXME: memoize this
     const finalData = useMemo(
         () => {
             if (!limit || !data) {

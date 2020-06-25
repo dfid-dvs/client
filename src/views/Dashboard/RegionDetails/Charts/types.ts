@@ -26,18 +26,30 @@ export interface PieChartSettings<T> {
     title: string;
 
     keySelector: (value: T) => string;
-    valueSelector: (value: T) => string;
+    valueSelector: (value: T) => number;
 
-    colorPalette?: string[];
+    // colorPalette?: string[];
 
-    dependencies?: [];
+    dependencies?: number[];
 }
 
-export type ChartSettings<T> = BarChartSettings<T> | PieChartSettings<T>;
+export interface HistogramSettings<T> {
+    id: string;
+    type: 'histogram';
+    title: string;
+    valueSelector: (value: T) => number;
+    color: string;
+    dependencies?: number[];
+}
+
+export type ChartSettings<T> = BarChartSettings<T> | PieChartSettings<T> | HistogramSettings<T>;
 
 export function isBarChart<T>(settings: ChartSettings<T>): settings is BarChartSettings<T> {
     return settings.type === 'bar-chart';
 }
 export function isPieChart<T>(settings: ChartSettings<T>): settings is PieChartSettings<T> {
     return settings.type === 'pie-chart';
+}
+export function isHistogram<T>(settings: ChartSettings<T>): settings is HistogramSettings<T> {
+    return settings.type === 'histogram';
 }

@@ -14,18 +14,33 @@ import {
 import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
 
 import PolyChart from './PolyChart';
-import { ChartSettings, BarChartSettings } from './types';
+import { ChartSettings } from './types';
 import ChartModal from './ChartModal';
 
 import styles from './styles.css';
 
-const defaultChartSettings: BarChartSettings<ExtendedFiveW>[] = [
+const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
+    {
+        id: 'test-1',
+        type: 'histogram',
+        title: 'Histogram',
+        color: 'red',
+        // valueSelector: item => item.allocatedBudget,
+        valueSelector: item => item.indicators[118] || 0,
+        dependencies: [118],
+    },
+    {
+        id: 'test',
+        type: 'pie-chart',
+        title: 'Budget spend',
+        keySelector: item => item.name,
+        valueSelector: item => item.allocatedBudget,
+    },
     {
         id: 'budget-information-top',
         type: 'bar-chart',
         title: 'Top 10 budget spend',
         keySelector: item => item.name,
-        // layout: 'horizontal',
 
         limit: {
             count: 10,
@@ -67,56 +82,6 @@ const defaultChartSettings: BarChartSettings<ExtendedFiveW>[] = [
         },
 
         // meta
-        dependencies: [119, 118],
-    },
-    {
-        id: 'budget-information-bottom',
-        type: 'bar-chart',
-        title: 'Bottom 10 budget spend',
-        keySelector: item => item.name,
-        // layout: 'horizontal',
-
-        limit: {
-            count: 10,
-            method: 'min',
-            valueSelector: item => item.allocatedBudget,
-        },
-
-        bars: [
-            {
-                title: 'Allocated Budget',
-                color: 'purple',
-                valueSelector: item => item.allocatedBudget,
-            },
-        ],
-    },
-    {
-        id: 'financial-information-bottom',
-        type: 'bar-chart',
-        title: 'Health and Finance for Bottom 10 budget spend',
-        keySelector: item => item.name,
-        // layout: 'horizontal',
-        bars: [
-            {
-                title: 'Health Facilities',
-                color: 'red',
-                valueSelector: item => item.indicators[119] || null,
-                stackId: 'facilities',
-            },
-            {
-                title: 'Financial Institutions',
-                color: 'blue',
-                valueSelector: item => item.indicators[118] || null,
-                stackId: 'facilities',
-            },
-        ],
-
-        limit: {
-            count: 10,
-            method: 'min',
-            valueSelector: item => item.allocatedBudget,
-        },
-
         dependencies: [119, 118],
     },
 ];

@@ -1,8 +1,10 @@
 import React from 'react';
 
-import { ChartSettings, isBarChart } from '../types';
+import { ChartSettings, isBarChart, isPieChart, isHistogram } from '../types';
 
 import BarChart from './BarChart';
+import PieChart from './PieChart';
+import Histogram from './Histogram';
 
 interface Props<T> {
     settings: ChartSettings<T>;
@@ -15,6 +17,24 @@ function PolyChart<T extends object>(props: Props<T>) {
     if (isBarChart(settings)) {
         return (
             <BarChart
+                data={data}
+                settings={settings}
+                className={className}
+            />
+        );
+    }
+    if (isPieChart(settings)) {
+        return (
+            <PieChart
+                data={data}
+                settings={settings}
+                className={className}
+            />
+        );
+    }
+    if (isHistogram(settings)) {
+        return (
+            <Histogram
                 data={data}
                 settings={settings}
                 className={className}
