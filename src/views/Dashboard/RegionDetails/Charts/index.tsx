@@ -4,7 +4,6 @@ import { isDefined, unique, listToMap } from '@togglecorp/fujs';
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
-import Modal from '#components/Modal';
 import RegionSelector from '#components/RegionSelector';
 
 import {
@@ -14,17 +13,35 @@ import {
 
 import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
 
-import PolyChart, { ChartSettings, BarChartSettings } from '../PolyChart';
+import PolyChart from './PolyChart';
+import { ChartSettings } from './types';
+import ChartModal from './ChartModal';
 
 import styles from './styles.css';
 
-const defaultChartSettings: BarChartSettings<ExtendedFiveW>[] = [
+const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
+    {
+        id: 'test-1',
+        type: 'histogram',
+        title: 'Histogram',
+        color: 'red',
+        binCount: 10,
+        // valueSelector: item => item.allocatedBudget,
+        valueSelector: item => item.indicators[118] || 0,
+        dependencies: [118],
+    },
+    {
+        id: 'test',
+        type: 'pie-chart',
+        title: 'Budget spend',
+        keySelector: item => item.name,
+        valueSelector: item => item.allocatedBudget,
+    },
     {
         id: 'budget-information-top',
         type: 'bar-chart',
         title: 'Top 10 budget spend',
         keySelector: item => item.name,
-        // layout: 'horizontal',
 
         limit: {
             count: 10,
@@ -66,56 +83,6 @@ const defaultChartSettings: BarChartSettings<ExtendedFiveW>[] = [
         },
 
         // meta
-        dependencies: [119, 118],
-    },
-    {
-        id: 'budget-information-bottom',
-        type: 'bar-chart',
-        title: 'Bottom 10 budget spend',
-        keySelector: item => item.name,
-        // layout: 'horizontal',
-
-        limit: {
-            count: 10,
-            method: 'min',
-            valueSelector: item => item.allocatedBudget,
-        },
-
-        bars: [
-            {
-                title: 'Allocated Budget',
-                color: 'purple',
-                valueSelector: item => item.allocatedBudget,
-            },
-        ],
-    },
-    {
-        id: 'financial-information-bottom',
-        type: 'bar-chart',
-        title: 'Health and Finance for Bottom 10 budget spend',
-        keySelector: item => item.name,
-        // layout: 'horizontal',
-        bars: [
-            {
-                title: 'Health Facilities',
-                color: 'red',
-                valueSelector: item => item.indicators[119] || null,
-                stackId: 'facilities',
-            },
-            {
-                title: 'Financial Institutions',
-                color: 'blue',
-                valueSelector: item => item.indicators[118] || null,
-                stackId: 'facilities',
-            },
-        ],
-
-        limit: {
-            count: 10,
-            method: 'min',
-            valueSelector: item => item.allocatedBudget,
-        },
-
         dependencies: [119, 118],
     },
 ];
@@ -175,6 +142,16 @@ function Charts(props: Props) {
         setModalVisibility(false);
     }, [setModalVisibility]);
 
+    const handleChartAdd = useCallback(
+        (settings: ChartSettings<ExtendedFiveW>) => {
+            setChartSettings(currentChartSettings => [
+                ...currentChartSettings,
+                settings,
+            ]);
+        },
+        [],
+    );
+
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
         regionLevel,
         programs,
@@ -191,7 +168,6 @@ function Charts(props: Props) {
                 />
                 <Button
                     onClick={handleModalShow}
-                    disabled
                 >
                     Add chart
                 </Button>
@@ -212,9 +188,11 @@ function Charts(props: Props) {
                 ))}
             </div>
             {showModal && (
-                <Modal onClose={handleModalClose}>
-                    This is the body
-                </Modal>
+                <ChartModal
+                    onClose={handleModalClose}
+                    onSave={handleChartAdd}
+                    indicatorList={indicatorList}
+                />
             )}
         </>
     );

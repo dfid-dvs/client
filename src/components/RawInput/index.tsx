@@ -16,7 +16,7 @@ function RawInput<T=string>(props: Props<T>) {
         onChange,
         onBlur,
         elementRef,
-        value,
+        value = '',
         ...otherProps
     } = props;
 
@@ -93,8 +93,5 @@ function RawInput<T=string>(props: Props<T>) {
         />
     );
 }
-RawInput.defaultProps = {
-    value: '',
-};
 
 export default RawInput;

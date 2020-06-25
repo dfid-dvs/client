@@ -10,9 +10,9 @@ import {
     isDefined,
 } from '@togglecorp/fujs';
 
-import { getFloatPlacement } from '#utils/common';
 import useBlurEffect from '#hooks/useBlurEffect';
 
+import Dropdown from '#components/Dropdown';
 import LoadingAnimation from '#components/LoadingAnimation';
 import List from '#components/List';
 import Button from '#components/Button';
@@ -34,7 +34,7 @@ interface OptionProps {
     children?: React.ReactNode;
 }
 function Option(props: OptionProps) {
-    const divRef = useRef<HTMLButtonElement>(null);
+    const ref = useRef<HTMLButtonElement>(null);
 
     const { name, onClick, selected, ...otherProps } = props;
 
@@ -47,38 +47,11 @@ function Option(props: OptionProps) {
 
     return (
         <CheckboxButton
-            elementRef={divRef}
+            ref={ref}
             onChange={onChange}
             value={selected}
             {...otherProps}
         />
-    );
-}
-
-interface DropdownProps {
-    className?: string;
-    parentRef: React.RefObject<HTMLElement>;
-    elementRef: React.RefObject<HTMLDivElement>;
-    children: React.ReactNode;
-}
-function Dropdown(props: DropdownProps) {
-    const {
-        parentRef,
-        elementRef,
-        children,
-        className,
-    } = props;
-
-    const style = getFloatPlacement(parentRef);
-
-    return (
-        <div
-            ref={elementRef}
-            style={style}
-            className={_cs(styles.dropdownContainer, className)}
-        >
-            { children }
-        </div>
     );
 }
 
@@ -332,8 +305,8 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
             { showDropdown && (
                 <Portal>
                     <Dropdown
-                        elementRef={dropdownRef}
-                        className={dropdownContainerClassName}
+                        ref={dropdownRef}
+                        className={_cs(dropdownContainerClassName, styles.dropdownContainer)}
                         parentRef={inputContainerRef}
                     >
                         {(!filteredOptions || filteredOptions.length <= 0) && (

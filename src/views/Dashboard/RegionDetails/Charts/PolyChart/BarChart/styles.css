@@ -29,7 +29,7 @@
                 .recharts-surface {
                     margin-right: var(--spacing-small)!important;
                 }
-                
+
                 .recharts-legend-item-text {
                     vertical-align: middle;
                     color: var(--color-text-label);

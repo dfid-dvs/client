@@ -1,0 +1,39 @@
+.histogram-config {
+    display: flex;
+    flex-direction: column;
+    border-top: var(--width-separator-thin) solid var(--color-separator-light);
+    overflow: auto;
+
+    .content {
+        flex-grow: 1;
+        border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
+        padding: calc(var(--spacing-large) - var(--spacing-small)) 0;
+        overflow: auto;
+
+        >* {
+            margin: var(--spacing-small) 0;
+        }
+
+        .group {
+            display: flex;
+
+            >*:first-child {
+                margin-right: var(--spacing-medium);
+            }
+        }
+    }
+
+    .footer {
+        display: flex;
+        flex-shrink: 0;
+        margin-top: var(--spacing-large);
+
+        .error {
+            flex-grow: 1;
+        }
+
+        .submit-button {
+            flex-shrink: 0;
+        }
+    }
+}

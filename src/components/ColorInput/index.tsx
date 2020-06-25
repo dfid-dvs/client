@@ -10,7 +10,7 @@ export interface Props<T> extends Omit<RawInputProps<T>, 'label' | 'elementRef'>
     inputRef?: React.RefObject<HTMLInputElement>;
 }
 
-function TextInput<T>(props: Props<T>) {
+function Color<T>(props: Props<T>) {
     const {
         elementRef,
         className,
@@ -24,12 +24,13 @@ function TextInput<T>(props: Props<T>) {
         error,
         inputClassName,
         inputRef,
+        value,
         ...otherProps
     } = props;
 
     return (
         <Input
-            className={_cs(styles.textInput, className)}
+            className={_cs(styles.colorInput, className)}
             elementRef={elementRef}
             label={label}
             icons={icons}
@@ -43,12 +44,16 @@ function TextInput<T>(props: Props<T>) {
             <RawInput
                 {...otherProps}
                 disabled={disabled}
-                type="text"
+                type="color"
                 elementRef={inputRef}
                 className={_cs(styles.input, inputClassName)}
+                value={value}
+                style={{
+                    backgroundColor: value as string,
+                }}
             />
         </Input>
     );
 }
 
-export default TextInput;
+export default Color;

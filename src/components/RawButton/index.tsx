@@ -3,46 +3,49 @@ import { _cs } from '@togglecorp/fujs';
 
 import styles from './styles.css';
 
-export interface Props extends Omit<React.HTMLProps<HTMLButtonElement>, 'onClick'>{
+export interface Props extends Omit<React.HTMLProps<HTMLButtonElement>, 'ref' | 'onClick'>{
     className?: string;
-    onClick: (name: string | undefined, e: React.MouseEvent<HTMLButtonElement>) => void;
-    elementRef?: React.RefObject<HTMLButtonElement>;
+    onClick?: (name: string | undefined, e: React.MouseEvent<HTMLButtonElement>) => void;
     type?: 'button' | 'submit' | 'reset';
 }
 
-function RawButton(props: Props) {
-    const {
-        className,
-        onClick,
-        elementRef,
-        ...otherProps
-    } = props;
 
-    const handleClick = React.useCallback(
-        (e: React.MouseEvent<HTMLButtonElement>) => {
-            const {
-                currentTarget: {
-                    name,
-                },
-            } = e;
+const RawButton = React.forwardRef<HTMLButtonElement, Props>(
+    (props, ref) => {
+        const {
+            className,
+            onClick,
+            ...otherProps
+        } = props;
 
-            onClick(
-                name,
-                e,
-            );
-        },
-        [onClick],
-    );
+        const handleClick = React.useCallback(
+            (e: React.MouseEvent<HTMLButtonElement>) => {
+                const {
+                    currentTarget: {
+                        name,
+                    },
+                } = e;
 
-    return (
-        <button
-            ref={elementRef}
-            type="button"
-            className={_cs(className, styles.rawButton)}
-            onClick={onClick ? handleClick : undefined}
-            {...otherProps}
-        />
-    );
-}
+                if (onClick) {
+                    onClick(
+                        name,
+                        e,
+                    );
+                }
+            },
+            [onClick],
+        );
+
+        return (
+            <button
+                ref={ref}
+                type="button"
+                className={_cs(className, styles.rawButton)}
+                onClick={onClick ? handleClick : undefined}
+                {...otherProps}
+            />
+        );
+    },
+);
 
 export default RawButton;
