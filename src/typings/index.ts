@@ -202,3 +202,9 @@ export function isPieChart<T>(settings: ChartSettings<T>): settings is PieChartS
 export function isHistogram<T>(settings: ChartSettings<T>): settings is HistogramSettings<T> {
     return settings.type === 'histogram';
 }
+
+export interface IndicatorValue {
+    code: string;
+    value: number;
+    indicatorId: number;
+}

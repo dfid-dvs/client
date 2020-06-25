@@ -4,7 +4,7 @@
 
 .navbar {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     background-color: var(--color-primary);
     padding: calc(var(--spacing-large) - var(--spacing-small)) calc(var(--spacing-large) - var(--spacing-medium));
     color: var(--color-text-on-primary);

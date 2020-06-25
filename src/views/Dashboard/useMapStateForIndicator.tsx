@@ -4,17 +4,13 @@ import {
     MultiResponse,
     RegionLevelOption,
     MapStateItem,
+    IndicatorValue,
 } from '#types';
 
 import { apiEndPoint } from '#utils/constants';
 import { prepareUrlParams as p } from '#utils/common';
 
 import useRequest from '#hooks/useRequest';
-
-interface IndicatorValue {
-    code: string;
-    value: number;
-}
 
 function useMapStateForIndicator(
     regionLevel: RegionLevelOption,

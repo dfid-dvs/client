@@ -1,0 +1,13 @@
+.single-region-select {
+    display: flex;
+    padding: calc(var(--spacing-medium) - var(--spacing-small));
+
+    .region-level-selection {
+        display: flex;
+        padding: var(--spacing-small);
+    }
+
+    .region-select-input {
+        padding: var(--spacing-small);
+    }
+}
