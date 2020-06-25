@@ -6,8 +6,9 @@ import {
     isDefined,
     isTruthyString,
     getRandomFromList,
+    _cs,
 } from '@togglecorp/fujs';
-import { IoMdTrash } from 'react-icons/io';
+import { IoMdTrash, IoMdAdd } from 'react-icons/io';
 
 import SelectInput from '#components/SelectInput';
 import SegmentInput from '#components/SegmentInput';
@@ -209,12 +210,14 @@ interface Props {
     onSave: (settings: BarChartSettings<ExtendedFiveW>) => void;
     indicatorList: Indicator[] | undefined;
     maxRow?: number;
+    className?: string;
 }
 
 function BarChartConfig(props: Props) {
     const {
         onSave,
         indicatorList,
+        className,
         maxRow = 4,
     } = props;
 
@@ -364,83 +367,90 @@ function BarChartConfig(props: Props) {
     );
 
     return (
-        <div className={styles.barChart}>
+        <div className={_cs(className, styles.barChart)}>
             <div className={styles.content}>
-                <TextInput
-                    label="Title"
-                    value={title}
-                    onChange={setTitle}
-                    autoFocus
-                />
-                <SegmentInput
-                    label="Type"
-                    options={barTypeOptions}
-                    onChange={setBarType}
-                    value={barType}
-                    optionLabelSelector={barTypeLabelSelector}
-                    optionKeySelector={barTypeKeySelector}
-                />
-                <div className={styles.barsHeader}>
-                    <h3 className={styles.header}>
-                        Bars
-                    </h3>
-                    <Button
-                        className={styles.addButton}
-                        disabled={bars.length > maxRow}
-                        onClick={handleBarAdd}
-                    >
-                        Add Bar
-                    </Button>
-                </div>
-                <div className={styles.bars}>
-                    {bars.map((bar, index) => (
-                        <BarItem
-                            key={bar.id}
-                            index={index}
-                            value={bar}
-                            onValueChange={setBars}
-                            options={options}
+                <section className={styles.topSection}>
+                    <TextInput
+                        label="Title"
+                        value={title}
+                        onChange={setTitle}
+                        autoFocus
+                    />
+                    <SegmentInput
+                        label="Type"
+                        options={barTypeOptions}
+                        onChange={setBarType}
+                        value={barType}
+                        optionLabelSelector={barTypeLabelSelector}
+                        optionKeySelector={barTypeKeySelector}
+                    />
+                </section>
+                <section className={styles.barSection}>
+                    <div className={styles.barsHeader}>
+                        <h3 className={styles.header}>
+                            Bars
+                        </h3>
+                        <Button
+                            className={styles.addButton}
+                            disabled={bars.length > maxRow}
+                            onClick={handleBarAdd}
+                            transparent
+                            variant="accent"
+                            icons={<IoMdAdd />}
+                        >
+                            Add bar
+                        </Button>
+                    </div>
+                    <div className={styles.bars}>
+                        {bars.map((bar, index) => (
+                            <BarItem
+                                key={bar.id}
+                                index={index}
+                                value={bar}
+                                onValueChange={setBars}
+                                options={options}
+                            />
+                        ))}
+                    </div>
+                </section>
+                <section className={styles.barDataOptionSection}>
+                    <div className={styles.barDataOption}>
+                        <span>
+                            Show
+                        </span>
+                        <NumberInput
+                            inputContainerClassName={styles.limitInput}
+                            onChange={setLimitValue}
+                            value={limitValue}
+                            placeholder="N"
                         />
-                    ))}
-                </div>
-                <div
-                    className={styles.checkboxLabel}
-                >
-                    <span>
-                        Show
-                    </span>
-                    <NumberInput
-                        inputContainerClassName={styles.limitInput}
-                        onChange={setLimitValue}
-                        value={limitValue}
-                        placeholder="N"
-                    />
-                    <span>
-                        data points in
-                    </span>
-                    <SelectInput
-                        className={styles.orderInput}
-                        options={orderOptions}
-                        onChange={setOrder}
-                        value={order}
-                        optionLabelSelector={orderLabelSelector}
-                        optionKeySelector={orderKeySelector}
-                        nonClearable
-                    />
-                    <span>
-                        order by
-                    </span>
-                    <SelectInput
-                        className={styles.fieldInput}
-                        options={options}
-                        onChange={setOrderField}
-                        value={autoOrderField}
-                        optionLabelSelector={labelSelector}
-                        optionKeySelector={keySelector}
-                        groupKeySelector={groupSelector}
-                        nonClearable
-                    />
-                </div>
+                        <span>
+                            data points in
+                        </span>
+                        <SelectInput
+                            className={styles.orderInput}
+                            options={orderOptions}
+                            onChange={setOrder}
+                            value={order}
+                            optionLabelSelector={orderLabelSelector}
+                            optionKeySelector={orderKeySelector}
+                            nonClearable
+                        />
+                        <span>
+                            order by
+                        </span>
+                        <SelectInput
+                            className={styles.fieldInput}
+                            options={options}
+                            onChange={setOrderField}
+                            value={autoOrderField}
+                            optionLabelSelector={labelSelector}
+                            optionKeySelector={keySelector}
+                            groupKeySelector={groupSelector}
+                            nonClearable
+                        />
+                    </div>
+                </section>
             </div>
             <div className={styles.footer}>
                 <div className={styles.error}>

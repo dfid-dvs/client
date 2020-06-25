@@ -10,7 +10,7 @@ interface Props<T, V> {
     className?: string;
     options?: T[];
     optionKeySelector: (d: T) => V;
-    optionLabelSelector: (d: T) => string;
+    optionLabelSelector: (d: T) => React.ReactNode;
     renderer?: typeof Option;
     // renderer?: React.ReactNode;
     label?: React.ReactNode;

@@ -1,14 +1,21 @@
 .modal {
-    min-width: 300px;
-    min-height: 300px;
+    max-width: 640px;
+    height: calc(100vh - 2 * var(--spacing-medium));
+    max-height: 700px;
 
     .body {
         display: flex;
         flex-direction: column;
-        padding: var(--spacing-medium);
-    }
+        padding: var(--spacing-large);
 
-    .chart-type-input {
-        margin-bottom: var(--spacing-large);
+        .chart-type-input {
+            flex-shrink: 0;
+            margin-bottom: var(--spacing-large);
+        }
+
+        .chart-config {
+            flex-grow: 1;
+            overflow: auto;
+        }
     }
 }

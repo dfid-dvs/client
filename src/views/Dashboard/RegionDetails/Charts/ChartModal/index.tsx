@@ -1,7 +1,10 @@
 import React, { useState, useCallback } from 'react';
+import { FiBarChart2 } from 'react-icons/fi';
+import { TiChartPie } from 'react-icons/ti';
 
 import Modal from '#components/Modal';
 import SelectInput from '#components/SelectInput';
+import SegmentInput from '#components/SegmentInput';
 import {
     Indicator,
 } from '#types';
@@ -19,17 +22,29 @@ type ChartType = 'bar-chart' | 'pie-chart' | 'histogram';
 
 interface ChartTypeOption {
     type: ChartType;
-    name: string;
+    name: React.ReactNode;
 }
 
 const chartTypeOptions: ChartTypeOption[] = [
     {
         type: 'bar-chart',
-        name: 'Bar Chart',
+        name: (
+            <>
+                <FiBarChart2 />
+                &nbsp;
+                Bar Chart
+            </>
+        ),
     },
     {
         type: 'pie-chart',
-        name: 'Pie Chart',
+        name: (
+            <>
+                <TiChartPie />
+                &nbsp;
+                Pie Chart
+            </>
+        ),
     },
     {
         type: 'histogram',
@@ -54,7 +69,7 @@ function ChartModal(props: Props) {
         indicatorList,
     } = props;
 
-    const [chartType, setChartType] = useState<ChartType | undefined>();
+    const [chartType, setChartType] = useState<ChartType>('bar-chart');
     const handleSave = useCallback(
         (value: ChartSettings<ExtendedFiveW>) => {
             onSave(value);
@@ -74,7 +89,7 @@ function ChartModal(props: Props) {
                 </h2>
             )}
         >
-            <SelectInput
+            <SegmentInput
                 className={styles.chartTypeInput}
                 label="Chart Type"
                 options={chartTypeOptions}
@@ -82,17 +97,17 @@ function ChartModal(props: Props) {
                 value={chartType}
                 optionLabelSelector={chartLabelSelector}
                 optionKeySelector={chartKeySelector}
-                nonClearable
-                autoFocus
             />
             {chartType === 'bar-chart' && (
                 <BarChartConfig
+                    className={styles.chartConfig}
                     indicatorList={indicatorList}
                     onSave={handleSave}
                 />
             )}
             {chartType === 'pie-chart' && (
                 <PieChartConfig
+                    className={styles.chartConfig}
                     indicatorList={indicatorList}
                     onSave={handleSave}
                 />

@@ -3,6 +3,7 @@ import {
     randomString,
     isFalsyString,
     isTruthyString,
+    _cs,
 } from '@togglecorp/fujs';
 
 import SelectInput from '#components/SelectInput';
@@ -57,12 +58,14 @@ const labelSelector = (item: NumericOption) => item.title;
 const groupSelector = (item: NumericOption) => item.category;
 
 interface Props {
+    className?: string;
     onSave: (settings: PieChartSettings<ExtendedFiveW>) => void;
     indicatorList: Indicator[] | undefined;
 }
 
 function PieChartConfig(props: Props) {
     const {
+        className,
         onSave,
         indicatorList,
     } = props;
@@ -134,7 +137,7 @@ function PieChartConfig(props: Props) {
     );
 
     return (
-        <div className={styles.barChart}>
+        <div className={_cs(className, styles.pieChartConfig)}>
             <div className={styles.content}>
                 <TextInput
                     label="Title"
