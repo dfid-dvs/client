@@ -16,28 +16,12 @@ import Button from '#components/Button';
 import TextInput from '#components/TextInput';
 import ColorInput from '#components/ColorInput';
 import NumberInput from '#components/NumberInput';
-import { ExtractKeys } from '#utils/common';
+import { tableauColors } from '#utils/constants';
 import { Indicator } from '#types';
 
 import { ExtendedFiveW } from '../../../../useExtendedFiveW';
 import { BarChartSettings } from '../../types';
 import styles from './styles.css';
-
-type numericKeys = ExtractKeys<ExtendedFiveW, number>;
-
-// FIXME: move this somewhere
-const colors = [
-    '#4e79a7',
-    '#f28e2c',
-    '#e15759',
-    '#76b7b2',
-    '#59a14f',
-    '#edc949',
-    '#af7aa1',
-    '#ff9da7',
-    '#9c755f',
-    '#bab0ab',
-];
 
 type BarTypeKeys = 'normal' | 'stacked';
 
@@ -235,7 +219,7 @@ function BarChartConfig(props: Props) {
     const [bars, setBars] = useState<Bar[]>([
         {
             id: randomString(),
-            color: getRandomFromList(colors),
+            color: getRandomFromList(tableauColors),
         },
     ]);
     const [limitValue, setLimitValue] = useState<string>('7');
@@ -359,7 +343,7 @@ function BarChartConfig(props: Props) {
                 const usedColors = new Set(
                     oldBars.map(item => item.color).filter(isDefined),
                 );
-                const unusedColors = colors.filter(color => !usedColors.has(color));
+                const unusedColors = tableauColors.filter(color => !usedColors.has(color));
 
                 return [
                     ...oldBars,

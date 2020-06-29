@@ -467,13 +467,11 @@ const Dashboard = (props: Props) => {
                 regionLevel,
                 true,
             );
-            const tmp = {
+            return {
                 ...generateChoroplethMapPaintAndLegend(colorDomain, min, max, choroplethInteger),
                 minExceeds,
                 maxExceeds,
             };
-            // console.warn(tmp);
-            return tmp;
         },
         [choroplethMapState, choroplethInteger, regionLevel],
     );

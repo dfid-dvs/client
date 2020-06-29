@@ -1,20 +1,4 @@
 .chart-container {
-    .header {
-        display: flex;
-        align-items: center;
-        padding: calc(var(--spacing-medium) - var(--spacing-small));
-
-        .heading {
-            flex-grow: 1;
-            padding: var(--spacing-small);
-        }
-
-        .actions {
-            flex-shrink: 0;
-            padding: var(--spacing-small);
-        }
-    }
-
     .chart {
         margin: var(--spacing-medium);
 
@@ -37,6 +21,28 @@
                     font-size: var(--font-size-small);
                     font-weight: var(--font-weight-bold);
                 }
+            }
+        }
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        padding: calc(var(--spacing-medium) - var(--spacing-small));
+
+        .heading {
+            flex-grow: 1;
+            padding: var(--spacing-small);
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            padding: var(--spacing-small);
+
+            >:not(:first-child) {
+                margin-left: var(--spacing-small);
             }
         }
     }

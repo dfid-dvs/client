@@ -10,12 +10,12 @@ import BudgetFlowSankey from '#components/BudgetFlowSankey';
 import useRequest from '#hooks/useRequest';
 import { SankeyData } from '#types';
 import { prepareUrlParams as p } from '#utils/common';
-import { apiEndPoint } from '#utils/constants';
+import { apiEndPoint, tableauColors } from '#utils/constants';
 
 import styles from './styles.css';
 
 // FIXME: change this to Node type
-const sankeyColorSelector = (item: { depth: number }) => ['red', 'blue', 'green'][item.depth];
+const sankeyColorSelector = (item: { depth: number }) => tableauColors[item.depth];
 
 const sankeyNameSelector = (item: { name: string }) => item.name;
 
@@ -35,7 +35,7 @@ function RegionSankey(props: Props) {
     const params = p({
         program: programs,
         province: regions,
-        threshold: 1,
+        threshold: 0.8,
     });
 
     const sankeyUrl = `${apiEndPoint}/core/sankey-region/?${params}`;

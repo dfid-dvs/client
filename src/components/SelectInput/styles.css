@@ -13,8 +13,6 @@
 
     .group {
         display: block;
-        top: 0;
-        background-color: var(--color-foreground);
         padding: var(--spacing-medium);
         width: 100%;
         text-align: left;

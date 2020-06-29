@@ -11,6 +11,7 @@ interface Props<T, V> {
     options?: T[];
     optionKeySelector: (d: T) => V;
     optionLabelSelector: (d: T) => React.ReactNode;
+    optionTitleSelector?: (d: T) => string | undefined;
     renderer?: typeof Option;
     // renderer?: React.ReactNode;
     label?: React.ReactNode;
@@ -29,6 +30,7 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
         options = [],
         optionKeySelector,
         optionLabelSelector,
+        optionTitleSelector,
         renderer,
         label,
         value,
@@ -60,12 +62,17 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
                         ? optionLabelSelector(option)
                         : undefined;
 
+                    const optionTitle = optionTitleSelector
+                        ? optionTitleSelector(option)
+                        : undefined;
+
                     return (
                         <RenderOption
                             key={key}
                             onClick={onChange ? (() => onChange(key, name)) : undefined}
                             isActive={isActive}
                             label={optionLabel}
+                            title={optionTitle}
                             disabled={disabled}
                         />
                     );

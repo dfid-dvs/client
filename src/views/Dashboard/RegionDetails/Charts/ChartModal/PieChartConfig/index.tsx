@@ -9,14 +9,11 @@ import {
 import SelectInput from '#components/SelectInput';
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
-import { ExtractKeys } from '#utils/common';
 import { Indicator } from '#types';
 
 import { ExtendedFiveW } from '../../../../useExtendedFiveW';
 import { PieChartSettings } from '../../types';
 import styles from './styles.css';
-
-type numericKeys = ExtractKeys<ExtendedFiveW, number>;
 
 interface NumericOption {
     key: string;

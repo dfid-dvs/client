@@ -1,3 +1,26 @@
+.table-actions {
+    display: flex;
+    align-items: flex-end;
+    flex-shrink: 0;
+    margin: var(--spacing-small) var(--spacing-medium);
+
+    >* {
+        &:not(:last-child) {
+            margin-right: var(--spacing-medium);
+        }
+    }
+
+    .info {
+        display: flex;
+        align-items: baseline;
+        padding: var(--spacing-small);
+
+        .numeral {
+            margin: 0 var(--spacing-small);
+        }
+    }
+}
+
 .sankey {
     position: relative;
     flex-grow: 1;

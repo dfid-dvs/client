@@ -20,7 +20,7 @@ interface TabOption {
 const tabOptions: TabOption[] = [
     { key: 'charts', label: 'Charts' },
     { key: 'table', label: 'Table' },
-    { key: 'sankey', label: 'Sankey' },
+    { key: 'sankey', label: 'Budget Flow' },
 ];
 
 interface RegionDetailsProps {

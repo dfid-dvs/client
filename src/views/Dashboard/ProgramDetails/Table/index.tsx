@@ -26,21 +26,34 @@ import { apiEndPoint } from '#utils/constants';
 
 import styles from './styles.css';
 
-function Link({ to }: { to: string | undefined }) {
+interface LinkProps {
+    to: string | undefined;
+    title: string | undefined;
+    className: string | undefined;
+}
+
+function Link({ to, title, className }: LinkProps) {
+    if (!to) {
+        return null;
+    }
+
     return (
         <a
+            className={className}
             href={to}
             target="_blank"
             rel="noopener noreferrer"
         >
-            {to}
+            {title}
         </a>
     );
 }
 
 interface ExtendedProgram extends Program {
-    devTrackerLink: string;
-    dPortalLink: string;
+    devTrackerLink?: string;
+    dPortalLink?: string;
+    componentCount: number;
+    sectorCount: number;
 }
 
 const programKeySelector = (data: ExtendedProgram) => data.id;
@@ -52,6 +65,8 @@ const staticColumnOrdering: ColumnOrderingItem[] = [
     { name: 'name' },
     { name: 'code' },
     { name: 'totalBudget' },
+    { name: 'componentCount' },
+    { name: 'sectorCount' },
     { name: 'devTrackerLink' },
     { name: 'dPortalLink' },
     { name: 'description' },
@@ -81,8 +96,14 @@ function ProgramTable(props: Props) {
 
     const extendedPrograms = programListResponse?.results.map(program => ({
         ...program,
-        dPortalLink: `http://d-portal.org/ctrack.html?country_code=NP#view=act&aid=GB-1-${program.code}`,
-        devTrackerLink: `https://devtracker.dfid.gov.uk/projects/GB-1-${program.code}`,
+        componentCount: program.component.length,
+        sectorCount: program.sector.length,
+        dPortalLink: program.iati
+            ? `http://d-portal.org/ctrack.html?country_code=NP#view=act&aid=${program.iati}`
+            : undefined,
+        devTrackerLink: program.iati
+            ? `https://devtracker.dfid.gov.uk/projects/${program.iati}`
+            : undefined,
     }));
 
     const { sortState, setSortState } = useSortState();
@@ -178,6 +199,7 @@ function ProgramTable(props: Props) {
                 cellRenderer: Link,
                 cellRendererParams: (key: number, datum: ExtendedProgram) => ({
                     to: datum[colName],
+                    title: datum.iati,
                 }),
 
                 sorter: (foo: ExtendedProgram, bar: ExtendedProgram) => compareString(
@@ -193,6 +215,8 @@ function ProgramTable(props: Props) {
                 createColumn(stringColumn, 'name', 'Name', true),
                 createColumn(stringColumn, 'code', 'Code'),
                 createColumn(numberColumn, 'totalBudget', 'Budget'),
+                createColumn(numberColumn, 'componentCount', '# of components'),
+                createColumn(numberColumn, 'sectorCount', '# of sectors'),
                 createColumn(linkColumn, 'devTrackerLink', 'Dev Tracker'),
                 createColumn(linkColumn, 'dPortalLink', 'D-Portal'),
                 createColumn(stringColumn, 'description', 'Description'),

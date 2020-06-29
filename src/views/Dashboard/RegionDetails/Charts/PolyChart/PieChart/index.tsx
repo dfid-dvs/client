@@ -1,19 +1,25 @@
 import React, { useMemo, useState } from 'react';
-import { PieChart, Pie, Cell, Tooltip, TooltipFormatter, Sector } from 'recharts';
+import { PieChart, Pie, Cell, Sector } from 'recharts';
+import { MdPieChart, MdDonutLarge } from 'react-icons/md';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
+import { IoMdTrash } from 'react-icons/io';
 
+import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import SegmentInput from '#components/SegmentInput';
+import { tableauColors } from '#utils/constants';
+
 import { PieChartSettings } from '../../types';
 
 import styles from './styles.css';
 
 const orientations: {
     key: 'pie' | 'donut';
-    label: string;
+    label: React.ReactNode;
+    tooltip: string;
 }[] = [
-    { key: 'pie', label: 'Pie' },
-    { key: 'donut', label: 'Donut' },
+    { key: 'pie', label: <MdPieChart />, tooltip: 'Pie Chart' },
+    { key: 'donut', label: <MdDonutLarge />, tooltip: 'Bar Chart' },
 ];
 
 function formatNumeral(value: number) {
@@ -32,23 +38,11 @@ function truncateString(value: string, maxLen = 12) {
     return `${value.slice(0, maxLen)}…`;
 }
 
-const colors = [
-    '#4e79a7',
-    '#f28e2c',
-    '#e15759',
-    '#76b7b2',
-    '#59a14f',
-    '#edc949',
-    '#af7aa1',
-    '#ff9da7',
-    '#9c755f',
-    '#bab0ab',
-];
-
 interface PieChartUnitProps<T> {
     settings: PieChartSettings<T>;
     data: T[] | undefined;
     className?: string;
+    onDelete: (name: string | undefined) => void;
 }
 
 const chartMargin = {
@@ -57,39 +51,6 @@ const chartMargin = {
     bottom: 0,
     left: 0,
 };
-
-interface LabelProps {
-    key: string;
-    value: number;
-    percent: number;
-    x: number;
-    y: number;
-    midAngle: number;
-}
-
-const Label = (props: LabelProps) => {
-    const { key, percent, x, y, midAngle } = props;
-    return (
-        <g
-            transform={`translate(${x}, ${y})`}
-            textAnchor={(midAngle < -90 || midAngle >= 90) ? 'end' : 'start'}
-        >
-            <text
-                x={0}
-                y={0}
-            >
-                {truncateString(key)}
-            </text>
-            <text
-                x={0}
-                y={20}
-            >
-                {`${(percent * 100).toFixed(2)}%`}
-            </text>
-        </g>
-    );
-};
-
 
 interface ActiveShapeProps {
     cx: number;
@@ -180,12 +141,14 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         settings,
         data,
         className,
+        onDelete,
     } = props;
 
     const {
         title,
         keySelector,
         valueSelector,
+        id,
     } = settings;
 
     const [type, setType] = useState<'pie' | 'donut'>('donut');
@@ -231,8 +194,18 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                     {title}
                 </h3>
                 <div className={styles.actions}>
+                    <Button
+                        onClick={onDelete}
+                        name={id}
+                        title="Delete chart"
+                        transparent
+                        variant="danger"
+                    >
+                        <IoMdTrash />
+                    </Button>
                     <SegmentInput
                         options={orientations}
+                        optionTitleSelector={item => item.tooltip}
                         optionKeySelector={item => item.key}
                         optionLabelSelector={item => item.label}
                         value={type}
@@ -266,7 +239,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                     {finalData?.map((entry, index) => (
                         <Cell
                             key={`cell-${entry.key}`}
-                            fill={colors[index % colors.length]}
+                            fill={tableauColors[index % tableauColors.length]}
                         />
                     ))}
                 </Pie>

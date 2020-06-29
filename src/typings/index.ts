@@ -116,8 +116,10 @@ export interface Program {
     name: string;
     description?: string;
     code: string;
+    iati?: string;
     totalBudget: number;
 
+    component: BaseEntity[];
     sector: BaseEntity[];
     subSector: BaseEntity[];
     markerCategory: BaseEntity[];

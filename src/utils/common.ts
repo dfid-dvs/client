@@ -287,14 +287,6 @@ export const generateChoroplethMapPaintAndLegend = (
     const colors = colorMap
         .map(item => [item.color, item.value])
         .flat();
-        // .slice(1); // remove first element
-
-    console.warn(
-        colorMap
-            .map(item => [item.value, item.color])
-            .flat(),
-        colors,
-    );
 
     const fillColor: mapboxgl.FillPaint['fill-color'] = [
         'case',
@@ -371,7 +363,7 @@ export const generateBubbleMapPaintAndLegend = (
         });
 
         const segments = getSegments(
-            5,
+            4,
             minValue,
             maxValue,
             integer,

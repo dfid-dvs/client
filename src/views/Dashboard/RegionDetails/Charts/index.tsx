@@ -1,11 +1,12 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { isDefined, unique, listToMap } from '@togglecorp/fujs';
+import { isDefined, unique, listToMap, isFalsyString } from '@togglecorp/fujs';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
 import RegionSelector from '#components/RegionSelector';
 
+import { tableauColors } from '#utils/constants';
 import {
     Indicator,
     RegionLevelOption,
@@ -21,23 +22,6 @@ import styles from './styles.css';
 
 const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
-        id: 'test-1',
-        type: 'histogram',
-        title: 'Histogram',
-        color: 'red',
-        binCount: 10,
-        // valueSelector: item => item.allocatedBudget,
-        valueSelector: item => item.indicators[118] || 0,
-        dependencies: [118],
-    },
-    {
-        id: 'test',
-        type: 'pie-chart',
-        title: 'Budget spend',
-        keySelector: item => item.name,
-        valueSelector: item => item.allocatedBudget,
-    },
-    {
         id: 'budget-information-top',
         type: 'bar-chart',
         title: 'Top 10 budget spend',
@@ -52,10 +36,17 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         bars: [
             {
                 title: 'Allocated Budget',
-                color: 'purple',
+                color: tableauColors[1],
                 valueSelector: item => item.allocatedBudget,
             },
         ],
+    },
+    {
+        id: 'test',
+        type: 'pie-chart',
+        title: 'Budget spend',
+        keySelector: item => item.name,
+        valueSelector: item => item.allocatedBudget,
     },
     {
         id: 'financial-information-top',
@@ -66,12 +57,12 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         bars: [
             {
                 title: 'Health Facilities',
-                color: 'red',
+                color: tableauColors[2],
                 valueSelector: item => item.indicators[119] || null,
             },
             {
                 title: 'Financial Institutions',
-                color: 'blue',
+                color: tableauColors[3],
                 valueSelector: item => item.indicators[118] || null,
             },
         ],
@@ -84,6 +75,16 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         // meta
         dependencies: [119, 118],
+    },
+    {
+        id: 'test-1',
+        type: 'histogram',
+        title: 'Frequency of Financial Institutions',
+        color: tableauColors[0],
+        binCount: 10,
+        // valueSelector: item => item.allocatedBudget,
+        valueSelector: item => item.indicators[118] || 0,
+        dependencies: [118],
     },
 ];
 
@@ -152,6 +153,19 @@ function Charts(props: Props) {
         [],
     );
 
+    const handleChartDelete = useCallback(
+        (name: string | undefined) => {
+            if (isFalsyString(name)) {
+                return;
+            }
+
+            setChartSettings(currentChartSettings => (
+                currentChartSettings.filter(item => item.id !== name)
+            ));
+        },
+        [],
+    );
+
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
         regionLevel,
         programs,
@@ -173,7 +187,7 @@ function Charts(props: Props) {
                 </Button>
             </div>
             <div className={styles.charts}>
-                {extendedFiveWPending && (
+                {(extendedFiveWPending || indicatorListPending) && (
                     <Backdrop className={styles.backdrop}>
                         <LoadingAnimation />
                     </Backdrop>
@@ -184,6 +198,7 @@ function Charts(props: Props) {
                         key={item.id}
                         data={extendedFiveWList}
                         settings={item}
+                        onDelete={handleChartDelete}
                     />
                 ))}
             </div>

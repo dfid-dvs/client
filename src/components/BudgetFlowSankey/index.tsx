@@ -37,6 +37,7 @@ interface Node<T> {
     index: number;
     payload: ExtendedData<T>;
     containerWidth: number;
+    maxDepth: number;
 }
 
 interface Link<T> {
@@ -66,6 +67,7 @@ function getNode<T>(
             height,
             index,
             payload,
+            maxDepth,
             // containerWidth,
         } = node;
 
@@ -80,7 +82,7 @@ function getNode<T>(
 
         // FIXME: containerWidth is not defined idk why, need to fix this
         // const isOut = (x + width) + 6 > containerWidth;
-        const isOut = depth >= 3 - 1;
+        const isOut = depth >= maxDepth - 1;
 
         const label = labelSelector(payload);
         const color = colorSelector(payload);
@@ -172,6 +174,7 @@ interface Props<T> {
 function BudgetFlowSankey<T>(props: Props<T>) {
     const {
         data: newData,
+        data,
         colorSelector,
         nameSelector,
     } = props;
