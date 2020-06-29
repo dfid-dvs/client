@@ -5,6 +5,7 @@ import {
     RegionLevelOption,
 } from '#types';
 import { apiEndPoint } from '#utils/constants';
+import { prepareUrlParams as p } from '#utils/common';
 
 import useRequest from '#hooks/useRequest';
 
@@ -30,27 +31,21 @@ function useExtendedFiveW(
     indicators: number[],
     preserveResponse = true,
 ): [boolean, ExtendedFiveW[]] {
-    const regionFiveWGetUrl = `${apiEndPoint}/core/fivew-${regionLevel}/`;
-    const regionFiveWGetOptions: RequestInit | undefined = useMemo(
-        () => ({
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-                programId: programs,
-            }),
-        }),
-        [programs],
-    );
+    const regionUrlParams = p({
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        program_id: programs,
+    });
+    const regionFiveWGetUrl = regionUrlParams
+        ? `${apiEndPoint}/core/fivew-${regionLevel}/?${regionUrlParams}`
+        : `${apiEndPoint}/core/fivew-${regionLevel}/`;
+
     const [
         regionFiveWPending,
         regionFiveWListResponse,
     ] = useRequest<MultiResponse<OriginalFiveW>>(
         regionFiveWGetUrl,
         'fivew',
-        regionFiveWGetOptions,
+        undefined,
         preserveResponse,
     );
 
@@ -58,34 +53,29 @@ function useExtendedFiveW(
         .filter(item => item.code !== '-1')
         .map(item => ({
             ...item,
+            programCount: item.program.length,
             partnerCount: item.partner.length,
             componentCount: item.component.length,
             sectorCount: item.sector.length,
         }));
 
-    // Get indicator value
-    const regionIndicatorOptions: RequestInit | undefined = useMemo(
-        () => (indicators.length > 0 ? {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-                indicatorId: indicators,
-            }),
-        } : undefined),
-        [indicators],
-    );
+    const regionIndicatorParams = indicators.length > 0
+        ? p({
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            indicator_id: indicators,
+            offset: 0,
+            limit: 774 * 20,
+        })
+        : undefined;
 
-    let regionIndicatorUrl: string | undefined;
-    if (indicators.length > 0) {
-        regionIndicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/`;
-    }
+    const regionIndicatorUrl = regionIndicatorParams
+        ? `${apiEndPoint}/core/${regionLevel}-indicator/?${regionIndicatorParams}`
+        : undefined;
+
     const [
         regionIndicatorListPending,
         regionIndicatorListResponse,
-    ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl, 'indicator', regionIndicatorOptions);
+    ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl, 'indicator');
 
     const extendedFiveW: ExtendedFiveW[] = useMemo(
         () => {

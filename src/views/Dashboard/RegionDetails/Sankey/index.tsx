@@ -58,14 +58,14 @@ function RegionSankey(props: Props) {
                     regions={regions}
                     onRegionsChange={onRegionsChange}
                 />
-                {sankeyResponse && isDefined(sankeyResponse.MaxThreshold) && (
+                {sankeyResponse && isDefined(sankeyResponse.minThreshold) && (
                     <div className={styles.info}>
                         <span>
                             Only showing budget flow greater than
                         </span>
                         <Numeral
                             className={styles.numeral}
-                            value={sankeyResponse.MaxThreshold}
+                            value={sankeyResponse.minThreshold}
                             prefix="£"
                         />
                     </div>

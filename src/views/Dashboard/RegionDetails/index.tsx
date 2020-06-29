@@ -18,8 +18,8 @@ interface TabOption {
     label: string;
 }
 const tabOptions: TabOption[] = [
-    { key: 'table', label: 'Table' },
     { key: 'charts', label: 'Charts' },
+    { key: 'table', label: 'Table' },
     { key: 'sankey', label: 'Sankey' },
 ];
 

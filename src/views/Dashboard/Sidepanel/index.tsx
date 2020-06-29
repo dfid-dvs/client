@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
 import {
@@ -14,6 +14,7 @@ import LastUpdated from '#components/LastUpdated';
 
 import useRequest from '#hooks/useRequest';
 
+import { prepareUrlParams as p } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
 
 import SummaryOutput from './SummaryOutput';
@@ -67,24 +68,19 @@ function Sidepanel(props: Props) {
         status,
     ] = useRequest<Status>(covidMode ? 'https://nepalcorona.info/api/v1/data/nepal' : undefined, 'corona-data');
 
-    const summaryUrl = `${apiEndPoint}/core/summary/`;
-    const options: RequestInit | undefined = useMemo(
-        () => ({
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-                programId: programs,
-            }),
-        }),
-        [programs],
-    );
+    const summaryParams = p({
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        program_id: programs,
+    });
+
+    const summaryUrl = summaryParams
+        ? `${apiEndPoint}/core/summary/?${summaryParams}`
+        : `${apiEndPoint}/core/summary/`;
+
     const [
         summaryPending,
         summary,
-    ] = useRequest<Summary>(summaryUrl, 'fivew-summary', options);
+    ] = useRequest<Summary>(summaryUrl, 'fivew-summary');
 
     const handleToggleVisibilityButtonClick = React.useCallback(() => {
         setIsHidden(prevValue => !prevValue);

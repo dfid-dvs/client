@@ -41,6 +41,7 @@ interface ColumnOrderingItem {
 const staticColumnOrdering: ColumnOrderingItem[] = [
     { name: 'name' },
     { name: 'allocatedBudget' },
+    { name: 'programCount' },
     { name: 'componentCount' },
     { name: 'partnerCount' },
     { name: 'sectorCount' },
@@ -227,6 +228,7 @@ function RegionTable(props: Props) {
                 createColumn(stringColumn, 'name', 'Name', true),
                 createColumn(numberColumn, 'allocatedBudget', 'Allocated Budget'),
                 createColumn(numberColumn, 'componentCount', '# of components'),
+                createColumn(numberColumn, 'programCount', '# of programs'),
                 createColumn(numberColumn, 'partnerCount', '# of partners'),
                 createColumn(numberColumn, 'sectorCount', '# of sectors'),
             ];

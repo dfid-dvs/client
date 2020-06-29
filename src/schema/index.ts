@@ -226,8 +226,8 @@ const userDefinedSchemas: Schema[] = [
                         id: { type: 'uint', required: true },
                         name: { type: 'string', required: true },
                         description: { type: 'string' },
-                        code: { type: 'string' },
-                        totalBudget: { type: 'number' },
+                        code: { type: 'string', required: true },
+                        totalBudget: { type: 'number', required: true },
 
                         sector: { type: 'array.base-entity', required: true },
                         subSector: { type: 'array.base-entity', required: true },

@@ -34,6 +34,12 @@ const numericOptions: NumericOption[] = [
         category: 'DFID Data',
     },
     {
+        key: 'programCount',
+        title: '# of programs',
+        valueSelector: item => item.programCount,
+        category: 'DFID Data',
+    },
+    {
         key: 'componentCount',
         title: '# of components',
         valueSelector: item => item.componentCount,

@@ -74,9 +74,11 @@ import useMapStateForIndicator from './useMapStateForIndicator';
 import {
     FiveWOptionKey,
     FiveWOption,
+    isFiveWOptionKey,
     HospitalType,
     Season,
     TravelTimeType,
+    CovidFields,
 } from './types';
 
 import styles from './styles.css';
@@ -93,7 +95,7 @@ interface ClickedRegion {
 const onClickTooltipOptions: mapboxgl.PopupOptions = {
     closeOnClick: true,
     closeButton: false,
-    offset: 8,
+    // offset: 8,
     maxWidth: '480px',
 };
 
@@ -108,26 +110,40 @@ const uncoveredLegend = {
     [fourHourUncoveredColor]: '> 4',
 };
 
-const fiveWOptions: FiveWOption[] = [
+const staticFiveWOptions: FiveWOption[] = [
     {
         key: 'allocatedBudget',
         label: 'Allocated Budget',
         unit: '£',
+        category: 'Other',
+    },
+    {
+        key: 'programCount',
+        label: 'Programs',
+        datatype: 'integer',
+        category: 'Other',
+        unit: 'Count',
     },
     {
         key: 'partnerCount',
         label: 'Partners',
         datatype: 'integer',
+        category: 'Other',
+        unit: 'Count',
     },
     {
         key: 'componentCount',
         label: 'Components',
         datatype: 'integer',
+        category: 'Other',
+        unit: 'Count',
     },
     {
         key: 'sectorCount',
         label: 'Sectors',
         datatype: 'integer',
+        category: 'Other',
+        unit: 'Count',
     },
 ];
 
@@ -148,6 +164,7 @@ const travelTimeTypeOptions: TravelTimeType[] = [
 
 const fiveWKeySelector = (option: FiveWOption) => option.key;
 const fiveWLabelSelector = (option: FiveWOption) => option.label;
+const fiveWGroupKeySelector = (indicator: FiveWOption) => indicator.category;
 
 const legendKeySelector = (option: LegendItem) => option.radius;
 const legendValueSelector = (option: LegendItem) => option.value;
@@ -191,7 +208,11 @@ const Dashboard = (props: Props) => {
     const [
         selectedFiveWOption,
         setFiveWOption,
-    ] = useState<FiveWOptionKey | undefined>('allocatedBudget');
+    ] = useState<string | undefined>('allocatedBudget');
+    const [
+        selectedFiveWSubOption,
+        setFiveWSubOption,
+    ] = useState<string | undefined>();
     const [
         mapStyleInverted,
         setMapStyleInverted,
@@ -244,6 +265,32 @@ const Dashboard = (props: Props) => {
         printMode,
         setPrintMode,
     ] = useState(false);
+
+    const covidFields = covidMode ? `${apiEndPoint}/core/covid-fields/` : undefined;
+    const [
+        covidFieldsPending,
+        covidFieldsResponse,
+    ] = useRequest<CovidFields>(covidFields, 'covid-fields');
+
+    const fiveWOptions = useMemo(
+        () => {
+            if (!covidFieldsResponse || !covidMode) {
+                return staticFiveWOptions;
+            }
+            const dynamicMapping: FiveWOption[] = covidFieldsResponse.field.map(item => ({
+                key: item,
+                label: item,
+                datatype: 'integer',
+                unit: 'Program count',
+                category: 'Covid',
+            }));
+            return [
+                ...staticFiveWOptions,
+                ...dynamicMapping,
+            ];
+        },
+        [covidMode, covidFieldsResponse],
+    );
 
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
     const [
@@ -306,11 +353,36 @@ const Dashboard = (props: Props) => {
         indicatorMapState,
     ] = useMapStateForIndicator(regionLevel, validSelectedIndicator);
 
+    const fiveWOptionKey = useMemo(
+        () => {
+            if (!selectedFiveWOption) {
+                return undefined;
+            }
+
+            const programCountOption: FiveWOptionKey = 'programCount';
+
+            return isFiveWOptionKey(selectedFiveWOption)
+                ? selectedFiveWOption
+                : programCountOption;
+        },
+        [selectedFiveWOption],
+    );
+
+    const filterValue = selectedFiveWOption && !isFiveWOptionKey(selectedFiveWOption)
+        ? { field: selectedFiveWOption, value: selectedFiveWSubOption }
+        : undefined;
+
     const [
         fiveWMapStatePending,
         fiveWMapState,
         fiveWStats,
-    ] = useMapStateForFiveW(regionLevel, programs, selectedFiveWOption);
+    ] = useMapStateForFiveW(
+        regionLevel,
+        programs,
+        fiveWOptionKey,
+        false,
+        filterValue,
+    );
 
     const {
         choroplethSelected,
@@ -373,6 +445,7 @@ const Dashboard = (props: Props) => {
     }, [
         mapStyleInverted,
         indicatorMapState,
+        fiveWOptions,
         fiveWMapState,
         indicatorMapStatePending,
         fiveWMapStatePending,
@@ -394,11 +467,13 @@ const Dashboard = (props: Props) => {
                 regionLevel,
                 true,
             );
-            return {
+            const tmp = {
                 ...generateChoroplethMapPaintAndLegend(colorDomain, min, max, choroplethInteger),
                 minExceeds,
                 maxExceeds,
             };
+            // console.warn(tmp);
+            return tmp;
         },
         [choroplethMapState, choroplethInteger, regionLevel],
     );
@@ -451,16 +526,6 @@ const Dashboard = (props: Props) => {
 
     const hash = useHash();
 
-    /*
-    const showLegend = (
-        bubbleLegend.length > 0
-        || Object.keys(mapLegend).length > 0
-        || showTravelTimeChoropleth
-        || selectedRasterLayerDetail
-        || (selectedVectorLayersDetail && selectedVectorLayersDetail?.length > 0)
-    );
-    */
-
     const dfidData = useMemo(
         () => {
             if (!clickedRegionProperties) {
@@ -489,6 +554,22 @@ const Dashboard = (props: Props) => {
             };
         },
         [indicatorMapState, selectedIndicatorDetails, clickedRegionProperties],
+    );
+
+    const handleFiveWOptionChange = useCallback(
+        (fiveWOption: string | undefined) => {
+            if (fiveWOption && !isFiveWOptionKey(fiveWOption)) {
+                if (fiveWOption === 'kathmandu_activity') {
+                    setFiveWSubOption(covidFieldsResponse?.kathmanduActivity[0]);
+                } else {
+                    setFiveWSubOption(covidFieldsResponse?.other[0]);
+                }
+            } else {
+                setFiveWSubOption(undefined);
+            }
+            setFiveWOption(fiveWOption);
+        },
+        [covidFieldsResponse],
     );
 
     const handleMapRegionClick = useCallback(
@@ -742,11 +823,29 @@ const Dashboard = (props: Props) => {
                     label="DFID Data"
                     className={styles.inputItem}
                     options={fiveWOptions}
-                    onChange={setFiveWOption}
+                    onChange={handleFiveWOptionChange}
                     value={selectedFiveWOption}
                     optionLabelSelector={fiveWLabelSelector}
+                    groupKeySelector={covidMode ? fiveWGroupKeySelector : undefined}
                     optionKeySelector={fiveWKeySelector}
+                    pending={covidFieldsPending}
                 />
+                {selectedFiveWOption && !isFiveWOptionKey(selectedFiveWOption) && (
+                    <SelectInput
+                        label="DFID Data Options"
+                        value={selectedFiveWSubOption}
+                        onChange={setFiveWSubOption}
+                        className={styles.inputItem}
+                        optionKeySelector={item => item}
+                        optionLabelSelector={item => item}
+                        nonClearable
+                        options={(
+                            selectedFiveWOption === 'kathmandu_activity'
+                                ? covidFieldsResponse?.kathmanduActivity
+                                : covidFieldsResponse?.other
+                        )}
+                    />
+                )}
                 <SelectInput
                     label="Indicator"
                     className={styles.inputItem}

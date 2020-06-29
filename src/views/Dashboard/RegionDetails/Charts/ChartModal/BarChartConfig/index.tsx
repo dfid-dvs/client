@@ -91,6 +91,12 @@ const numericOptions: NumericOption[] = [
         category: 'DFID Data',
     },
     {
+        key: 'programCount',
+        title: '# of programs',
+        valueSelector: item => item.programCount,
+        category: 'DFID Data',
+    },
+    {
         key: 'componentCount',
         title: '# of components',
         valueSelector: item => item.componentCount,
@@ -178,7 +184,7 @@ function BarItem(props: BarItemProps) {
         <div className={styles.bar}>
             <SelectInput
                 className={styles.select}
-                label={`Bar #${index + 1}`}
+                label={`Data #${index + 1}`}
                 options={options}
                 onChange={handleOptionNameChange}
                 value={value.optionName}
@@ -389,7 +395,7 @@ function BarChartConfig(props: Props) {
                 <section className={styles.barSection}>
                     <div className={styles.barsHeader}>
                         <h3 className={styles.header}>
-                            Bars
+                            Data
                         </h3>
                         <Button
                             className={styles.addButton}
@@ -399,7 +405,7 @@ function BarChartConfig(props: Props) {
                             variant="accent"
                             icons={<IoMdAdd />}
                         >
-                            Add bar
+                            Add data
                         </Button>
                     </div>
                     <div className={styles.bars}>

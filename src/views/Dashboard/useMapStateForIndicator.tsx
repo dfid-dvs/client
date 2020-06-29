@@ -7,6 +7,7 @@ import {
 } from '#types';
 
 import { apiEndPoint } from '#utils/constants';
+import { prepareUrlParams as p } from '#utils/common';
 
 import useRequest from '#hooks/useRequest';
 
@@ -20,30 +21,21 @@ function useMapStateForIndicator(
     selectedIndicator: number | undefined,
     preserveResponse = false,
 ): [boolean, MapStateItem[]] {
-    let regionIndicatorUrl: string | undefined;
+    const regionIndicatorParams = isDefined(selectedIndicator) && String(selectedIndicator) !== '-1'
+        ? p({
+            // eslint-disable-next-line @typescript-eslint/camelcase
+            indicator_id: selectedIndicator,
+        })
+        : undefined;
 
-    const options: RequestInit | undefined = useMemo(
-        () => (selectedIndicator ? {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-                indicatorId: [selectedIndicator],
-            }),
-        } : undefined),
-        [selectedIndicator],
-    );
-
-    if (isDefined(selectedIndicator) && String(selectedIndicator) !== '-1') {
-        regionIndicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/`;
-    }
+    const regionIndicatorUrl = regionIndicatorParams
+        ? `${apiEndPoint}/core/${regionLevel}-indicator/?${regionIndicatorParams}`
+        : undefined;
 
     const [
         regionIndicatorListPending,
         regionIndicatorListResponse,
-    ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl, 'indicator', options, preserveResponse);
+    ] = useRequest<MultiResponse<IndicatorValue>>(regionIndicatorUrl, 'indicator', undefined, preserveResponse);
 
     let mapState: MapStateItem[] = [];
     if (regionIndicatorListResponse && isDefined(selectedIndicator)) {

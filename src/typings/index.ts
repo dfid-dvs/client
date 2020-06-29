@@ -131,8 +131,7 @@ interface LinkData {
     value: number;
 }
 export interface SankeyData<T> {
-    // FIXME: rename this
-    MaxThreshold?: number;
+    minThreshold?: number;
     nodes: T[];
     links: LinkData[];
 }
