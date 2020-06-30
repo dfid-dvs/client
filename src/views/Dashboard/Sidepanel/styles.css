@@ -12,12 +12,12 @@
 
     .toggle-visibility-button {
         position: absolute;
-        top: var(--spacing-medium);
+        top: 150px;
         left: 0;
         transform: translateX(-100%);
         border: var(--width-separator-thin) solid var(--color-separator);
         border-right: 0;
-        border-radius: 0;
+        border-radius: var(--radius-modal) 0 0 var(--radius-modal);
         background-color: var(--color-foreground);
         padding: var(--spacing-medium) var(--spacing-extra-small);
         font-size: var(--font-size-large);

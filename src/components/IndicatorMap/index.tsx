@@ -26,6 +26,14 @@ const defaultBounds: [number, number, number, number] = [
     88.20166918432409, 30.44702867091792,
 ];
 
+const leftSpacedPadding = {
+    top: 20,
+    bottom: 20,
+    right: 20,
+    left: 320 + 20,
+};
+const defaultPadding = 20;
+
 const mapOptions: Omit<mapboxgl.MapboxOptions, 'style' | 'container'> = {
     logoPosition: 'bottom-right',
     minZoom: 5,
@@ -97,14 +105,14 @@ function IndicatorMap(props: Props) {
             mapStyle="mapbox://styles/togglecorp/ck9jjmob30vio1it71wja5zhi"
             mapOptions={mapOptions}
             scaleControlShown
-            scaleControlPosition="bottom-right"
+            scaleControlPosition="top-right"
             navControlShown={!printMode}
-            navControlPosition="bottom-right"
+            navControlPosition="top-right"
         >
             <MapContainer className={_cs(styles.mapContainer, className)} />
             <MapBounds
                 bounds={defaultBounds}
-                padding={100}
+                padding={printMode ? defaultPadding : leftSpacedPadding}
             />
             <MapSource
                 sourceKey="nepal"

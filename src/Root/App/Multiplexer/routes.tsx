@@ -28,8 +28,7 @@ const routeSettings: SomeRoute[] = [
         path: '/',
         name: 'dashboard',
         title: 'Dashboard',
-        load: () => <Redirect to="/dashboard/" />,
-        hideOnNavbar: true,
+        load: lazy(() => import('../../../views/Dashboard')),
     },
     {
         path: '/dashboard/',
