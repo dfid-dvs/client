@@ -14,7 +14,16 @@ const userDefinedSchemas: Schema[] = [
     {
         name: 'covid-fields',
         fields: {
-            field: { type: 'array.string', required: true },
+            field: {
+                arrayType: {
+                    name: 'covid-field',
+                    fields: {
+                        name: { type: 'string', required: true },
+                        value: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
             kathmanduActivity: { type: 'array.string', required: true },
             other: { type: 'array.string', required: true },
         },

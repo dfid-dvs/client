@@ -214,9 +214,9 @@ function ProgramTable(props: Props) {
             return [
                 createColumn(stringColumn, 'name', 'Name', true),
                 createColumn(stringColumn, 'code', 'Code'),
-                createColumn(numberColumn, 'totalBudget', 'Budget'),
-                createColumn(numberColumn, 'componentCount', '# of components'),
-                createColumn(numberColumn, 'sectorCount', '# of sectors'),
+                createColumn(numberColumn, 'totalBudget', 'Allocated Budget (£)'),
+                createColumn(numberColumn, 'componentCount', '# of components (count)'),
+                createColumn(numberColumn, 'sectorCount', '# of sectors (count)'),
                 createColumn(linkColumn, 'devTrackerLink', 'Dev Tracker'),
                 createColumn(linkColumn, 'dPortalLink', 'D-Portal'),
                 createColumn(stringColumn, 'description', 'Description'),

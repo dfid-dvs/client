@@ -115,34 +115,34 @@ const staticFiveWOptions: FiveWOption[] = [
         key: 'allocatedBudget',
         label: 'Allocated Budget',
         unit: '£',
-        category: 'Other',
+        category: 'General',
     },
     {
         key: 'programCount',
         label: 'Programs',
         datatype: 'integer',
-        category: 'Other',
+        category: 'General',
         unit: 'Count',
     },
     {
         key: 'partnerCount',
         label: 'Partners',
         datatype: 'integer',
-        category: 'Other',
+        category: 'General',
         unit: 'Count',
     },
     {
         key: 'componentCount',
         label: 'Components',
         datatype: 'integer',
-        category: 'Other',
+        category: 'General',
         unit: 'Count',
     },
     {
         key: 'sectorCount',
         label: 'Sectors',
         datatype: 'integer',
-        category: 'Other',
+        category: 'General',
         unit: 'Count',
     },
 ];
@@ -278,11 +278,11 @@ const Dashboard = (props: Props) => {
                 return staticFiveWOptions;
             }
             const dynamicMapping: FiveWOption[] = covidFieldsResponse.field.map(item => ({
-                key: item,
-                label: item,
+                key: item.value,
+                label: item.name,
                 datatype: 'integer',
                 unit: 'Program count',
-                category: 'Covid',
+                category: 'Covid Related',
             }));
             return [
                 ...staticFiveWOptions,

@@ -1,6 +1,6 @@
 export interface CovidFields {
     // These are fields
-    field: string[];
+    field: { name: string; value: string }[];
 
     // These are options
     kathmanduActivity: string[];
@@ -46,7 +46,7 @@ export interface FiveWOption {
     label: string;
     datatype?: 'integer' | 'float';
     unit?: string;
-    category: 'Covid' | 'Other';
+    category: 'Covid Related' | 'General';
 }
 
 export interface HospitalType {

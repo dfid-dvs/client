@@ -27,6 +27,16 @@ import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
 import { FiveW } from '../../types';
 import styles from './styles.css';
 
+function getIndicatorTitle(indicator: Indicator | undefined) {
+    if (!indicator) {
+        return '';
+    }
+    if (!indicator.unit) {
+        return indicator.fullTitle;
+    }
+    return `${indicator.fullTitle} (${indicator.unit})`;
+}
+
 function getIndicatorHeaderName(id: number) {
     return `indicator_${id}`;
 }
@@ -226,11 +236,11 @@ function RegionTable(props: Props) {
 
             const staticColumns = [
                 createColumn(stringColumn, 'name', 'Name', true),
-                createColumn(numberColumn, 'allocatedBudget', 'Allocated Budget'),
-                createColumn(numberColumn, 'componentCount', '# of components'),
-                createColumn(numberColumn, 'programCount', '# of programs'),
-                createColumn(numberColumn, 'partnerCount', '# of partners'),
-                createColumn(numberColumn, 'sectorCount', '# of sectors'),
+                createColumn(numberColumn, 'allocatedBudget', 'Allocated Budget (£)'),
+                createColumn(numberColumn, 'componentCount', '# of components (count)'),
+                createColumn(numberColumn, 'programCount', '# of programs (count)'),
+                createColumn(numberColumn, 'partnerCount', '# of partners (count)'),
+                createColumn(numberColumn, 'sectorCount', '# of sectors (count)'),
             ];
 
             // eslint-disable-next-line max-len
@@ -272,7 +282,7 @@ function RegionTable(props: Props) {
             const dynamicColumns = validSelectedIndicators.map(id => createColumn(
                 dynamicNumberColumn(item => item.indicators[id]),
                 getIndicatorHeaderName(id),
-                indicatorMapping[id]?.fullTitle,
+                getIndicatorTitle(indicatorMapping[id]),
             ));
 
             return dynamicColumns ? [...staticColumns, ...dynamicColumns] : staticColumns;
