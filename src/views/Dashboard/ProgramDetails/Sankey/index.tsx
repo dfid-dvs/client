@@ -1,6 +1,7 @@
 import React from 'react';
 import { isDefined } from '@togglecorp/fujs';
 
+import { LegendItem } from '#components/VectorLegend';
 import Numeral from '#components/Numeral';
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
@@ -46,18 +47,34 @@ function ProgramSankey(props: Props) {
     return (
         <>
             <div className={styles.tableActions}>
-                {sankeyResponse && isDefined(sankeyResponse.minThreshold) && (
-                    <div className={styles.info}>
-                        <span>
-                            Only showing budget flow greater than
+                <div className={styles.info}>
+                    {sankeyResponse && isDefined(sankeyResponse.minThreshold) && (
+                        <span className={styles.text}>
+                            <span>
+                                Only showing budget flow greater than
+                            </span>
+                            <Numeral
+                                className={styles.numeral}
+                                value={sankeyResponse.minThreshold}
+                                prefix="£"
+                            />
                         </span>
-                        <Numeral
-                            className={styles.numeral}
-                            value={sankeyResponse.minThreshold}
-                            prefix="£"
-                        />
-                    </div>
-                )}
+                    )}
+                </div>
+                <span className={styles.legend}>
+                    <LegendItem
+                        title="Program"
+                        color={tableauColors[0]}
+                    />
+                    <LegendItem
+                        title="Components"
+                        color={tableauColors[1]}
+                    />
+                    <LegendItem
+                        title="Partners"
+                        color={tableauColors[2]}
+                    />
+                </span>
             </div>
             <div className={styles.sankey}>
                 {sankeyPending && (

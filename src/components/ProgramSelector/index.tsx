@@ -1,4 +1,5 @@
 import React, { useMemo, useContext } from 'react';
+import { IoMdArrowDropdown } from 'react-icons/io';
 import { _cs, intersection } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
@@ -297,8 +298,13 @@ function ProgramSelector(props: Props) {
                 dropdownContainerClassName={styles.programSelectDropdown}
             />
             <DropdownMenu
-                label={`Sectors ${selectedSector && selectedSector.length > 0 ? '*' : ''}`}
                 className={styles.sectorInput}
+                label={(
+                    <>
+                        {`Sectors ${selectedSector && selectedSector.length > 0 ? '*' : ''}`}
+                        <IoMdArrowDropdown />
+                    </>
+                )}
             >
                 {(sectorListPending || subSectorListPending) && (
                     <Backdrop>
@@ -318,8 +324,13 @@ function ProgramSelector(props: Props) {
                 />
             </DropdownMenu>
             <DropdownMenu
-                label={`Markers ${selectedMarker && selectedMarker.length > 0 ? '*' : ''}`}
                 className={styles.markerInput}
+                label={(
+                    <>
+                        {`Markers ${selectedMarker && selectedMarker.length > 0 ? '*' : ''}`}
+                        <IoMdArrowDropdown />
+                    </>
+                )}
                 dropdownContainerClassName={styles.markersDropdown}
             >
                 {(markerListPending || subMarkerListPending) && (

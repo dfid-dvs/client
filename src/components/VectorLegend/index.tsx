@@ -16,7 +16,7 @@ interface LegendItemProps {
     radius?: number;
 }
 
-function LegendItem(props: LegendItemProps) {
+export function LegendItem(props: LegendItemProps) {
     const {
         className,
         title,

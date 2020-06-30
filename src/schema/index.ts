@@ -20,6 +20,33 @@ const userDefinedSchemas: Schema[] = [
         },
     },
     {
+        name: 'sankey-data',
+        fields: {
+            minThreshold: { type: 'number' },
+            nodes: {
+                arrayType: {
+                    name: 'sankey-data-node',
+                    fields: {
+                        name: { type: 'string', required: true },
+                        type: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+            links: {
+                arrayType: {
+                    name: 'sankey-data-link',
+                    fields: {
+                        source: { type: 'uint', required: true },
+                        target: { type: 'uint', required: true },
+                        value: { type: 'number', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
         name: 'fivew-summary',
         fields: {
             allocatedBudget: { type: 'number', required: true },

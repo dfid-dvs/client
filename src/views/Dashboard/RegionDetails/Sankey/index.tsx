@@ -1,6 +1,7 @@
 import React from 'react';
 import { isDefined } from '@togglecorp/fujs';
 
+import { LegendItem } from '#components/VectorLegend';
 import Numeral from '#components/Numeral';
 import RegionSelector from '#components/RegionSelector';
 import LoadingAnimation from '#components/LoadingAnimation';
@@ -52,24 +53,40 @@ function RegionSankey(props: Props) {
     return (
         <>
             <div className={styles.tableActions}>
-                <RegionSelector
-                    regionLevel="province"
-                    selectionHidden
-                    regions={regions}
-                    onRegionsChange={onRegionsChange}
-                />
-                {sankeyResponse && isDefined(sankeyResponse.minThreshold) && (
-                    <div className={styles.info}>
-                        <span>
-                            Only showing budget flow greater than
+                <div className={styles.info}>
+                    <RegionSelector
+                        regionLevel="province"
+                        selectionHidden
+                        regions={regions}
+                        onRegionsChange={onRegionsChange}
+                    />
+                    {sankeyResponse && isDefined(sankeyResponse.minThreshold) && (
+                        <span className={styles.text}>
+                            <span>
+                                Only showing budget flow greater than
+                            </span>
+                            <Numeral
+                                className={styles.numeral}
+                                value={sankeyResponse.minThreshold}
+                                prefix="£"
+                            />
                         </span>
-                        <Numeral
-                            className={styles.numeral}
-                            value={sankeyResponse.minThreshold}
-                            prefix="£"
-                        />
-                    </div>
-                )}
+                    )}
+                </div>
+                <span className={styles.legend}>
+                    <LegendItem
+                        title="Province"
+                        color={tableauColors[0]}
+                    />
+                    <LegendItem
+                        title="District"
+                        color={tableauColors[1]}
+                    />
+                    <LegendItem
+                        title="Municipality"
+                        color={tableauColors[2]}
+                    />
+                </span>
             </div>
             <div className={styles.sankey}>
                 {sankeyPending && (

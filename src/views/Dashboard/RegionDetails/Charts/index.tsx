@@ -135,6 +135,8 @@ function Charts(props: Props) {
         [chartSettings, indicatorMapping],
     );
 
+    console.warn(validSelectedIndicators);
+
     const handleModalShow = useCallback(() => {
         setModalVisibility(true);
     }, [setModalVisibility]);
