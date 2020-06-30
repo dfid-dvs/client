@@ -304,7 +304,7 @@ export const generateChoroplethMapPaintAndLegend = (
         'case',
         ['==', ['feature-state', 'value'], null],
         fillOpacityForNoData,
-        1,
+        0.8,
     ];
 
     const paint: mapboxgl.FillPaint = {
