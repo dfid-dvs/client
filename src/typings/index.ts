@@ -11,7 +11,7 @@ export interface DomainContextProps {
     covidMode: boolean;
     setCovidMode: (m: boolean) => void;
     programs: number[];
-    setPrograms: (programs: number[]) => void;
+    setPrograms: (programs: number[] | ((p: number[]) => number[])) => void;
 }
 
 export interface NavbarContextProps {

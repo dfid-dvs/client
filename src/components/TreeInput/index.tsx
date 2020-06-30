@@ -353,9 +353,16 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
         [options, keySelector, parentKeySelector],
     );
 
+    const handleClear = useCallback(
+        () => {
+            onChange([]);
+        },
+        [onChange],
+    );
+
     return (
         <div
-            className={className}
+            className={_cs(styles.treeInput, className)}
             title={title}
         >
             {showLabel && (
@@ -387,6 +394,13 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
                 onChange={onChange}
                 visibleOptions={visibleOptions}
             />
+            <Button
+                onClick={handleClear}
+                transparent
+                disabled={!value || value.length <= 0}
+            >
+                Clear
+            </Button>
             {showHintAndError && (
                 <HintAndError
                     error={error}

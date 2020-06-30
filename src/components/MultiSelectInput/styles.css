@@ -10,7 +10,7 @@
         font-weight: var(--font-weight-bold);
     }
 
-    .clear-button {
+    .select-all-button, .clear-button {
         padding: 0;
         font-size: var(--font-size-medium);
     }

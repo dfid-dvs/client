@@ -278,6 +278,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 transparent
                                 name="close"
                                 onClick={handleClearClick}
+                                disabled={disabled}
                                 icons={(
                                     <IoMdClose />
                                 )}

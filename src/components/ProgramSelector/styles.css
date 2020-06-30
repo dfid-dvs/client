@@ -18,6 +18,10 @@
         &:disabled {
             opacity: 0.5;
         }
+
+        &.applied {
+            font-weight: var(--font-weight-bold);
+        }
     }
 }
 
