@@ -5,6 +5,7 @@ import {
     MapStateItem,
 } from '#types';
 import { apiEndPoint } from '#utils/constants';
+import { prepareUrlParams as p, UrlParams } from '#utils/common';
 
 import useRequest from '#hooks/useRequest';
 
@@ -19,32 +20,37 @@ function useMapStateForFiveW(
     programs: number[],
     selectedFiveWOption?: FiveWOptionKey,
     preserveResponse = false,
+    filter?: { field?: string; value?: string },
 ): [boolean, MapStateItem[], FiveW[]] {
-    const regionFiveWGetUrl = `${apiEndPoint}/core/fivew-${regionLevel}/`;
-
-    const options: RequestInit | undefined = useMemo(
-        () => ({
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-                programId: programs,
-            }),
-        }),
-        [programs],
-    );
+    let params: UrlParams = {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        program_id: programs,
+    };
+    if (filter && filter.field && filter.value) {
+        params = {
+            ...filter,
+        };
+    }
+    const regionUrlParams = p(params);
+    const regionFiveWGetUrl = regionUrlParams
+        ? `${apiEndPoint}/core/fivew-${regionLevel}/?${regionUrlParams}`
+        : `${apiEndPoint}/core/fivew-${regionLevel}/`;
 
     const [
         regionFiveWPending,
         regionFiveWListResponse,
-    ] = useRequest<MultiResponse<OriginalFiveW>>(regionFiveWGetUrl, 'fivew', options, preserveResponse);
+    ] = useRequest<MultiResponse<OriginalFiveW>>(
+        regionFiveWGetUrl,
+        'fivew',
+        undefined,
+        preserveResponse,
+    );
 
     const filteredRegionFivewW = regionFiveWListResponse?.results
         .filter(item => item.code !== '-1')
         .map(item => ({
             ...item,
+            programCount: item.program.length,
             partnerCount: item.partner.length,
             componentCount: item.component.length,
             sectorCount: item.sector.length,

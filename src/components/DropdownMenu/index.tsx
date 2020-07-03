@@ -13,7 +13,7 @@ interface Props {
     className?: string;
     dropdownContainerClassName?: string;
     children: React.ReactNode;
-    label: string | undefined;
+    label: React.ReactNode;
     disabled?: boolean;
 }
 function DropdownMenu(props: Props) {

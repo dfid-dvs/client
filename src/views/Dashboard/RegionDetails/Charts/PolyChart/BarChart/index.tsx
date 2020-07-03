@@ -3,9 +3,11 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
     TooltipFormatter,
 } from 'recharts';
+import { IoMdTrash } from 'react-icons/io';
 import { compareNumber, isNotDefined, isDefined, _cs } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
+import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
 import { BarChartSettings } from '../../types';
 
@@ -32,6 +34,7 @@ interface BarChartUnitProps<T> {
     settings: BarChartSettings<T>;
     data: T[] | undefined;
     className?: string;
+    onDelete: (name: string | undefined) => void;
 }
 
 const chartMargin = {
@@ -46,6 +49,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         settings,
         data,
         className,
+        onDelete,
     } = props;
 
     const {
@@ -54,6 +58,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         bars,
         // layout,
         limit,
+        id,
     } = settings;
 
     const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal');
@@ -85,6 +90,15 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                     {title}
                 </h3>
                 <div className={styles.actions}>
+                    <Button
+                        onClick={onDelete}
+                        name={id}
+                        title="Delete chart"
+                        transparent
+                        variant="danger"
+                    >
+                        <IoMdTrash />
+                    </Button>
                     <SegmentInput
                         options={orientations}
                         optionKeySelector={item => item.key}

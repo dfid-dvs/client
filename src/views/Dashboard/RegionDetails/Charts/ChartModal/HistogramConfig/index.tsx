@@ -13,27 +13,12 @@ import TextInput from '#components/TextInput';
 import ColorInput from '#components/ColorInput';
 import NumberInput from '#components/NumberInput';
 import { ExtractKeys } from '#utils/common';
+import { tableauColors } from '#utils/constants';
 import { Indicator } from '#types';
 
 import { ExtendedFiveW } from '../../../../useExtendedFiveW';
 import { HistogramSettings } from '../../types';
 import styles from './styles.css';
-
-type numericKeys = ExtractKeys<ExtendedFiveW, number>;
-
-// FIXME: move this somewhere
-const colors = [
-    '#4e79a7',
-    '#f28e2c',
-    '#e15759',
-    '#76b7b2',
-    '#59a14f',
-    '#edc949',
-    '#af7aa1',
-    '#ff9da7',
-    '#9c755f',
-    '#bab0ab',
-];
 
 interface NumericOption {
     key: string;
@@ -48,6 +33,12 @@ const numericOptions: NumericOption[] = [
         key: 'allocatedBudget',
         title: 'Allocated Budget',
         valueSelector: item => item.allocatedBudget,
+        category: 'DFID Data',
+    },
+    {
+        key: 'programCount',
+        title: '# of programs',
+        valueSelector: item => item.programCount,
         category: 'DFID Data',
     },
     {
@@ -77,6 +68,7 @@ const groupSelector = (item: NumericOption) => item.category;
 interface Props {
     onSave: (settings: HistogramSettings<ExtendedFiveW>) => void;
     indicatorList: Indicator[] | undefined;
+    className?: string;
 }
 
 function HistogramConfig(props: Props) {
@@ -90,7 +82,7 @@ function HistogramConfig(props: Props) {
 
     const [title, setTitle] = useState('');
     const [orderField, setOrderField] = useState<string | undefined>();
-    const [color, setColor] = useState(() => getRandomFromList(colors));
+    const [color, setColor] = useState(() => getRandomFromList(tableauColors));
     const [binCount, setBinCount] = useState('10');
 
     const options: NumericOption[] = useMemo(

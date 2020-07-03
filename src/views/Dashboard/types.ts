@@ -1,3 +1,12 @@
+export interface CovidFields {
+    // These are fields
+    field: { name: string; value: string }[];
+
+    // These are options
+    kathmanduActivity: string[];
+    other: string[];
+}
+
 export interface OriginalFiveW {
     id: number;
     name: string;
@@ -7,6 +16,7 @@ export interface OriginalFiveW {
     partner: string[];
     sector: string[];
     subSector: string[];
+    program: string[];
     // markerCategory: string[];
     // markerValue: string[];
 }
@@ -15,15 +25,28 @@ export interface FiveW extends OriginalFiveW {
     partnerCount: number;
     componentCount: number;
     sectorCount: number;
+    programCount: number;
 }
 
-export type FiveWOptionKey = Extract<keyof FiveW, 'allocatedBudget' | 'partnerCount' | 'componentCount' | 'sectorCount'>;
+export type FiveWOptionKey = Extract<keyof FiveW, 'allocatedBudget' | 'partnerCount' | 'componentCount' | 'sectorCount' | 'programCount'>;
+
+export function isFiveWOptionKey(value: string): value is FiveWOptionKey {
+    const options: FiveWOptionKey[] = [
+        'allocatedBudget',
+        'partnerCount',
+        'componentCount',
+        'sectorCount',
+        'programCount',
+    ];
+    return options.includes(value as FiveWOptionKey);
+}
 
 export interface FiveWOption {
-    key: FiveWOptionKey;
+    key: string;
     label: string;
     datatype?: 'integer' | 'float';
     unit?: string;
+    category: 'Covid Related' | 'General';
 }
 
 export interface HospitalType {

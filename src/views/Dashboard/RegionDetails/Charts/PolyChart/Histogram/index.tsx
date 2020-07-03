@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
+import { IoMdTrash } from 'react-icons/io';
 
+import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import { HistogramSettings } from '../../types';
 
@@ -20,6 +22,7 @@ interface HistogramUnitProps<T> {
     settings: HistogramSettings<T>;
     data: T[] | undefined;
     className?: string;
+    onDelete: (name: string | undefined) => void;
 }
 
 const chartMargin = {
@@ -34,6 +37,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         settings,
         data,
         className,
+        onDelete,
     } = props;
 
     const {
@@ -41,6 +45,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         valueSelector,
         color,
         binCount,
+        id,
     } = settings;
 
     const finalData = useMemo(
@@ -83,7 +88,17 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                 <h3 className={styles.heading}>
                     {title}
                 </h3>
-                <div className={styles.actions} />
+                <div className={styles.actions}>
+                    <Button
+                        onClick={onDelete}
+                        name={id}
+                        title="Delete chart"
+                        transparent
+                        variant="danger"
+                    >
+                        <IoMdTrash />
+                    </Button>
+                </div>
             </header>
             <BarChart
                 className={styles.chart}

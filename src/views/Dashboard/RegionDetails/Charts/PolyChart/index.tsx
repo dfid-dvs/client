@@ -10,13 +10,15 @@ interface Props<T> {
     settings: ChartSettings<T>;
     data: T[] | undefined;
     className?: string;
+    onDelete: (name: string | undefined) => void;
 }
 
 function PolyChart<T extends object>(props: Props<T>) {
-    const { settings, data, className } = props;
+    const { settings, data, className, onDelete } = props;
     if (isBarChart(settings)) {
         return (
             <BarChart
+                onDelete={onDelete}
                 data={data}
                 settings={settings}
                 className={className}
@@ -26,6 +28,7 @@ function PolyChart<T extends object>(props: Props<T>) {
     if (isPieChart(settings)) {
         return (
             <PieChart
+                onDelete={onDelete}
                 data={data}
                 settings={settings}
                 className={className}
@@ -35,6 +38,7 @@ function PolyChart<T extends object>(props: Props<T>) {
     if (isHistogram(settings)) {
         return (
             <Histogram
+                onDelete={onDelete}
                 data={data}
                 settings={settings}
                 className={className}

@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
 import {
@@ -6,6 +6,7 @@ import {
     IoIosArrowBack,
 } from 'react-icons/io';
 
+import List from '#components/List';
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
@@ -14,7 +15,9 @@ import LastUpdated from '#components/LastUpdated';
 
 import useRequest from '#hooks/useRequest';
 
+import { prepareUrlParams as p } from '#utils/common';
 import { apiEndPoint } from '#utils/constants';
+import { MultiResponse } from '#types';
 
 import SummaryOutput from './SummaryOutput';
 import ExternalLink from './ExternalLink';
@@ -51,6 +54,18 @@ interface Summary {
     sector: number;
 }
 
+interface Item {
+    name: string;
+    value: number;
+}
+
+const summaryNepalKeySelector = (item: Item) => item.name;
+const summaryNepalRendererParams = (key: string, item: Item) => ({
+    className: styles.summaryOutput,
+    label: item.name,
+    value: item.value,
+});
+
 interface Props {
     className?: string;
 }
@@ -67,24 +82,25 @@ function Sidepanel(props: Props) {
         status,
     ] = useRequest<Status>(covidMode ? 'https://nepalcorona.info/api/v1/data/nepal' : undefined, 'corona-data');
 
-    const summaryUrl = `${apiEndPoint}/core/summary/`;
-    const options: RequestInit | undefined = useMemo(
-        () => ({
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-            },
-            body: JSON.stringify({
-                programId: programs,
-            }),
-        }),
-        [programs],
-    );
+    const summaryParams = p({
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        program_id: programs,
+    });
+
+    const summaryUrl = summaryParams
+        ? `${apiEndPoint}/core/summary/?${summaryParams}`
+        : `${apiEndPoint}/core/summary/`;
+
     const [
         summaryPending,
         summary,
-    ] = useRequest<Summary>(summaryUrl, 'fivew-summary', options);
+    ] = useRequest<Summary>(summaryUrl, 'fivew-summary');
+
+    const summaryNepalUrl = `${apiEndPoint}/core/summary-nepal/`;
+    const [
+        summaryNepalPending,
+        summaryNepal,
+    ] = useRequest<MultiResponse<Item>>(summaryNepalUrl, 'summary-nepal');
 
     const handleToggleVisibilityButtonClick = React.useCallback(() => {
         setIsHidden(prevValue => !prevValue);
@@ -164,35 +180,16 @@ function Sidepanel(props: Props) {
                             </h2>
                         </header>
                         <div className={styles.content}>
-                            <SummaryOutput
-                                className={styles.summaryOutput}
-                                label="Provinces"
-                                value={7}
-                            />
-                            <SummaryOutput
-                                className={styles.summaryOutput}
-                                label="Districts"
-                                value={77}
-                            />
-                            <SummaryOutput
-                                className={styles.summaryOutput}
-                                label="Municipalities"
-                                value={753}
-                            />
-                            <SummaryOutput
-                                className={styles.summaryOutput}
-                                label="Total population"
-                                value={28940000}
-                            />
-                            <SummaryOutput
-                                className={styles.summaryOutput}
-                                label="GDP (USD)"
-                                value={29040000000}
-                            />
-                            <SummaryOutput
-                                className={styles.summaryOutput}
-                                label="Per capita income (USD)"
-                                value={3110}
+                            {summaryPending && (
+                                <Backdrop>
+                                    <LoadingAnimation />
+                                </Backdrop>
+                            )}
+                            <List
+                                renderer={SummaryOutput}
+                                keySelector={summaryNepalKeySelector}
+                                rendererParams={summaryNepalRendererParams}
+                                data={summaryNepal?.results}
                             />
                         </div>
                     </div>
@@ -234,22 +231,22 @@ function Sidepanel(props: Props) {
                                 value={summary?.sector}
                             />
                         </div>
-                        <div className={styles.actions}>
-                            <Link
-                                className={styles.link}
-                                to="#regions"
-                                replace
-                            >
-                                Go to regions
-                            </Link>
-                            <Link
-                                className={styles.link}
-                                to="#programs"
-                                replace
-                            >
-                                Go to programs
-                            </Link>
-                        </div>
+                    </div>
+                    <div className={styles.actions}>
+                        <Link
+                            className={styles.link}
+                            to="#regions"
+                            replace
+                        >
+                            Go to regions
+                        </Link>
+                        <Link
+                            className={styles.link}
+                            to="#programs"
+                            replace
+                        >
+                            Go to programs
+                        </Link>
                     </div>
                 </div>
             </div>

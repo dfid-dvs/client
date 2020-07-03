@@ -32,53 +32,69 @@ const Tooltip = ({
         <h3 className={styles.heading}>
             { feature.properties.name }
         </h3>
-        {indicatorData && (
-            <TextOutput
-                label={indicatorData.fullTitle}
-                value={(
-                    <Numeral
-                        value={indicatorData.value}
+        <div className={styles.scrollWrapper}>
+            <div className={styles.content}>
+                {indicatorData && (
+                    <TextOutput
+                        label={indicatorData.fullTitle}
+                        value={(
+                            <Numeral
+                                value={indicatorData.value}
+                            />
+                        )}
                     />
                 )}
-            />
-        )}
-        {dfidData && (
-            <>
-                <TextOutput
-                    label="Allocated Budget"
-                    value={(
-                        <Numeral
-                            value={dfidData.allocatedBudget}
-                            prefix="£"
+                {dfidData && (
+                    <>
+                        <TextOutput
+                            label="Allocated Budget"
+                            value={(
+                                <Numeral
+                                    value={dfidData.allocatedBudget}
+                                    prefix="£"
+                                />
+                            )}
                         />
-                    )}
-                />
-                <TextOutput
-                    label="Sectors"
-                    value={(
-                        <Numeral
-                            value={dfidData.sector.length}
+                        <TextOutput
+                            label={`Programs (${dfidData.programCount})`}
+                            multiline
+                            value={(
+                                <ul>
+                                    {dfidData.program.map(name => <li key={name}>{name}</li>)}
+                                </ul>
+                            )}
                         />
-                    )}
-                />
-                <TextOutput
-                    label="Components"
-                    value={(
-                        <Numeral
-                            value={dfidData.component.length}
+                        <TextOutput
+                            label={`Component (${dfidData.componentCount})`}
+                            multiline
+                            value={(
+                                <ul>
+                                    {dfidData.component.map(name => <li key={name}>{name}</li>)}
+                                </ul>
+                            )}
                         />
-                    )}
-                />
-                <TextOutput
-                    label="Partners"
-                    value={(
-                        <Numeral
-                            value={dfidData.partner.length}
+                        <TextOutput
+                            label={`Partner (${dfidData.partnerCount})`}
+                            multiline
+                            value={(
+                                <ul>
+                                    {dfidData.partner.map(name => <li key={name}>{name}</li>)}
+                                </ul>
+                            )}
                         />
-                    )}
-                />
-            </>
-        )}
+                        <TextOutput
+                            label={`Sectors (${dfidData.sectorCount})`}
+                            multiline
+                            value={(
+                                <ul>
+                                    {dfidData.sector.map(name => <li key={name}>{name}</li>)}
+                                </ul>
+                            )}
+                        />
+                    </>
+                )}
+            </div>
+        </div>
     </div>
 );
 export default Tooltip;

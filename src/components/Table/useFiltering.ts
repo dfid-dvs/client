@@ -111,8 +111,8 @@ export function useFiltering<T>(
                         test = isFalsyString(subMatch) || caseInsensitiveSubmatch(val, subMatch);
                     } else {
                         test = (
-                            (isNotDefined(greaterThanOrEqualTo) || val > greaterThanOrEqualTo)
-                            && (isNotDefined(lessThanOrEqualTo) || val < lessThanOrEqualTo)
+                            (isNotDefined(greaterThanOrEqualTo) || val >= greaterThanOrEqualTo)
+                            && (isNotDefined(lessThanOrEqualTo) || val <= lessThanOrEqualTo)
                         );
                     }
                     return test;

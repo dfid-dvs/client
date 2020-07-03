@@ -1,6 +1,7 @@
 import React from 'react';
 import { isDefined } from '@togglecorp/fujs';
 
+import { LegendItem } from '#components/VectorLegend';
 import Numeral from '#components/Numeral';
 import RegionSelector from '#components/RegionSelector';
 import LoadingAnimation from '#components/LoadingAnimation';
@@ -10,12 +11,12 @@ import BudgetFlowSankey from '#components/BudgetFlowSankey';
 import useRequest from '#hooks/useRequest';
 import { SankeyData } from '#types';
 import { prepareUrlParams as p } from '#utils/common';
-import { apiEndPoint } from '#utils/constants';
+import { apiEndPoint, tableauColors } from '#utils/constants';
 
 import styles from './styles.css';
 
 // FIXME: change this to Node type
-const sankeyColorSelector = (item: { depth: number }) => ['red', 'blue', 'green'][item.depth];
+const sankeyColorSelector = (item: { depth: number }) => tableauColors[item.depth];
 
 const sankeyNameSelector = (item: { name: string }) => item.name;
 
@@ -35,7 +36,7 @@ function RegionSankey(props: Props) {
     const params = p({
         program: programs,
         province: regions,
-        threshold: 1,
+        threshold: 0.8,
     });
 
     const sankeyUrl = `${apiEndPoint}/core/sankey-region/?${params}`;
@@ -52,24 +53,40 @@ function RegionSankey(props: Props) {
     return (
         <>
             <div className={styles.tableActions}>
-                <RegionSelector
-                    regionLevel="province"
-                    selectionHidden
-                    regions={regions}
-                    onRegionsChange={onRegionsChange}
-                />
-                {sankeyResponse && isDefined(sankeyResponse.MaxThreshold) && (
-                    <div className={styles.info}>
-                        <span>
-                            Only showing budget flow greater than
+                <div className={styles.info}>
+                    <RegionSelector
+                        regionLevel="province"
+                        selectionHidden
+                        regions={regions}
+                        onRegionsChange={onRegionsChange}
+                    />
+                    {sankeyResponse && isDefined(sankeyResponse.minThreshold) && (
+                        <span className={styles.text}>
+                            <span>
+                                Only showing budget flow greater than
+                            </span>
+                            <Numeral
+                                className={styles.numeral}
+                                value={sankeyResponse.minThreshold}
+                                prefix="£"
+                            />
                         </span>
-                        <Numeral
-                            className={styles.numeral}
-                            value={sankeyResponse.MaxThreshold}
-                            prefix="£"
-                        />
-                    </div>
-                )}
+                    )}
+                </div>
+                <span className={styles.legend}>
+                    <LegendItem
+                        title="Province"
+                        color={tableauColors[0]}
+                    />
+                    <LegendItem
+                        title="District"
+                        color={tableauColors[1]}
+                    />
+                    <LegendItem
+                        title="Municipality"
+                        color={tableauColors[2]}
+                    />
+                </span>
             </div>
             <div className={styles.sankey}>
                 {sankeyPending && (

@@ -18,9 +18,9 @@ interface TabOption {
     label: string;
 }
 const tabOptions: TabOption[] = [
-    { key: 'table', label: 'Table' },
     { key: 'charts', label: 'Charts' },
-    { key: 'sankey', label: 'Sankey' },
+    { key: 'table', label: 'Table' },
+    { key: 'sankey', label: 'Budget Flow' },
 ];
 
 interface RegionDetailsProps {

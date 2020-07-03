@@ -5,7 +5,8 @@ import styles from './styles.css';
 
 export interface Props {
     onClick?: () => void;
-    label?: string;
+    label?: React.ReactNode;
+    title?: string;
     isActive?: boolean;
     className?: string;
     disabled?: boolean;
@@ -17,6 +18,7 @@ const Option = ({
     isActive,
     className,
     disabled,
+    title,
 }: Props) => (
     <div
         role="presentation"
@@ -27,6 +29,7 @@ const Option = ({
             isActive && styles.active,
             disabled && styles.disabled,
         )}
+        title={title}
     >
         { label }
     </div>

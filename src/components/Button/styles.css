@@ -2,6 +2,7 @@
     display: flex;
     position: relative;
     align-items: center;
+    justify-content: space-around;
     padding: var(--spacing-small) calc(var(--spacing-small) - var(--spacing-extra-small));
     overflow: hidden;
     font-family: inherit;
@@ -48,6 +49,15 @@
 
         &:disabled {
             color: var(--color-text-disabled);
+        }
+
+        &:not(&:disabled) {
+            cursor: pointer;
+
+            &:hover {
+                border-radius: var(--radius-button);
+                background-color: var(--color-button-background);
+            }
         }
     }
 

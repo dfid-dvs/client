@@ -12,6 +12,50 @@ const userDefinedSchemas: Schema[] = [
         },
     },
     {
+        name: 'covid-fields',
+        fields: {
+            field: {
+                arrayType: {
+                    name: 'covid-field',
+                    fields: {
+                        name: { type: 'string', required: true },
+                        value: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+            kathmanduActivity: { type: 'array.string', required: true },
+            other: { type: 'array.string', required: true },
+        },
+    },
+    {
+        name: 'sankey-data',
+        fields: {
+            minThreshold: { type: 'number' },
+            nodes: {
+                arrayType: {
+                    name: 'sankey-data-node',
+                    fields: {
+                        name: { type: 'string', required: true },
+                        type: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+            links: {
+                arrayType: {
+                    name: 'sankey-data-link',
+                    fields: {
+                        source: { type: 'uint', required: true },
+                        target: { type: 'uint', required: true },
+                        value: { type: 'number', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
         name: 'fivew-summary',
         fields: {
             allocatedBudget: { type: 'number', required: true },
@@ -70,6 +114,26 @@ const userDefinedSchemas: Schema[] = [
                     },
                 },
                 required: false,
+            },
+        },
+    },
+    {
+        name: 'summary-nepal',
+        description: 'Get summary for nepal',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'summary-nepal-item',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        name: { type: 'string', required: true },
+                        value: { type: 'number', required: true },
+                    },
+                },
+                required: true,
             },
         },
     },
@@ -226,13 +290,15 @@ const userDefinedSchemas: Schema[] = [
                         id: { type: 'uint', required: true },
                         name: { type: 'string', required: true },
                         description: { type: 'string' },
-                        code: { type: 'string' },
-                        totalBudget: { type: 'number' },
+                        code: { type: 'string', required: true },
+                        iati: { type: 'string' },
+                        totalBudget: { type: 'number', required: true },
 
                         sector: { type: 'array.base-entity', required: true },
                         subSector: { type: 'array.base-entity', required: true },
                         markerCategory: { type: 'array.base-entity', required: true },
                         markerValue: { type: 'array.base-entity', required: true },
+
                         component: { type: 'array.base-entity', required: true },
                     },
                 },
@@ -336,6 +402,7 @@ const userDefinedSchemas: Schema[] = [
                         name: { type: 'string', required: true },
 
                         allocatedBudget: { type: 'number' },
+                        program: { type: 'array.string', required: true },
                         component: { type: 'array.string', required: true },
                         partner: { type: 'array.string', required: true },
                         sector: { type: 'array.string', required: true },

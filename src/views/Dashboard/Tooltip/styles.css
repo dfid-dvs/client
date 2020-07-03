@@ -5,17 +5,16 @@
     overflow-y: auto;
 
     .heading {
+        flex-shrink: 0;
         padding: var(--spacing-small);
     }
 
-    .content {
-        display: flex;
-        flex-direction: column;
+    .scroll-wrapper {
+        flex-grow: 1;
+        overflow: auto;
 
-        .sub-heading {
-            padding: 0 var(--spacing-small);
-            font-size: var(--font-size-small);
-            font-weight: var(--font-weight-bold);
+        .content {
+            display: table;
         }
     }
 }

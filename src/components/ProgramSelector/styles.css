@@ -11,10 +11,16 @@
 
     .sector-input,
     .marker-input {
+        display: flex;
+        align-items: center;
         padding: 0 var(--spacing-medium);
 
         &:disabled {
             opacity: 0.5;
+        }
+
+        &.applied {
+            font-weight: var(--font-weight-bold);
         }
     }
 }

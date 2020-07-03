@@ -11,7 +11,7 @@ export interface DomainContextProps {
     covidMode: boolean;
     setCovidMode: (m: boolean) => void;
     programs: number[];
-    setPrograms: (programs: number[]) => void;
+    setPrograms: (programs: number[] | ((p: number[]) => number[])) => void;
 }
 
 export interface NavbarContextProps {
@@ -116,8 +116,10 @@ export interface Program {
     name: string;
     description?: string;
     code: string;
+    iati?: string;
     totalBudget: number;
 
+    component: BaseEntity[];
     sector: BaseEntity[];
     subSector: BaseEntity[];
     markerCategory: BaseEntity[];
@@ -131,8 +133,7 @@ interface LinkData {
     value: number;
 }
 export interface SankeyData<T> {
-    // FIXME: rename this
-    MaxThreshold?: number;
+    minThreshold?: number;
     nodes: T[];
     links: LinkData[];
 }

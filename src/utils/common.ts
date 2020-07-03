@@ -285,9 +285,8 @@ export const generateChoroplethMapPaintAndLegend = (
     }
 
     const colors = colorMap
-        .map(item => [item.value, item.color])
-        .flat()
-        .slice(1); // remove first element
+        .map(item => [item.color, item.value])
+        .flat();
 
     const fillColor: mapboxgl.FillPaint['fill-color'] = [
         'case',
@@ -297,6 +296,7 @@ export const generateChoroplethMapPaintAndLegend = (
             'step',
             ['feature-state', 'value'],
             ...colors,
+            colorDomain[colorDomain.length - 1], // this will never be used
         ],
     ];
 
@@ -304,7 +304,7 @@ export const generateChoroplethMapPaintAndLegend = (
         'case',
         ['==', ['feature-state', 'value'], null],
         fillOpacityForNoData,
-        0.7,
+        0.8,
     ];
 
     const paint: mapboxgl.FillPaint = {
@@ -363,7 +363,7 @@ export const generateBubbleMapPaintAndLegend = (
         });
 
         const segments = getSegments(
-            5,
+            4,
             minValue,
             maxValue,
             integer,

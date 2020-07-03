@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useCallback } from 'react';
 // import { IoIosSearch } from 'react-icons/io';
-import { IoMdClose } from 'react-icons/io';
+import { IoMdClose, IoMdDoneAll } from 'react-icons/io';
 import {
     _cs,
     caseInsensitiveSubmatch,
@@ -220,6 +220,19 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
         [],
     );
 
+    const handleSelectAll = React.useCallback(
+        () => {
+            if (!options) {
+                onChange([]);
+                return;
+            }
+
+            const allValues = options.map(optionKeySelector);
+            onChange(allValues);
+        },
+        [onChange, options, optionKeySelector],
+    );
+
     const handleClearClick = React.useCallback(
         () => {
             onChange([]);
@@ -249,6 +262,9 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
         },
         [disabled, handleOptionClick, optionLabelSelector, value],
     );
+
+    const valueLength = value ? value.length : 0;
+    const optionsLength = options ? options.length : 0;
 
     return (
         <div
@@ -281,23 +297,36 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                             <LoadingAnimation />
                         )}
                         {value && value.length > 0 && (
-                            <>
-                                <div
-                                    className={styles.countBadge}
-                                    title={`${value.length} selected`}
-                                >
-                                    {value.length}
-                                </div>
-                                <Button
-                                    className={styles.clearButton}
-                                    transparent
-                                    name="close"
-                                    onClick={handleClearClick}
-                                    icons={(
-                                        <IoMdClose />
-                                    )}
-                                />
-                            </>
+                            <div
+                                className={styles.countBadge}
+                                title={`${value.length} selected`}
+                            >
+                                {value.length}
+                            </div>
+                        )}
+                        {(optionsLength !== 0 && valueLength !== optionsLength) && (
+                            <Button
+                                className={styles.selectAllButton}
+                                transparent
+                                name="select-all"
+                                onClick={handleSelectAll}
+                                disabled={disabled || !options}
+                                icons={(
+                                    <IoMdDoneAll />
+                                )}
+                            />
+                        )}
+                        {value && value.length > 0 && (
+                            <Button
+                                className={styles.clearButton}
+                                transparent
+                                name="close"
+                                onClick={handleClearClick}
+                                disabled={disabled}
+                                icons={(
+                                    <IoMdClose />
+                                )}
+                            />
                         )}
                     </>
                 )}

@@ -1,4 +1,5 @@
-import React, { useMemo, useContext } from 'react';
+import React, { useMemo, useContext, useEffect } from 'react';
+import { IoMdArrowDropdown } from 'react-icons/io';
 import { _cs, intersection } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
@@ -281,6 +282,21 @@ function ProgramSelector(props: Props) {
         ],
     );
 
+
+    useEffect(
+        () => {
+            setSelectedPrograms((programs) => {
+                if (!filteredPrograms) {
+                    return [];
+                }
+                const newSet = new Set(filteredPrograms.map(item => item.id));
+
+                return programs.filter(item => newSet.has(item));
+            });
+        },
+        [filteredPrograms, setSelectedPrograms],
+    );
+
     // TODO: Only selected programs belonging to filtered programs should be valid
 
     return (
@@ -297,8 +313,16 @@ function ProgramSelector(props: Props) {
                 dropdownContainerClassName={styles.programSelectDropdown}
             />
             <DropdownMenu
-                label={`Sectors ${selectedSector && selectedSector.length > 0 ? '*' : ''}`}
-                className={styles.sectorInput}
+                className={_cs(
+                    styles.sectorInput,
+                    selectedSector && selectedSector.length > 0 && styles.applied,
+                )}
+                label={(
+                    <>
+                        Sectors
+                        <IoMdArrowDropdown />
+                    </>
+                )}
             >
                 {(sectorListPending || subSectorListPending) && (
                     <Backdrop>
@@ -307,7 +331,7 @@ function ProgramSelector(props: Props) {
                 )}
                 <TreeInput
                     className={styles.sectorTree}
-                    // label="Sector"
+                    label="Filter programs by sector"
                     keySelector={treeKeySelector}
                     parentKeySelector={treeParentSelector}
                     labelSelector={treeLabelSelector}
@@ -318,8 +342,16 @@ function ProgramSelector(props: Props) {
                 />
             </DropdownMenu>
             <DropdownMenu
-                label={`Markers ${selectedMarker && selectedMarker.length > 0 ? '*' : ''}`}
-                className={styles.markerInput}
+                className={_cs(
+                    styles.markerInput,
+                    selectedMarker && selectedMarker.length > 0 && styles.applied,
+                )}
+                label={(
+                    <>
+                        Markers
+                        <IoMdArrowDropdown />
+                    </>
+                )}
                 dropdownContainerClassName={styles.markersDropdown}
             >
                 {(markerListPending || subMarkerListPending) && (
@@ -329,7 +361,7 @@ function ProgramSelector(props: Props) {
                 )}
                 <TreeInput
                     className={styles.markerTree}
-                    // label="Marker"
+                    label="Filter programs by marker"
                     keySelector={treeKeySelector}
                     parentKeySelector={treeParentSelector}
                     labelSelector={treeLabelSelector}

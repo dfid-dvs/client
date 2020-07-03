@@ -29,6 +29,7 @@ const gitRevisionPlugin = new GitRevisionPlugin();
 const appBase = process.cwd();
 const eslintFile = path.resolve(appBase, '.eslintrc-loader.js');
 const appSrc = path.resolve(appBase, 'src/');
+const mapboxglDist = path.resolve(appBase, 'node_modules/mapbox-gl/dist/');
 const appDist = path.resolve(appBase, 'build/');
 const appIndexJs = path.resolve(appBase, 'src/index.tsx');
 const appIndexHtml = path.resolve(appBase, 'public/index.html');
@@ -154,6 +155,14 @@ module.exports = (env) => {
                                 sourceMap: true,
                             },
                         },
+                    ],
+                },
+                {
+                    test: /\.css$/,
+                    include: mapboxglDist,
+                    use: [
+                        MiniCssExtractPlugin.loader,
+                        require.resolve('css-loader'),
                     ],
                 },
                 {

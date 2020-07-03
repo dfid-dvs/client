@@ -26,7 +26,37 @@ import { apiEndPoint } from '#utils/constants';
 
 import styles from './styles.css';
 
-const programKeySelector = (data: Program) => data.id;
+interface LinkProps {
+    to: string | undefined;
+    title: string | undefined;
+    className: string | undefined;
+}
+
+function Link({ to, title, className }: LinkProps) {
+    if (!to) {
+        return null;
+    }
+
+    return (
+        <a
+            className={className}
+            href={to}
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            {title}
+        </a>
+    );
+}
+
+interface ExtendedProgram extends Program {
+    devTrackerLink?: string;
+    dPortalLink?: string;
+    componentCount: number;
+    sectorCount: number;
+}
+
+const programKeySelector = (data: ExtendedProgram) => data.id;
 
 interface ColumnOrderingItem {
     name: string;
@@ -35,6 +65,10 @@ const staticColumnOrdering: ColumnOrderingItem[] = [
     { name: 'name' },
     { name: 'code' },
     { name: 'totalBudget' },
+    { name: 'componentCount' },
+    { name: 'sectorCount' },
+    { name: 'devTrackerLink' },
+    { name: 'dPortalLink' },
     { name: 'description' },
 ];
 
@@ -60,14 +94,26 @@ function ProgramTable(props: Props) {
         programListResponse,
     ] = useRequest<MultiResponse<Program>>(programUrl, 'program-list');
 
+    const extendedPrograms = programListResponse?.results.map(program => ({
+        ...program,
+        componentCount: program.component.length,
+        sectorCount: program.sector.length,
+        dPortalLink: program.iati
+            ? `http://d-portal.org/ctrack.html?country_code=NP#view=act&aid=${program.iati}`
+            : undefined,
+        devTrackerLink: program.iati
+            ? `https://devtracker.dfid.gov.uk/projects/${program.iati}`
+            : undefined,
+    }));
+
     const { sortState, setSortState } = useSortState();
     const { filtering, setFilteringItem, getFilteringItem } = useFilterState();
     const { ordering, moveOrderingItem } = useOrderState(staticColumnOrdering);
 
     const columns = useMemo(
         () => {
-            type numericKeys = ExtractKeys<Program, number>;
-            type stringKeys = ExtractKeys<Program, string>;
+            type numericKeys = ExtractKeys<ExtendedProgram, number>;
+            type stringKeys = ExtractKeys<ExtendedProgram, string>;
 
             const stringColumn = (colName: stringKeys) => ({
                 headerCellRenderer: HeaderCell,
@@ -86,17 +132,18 @@ function ProgramTable(props: Props) {
                     hideable: false,
                 },
 
+                // FIXME:
                 cellAsHeader: true,
                 cellRenderer: Cell,
-                cellRendererParams: (key: number, datum: Program) => ({
+                cellRendererParams: (key: number, datum: ExtendedProgram) => ({
                     value: datum[colName],
                 }),
 
-                sorter: (foo: Program, bar: Program) => compareString(
+                sorter: (foo: ExtendedProgram, bar: ExtendedProgram) => compareString(
                     foo[colName],
                     bar[colName],
                 ),
-                valueSelector: (foo: Program) => foo[colName],
+                valueSelector: (foo: ExtendedProgram) => foo[colName],
                 valueType: 'string',
             });
 
@@ -119,24 +166,60 @@ function ProgramTable(props: Props) {
                 },
 
                 cellRenderer: Numeral,
-                cellRendererParams: (key: number, datum: Program) => ({
+                cellRendererParams: (key: number, datum: ExtendedProgram) => ({
                     value: datum[colName],
                     normalize: true,
                 }),
 
-                sorter: (foo: Program, bar: Program) => compareNumber(
+                sorter: (foo: ExtendedProgram, bar: ExtendedProgram) => compareNumber(
                     foo[colName],
                     bar[colName],
                 ),
-                valueSelector: (foo: Program) => foo[colName],
+                valueSelector: (foo: ExtendedProgram) => foo[colName],
                 valueType: 'number',
+            });
+
+            const linkColumn = (colName: stringKeys) => ({
+                headerCellRenderer: HeaderCell,
+                headerCellRendererParams: {
+                    onSortChange: setSortState,
+                    sortable: true,
+                    sortDirection: colName === sortState?.name ? sortState?.direction : undefined,
+
+                    filterType: FilterType.string,
+                    filterValue: getFilteringItem(colName),
+                    onFilterValueChange: setFilteringItem,
+
+                    draggable: true,
+                    onReorder: moveOrderingItem,
+
+                    hideable: false,
+                },
+
+                cellRenderer: Link,
+                cellRendererParams: (key: number, datum: ExtendedProgram) => ({
+                    to: datum[colName],
+                    title: datum.iati,
+                }),
+
+                sorter: (foo: ExtendedProgram, bar: ExtendedProgram) => compareString(
+                    foo[colName],
+                    bar[colName],
+                ),
+
+                valueSelector: (foo: ExtendedProgram) => foo[colName],
+                valueType: 'string',
             });
 
             return [
                 createColumn(stringColumn, 'name', 'Name', true),
                 createColumn(stringColumn, 'code', 'Code'),
+                createColumn(numberColumn, 'totalBudget', 'Allocated Budget (£)'),
+                createColumn(numberColumn, 'componentCount', '# of components (count)'),
+                createColumn(numberColumn, 'sectorCount', '# of sectors (count)'),
+                createColumn(linkColumn, 'devTrackerLink', 'Dev Tracker'),
+                createColumn(linkColumn, 'dPortalLink', 'D-Portal'),
                 createColumn(stringColumn, 'description', 'Description'),
-                createColumn(numberColumn, 'totalBudget', 'Budget'),
             ];
         },
         [
@@ -153,7 +236,7 @@ function ProgramTable(props: Props) {
     const filteredPrograms = useFiltering(
         filtering,
         orderedColumns,
-        programListResponse?.results,
+        extendedPrograms,
     );
     const sortedPrograms = useSorting(
         sortState,

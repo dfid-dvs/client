@@ -61,17 +61,17 @@ const Button = React.forwardRef<HTMLButtonElement, Props>(
                 type={type}
                 {...otherProps}
             >
-                { pending && (
+                {pending && (
                     <Backdrop className={styles.loadingBackdrop}>
                         <LoadingAnimation />
                     </Backdrop>
                 )}
-                { icons && (
+                {icons && (
                     <div className={styles.icons}>
                         { icons }
                     </div>
                 )}
-                { children && (
+                {children && (
                     <div className={styles.children}>
                         { children }
                     </div>

@@ -3,6 +3,11 @@
         position: relative;
         z-index: 0;
     }
+
+    .mapboxgl-popup {
+        transition-duration: 50ms;
+        transition-property: transform;
+    }
 }
 
 .no-spinners {

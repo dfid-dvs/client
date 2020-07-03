@@ -1,23 +1,25 @@
 import React from 'react';
-import { isDefined } from '@togglecorp/fujs';
+import { isDefined, _cs } from '@togglecorp/fujs';
 
 import styles from './styles.css';
 
 interface TextOutputProps {
     label: string | number;
     value: React.ReactNode | null;
+    multiline?: boolean;
 }
 
 function TextOutput({
     label,
     value,
+    multiline = false,
 }: TextOutputProps) {
     return (
-        <div className={styles.textOutput}>
+        <div className={_cs(styles.textOutput, multiline && styles.multiline)}>
             <div className={styles.label}>
                 { label }
             </div>
-            { isDefined(value) ? (
+            {isDefined(value) ? (
                 <div className={styles.value}>
                     { value }
                 </div>
