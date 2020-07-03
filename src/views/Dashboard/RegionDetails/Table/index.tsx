@@ -237,10 +237,10 @@ function RegionTable(props: Props) {
             const staticColumns = [
                 createColumn(stringColumn, 'name', 'Name', true),
                 createColumn(numberColumn, 'allocatedBudget', 'Allocated Budget (£)'),
-                createColumn(numberColumn, 'componentCount', '# of components (count)'),
-                createColumn(numberColumn, 'programCount', '# of programs (count)'),
-                createColumn(numberColumn, 'partnerCount', '# of partners (count)'),
-                createColumn(numberColumn, 'sectorCount', '# of sectors (count)'),
+                createColumn(numberColumn, 'componentCount', 'Components (count)'),
+                createColumn(numberColumn, 'programCount', 'Programs (count)'),
+                createColumn(numberColumn, 'partnerCount', 'Partners (count)'),
+                createColumn(numberColumn, 'sectorCount', 'Sectors (count)'),
             ];
 
             // eslint-disable-next-line max-len

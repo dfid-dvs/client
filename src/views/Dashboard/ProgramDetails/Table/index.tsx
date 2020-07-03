@@ -1,6 +1,6 @@
 import React, { useMemo, useCallback } from 'react';
 import { IoMdDownload } from 'react-icons/io';
-import { compareString, compareNumber, isTruthyString } from '@togglecorp/fujs';
+import { compareString, compareNumber } from '@togglecorp/fujs';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
@@ -16,13 +16,8 @@ import useOrdering, { useOrderState } from '#components/Table/useOrdering';
 import useSorting, { useSortState } from '#components/Table/useSorting';
 import { SortDirection, FilterType } from '#components/Table/types';
 
-import useRequest from '#hooks/useRequest';
-import {
-    MultiResponse,
-    Program,
-} from '#types';
 import { ExtractKeys, prepareUrlParams as p } from '#utils/common';
-import { apiEndPoint } from '#utils/constants';
+import useExtendedPrograms, { ExtendedProgram } from '../../useExtendedPrograms';
 
 import styles from './styles.css';
 
@@ -47,13 +42,6 @@ function Link({ to, title, className }: LinkProps) {
             {title}
         </a>
     );
-}
-
-interface ExtendedProgram extends Program {
-    devTrackerLink?: string;
-    dPortalLink?: string;
-    componentCount: number;
-    sectorCount: number;
 }
 
 const programKeySelector = (data: ExtendedProgram) => data.id;
@@ -81,30 +69,7 @@ function ProgramTable(props: Props) {
         programs,
     } = props;
 
-    const params = p({
-        program: programs,
-    });
-
-    const programUrl = isTruthyString(params)
-        ? `${apiEndPoint}/core/program/?${params}`
-        : `${apiEndPoint}/core/program/`;
-
-    const [
-        programsPending,
-        programListResponse,
-    ] = useRequest<MultiResponse<Program>>(programUrl, 'program-list');
-
-    const extendedPrograms = programListResponse?.results.map(program => ({
-        ...program,
-        componentCount: program.component.length,
-        sectorCount: program.sector.length,
-        dPortalLink: program.iati
-            ? `http://d-portal.org/ctrack.html?country_code=NP#view=act&aid=${program.iati}`
-            : undefined,
-        devTrackerLink: program.iati
-            ? `https://devtracker.dfid.gov.uk/projects/${program.iati}`
-            : undefined,
-    }));
+    const [programsPending, extendedPrograms] = useExtendedPrograms(programs);
 
     const { sortState, setSortState } = useSortState();
     const { filtering, setFilteringItem, getFilteringItem } = useFilterState();
@@ -215,8 +180,8 @@ function ProgramTable(props: Props) {
                 createColumn(stringColumn, 'name', 'Name', true),
                 createColumn(stringColumn, 'code', 'Code'),
                 createColumn(numberColumn, 'totalBudget', 'Allocated Budget (£)'),
-                createColumn(numberColumn, 'componentCount', '# of components (count)'),
-                createColumn(numberColumn, 'sectorCount', '# of sectors (count)'),
+                createColumn(numberColumn, 'componentCount', 'Components (count)'),
+                createColumn(numberColumn, 'sectorCount', 'Sectors (count)'),
                 createColumn(linkColumn, 'devTrackerLink', 'Dev Tracker'),
                 createColumn(linkColumn, 'dPortalLink', 'D-Portal'),
                 createColumn(stringColumn, 'description', 'Description'),

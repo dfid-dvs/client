@@ -31,25 +31,25 @@ const staticOptions: NumericOption<ExtendedFiveW>[] = [
     },
     {
         key: 'programCount',
-        title: '# of programs',
+        title: 'Programs',
         valueSelector: item => item.programCount,
         category: 'DFID Data',
     },
     {
         key: 'componentCount',
-        title: '# of components',
+        title: 'Components',
         valueSelector: item => item.componentCount,
         category: 'DFID Data',
     },
     {
         key: 'partnerCount',
-        title: '# of partners',
+        title: 'Partners',
         valueSelector: item => item.partnerCount,
         category: 'DFID Data',
     },
     {
         key: 'sectorCount',
-        title: '# of sectors',
+        title: 'Sectors',
         valueSelector: item => item.sectorCount,
         category: 'DFID Data',
     },
@@ -57,9 +57,9 @@ const staticOptions: NumericOption<ExtendedFiveW>[] = [
 
 const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
-        id: 'budget-information-top',
+        id: '1',
         type: 'bar-chart',
-        title: 'Top 10 budget spend',
+        title: 'Top 10 by budget',
         keySelector: item => item.name,
 
         limit: {
@@ -77,18 +77,17 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         ],
     },
     {
-        id: 'test',
+        id: '2',
         type: 'pie-chart',
-        title: 'Budget spend',
+        title: 'Total Budget',
         keySelector: item => item.name,
         valueSelector: item => item.allocatedBudget,
     },
     {
-        id: 'financial-information-top',
+        id: '3',
         type: 'bar-chart',
-        title: 'Health and Finance for Top 10 budget spend',
+        title: 'Health and Finance for top 10 by budget',
         keySelector: item => item.name,
-        // layout: 'horizontal',
         bars: [
             {
                 title: 'Health Facilities',
@@ -112,14 +111,22 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         dependencies: [119, 118],
     },
     {
-        id: 'test-1',
+        id: '4',
         type: 'histogram',
-        title: 'Frequency of Financial Institutions',
+        title: 'Financial Institutions distribution',
         color: tableauColors[0],
         binCount: 10,
-        // valueSelector: item => item.allocatedBudget,
         valueSelector: item => item.indicators[118] || 0,
         dependencies: [118],
+    },
+    {
+        id: '5',
+        type: 'histogram',
+        title: 'Health Facilities distribution',
+        color: tableauColors[3],
+        binCount: 10,
+        valueSelector: item => item.indicators[119] || 0,
+        dependencies: [119],
     },
 ];
 
@@ -251,8 +258,8 @@ function Charts(props: Props) {
                 )}
                 {chartSettings.map(item => (
                     <PolyChart
-                        className={styles.chart}
                         key={item.id}
+                        className={styles.chart}
                         data={extendedFiveWList}
                         settings={item}
                         onDelete={handleChartDelete}

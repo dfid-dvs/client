@@ -4,20 +4,21 @@ import DomainContext from '#components/DomainContext';
 import SegmentInput from '#components/SegmentInput';
 import PopupPage from '#components/PopupPage';
 
-import {
-    DomainContextProps,
-} from '#types';
+import { DomainContextProps } from '#types';
 
-import Sankey from './Sankey';
 import Table from './Table';
+import Sankey from './Sankey';
+import Charts from './Charts';
+
 import styles from './styles.css';
 
-type TabOptionKeys = 'table' | 'sankey';
+type TabOptionKeys = 'table' | 'charts' | 'sankey';
 interface TabOption {
     key: TabOptionKeys;
     label: string;
 }
 const tabOptions: TabOption[] = [
+    { key: 'charts', label: 'Charts' },
     { key: 'table', label: 'Table' },
     { key: 'sankey', label: 'Budget Flow' },
 ];
@@ -34,7 +35,7 @@ function ProgramDetails(props: Props) {
         programs,
     } = useContext<DomainContextProps>(DomainContext);
 
-    const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('table');
+    const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('charts');
 
     return (
         <PopupPage
@@ -54,13 +55,18 @@ function ProgramDetails(props: Props) {
                 </div>
             )}
         >
+            {selectedTab === 'table' && (
+                <Table programs={programs} />
+            )}
+            {selectedTab === 'charts' && (
+                <Charts
+                    programs={programs}
+                />
+            )}
             {selectedTab === 'sankey' && (
                 <Sankey
                     programs={programs}
                 />
-            )}
-            {selectedTab === 'table' && (
-                <Table programs={programs} />
             )}
         </PopupPage>
     );
