@@ -5,20 +5,55 @@ import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
 import RegionSelector from '#components/RegionSelector';
+import PolyChart from '#components/PolyChart';
+import ChartModal from '#components/ChartModal';
 
 import { tableauColors } from '#utils/constants';
 import {
     Indicator,
     RegionLevelOption,
+    ChartSettings,
+    NumericOption,
 } from '#types';
 
 import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
-
-import PolyChart from './PolyChart';
-import { ChartSettings } from './types';
-import ChartModal from './ChartModal';
-
 import styles from './styles.css';
+
+
+const keySelector = (item: ExtendedFiveW) => item.name;
+
+const staticOptions: NumericOption<ExtendedFiveW>[] = [
+    {
+        key: 'allocatedBudget',
+        title: 'Allocated Budget',
+        valueSelector: item => item.allocatedBudget,
+        category: 'DFID Data',
+    },
+    {
+        key: 'programCount',
+        title: '# of programs',
+        valueSelector: item => item.programCount,
+        category: 'DFID Data',
+    },
+    {
+        key: 'componentCount',
+        title: '# of components',
+        valueSelector: item => item.componentCount,
+        category: 'DFID Data',
+    },
+    {
+        key: 'partnerCount',
+        title: '# of partners',
+        valueSelector: item => item.partnerCount,
+        category: 'DFID Data',
+    },
+    {
+        key: 'sectorCount',
+        title: '# of sectors',
+        valueSelector: item => item.sectorCount,
+        category: 'DFID Data',
+    },
+];
 
 const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
@@ -122,6 +157,28 @@ function Charts(props: Props) {
         [indicatorList],
     );
 
+    const options: NumericOption<ExtendedFiveW>[] = useMemo(
+        () => {
+            if (!indicatorList) {
+                return staticOptions;
+            }
+            return [
+                ...staticOptions,
+                ...indicatorList.map(indicator => ({
+                    key: `indicator_${indicator.id}`,
+                    title: indicator.fullTitle,
+                    // FIXME: zero zero zero
+                    valueSelector: (item: ExtendedFiveW) => item.indicators[indicator.id] || 0,
+
+                    category: indicator.category,
+
+                    dependency: indicator.id,
+                })),
+            ];
+        },
+        [indicatorList],
+    );
+
     // Valid indicators for chart
     const validSelectedIndicators = useMemo(
         () => unique(
@@ -134,8 +191,6 @@ function Charts(props: Props) {
         ).sort(),
         [chartSettings, indicatorMapping],
     );
-
-    console.warn(validSelectedIndicators);
 
     const handleModalShow = useCallback(() => {
         setModalVisibility(true);
@@ -208,7 +263,8 @@ function Charts(props: Props) {
                 <ChartModal
                     onClose={handleModalClose}
                     onSave={handleChartAdd}
-                    indicatorList={indicatorList}
+                    options={options}
+                    keySelector={keySelector}
                 />
             )}
         </>

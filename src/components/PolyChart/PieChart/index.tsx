@@ -9,7 +9,7 @@ import { formatNumber, getPrecision } from '#components/Numeral';
 import SegmentInput from '#components/SegmentInput';
 import { tableauColors } from '#utils/constants';
 
-import { PieChartSettings } from '../../types';
+import { PieChartSettings } from '#types';
 
 import styles from './styles.css';
 

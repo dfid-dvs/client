@@ -9,7 +9,7 @@ import { compareNumber, isNotDefined, isDefined, _cs } from '@togglecorp/fujs';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
-import { BarChartSettings } from '../../types';
+import { BarChartSettings } from '#types';
 
 import styles from './styles.css';
 

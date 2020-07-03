@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ChartSettings, isBarChart, isPieChart, isHistogram } from '../types';
+import { ChartSettings, isBarChart, isPieChart, isHistogram } from '#types';
 
 import BarChart from './BarChart';
 import PieChart from './PieChart';
