@@ -60,7 +60,7 @@ jobs:
 
 
   deploy:
-    name: Push to Github Pages
+    name: Deploy to AWS (S3 + Cloudfront)
     needs: test
     runs-on: ubuntu-latest
 
@@ -75,16 +75,24 @@ jobs:
           name: dfid-dvs
           path: build
 
-      - name: Add CNAME
-        run: echo "www.dvs-nepal.org" > build/CNAME
-      - name: Add 404 for router
-        run: cp build/index.html build/404.html
-
-      - name: Deploy
-        if: success()
-        uses: crazy-max/ghaction-github-pages@v1
+      # Copy build to S3
+      - name: S3 Sync
+        uses: jakejarvis/s3-sync-action@master
         with:
-          target_branch: gh-pages
-          build_dir: build
+          args: --acl public-read --follow-symlinks --delete
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION:  ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: './build'
+
+      # Invalidate Cloudfront (this action)
+      - name: Cloudfront Invalidate
+        uses: chetan/invalidate-cloudfront-action@master
+        env:
+          DISTRIBUTION: ${{ secrets.AWS_DISTRIBUTION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION:  ${{ secrets.AWS_REGION }}
+          PATHS: '/index.html'
