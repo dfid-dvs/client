@@ -204,8 +204,8 @@ module.exports = (env) => {
                 chunksSortMode: 'none',
             }),
             new MiniCssExtractPlugin({
-                filename: 'css/[name].css',
-                chunkFilename: 'css/[id].css',
+                filename: '[name].[contenthash].css',
+                chunkFilename: '[id].[contenthash].css',
             }),
             new WebpackPwaManifest({
                 name: 'dfid',
