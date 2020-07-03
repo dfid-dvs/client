@@ -202,8 +202,8 @@ module.exports = (env) => {
                 chunksSortMode: 'none',
             }),
             new MiniCssExtractPlugin({
-                filename: 'css/[name].css',
-                chunkFilename: 'css/[id].css',
+                filename: 'css/[name].[contenthash].css',
+                chunkFilename: 'css/[id].[contenthash].css',
             }),
             new WorkboxPlugin.GenerateSW({
                 // these options encourage the ServiceWorkers to get in there fast
