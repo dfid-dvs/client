@@ -17,10 +17,8 @@ import TextInput from '#components/TextInput';
 import ColorInput from '#components/ColorInput';
 import NumberInput from '#components/NumberInput';
 import { tableauColors } from '#utils/constants';
-import { Indicator } from '#types';
 
-import { ExtendedFiveW } from '../../../../useExtendedFiveW';
-import { BarChartSettings } from '../../types';
+import { BarChartSettings, NumericOption } from '#types';
 import styles from './styles.css';
 
 type BarTypeKeys = 'normal' | 'stacked';
@@ -59,71 +57,31 @@ const orderOptions: OrderOption[] = [
 const orderKeySelector = (item: OrderOption) => item.key;
 const orderLabelSelector = (item: OrderOption) => item.title;
 
-interface NumericOption {
-    key: string;
-    title: string;
-    valueSelector: (value: ExtendedFiveW) => number;
-    dependency?: number;
-    category: string;
-}
-
-const numericOptions: NumericOption[] = [
-    {
-        key: 'allocatedBudget',
-        title: 'Allocated Budget',
-        valueSelector: item => item.allocatedBudget,
-        category: 'DFID Data',
-    },
-    {
-        key: 'programCount',
-        title: '# of programs',
-        valueSelector: item => item.programCount,
-        category: 'DFID Data',
-    },
-    {
-        key: 'componentCount',
-        title: '# of components',
-        valueSelector: item => item.componentCount,
-        category: 'DFID Data',
-    },
-    {
-        key: 'partnerCount',
-        title: '# of partners',
-        valueSelector: item => item.partnerCount,
-        category: 'DFID Data',
-    },
-    {
-        key: 'sectorCount',
-        title: '# of sectors',
-        valueSelector: item => item.sectorCount,
-        category: 'DFID Data',
-    },
-];
-
-const keySelector = (item: NumericOption) => item.key;
-const labelSelector = (item: NumericOption) => item.title;
-const groupSelector = (item: NumericOption) => item.category;
-
 interface Bar {
     id: string;
     optionName?: string;
     color: string;
 }
 
-interface BarItemProps {
+interface BarItemProps<T> {
     value: Bar;
     onValueChange: (val: (values: Bar[]) => Bar[]) => void;
     index: number;
-    options: NumericOption[];
+    options: NumericOption<T>[];
 }
 
-function BarItem(props: BarItemProps) {
+function BarItem<T>(props: BarItemProps<T>) {
     const {
         index,
         value,
         onValueChange,
         options,
     } = props;
+
+    // FIXME: memoize
+    const keySelector = (item: NumericOption<T>) => item.key;
+    const labelSelector = (item: NumericOption<T>) => item.title;
+    const groupSelector = (item: NumericOption<T>) => item.category;
 
     const handleOptionNameChange = useCallback(
         (optionName: string | undefined) => {
@@ -197,20 +155,29 @@ function BarItem(props: BarItemProps) {
     );
 }
 
-interface Props {
-    onSave: (settings: BarChartSettings<ExtendedFiveW>) => void;
-    indicatorList: Indicator[] | undefined;
+interface Props<T> {
+    onSave: (settings: BarChartSettings<T>) => void;
+    // indicatorList: Indicator[] | undefined;
     maxRow?: number;
     className?: string;
+    options: NumericOption<T>[];
+    keySelector: (item: T) => string;
 }
 
-function BarChartConfig(props: Props) {
+function BarChartConfig<T>(props: Props<T>) {
     const {
         onSave,
-        indicatorList,
+        // indicatorList,
         className,
         maxRow = 4,
+        options,
+        keySelector: primaryKeySelector,
     } = props;
+
+    // FIXME: memoize
+    const keySelector = (item: NumericOption<T>) => item.key;
+    const labelSelector = (item: NumericOption<T>) => item.title;
+    const groupSelector = (item: NumericOption<T>) => item.category;
 
     const [error, setError] = useState<string | undefined>(undefined);
 
@@ -231,6 +198,7 @@ function BarChartConfig(props: Props) {
         ? orderField
         : bars[0].optionName;
 
+    /*
     const options: NumericOption[] = useMemo(
         () => {
             if (!indicatorList) {
@@ -242,7 +210,7 @@ function BarChartConfig(props: Props) {
                     key: `indicator_${indicator.id}`,
                     title: indicator.fullTitle,
                     // FIXME: we should have certain thing for this
-                    valueSelector: (item: ExtendedFiveW) => item.indicators[indicator.id] || 0,
+                    valueSelector: (item: T) => item.indicators[indicator.id] || 0,
 
                     category: indicator.category,
 
@@ -252,6 +220,7 @@ function BarChartConfig(props: Props) {
         },
         [indicatorList],
     );
+    */
 
     const handleSave = useCallback(
         () => {
@@ -314,12 +283,12 @@ function BarChartConfig(props: Props) {
                 item => item,
             );
 
-            const settings: BarChartSettings<ExtendedFiveW> = {
+            const settings: BarChartSettings<T> = {
                 id: chartId,
                 type: 'bar-chart',
                 title,
 
-                keySelector: item => item.name,
+                keySelector: primaryKeySelector,
 
                 limit: {
                     count: limit,
@@ -334,7 +303,10 @@ function BarChartConfig(props: Props) {
 
             onSave(settings);
         },
-        [onSave, bars, title, options, barType, limitValue, order, autoOrderField],
+        [
+            onSave, bars, title, options, barType, limitValue,
+            order, autoOrderField, primaryKeySelector,
+        ],
     );
 
     const handleBarAdd = useCallback(

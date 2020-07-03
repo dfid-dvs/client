@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     randomString,
     isFalsyString,
@@ -9,68 +9,23 @@ import {
 import SelectInput from '#components/SelectInput';
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
-import { Indicator } from '#types';
 
-import { ExtendedFiveW } from '../../../../useExtendedFiveW';
-import { PieChartSettings } from '../../types';
+import { PieChartSettings, NumericOption } from '#types';
 import styles from './styles.css';
 
-interface NumericOption {
-    key: string;
-    title: string;
-    valueSelector: (value: ExtendedFiveW) => number;
-    dependency?: number;
-    category: string;
-}
-
-const numericOptions: NumericOption[] = [
-    {
-        key: 'allocatedBudget',
-        title: 'Allocated Budget',
-        valueSelector: item => item.allocatedBudget,
-        category: 'DFID Data',
-    },
-    {
-        key: 'programCount',
-        title: '# of programs',
-        valueSelector: item => item.programCount,
-        category: 'DFID Data',
-    },
-    {
-        key: 'componentCount',
-        title: '# of components',
-        valueSelector: item => item.componentCount,
-        category: 'DFID Data',
-    },
-    {
-        key: 'partnerCount',
-        title: '# of partners',
-        valueSelector: item => item.partnerCount,
-        category: 'DFID Data',
-    },
-    {
-        key: 'sectorCount',
-        title: '# of sectors',
-        valueSelector: item => item.sectorCount,
-        category: 'DFID Data',
-    },
-];
-
-const keySelector = (item: NumericOption) => item.key;
-const labelSelector = (item: NumericOption) => item.title;
-const groupSelector = (item: NumericOption) => item.category;
-
-interface Props {
+interface Props<T> {
     className?: string;
-    onSave: (settings: PieChartSettings<ExtendedFiveW>) => void;
-    indicatorList: Indicator[] | undefined;
+    onSave: (settings: PieChartSettings<T>) => void;
+    options: NumericOption<T>[];
+    keySelector: (item: T) => string;
 }
 
-function PieChartConfig(props: Props) {
+function PieChartConfig<T>(props: Props<T>) {
     const {
         className,
         onSave,
-        indicatorList,
+        options,
+        keySelector: primaryKeySelector,
     } = props;
 
     const [error, setError] = useState<string | undefined>(undefined);
@@ -78,27 +33,10 @@ function PieChartConfig(props: Props) {
     const [title, setTitle] = useState('');
     const [orderField, setOrderField] = useState<string | undefined>();
 
-    const options: NumericOption[] = useMemo(
-        () => {
-            if (!indicatorList) {
-                return numericOptions;
-            }
-            return [
-                ...numericOptions,
-                ...indicatorList.map(indicator => ({
-                    key: `indicator_${indicator.id}`,
-                    title: indicator.fullTitle,
-                    // FIXME: we should have certain thing for this
-                    valueSelector: (item: ExtendedFiveW) => item.indicators[indicator.id] || 0,
-
-                    category: indicator.category,
-
-                    dependency: indicator.id,
-                })),
-            ];
-        },
-        [indicatorList],
-    );
+    // FIXME: memoize
+    const keySelector = (item: NumericOption<T>) => item.key;
+    const labelSelector = (item: NumericOption<T>) => item.title;
+    const groupSelector = (item: NumericOption<T>) => item.category;
 
     const handleSave = useCallback(
         () => {
@@ -124,19 +62,19 @@ function PieChartConfig(props: Props) {
                 ? [option.dependency]
                 : undefined;
 
-            const settings: PieChartSettings<ExtendedFiveW> = {
+            const settings: PieChartSettings<T> = {
                 id: chartId,
                 type: 'pie-chart',
                 title,
 
-                keySelector: item => item.name,
+                keySelector: primaryKeySelector,
                 valueSelector: option.valueSelector,
                 dependencies,
             };
 
             onSave(settings);
         },
-        [onSave, options, orderField, title],
+        [onSave, options, orderField, title, primaryKeySelector],
     );
 
     return (

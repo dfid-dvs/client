@@ -1,0 +1,31 @@
+.table-actions {
+    display: flex;
+    align-items: flex-end;
+    flex-shrink: 0;
+    padding: var(--spacing-large) var(--spacing-medium);
+
+    >* {
+        &:not(:last-child) {
+            margin-right: var(--spacing-medium);
+        }
+    }
+}
+
+.charts {
+    display: flex;
+    position: relative;
+    align-items: flex-start;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    border-top: var(--width-separator-thin) solid var(--color-separator-light);
+    overflow-y: auto;
+
+    .chart {
+        padding: var(--spacing-large) var(--spacing-medium);
+    }
+
+    .backdrop {
+        z-index: 1;
+    }
+}

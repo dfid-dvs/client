@@ -5,7 +5,7 @@ import { IoMdTrash } from 'react-icons/io';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
-import { HistogramSettings } from '../../types';
+import { HistogramSettings } from '#types';
 
 import styles from './styles.css';
 

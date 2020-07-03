@@ -5,13 +5,8 @@ import { GiHistogram } from 'react-icons/gi';
 
 import Modal from '#components/Modal';
 import SegmentInput from '#components/SegmentInput';
-import {
-    Indicator,
-} from '#types';
 
-
-import { ChartSettings } from '../types';
-import { ExtendedFiveW } from '../../../useExtendedFiveW';
+import { ChartSettings, NumericOption } from '#types';
 
 import BarChartConfig from './BarChartConfig';
 import PieChartConfig from './PieChartConfig';
@@ -56,28 +51,29 @@ const chartTypeOptions: ChartTypeOption[] = [
             </>
         ),
     },
-
 ];
 
 const chartLabelSelector = (item: ChartTypeOption) => item.name;
 const chartKeySelector = (item: ChartTypeOption) => item.type;
 
-interface Props {
-    onSave: (settings: ChartSettings<ExtendedFiveW>) => void;
+interface Props<T> {
+    onSave: (settings: ChartSettings<T>) => void;
     onClose: () => void;
-    indicatorList: Indicator[] | undefined;
+    options: NumericOption<T>[];
+    keySelector: (item: T) => string;
 }
 
-function ChartModal(props: Props) {
+function ChartModal<T>(props: Props<T>) {
     const {
         onClose,
         onSave,
-        indicatorList,
+        options,
+        keySelector,
     } = props;
 
     const [chartType, setChartType] = useState<ChartType>('bar-chart');
     const handleSave = useCallback(
-        (value: ChartSettings<ExtendedFiveW>) => {
+        (value: ChartSettings<T>) => {
             onSave(value);
             onClose();
         },
@@ -107,22 +103,25 @@ function ChartModal(props: Props) {
             {chartType === 'bar-chart' && (
                 <BarChartConfig
                     className={styles.chartConfig}
-                    indicatorList={indicatorList}
                     onSave={handleSave}
+                    keySelector={keySelector}
+                    options={options}
                 />
             )}
             {chartType === 'pie-chart' && (
                 <PieChartConfig
                     className={styles.chartConfig}
-                    indicatorList={indicatorList}
                     onSave={handleSave}
+                    keySelector={keySelector}
+                    options={options}
                 />
             )}
             {chartType === 'histogram' && (
                 <HistogramConfig
                     className={styles.chartConfig}
-                    indicatorList={indicatorList}
                     onSave={handleSave}
+                    // keySelector={keySelector}
+                    options={options}
                 />
             )}
         </Modal>

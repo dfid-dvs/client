@@ -23,13 +23,13 @@ const tabOptions: TabOption[] = [
     { key: 'sankey', label: 'Budget Flow' },
 ];
 
-interface RegionDetailsProps {
+interface Props {
     className?: string;
     indicatorList: Indicator[] | undefined;
     indicatorListPending: boolean | undefined;
 }
 
-function RegionDetails(props: RegionDetailsProps) {
+function RegionDetails(props: Props) {
     const {
         className,
         indicatorList,
