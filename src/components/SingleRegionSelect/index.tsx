@@ -1,9 +1,13 @@
 import React, { useMemo, useCallback } from 'react';
-import { _cs } from '@togglecorp/fujs';
+import {
+    _cs,
+    isDefined,
+} from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
 import {
+    Bbox,
     MultiResponse,
     RegionLevelOption,
 } from '#types';
@@ -18,6 +22,7 @@ interface Province {
     name: string;
     code: string;
     boundary: string;
+    bbox: string;
 }
 interface District {
     id: number;
@@ -26,6 +31,7 @@ interface District {
     name: string;
     code: string;
     nCode: number;
+    bbox: string;
 }
 
 interface Municipality {
@@ -37,6 +43,7 @@ interface Municipality {
     gnTypeNp: string;
     code: string;
     population: number;
+    bbox: string;
 }
 
 type Region = Province | District | Municipality;
@@ -67,6 +74,7 @@ interface Props {
 
     region: number | undefined;
     onRegionChange?: (item: number | undefined) => void;
+    onBoundsChange?: (bounds: Bbox | undefined) => void;
 }
 function RegionSelector(props: Props) {
     const {
@@ -77,26 +85,8 @@ function RegionSelector(props: Props) {
         regionLevel,
         region: selectedRegion,
         onRegionChange: setSelectedRegion,
+        onBoundsChange: setBounds,
     } = props;
-
-    const setRegionLevelSafely = useCallback(
-        (r: RegionLevelOption) => {
-            if (onRegionLevelChange) {
-                onRegionLevelChange(r);
-                if (setSelectedRegion) {
-                    setSelectedRegion(undefined);
-                }
-            }
-        },
-        [onRegionLevelChange, setSelectedRegion],
-    );
-
-    const regionLevelLabel = useMemo(
-        () => (
-            regionLevelOptionList.find(v => v.key === regionLevel)?.label
-        ),
-        [regionLevel],
-    );
 
     const regionGetRequest = searchHidden ? undefined : `${apiEndPoint}/core/${regionLevel}/`;
     const regionSchema = regionLevel;
@@ -105,6 +95,40 @@ function RegionSelector(props: Props) {
         regionListPending,
         regionListResponse,
     ] = useRequest<MultiResponse<Region>>(regionGetRequest, regionSchema);
+
+    const regionLevelLabel = useMemo(
+        () => (
+            regionLevelOptionList.find(v => v.key === regionLevel)?.label
+        ),
+        [regionLevel],
+    );
+
+    const handleSelectedRegionChange = useCallback((selectedRegionId?: number) => {
+        if (setSelectedRegion) {
+            setSelectedRegion(selectedRegionId);
+        }
+        if (setBounds) {
+            const selectedRegionObj = regionListResponse?.results
+                ?.find(r => r.id === selectedRegionId);
+
+            if (isDefined(selectedRegionObj)) {
+                // TODO: Fix from server, currently sends in string
+                const bounds = selectedRegionObj.bbox?.split(',');
+                const numberBounds: Bbox = bounds.map(b => Number(b));
+                setBounds(numberBounds);
+            }
+        }
+    }, [setSelectedRegion, regionListResponse, setBounds]);
+
+    const setRegionLevelSafely = useCallback(
+        (r: RegionLevelOption) => {
+            if (onRegionLevelChange) {
+                onRegionLevelChange(r);
+                handleSelectedRegionChange(undefined);
+            }
+        },
+        [onRegionLevelChange, handleSelectedRegionChange],
+    );
 
     return (
         <div className={_cs(className, styles.singleRegionSelect)}>
@@ -127,7 +151,7 @@ function RegionSelector(props: Props) {
                     className={styles.regionSelectInput}
                     disabled={regionListPending}
                     options={regionListResponse?.results}
-                    onChange={setSelectedRegion}
+                    onChange={handleSelectedRegionChange}
                     value={selectedRegion}
                     optionLabelSelector={regionLabelSelector}
                     optionKeySelector={regionKeySelector}
@@ -136,4 +160,5 @@ function RegionSelector(props: Props) {
         </div>
     );
 }
+
 export default RegionSelector;

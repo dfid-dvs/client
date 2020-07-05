@@ -10,7 +10,6 @@ import { tableauColors } from '#utils/constants';
 import {
     ChartSettings,
     NumericOption,
-    Program,
 } from '#types';
 import { prepareUrlParams as p } from '#utils/common';
 

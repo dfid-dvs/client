@@ -1,0 +1,15 @@
+.map-container {
+    margin: var(--spacing-extra-small) var(--spacing-small);
+    border: var(--width-separator-thin) solid var(--color-separator-light);
+    border-radius: 5px;
+
+    canvas {
+        outline: none;
+    }
+
+    :global {
+        .mapboxgl-ctrl-logo {
+            display: none;
+        }
+    }
+}

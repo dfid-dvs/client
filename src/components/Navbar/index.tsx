@@ -58,7 +58,6 @@ const Navbar = (props: Props) => {
                     >
                         Dashboard
                     </NavLink>
-                    {/*
                     <NavLink
                         exact
                         to="/infographics/"
@@ -67,7 +66,6 @@ const Navbar = (props: Props) => {
                     >
                         Infographics
                     </NavLink>
-                    */}
                 </div>
                 <div
                     className={styles.filters}

@@ -40,7 +40,6 @@
             flex-shrink: 0;
             width: var(--width-sidepanel);
         }
-
     }
 
     --width-config-container: 320px;

@@ -208,3 +208,5 @@ export interface IndicatorValue {
     value: number;
     indicatorId: number;
 }
+
+export type Bbox = [number, number, number, number];
