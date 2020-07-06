@@ -150,6 +150,7 @@ export interface BarChartSettings<T> {
     id: string;
     type: 'bar-chart';
     title: string;
+    orientation?: 'horizontal' | 'vertical';
 
     // layout: 'vertical' | 'horizontal';
     keySelector: (value: T) => string;

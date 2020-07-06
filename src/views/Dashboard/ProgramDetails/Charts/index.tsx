@@ -146,7 +146,7 @@ function Charts(props: Props) {
                 {chartSettings.map(item => (
                     <PolyChart
                         key={item.id}
-                        className={styles.chart}
+                        chartClassName={styles.chart}
                         data={extendedPrograms}
                         settings={item}
                         onDelete={handleChartDelete}

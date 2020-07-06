@@ -5,7 +5,10 @@ import {
     RegionLevelOption,
 } from '#types';
 import { apiEndPoint } from '#utils/constants';
-import { prepareUrlParams as p } from '#utils/common';
+import {
+    UrlParams,
+    prepareUrlParams as p,
+} from '#utils/common';
 
 import useRequest from '#hooks/useRequest';
 
@@ -30,10 +33,12 @@ function useExtendedFiveW(
     programs: number[],
     indicators: number[],
     preserveResponse = true,
+    extraUrlParams: UrlParams = {},
 ): [boolean, ExtendedFiveW[]] {
     const regionUrlParams = p({
         // eslint-disable-next-line @typescript-eslint/camelcase
         program_id: programs,
+        ...extraUrlParams,
     });
     const regionFiveWGetUrl = regionUrlParams
         ? `${apiEndPoint}/core/fivew-${regionLevel}/?${regionUrlParams}`

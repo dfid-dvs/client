@@ -1,5 +1,13 @@
 import React, { useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import {
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+} from 'recharts';
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
 import { IoMdTrash } from 'react-icons/io';
 
@@ -23,6 +31,8 @@ interface HistogramUnitProps<T> {
     data: T[] | undefined;
     className?: string;
     onDelete: (name: string | undefined) => void;
+    chartClassName?: string;
+    hideActions?: boolean;
 }
 
 const chartMargin = {
@@ -38,6 +48,8 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         data,
         className,
         onDelete,
+        chartClassName,
+        hideActions,
     } = props;
 
     const {
@@ -88,48 +100,55 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                 <h3 className={styles.heading}>
                     {title}
                 </h3>
-                <div className={styles.actions}>
-                    <Button
-                        onClick={onDelete}
-                        name={id}
-                        title="Delete chart"
-                        transparent
-                        variant="danger"
-                    >
-                        <IoMdTrash />
-                    </Button>
-                </div>
+                {!hideActions && (
+                    <div className={styles.actions}>
+                        <Button
+                            onClick={onDelete}
+                            name={id}
+                            title="Delete chart"
+                            transparent
+                            variant="danger"
+                        >
+                            <IoMdTrash />
+                        </Button>
+                    </div>
+                )}
             </header>
-            <BarChart
-                className={styles.chart}
-                width={400}
-                height={300}
-                data={finalData}
-                margin={chartMargin}
-                barCategoryGap={0}
-            >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                    dataKey="key"
-                    type="category"
-                />
-                <YAxis
-                    type="number"
-                    label={{
-                        value: 'Frequency',
-                        angle: -90,
-                        position: 'insideLeft',
-                    }}
-                />
-                <Tooltip
-                    offset={20}
-                />
-                <Bar
-                    name="Frequency"
-                    dataKey="value"
-                    fill={color}
-                />
-            </BarChart>
+            <div className={_cs(styles.responsiveContainer, chartClassName)}>
+                <ResponsiveContainer>
+                    <BarChart
+                        className={styles.chart}
+                        width={400}
+                        height={300}
+                        data={finalData}
+                        margin={chartMargin}
+                        barCategoryGap={0}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                            dataKey="key"
+                            type="category"
+                        />
+                        <YAxis
+                            type="number"
+                            label={{
+                                value: 'Frequency',
+                                angle: -90,
+                                position: 'insideLeft',
+                            }}
+                        />
+                        <Tooltip
+                            allowEscapeViewBox={{ x: false, y: true }}
+                            offset={20}
+                        />
+                        <Bar
+                            name="Frequency"
+                            dataKey="value"
+                            fill={color}
+                        />
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
         </div>
     );
 }

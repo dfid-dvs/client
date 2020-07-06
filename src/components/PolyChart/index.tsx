@@ -11,17 +11,29 @@ interface Props<T> {
     data: T[] | undefined;
     className?: string;
     onDelete: (name: string | undefined) => void;
+    chartClassName?: string;
+    hideActions?: boolean;
 }
 
 function PolyChart<T extends object>(props: Props<T>) {
-    const { settings, data, className, onDelete } = props;
+    const {
+        settings,
+        data,
+        className,
+        onDelete,
+        chartClassName,
+        hideActions,
+    } = props;
+
     if (isBarChart(settings)) {
         return (
             <BarChart
                 onDelete={onDelete}
                 data={data}
+                hideActions={hideActions}
                 settings={settings}
                 className={className}
+                chartClassName={chartClassName}
             />
         );
     }
@@ -31,7 +43,9 @@ function PolyChart<T extends object>(props: Props<T>) {
                 onDelete={onDelete}
                 data={data}
                 settings={settings}
+                hideActions={hideActions}
                 className={className}
+                chartClassName={chartClassName}
             />
         );
     }
@@ -41,7 +55,9 @@ function PolyChart<T extends object>(props: Props<T>) {
                 onDelete={onDelete}
                 data={data}
                 settings={settings}
+                hideActions={hideActions}
                 className={className}
+                chartClassName={chartClassName}
             />
         );
     }

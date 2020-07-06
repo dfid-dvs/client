@@ -1,3 +1,22 @@
 .charts {
-    display: flex;
+    .chart-container {
+        display: inline-block;
+        margin: var(--spacing-medium);
+        border-radius: 5px;
+        width: calc(50% - 2 * var(--spacing-medium));
+        vertical-align: top;
+    }
+
+    .chart {
+        padding: var(--spacing-large);
+        height: 72mm!important;
+    }
+}
+
+@media print {
+    .charts {
+        .chart {
+            page-break-inside: avoid;
+        }
+    }
 }

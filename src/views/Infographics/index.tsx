@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import {
     _cs,
     isDefined,
@@ -8,7 +8,6 @@ import PrintButton from '#components/PrintButton';
 
 import useRequest from '#hooks/useRequest';
 import {
-    Bbox,
     MultiResponse,
     IndicatorValue,
 } from '#types';
@@ -16,11 +15,13 @@ import { apiEndPoint } from '#utils/constants';
 
 import { OriginalFiveW } from '#views/Dashboard/types';
 import DomainContext from '#components/DomainContext';
-import SingleRegionSelect from '#components/SingleRegionSelect';
+import SingleRegionSelect, { Region } from '#components/SingleRegionSelect';
 import Numeral from '#components/Numeral';
+import Button from '#components/Button';
 import infographicLogo from '#resources/infographic-logo.svg';
 
 import InfographicsMap from './Map';
+import InfographicsCharts from './Charts';
 
 import styles from './styles.css';
 
@@ -30,7 +31,7 @@ interface Props {
 
 const numericDataList = [
     { key: 'finance', label: 'Financial institutions', value: 0 },
-    { key: 'health', label: 'Health facilities', value: 0 },
+    // { key: 'health', label: 'Health facilities', value: 0 },
     { key: 'healthPerThousand', label: 'Health facilities / 1000 person', value: 0 },
     { key: 'population', label: 'Population', value: 0 },
     { key: 'povertyGap', label: 'Poverty gap', value: 0 },
@@ -87,9 +88,11 @@ function Infographics(props: Props) {
     const [region, setRegion] = useState<number | undefined>(undefined);
     const [printMode, setPrintMode] = useState(false);
     const [
-        selectedRegionBounds,
-        setSelectedRegionBounds,
-    ] = React.useState<Bbox | undefined>(undefined);
+        selectedRegionData,
+        setSelectedRegionData,
+    ] = React.useState<Region | undefined>(undefined);
+
+    const [showAddModal, setAddModalVisibility] = useState(false);
 
     const regionFiveWUrl = `${apiEndPoint}/core/fivew-${regionLevel}/`;
     const regionFiveWRequestOptions: RequestInit | undefined = React.useMemo(
@@ -103,11 +106,6 @@ function Infographics(props: Props) {
         [],
     );
 
-    // 25: estimated population
-    // 133: Poverty gap
-    // 118: Financial institution
-    // 119: Health facilities
-    // 145: Health facilities per 1000 person
     const indicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/?indicator_id=25,54,118,119,145`;
     const indicatorRequestOptions: RequestInit | undefined = React.useMemo(
         () => ({
@@ -158,7 +156,12 @@ function Infographics(props: Props) {
         return {};
     }, [indicatorResponse, region]);
 
+    const handleAddChartModalClick = useCallback(() => {
+        setAddModalVisibility(true);
+    }, [setAddModalVisibility]);
+
     const [, aggregatedFiveWResponse] = useRequest<MultiResponse<OriginalFiveW>>(regionFiveWUrl, 'fivew', regionFiveWRequestOptions);
+
     const regionData = React.useMemo(() => {
         const data = {
             budget: 0,
@@ -187,6 +190,34 @@ function Infographics(props: Props) {
         return data;
     }, [aggregatedFiveWResponse, region]);
 
+    const handleRegionChange = useCallback((newRegionId, newSelectedRegionData) => {
+        setRegion(newRegionId);
+        setSelectedRegionData(newSelectedRegionData);
+    }, [setRegion, setSelectedRegionData]);
+
+    const handleRegionLevelChange = useCallback((newRegionLevel) => {
+        setRegion(undefined);
+        setSelectedRegionData(undefined);
+        setRegionLevel(newRegionLevel);
+    }, [setRegion, setSelectedRegionData, setRegionLevel]);
+
+    const currentBounds = useMemo(() => {
+        const bounds = selectedRegionData?.bbox?.split(',');
+        return bounds?.map(b => Number(b));
+    }, [selectedRegionData]);
+
+    const url = useMemo(() => {
+        if (regionLevel === 'district' && selectedRegionData && selectedRegionData.provinceId) {
+            return `${apiEndPoint}/core/province/?id=${selectedRegionData.provinceId}`;
+        }
+        if (regionLevel === 'municipality' && selectedRegionData && selectedRegionData.districtId) {
+            return `${apiEndPoint}/core/district/?id=${selectedRegionData.districtId}`;
+        }
+        return undefined;
+    }, [selectedRegionData, regionLevel]);
+
+    const [_, parentRegionResponse] = useRequest<MultiResponse<Region>>(url, 'parent-region');
+
     return (
         <div
             className={_cs(
@@ -196,20 +227,27 @@ function Infographics(props: Props) {
             )}
         >
             <div className={styles.sidebar}>
-                <SingleRegionSelect
-                    className={styles.regionSelector}
-                    onRegionLevelChange={setRegionLevel}
-                    regionLevel={regionLevel}
-                    region={region}
-                    onRegionChange={setRegion}
-                    onBoundsChange={setSelectedRegionBounds}
-                />
                 <PrintButton
                     className={styles.printModeButton}
                     printMode={printMode}
                     onPrintModeChange={setPrintMode}
                     orientation="portrait"
                 />
+                <SingleRegionSelect
+                    className={styles.regionSelector}
+                    onRegionLevelChange={handleRegionLevelChange}
+                    regionLevel={regionLevel}
+                    region={region}
+                    onRegionChange={handleRegionChange}
+                    disabled={printMode}
+                />
+                <Button
+                    className={styles.addChartButton}
+                    onClick={handleAddChartModalClick}
+                    disabled={printMode}
+                >
+                    Add Chart
+                </Button>
             </div>
             {isDefined(region) ? (
                 <div className={styles.content}>
@@ -219,9 +257,11 @@ function Infographics(props: Props) {
                                 <div className={styles.regionName}>
                                     { regionData.name }
                                 </div>
-                                <div className={styles.parentRegionDetails}>
-                                    Parent region
-                                </div>
+                                {regionLevel !== 'province' && (
+                                    <div className={styles.parentRegionDetails}>
+                                        {parentRegionResponse?.results[0]?.name}
+                                    </div>
+                                )}
                             </div>
                             <div className={styles.appBrand}>
                                 <img
@@ -247,10 +287,17 @@ function Infographics(props: Props) {
                             </div>
                             <InfographicsMap
                                 className={styles.mapContainer}
-                                bounds={selectedRegionBounds}
+                                bounds={currentBounds}
                                 selectedRegion={region}
                             />
                         </div>
+                        <InfographicsCharts
+                            className={styles.charts}
+                            printMode={printMode}
+                            showAddModal={showAddModal}
+                            selectedRegion={region}
+                            onAddModalVisibilityChange={setAddModalVisibility}
+                        />
                     </div>
                 </div>
             ) : (

@@ -7,7 +7,6 @@ import {
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
 import {
-    Bbox,
     MultiResponse,
     RegionLevelOption,
 } from '#types';
@@ -24,6 +23,7 @@ interface Province {
     boundary: string;
     bbox: string;
 }
+
 interface District {
     id: number;
     provinceId: number;
@@ -46,7 +46,7 @@ interface Municipality {
     bbox: string;
 }
 
-type Region = Province | District | Municipality;
+export type Region = Province | District | Municipality;
 const regionKeySelector = (region: Region) => +region.code;
 const regionLabelSelector = (region: Region) => region.name;
 
@@ -68,24 +68,24 @@ interface Props {
     className?: string;
     searchHidden?: boolean;
     selectionHidden?: boolean;
+    disabled?: boolean;
 
     regionLevel: RegionLevelOption;
     onRegionLevelChange?: (regionLevel: RegionLevelOption) => void;
 
     region: number | undefined;
-    onRegionChange?: (item: number | undefined) => void;
-    onBoundsChange?: (bounds: Bbox | undefined) => void;
+    onRegionChange?: (item: number | undefined, obj: Region) => void;
 }
 function RegionSelector(props: Props) {
     const {
         className,
+        disabled,
         searchHidden,
         selectionHidden,
         onRegionLevelChange,
         regionLevel,
         region: selectedRegion,
         onRegionChange: setSelectedRegion,
-        onBoundsChange: setBounds,
     } = props;
 
     const regionGetRequest = searchHidden ? undefined : `${apiEndPoint}/core/${regionLevel}/`;
@@ -105,20 +105,15 @@ function RegionSelector(props: Props) {
 
     const handleSelectedRegionChange = useCallback((selectedRegionId?: number) => {
         if (setSelectedRegion) {
-            setSelectedRegion(selectedRegionId);
-        }
-        if (setBounds) {
             const selectedRegionObj = regionListResponse?.results
-                ?.find(r => r.id === selectedRegionId);
+                ?.find(r => r.code === String(selectedRegionId));
 
             if (isDefined(selectedRegionObj)) {
                 // TODO: Fix from server, currently sends in string
-                const bounds = selectedRegionObj.bbox?.split(',');
-                const numberBounds: Bbox = bounds.map(b => Number(b));
-                setBounds(numberBounds);
+                setSelectedRegion(selectedRegionId, selectedRegionObj);
             }
         }
-    }, [setSelectedRegion, regionListResponse, setBounds]);
+    }, [setSelectedRegion, regionListResponse]);
 
     const setRegionLevelSafely = useCallback(
         (r: RegionLevelOption) => {
@@ -141,6 +136,7 @@ function RegionSelector(props: Props) {
                     optionLabelSelector={regionLevelOptionListLabelSelector}
                     value={regionLevel}
                     onChange={setRegionLevelSafely}
+                    disabled={disabled}
                 />
             )}
             {!searchHidden && setSelectedRegion && (
@@ -149,7 +145,7 @@ function RegionSelector(props: Props) {
                     label={regionLevelLabel}
                     placeholder={`Select ${regionLevelLabel}`}
                     className={styles.regionSelectInput}
-                    disabled={regionListPending}
+                    disabled={regionListPending || disabled}
                     options={regionListResponse?.results}
                     onChange={handleSelectedRegionChange}
                     value={selectedRegion}

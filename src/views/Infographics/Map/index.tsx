@@ -29,7 +29,7 @@ const mapOptions: Omit<mapboxgl.MapboxOptions, 'style' | 'container'> = {
     zoom: 3,
     center: defaultCenter,
     bounds: defaultBounds,
-    interactive: false,
+    // interactive: false,
 };
 
 const outlinePaint: mapboxgl.LinePaint = {
@@ -112,7 +112,7 @@ function InfographicsMap(props: Props) {
                             'source-layer': 'districtcentroidgeo',
                             paint: labelPaint,
                             layout: labelLayout,
-                            filter: ['==', ['id'], selectedRegion],
+                            // filter: ['==', ['id'], selectedRegion],
                         }}
                     />
                 )}

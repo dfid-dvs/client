@@ -1,25 +1,27 @@
 .chart-container {
-    .chart {
-        margin: var(--spacing-medium);
+    .responsive-container {
+        width: 100%;
 
-        :global {
-            .recharts-cartesian-axis-ticks {
-                text {
-                    font-size: var(--font-size-extra-small);
-                }
-            }
-
-            .recharts-legend-wrapper {
-                .recharts-surface {
-                    margin-right: var(--spacing-small)!important;
+        .chart {
+            :global {
+                .recharts-cartesian-axis-ticks {
+                    text {
+                        font-size: var(--font-size-extra-small);
+                    }
                 }
 
-                .recharts-legend-item-text {
-                    vertical-align: middle;
-                    color: var(--color-text-label);
-                    font-family: inherit;
-                    font-size: var(--font-size-small);
-                    font-weight: var(--font-weight-bold);
+                .recharts-legend-wrapper {
+                    .recharts-surface {
+                        margin-right: var(--spacing-small)!important;
+                    }
+
+                    .recharts-legend-item-text {
+                        vertical-align: middle;
+                        color: var(--color-text-label);
+                        font-family: inherit;
+                        font-size: var(--font-size-small);
+                        font-weight: var(--font-weight-bold);
+                    }
                 }
             }
         }
@@ -28,7 +30,9 @@
     .header {
         display: flex;
         align-items: center;
+        flex-shrink: 0;
         padding: calc(var(--spacing-medium) - var(--spacing-small));
+        overflow-y: auto;
 
         .heading {
             flex-grow: 1;
