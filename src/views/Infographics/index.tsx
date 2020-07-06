@@ -8,6 +8,8 @@ import PrintButton from '#components/PrintButton';
 
 import useRequest from '#hooks/useRequest';
 import {
+    Bbox,
+    RegionLevelOption,
     MultiResponse,
     IndicatorValue,
 } from '#types';
@@ -29,9 +31,17 @@ interface Props {
     className?: string;
 }
 
-const numericDataList = [
+type numericDataKey = 'finance' | 'healthPerThousand' | 'population'
+| 'povertyGap' | 'budget' | 'programs' | 'partners' | 'sectors';
+
+interface NumericData {
+    key: numericDataKey;
+    label: string;
+    value: number;
+}
+
+const numericDataList: NumericData[] = [
     { key: 'finance', label: 'Financial institutions', value: 0 },
-    // { key: 'health', label: 'Health facilities', value: 0 },
     { key: 'healthPerThousand', label: 'Health facilities / 1000 person', value: 0 },
     { key: 'population', label: 'Population', value: 0 },
     { key: 'povertyGap', label: 'Poverty gap', value: 0 },
@@ -39,6 +49,7 @@ const numericDataList = [
     { key: 'programs', label: 'Programs', value: 0 },
     { key: 'partners', label: 'Partners (1st tier)', value: 0 },
     { key: 'sectors', label: 'Sectors', value: 0 },
+    // { key: 'health', label: 'Health facilities', value: 0 },
     // { key: 'subSectors', label: 'Subsectors', value: 0 },
     // { key: 'gdp', label: 'GDP', value: 0 },
     // { key: 'perCapitaIncome', label: 'Per capita income', value: 0 },
@@ -90,7 +101,7 @@ function Infographics(props: Props) {
     const [
         selectedRegionData,
         setSelectedRegionData,
-    ] = React.useState<Region | undefined>(undefined);
+    ] = React.useState<Region & { type: RegionLevelOption } | undefined>(undefined);
 
     const [showAddModal, setAddModalVisibility] = useState(false);
 
@@ -167,6 +178,7 @@ function Infographics(props: Props) {
             budget: 0,
             name: 'Region',
             partners: 0,
+            programs: 0,
             sectors: 0,
             subSectors: 0,
             components: 0,
@@ -181,6 +193,7 @@ function Infographics(props: Props) {
         if (currentRegion) {
             data.name = currentRegion.name;
             data.budget = currentRegion.allocatedBudget;
+            data.programs = currentRegion.program.length;
             data.partners = currentRegion.partner.length;
             data.sectors = currentRegion.sector.length;
             data.subSectors = currentRegion.subSector.length;
@@ -190,10 +203,18 @@ function Infographics(props: Props) {
         return data;
     }, [aggregatedFiveWResponse, region]);
 
+    const numericData = useMemo(() => ({
+        ...indicatorData,
+        ...regionData,
+    }), [indicatorData, regionData]);
+
     const handleRegionChange = useCallback((newRegionId, newSelectedRegionData) => {
         setRegion(newRegionId);
-        setSelectedRegionData(newSelectedRegionData);
-    }, [setRegion, setSelectedRegionData]);
+        setSelectedRegionData({
+            ...newSelectedRegionData,
+            type: regionLevel,
+        });
+    }, [setRegion, setSelectedRegionData, regionLevel]);
 
     const handleRegionLevelChange = useCallback((newRegionLevel) => {
         setRegion(undefined);
@@ -201,9 +222,9 @@ function Infographics(props: Props) {
         setRegionLevel(newRegionLevel);
     }, [setRegion, setSelectedRegionData, setRegionLevel]);
 
-    const currentBounds = useMemo(() => {
+    const currentBounds: Bbox | undefined = useMemo(() => {
         const bounds = selectedRegionData?.bbox?.split(',');
-        return bounds?.map(b => Number(b));
+        return bounds?.length === 4 ? (bounds?.map(b => +b)) as Bbox : undefined;
     }, [selectedRegionData]);
 
     const url = useMemo(() => {
@@ -217,6 +238,7 @@ function Infographics(props: Props) {
     }, [selectedRegionData, regionLevel]);
 
     const [_, parentRegionResponse] = useRequest<MultiResponse<Region>>(url, 'parent-region');
+    const currentDate = new Date().toDateString();
 
     return (
         <div
@@ -262,6 +284,9 @@ function Infographics(props: Props) {
                                         {parentRegionResponse?.results[0]?.name}
                                     </div>
                                 )}
+                                <div className={styles.date}>
+                                    {currentDate}
+                                </div>
                             </div>
                             <div className={styles.appBrand}>
                                 <img
@@ -275,11 +300,7 @@ function Infographics(props: Props) {
                             <div className={styles.regionDetails}>
                                 { numericDataList.map(d => (
                                     <NumberOutput
-                                        value={
-                                            regionData[d.key]
-                                            || indicatorData[d.key]
-                                            || d.value
-                                        }
+                                        value={numericData[d.key] || 0}
                                         label={d.label}
                                         key={d.key}
                                     />

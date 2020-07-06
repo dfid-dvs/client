@@ -50,7 +50,7 @@ interface PieChartUnitProps<T> {
     data: T[] | undefined;
     className?: string;
     chartClassName?: string;
-    hideActions: boolean;
+    hideActions?: boolean;
     onDelete: (name: string | undefined) => void;
 }
 

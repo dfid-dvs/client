@@ -22,6 +22,7 @@ interface Province {
     code: string;
     boundary: string;
     bbox: string;
+    type: 'province';
 }
 
 interface District {
@@ -32,6 +33,7 @@ interface District {
     code: string;
     nCode: number;
     bbox: string;
+    type: 'district';
 }
 
 interface Municipality {
@@ -44,12 +46,13 @@ interface Municipality {
     code: string;
     population: number;
     bbox: string;
+    type: 'municipality';
 }
 
 export type Region = Province | District | Municipality;
+
 const regionKeySelector = (region: Region) => +region.code;
 const regionLabelSelector = (region: Region) => region.name;
-
 
 interface RegionLevelOptionListItem {
     key: RegionLevelOption;
@@ -74,7 +77,7 @@ interface Props {
     onRegionLevelChange?: (regionLevel: RegionLevelOption) => void;
 
     region: number | undefined;
-    onRegionChange?: (item: number | undefined, obj: Region) => void;
+    onRegionChange?: (item: number | undefined, obj: Region | undefined) => void;
 }
 function RegionSelector(props: Props) {
     const {
@@ -109,8 +112,9 @@ function RegionSelector(props: Props) {
                 ?.find(r => r.code === String(selectedRegionId));
 
             if (isDefined(selectedRegionObj)) {
-                // TODO: Fix from server, currently sends in string
                 setSelectedRegion(selectedRegionId, selectedRegionObj);
+            } else {
+                setSelectedRegion(selectedRegionId, undefined);
             }
         }
     }, [setSelectedRegion, regionListResponse]);
