@@ -1,24 +1,34 @@
-import React, { useMemo, useState, useCallback } from 'react';
-import { isDefined, unique, listToMap, isFalsyString } from '@togglecorp/fujs';
+import React, { useCallback, useState, useMemo, useContext } from 'react';
+import {
+    _cs,
+    isDefined,
+    unique,
+    listToMap,
+    isFalsyString,
+} from '@togglecorp/fujs';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
-import Button from '#components/Button';
-import RegionSelector from '#components/RegionSelector';
 import PolyChart from '#components/PolyChart';
 import ChartModal from '#components/ChartModal';
+import DomainContext from '#components/DomainContext';
+import useRequest from '#hooks/useRequest';
 
-import { tableauColors } from '#utils/constants';
 import {
+    MultiResponse,
     Indicator,
-    RegionLevelOption,
     ChartSettings,
     NumericOption,
+    RegionLevelOption,
 } from '#types';
+import {
+    tableauColors,
+    apiEndPoint,
+} from '#utils/constants';
 
-import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
+import useExtendedFiveW, { ExtendedFiveW } from '../../Dashboard/useExtendedFiveW';
+
 import styles from './styles.css';
-
 
 const keySelector = (item: ExtendedFiveW) => item.name;
 
@@ -59,11 +69,12 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '1',
         type: 'bar-chart',
-        title: 'Top 10 by budget',
+        title: 'Top 12 by budget',
         keySelector: item => item.name,
+        orientation: 'vertical',
 
         limit: {
-            count: 10,
+            count: 12,
             method: 'max',
             valueSelector: item => item.allocatedBudget,
         },
@@ -77,17 +88,11 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         ],
     },
     {
-        id: '2',
-        type: 'pie-chart',
-        title: 'Total Budget',
-        keySelector: item => item.name,
-        valueSelector: item => item.allocatedBudget,
-    },
-    {
         id: '3',
         type: 'bar-chart',
-        title: 'Health and Finance for top 10 by budget',
+        title: 'Health and Finance for top 12 by budget',
         keySelector: item => item.name,
+        orientation: 'vertical',
         bars: [
             {
                 title: 'Health Facilities',
@@ -102,7 +107,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         ],
 
         limit: {
-            count: 10,
+            count: 12,
             method: 'max',
             valueSelector: item => item.allocatedBudget,
         },
@@ -131,81 +136,46 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 ];
 
 interface Props {
-    programs: number[];
-
-    regionLevel: RegionLevelOption;
-    onRegionLevelChange: (v: RegionLevelOption) => void;
-
-    indicatorList: Indicator[] | undefined;
-    indicatorListPending: boolean | undefined;
+    className?: string;
+    showAddModal: boolean;
+    printMode: boolean;
+    onAddModalVisibilityChange: (value: boolean) => void;
+    selectedRegion: number | undefined;
 }
 
-function Charts(props: Props) {
+const programs: number[] = [];
+
+function InfographicsCharts(props: Props) {
     const {
-        programs,
-        regionLevel,
-        onRegionLevelChange,
-        indicatorList,
-        indicatorListPending,
+        className,
+        showAddModal,
+        onAddModalVisibilityChange,
+        printMode,
+        selectedRegion,
     } = props;
+
+    const {
+        regionLevel,
+        // programs,
+    } = useContext(DomainContext);
+
+    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_dashboard=true`;
+    const [
+        indicatorListPending,
+        indicatorListResponse,
+    ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl, 'indicator-list');
+
+    const indicatorList = indicatorListResponse?.results.filter(
+        indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regionLevel,
+    );
 
     const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>(
         defaultChartSettings,
     );
 
-    const [showModal, setModalVisibility] = useState(false);
-
-    const indicatorMapping = useMemo(
-        () => listToMap(
-            indicatorList,
-            item => item.id,
-            item => item,
-        ),
-        [indicatorList],
-    );
-
-    const options: NumericOption<ExtendedFiveW>[] = useMemo(
-        () => {
-            if (!indicatorList) {
-                return staticOptions;
-            }
-            return [
-                ...staticOptions,
-                ...indicatorList.map(indicator => ({
-                    key: `indicator_${indicator.id}`,
-                    title: indicator.fullTitle,
-                    // FIXME: zero zero zero
-                    valueSelector: (item: ExtendedFiveW) => item.indicators[indicator.id] || 0,
-
-                    category: indicator.category,
-
-                    dependency: indicator.id,
-                })),
-            ];
-        },
-        [indicatorList],
-    );
-
-    // Valid indicators for chart
-    const validSelectedIndicators = useMemo(
-        () => unique(
-            [...chartSettings
-                .map(item => item.dependencies)
-                .filter(isDefined)
-                .flat(),
-            ].filter(i => !!indicatorMapping[i]),
-            item => item,
-        ).sort(),
-        [chartSettings, indicatorMapping],
-    );
-
-    const handleModalShow = useCallback(() => {
-        setModalVisibility(true);
-    }, [setModalVisibility]);
-
     const handleModalClose = useCallback(() => {
-        setModalVisibility(false);
-    }, [setModalVisibility]);
+        onAddModalVisibilityChange(false);
+    }, [onAddModalVisibilityChange]);
 
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedFiveW>) => {
@@ -230,43 +200,90 @@ function Charts(props: Props) {
         [],
     );
 
+    const indicatorMapping = useMemo(
+        () => listToMap(
+            indicatorList,
+            item => item.id,
+            item => item,
+        ),
+        [indicatorList],
+    );
+
+    const validSelectedIndicators = useMemo(
+        () => unique(
+            [...chartSettings
+                .map(item => item.dependencies)
+                .filter(isDefined)
+                .flat(),
+            ].filter(i => !!indicatorMapping[i]),
+            item => item,
+        ).sort(),
+        [chartSettings, indicatorMapping],
+    );
+
+    const subsequentRegionLevel: RegionLevelOption | undefined = (
+        (regionLevel === 'province' && 'district')
+        || (regionLevel === 'district' && 'municipality')
+        || undefined
+    );
+
+    const extraUrlParams = {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        province_id: regionLevel === 'province' ? selectedRegion : undefined,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        district_id: regionLevel === 'district' ? selectedRegion : undefined,
+    };
+
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
-        regionLevel,
+        subsequentRegionLevel,
+        // Setting all programs
         programs,
         validSelectedIndicators,
+        true,
+        extraUrlParams,
+    );
+
+    const options: NumericOption<ExtendedFiveW>[] = useMemo(
+        () => {
+            if (!indicatorList) {
+                return staticOptions;
+            }
+            return [
+                ...staticOptions,
+                ...indicatorList.map(indicator => ({
+                    key: `indicator_${indicator.id}`,
+                    title: indicator.fullTitle,
+                    // FIXME: zero zero zero
+                    valueSelector: (item: ExtendedFiveW) => item.indicators[indicator.id] || 0,
+
+                    category: indicator.category,
+
+                    dependency: indicator.id,
+                })),
+            ];
+        },
+        [indicatorList],
     );
 
     return (
-        <>
-            <div className={styles.tableActions}>
-                <RegionSelector
-                    onRegionLevelChange={onRegionLevelChange}
-                    regionLevel={regionLevel}
-                    searchHidden
+        <div className={_cs(styles.charts, className)}>
+            {(indicatorListPending || extendedFiveWPending) && (
+                <Backdrop className={styles.backdrop}>
+                    <LoadingAnimation />
+                </Backdrop>
+            )}
+            {chartSettings.map(item => (
+                <PolyChart
+                    key={item.id}
+                    className={styles.chartContainer}
+                    chartClassName={styles.chart}
+                    hideActions={printMode}
+                    data={extendedFiveWList}
+                    settings={item}
+                    onDelete={handleChartDelete}
                 />
-                <Button
-                    onClick={handleModalShow}
-                >
-                    Add chart
-                </Button>
-            </div>
-            <div className={styles.charts}>
-                {(extendedFiveWPending || indicatorListPending) && (
-                    <Backdrop className={styles.backdrop}>
-                        <LoadingAnimation />
-                    </Backdrop>
-                )}
-                {chartSettings.map(item => (
-                    <PolyChart
-                        key={item.id}
-                        chartClassName={styles.chart}
-                        data={extendedFiveWList}
-                        settings={item}
-                        onDelete={handleChartDelete}
-                    />
-                ))}
-            </div>
-            {showModal && (
+            ))}
+            {showAddModal && (
                 <ChartModal
                     onClose={handleModalClose}
                     onSave={handleChartAdd}
@@ -274,7 +291,8 @@ function Charts(props: Props) {
                     keySelector={keySelector}
                 />
             )}
-        </>
+        </div>
     );
 }
-export default Charts;
+
+export default InfographicsCharts;

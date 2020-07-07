@@ -714,6 +714,7 @@ const Dashboard = (props: Props) => {
                 <Sidepanel className={styles.sidebar} />
             </div>
             <PrintButton
+                orientation="landscape"
                 className={styles.printModeButton}
                 printMode={printMode}
                 onPrintModeChange={setPrintMode}

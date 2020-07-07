@@ -150,6 +150,7 @@ export interface BarChartSettings<T> {
     id: string;
     type: 'bar-chart';
     title: string;
+    orientation?: 'horizontal' | 'vertical';
 
     // layout: 'vertical' | 'horizontal';
     keySelector: (value: T) => string;
@@ -202,3 +203,11 @@ export function isPieChart<T>(settings: ChartSettings<T>): settings is PieChartS
 export function isHistogram<T>(settings: ChartSettings<T>): settings is HistogramSettings<T> {
     return settings.type === 'histogram';
 }
+
+export interface IndicatorValue {
+    code: string;
+    value: number;
+    indicatorId: number;
+}
+
+export type Bbox = [number, number, number, number];

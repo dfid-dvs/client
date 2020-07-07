@@ -1,0 +1,34 @@
+.charts {
+    position: relative;
+
+    .backdrop {
+        z-index: 1;
+    }
+
+    .chart-container {
+        display: inline-block;
+        margin: var(--spacing-medium);
+        border-radius: 5px;
+        width: calc(50% - 2 * var(--spacing-medium));
+        vertical-align: top;
+    }
+
+    .chart {
+        padding: 0;
+        height: 88mm!important;
+
+        :global {
+            text {
+                font-size: 2.3mm!important;
+            }
+        }
+    }
+}
+
+@media print {
+    .charts {
+        .chart {
+            page-break-inside: avoid;
+        }
+    }
+}

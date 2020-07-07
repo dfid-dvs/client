@@ -432,6 +432,8 @@ const userDefinedSchemas: Schema[] = [
                         name: { type: 'string', required: true },
 
                         nCode: { type: 'number' }, // Not used
+                        // TODO: Fix this
+                        bbox: { type: 'string', required: true },
                     },
                 },
                 required: true,
@@ -454,6 +456,8 @@ const userDefinedSchemas: Schema[] = [
                         provinceId: { type: 'uint', required: true },
                         districtId: { type: 'uint', required: true },
                         name: { type: 'string', required: true },
+                        // TODO: Fix this
+                        bbox: { type: 'string', required: true },
 
                         gnTypeNp: { type: 'string' }, // Gaunpalika, Nagarpalika, Mahanagarpalika, Upamahanagarpalika
                         hlcitCode: { type: 'string' }, // Not used
@@ -478,6 +482,8 @@ const userDefinedSchemas: Schema[] = [
                         id: { type: 'uint', required: true },
                         code: { type: 'string', required: true },
                         name: { type: 'string', required: true },
+                        // TODO: Fix this
+                        bbox: { type: 'string', required: true },
                     },
                 },
                 required: true,

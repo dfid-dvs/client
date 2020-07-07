@@ -75,6 +75,8 @@ text-placeholder: #7a8898
     --font-size-large-medium: 16px;
     --font-size-large: 18px;
     --font-size-extra-large: 24px;
+    --font-size-super-large: 32px;
+    --font-size-ultra-large: 48px;
 
     /* FONT WEIGHT */
     --font-weight-light: 400;

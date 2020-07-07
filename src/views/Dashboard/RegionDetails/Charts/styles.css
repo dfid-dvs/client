@@ -23,6 +23,8 @@
 
     .chart {
         padding: var(--spacing-large) var(--spacing-medium);
+        width: 360px;
+        height: 400px;
     }
 
     .backdrop {

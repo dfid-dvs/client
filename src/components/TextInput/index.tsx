@@ -38,6 +38,7 @@ function TextInput<T>(props: Props<T>) {
             iconContainerClassName={iconContainerClassName}
             actionContainerClassName={actionContainerClassName}
 
+            disabled={disabled}
             error={error}
         >
             <RawInput

@@ -10,7 +10,6 @@ import { tableauColors } from '#utils/constants';
 import {
     ChartSettings,
     NumericOption,
-    Program,
 } from '#types';
 import { prepareUrlParams as p } from '#utils/common';
 
@@ -147,7 +146,7 @@ function Charts(props: Props) {
                 {chartSettings.map(item => (
                     <PolyChart
                         key={item.id}
-                        className={styles.chart}
+                        chartClassName={styles.chart}
                         data={extendedPrograms}
                         settings={item}
                         onDelete={handleChartDelete}

@@ -1,5 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { PieChart, Pie, Cell, Sector } from 'recharts';
+import {
+    PieChart,
+    Pie,
+    Cell,
+    Sector,
+    Legend,
+    ResponsiveContainer,
+} from 'recharts';
 import { MdPieChart, MdDonutLarge } from 'react-icons/md';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
 import { IoMdTrash } from 'react-icons/io';
@@ -42,6 +49,8 @@ interface PieChartUnitProps<T> {
     settings: PieChartSettings<T>;
     data: T[] | undefined;
     className?: string;
+    chartClassName?: string;
+    hideActions?: boolean;
     onDelete: (name: string | undefined) => void;
 }
 
@@ -142,6 +151,8 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         data,
         className,
         onDelete,
+        chartClassName,
+        hideActions,
     } = props;
 
     const {
@@ -193,57 +204,62 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                 <h3 className={styles.heading}>
                     {title}
                 </h3>
-                <div className={styles.actions}>
-                    <Button
-                        onClick={onDelete}
-                        name={id}
-                        title="Delete chart"
-                        transparent
-                        variant="danger"
-                    >
-                        <IoMdTrash />
-                    </Button>
-                    <SegmentInput
-                        options={orientations}
-                        optionTitleSelector={item => item.tooltip}
-                        optionKeySelector={item => item.key}
-                        optionLabelSelector={item => item.label}
-                        value={type}
-                        onChange={setType}
-                    />
-                </div>
-            </header>
-            <PieChart
-                className={styles.chart}
-                width={400}
-                height={300}
-                // data={data}
-                margin={chartMargin}
-            >
-                <Pie
-                    data={finalData}
-                    innerRadius={type === 'donut' ? '40%' : undefined}
-                    outerRadius="60%"
-                    fill="#8884d8"
-                    isAnimationActive={false}
-                    nameKey="key"
-                    dataKey="value"
-                    onMouseEnter={handlePieEnter}
-                    activeIndex={activeIndex}
-                    activeShape={type === 'donut' ? CenteredActiveShape : ActiveShape}
-                    // cx={200}
-                    // cy={200}
-                    // label={renderCustomizedLabel}
-                    // label={Label}
-                >
-                    {finalData?.map((entry, index) => (
-                        <Cell
-                            key={`cell-${entry.key}`}
-                            fill={tableauColors[index % tableauColors.length]}
+                {!hideActions && (
+                    <div className={styles.actions}>
+                        <Button
+                            onClick={onDelete}
+                            name={id}
+                            title="Delete chart"
+                            transparent
+                            variant="danger"
+                        >
+                            <IoMdTrash />
+                        </Button>
+                        <SegmentInput
+                            options={orientations}
+                            optionTitleSelector={item => item.tooltip}
+                            optionKeySelector={item => item.key}
+                            optionLabelSelector={item => item.label}
+                            value={type}
+                            onChange={setType}
                         />
-                    ))}
-                </Pie>
-            </PieChart>
+                    </div>
+                )}
+            </header>
+            <div className={_cs(styles.responsiveContainer, chartClassName)}>
+                <ResponsiveContainer>
+                    <PieChart
+                        className={styles.chart}
+                        // data={data}
+                        margin={chartMargin}
+                    >
+                        <Pie
+                            data={finalData}
+                            innerRadius={type === 'donut' ? '40%' : undefined}
+                            outerRadius="60%"
+                            fill="#8884d8"
+                            isAnimationActive={false}
+                            nameKey="key"
+                            dataKey="value"
+                            onMouseEnter={handlePieEnter}
+                            activeIndex={activeIndex}
+                            activeShape={type === 'donut' ? CenteredActiveShape : ActiveShape}
+                            // cx={200}
+                            // cy={200}
+                            // label={renderCustomizedLabel}
+                            // label={Label}
+                        >
+                            {finalData?.map((entry, index) => (
+                                <Cell
+                                    key={`cell-${entry.key}`}
+                                    fill={tableauColors[index % tableauColors.length]}
+                                />
+                            ))}
+                        </Pie>
+                        <Legend />
+                    </PieChart>
+                </ResponsiveContainer>
+            </div>
         </div>
     );
 }

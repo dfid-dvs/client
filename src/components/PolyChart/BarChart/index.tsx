@@ -1,7 +1,14 @@
 import React, { useMemo, useState } from 'react';
 import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
     TooltipFormatter,
+    ResponsiveContainer,
 } from 'recharts';
 import { IoMdTrash } from 'react-icons/io';
 import { compareNumber, isNotDefined, isDefined, _cs } from '@togglecorp/fujs';
@@ -34,6 +41,8 @@ interface BarChartUnitProps<T> {
     settings: BarChartSettings<T>;
     data: T[] | undefined;
     className?: string;
+    chartClassName?: string;
+    hideActions?: boolean;
     onDelete: (name: string | undefined) => void;
 }
 
@@ -46,10 +55,12 @@ const chartMargin = {
 
 export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     const {
+        className,
+        chartClassName,
         settings,
         data,
-        className,
         onDelete,
+        hideActions,
     } = props;
 
     const {
@@ -59,9 +70,10 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         // layout,
         limit,
         id,
+        orientation,
     } = settings;
 
-    const [layout, setLayout] = useState<'horizontal' | 'vertical'>('horizontal');
+    const [layout, setLayout] = useState<'horizontal' | 'vertical'>(orientation || 'horizontal');
 
     const Xcomp = layout === 'vertical' ? YAxis : XAxis;
     const Ycomp = layout === 'vertical' ? XAxis : YAxis;
@@ -89,59 +101,67 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                 <h3 className={styles.heading}>
                     {title}
                 </h3>
-                <div className={styles.actions}>
-                    <Button
-                        onClick={onDelete}
-                        name={id}
-                        title="Delete chart"
-                        transparent
-                        variant="danger"
-                    >
-                        <IoMdTrash />
-                    </Button>
-                    <SegmentInput
-                        options={orientations}
-                        optionKeySelector={item => item.key}
-                        optionLabelSelector={item => item.label}
-                        value={layout}
-                        onChange={setLayout}
-                    />
-                </div>
+                {!hideActions && (
+                    <div className={styles.actions}>
+                        <Button
+                            onClick={onDelete}
+                            name={id}
+                            title="Delete chart"
+                            transparent
+                            variant="danger"
+                        >
+                            <IoMdTrash />
+                        </Button>
+                        <SegmentInput
+                            options={orientations}
+                            optionKeySelector={item => item.key}
+                            optionLabelSelector={item => item.label}
+                            value={layout}
+                            onChange={setLayout}
+                        />
+                    </div>
+                )}
             </header>
-            <BarChart
-                className={styles.chart}
-                width={400}
-                height={300}
-                data={finalData}
-                layout={layout}
-                margin={chartMargin}
-            >
-                <CartesianGrid strokeDasharray="3 3" />
-                <Xcomp
-                    dataKey={keySelector}
-                    type="category"
-                    width={layout === 'vertical' ? 86 : undefined}
-                />
-                <Ycomp
-                    type="number"
-                    tickFormatter={valueTickFormatter}
-                    width={layout === 'horizontal' ? 36 : undefined}
-                />
-                <Tooltip
-                    offset={20}
-                    formatter={valueTickFormatter}
-                />
-                <Legend />
-                {bars.map(bar => (
-                    <Bar
-                        key={bar.title}
-                        name={bar.title}
-                        dataKey={bar.valueSelector}
-                        fill={bar.color}
-                        stackId={bar.stackId}
-                    />
-                ))}
-            </BarChart>
+            <div className={_cs(styles.responsiveContainer, chartClassName)}>
+                <ResponsiveContainer>
+                    <BarChart
+                        className={styles.chart}
+                        data={finalData}
+                        layout={layout}
+                        margin={chartMargin}
+                        barGap={1}
+                    >
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <Xcomp
+                            dataKey={keySelector}
+                            type="category"
+                            interval={layout === 'vertical' ? 0 : undefined}
+                            width={layout === 'vertical' ? 86 : undefined}
+                        />
+                        <Ycomp
+                            type="number"
+                            tickFormatter={valueTickFormatter}
+                            interval={layout === 'vertical' ? 0 : undefined}
+                            width={layout === 'horizontal' ? 36 : undefined}
+                        />
+                        <Tooltip
+                            allowEscapeViewBox={{ x: false, y: true }}
+                            offset={20}
+                            formatter={valueTickFormatter}
+                        />
+                        <Legend />
+                        {bars.map(bar => (
+                            <Bar
+                                key={bar.title}
+                                name={bar.title}
+                                dataKey={bar.valueSelector}
+                                fill={bar.color}
+                                stackId={bar.stackId}
+                            />
+                        ))}
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
         </div>
     );
 }
