@@ -129,6 +129,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                         data={finalData}
                         layout={layout}
                         margin={chartMargin}
+                        barGap={1}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <Xcomp
