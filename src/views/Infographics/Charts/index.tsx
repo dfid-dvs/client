@@ -143,6 +143,8 @@ interface Props {
     selectedRegion: number | undefined;
 }
 
+const programs: number[] = [];
+
 function InfographicsCharts(props: Props) {
     const {
         className,
@@ -154,7 +156,7 @@ function InfographicsCharts(props: Props) {
 
     const {
         regionLevel,
-        programs,
+        // programs,
     } = useContext(DomainContext);
 
     const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_dashboard=true`;
@@ -235,6 +237,7 @@ function InfographicsCharts(props: Props) {
 
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
         subsequentRegionLevel,
+        // Setting all programs
         programs,
         validSelectedIndicators,
         true,
