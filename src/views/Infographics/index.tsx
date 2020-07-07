@@ -4,6 +4,8 @@ import {
     isDefined,
 } from '@togglecorp/fujs';
 
+import LoadingAnimation from '#components/LoadingAnimation';
+import Backdrop from '#components/Backdrop';
 import PrintButton from '#components/PrintButton';
 
 import useRequest from '#hooks/useRequest';
@@ -106,30 +108,14 @@ function Infographics(props: Props) {
     const [showAddModal, setAddModalVisibility] = useState(false);
 
     const regionFiveWUrl = `${apiEndPoint}/core/fivew-${regionLevel}/`;
-    const regionFiveWRequestOptions: RequestInit | undefined = React.useMemo(
-        () => ({
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-            },
-        }),
-        [],
-    );
 
     const indicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/?indicator_id=25,54,118,119,145`;
-    const indicatorRequestOptions: RequestInit | undefined = React.useMemo(
-        () => ({
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json; charset=utf-8',
-            },
-        }),
-        [],
-    );
 
-    const [, indicatorResponse] = useRequest<MultiResponse<IndicatorValue>>(indicatorUrl, 'indicator', indicatorRequestOptions);
+    const [indicatorPending, indicatorResponse] = useRequest<MultiResponse<IndicatorValue>>(
+        indicatorUrl,
+        'indicator',
+        undefined,
+    );
 
     const indicatorData = useMemo(() => {
         if (indicatorResponse) {
@@ -171,7 +157,14 @@ function Infographics(props: Props) {
         setAddModalVisibility(true);
     }, [setAddModalVisibility]);
 
-    const [, aggregatedFiveWResponse] = useRequest<MultiResponse<OriginalFiveW>>(regionFiveWUrl, 'fivew', regionFiveWRequestOptions);
+    const [
+        aggregatedFiveWPending,
+        aggregatedFiveWResponse,
+    ] = useRequest<MultiResponse<OriginalFiveW>>(
+        regionFiveWUrl,
+        'fivew',
+        undefined,
+    );
 
     const regionData = React.useMemo(() => {
         const data = {
@@ -223,22 +216,35 @@ function Infographics(props: Props) {
     }, [setRegion, setSelectedRegionData, setRegionLevel]);
 
     const currentBounds: Bbox | undefined = useMemo(() => {
-        const bounds = selectedRegionData?.bbox?.split(',');
-        return bounds?.length === 4 ? (bounds?.map(b => +b)) as Bbox : undefined;
+        const bounds = selectedRegionData
+            ?.bbox
+            ?.split(',')
+            .slice(0, 4)
+            .map(b => +b);
+
+        return bounds?.length === 4
+            ? bounds as Bbox
+            : undefined;
     }, [selectedRegionData]);
 
     const url = useMemo(() => {
-        if (regionLevel === 'district' && selectedRegionData && selectedRegionData.provinceId) {
+        if (!selectedRegionData) {
+            return undefined;
+        }
+        if (selectedRegionData.type === 'district') {
             return `${apiEndPoint}/core/province/?id=${selectedRegionData.provinceId}`;
         }
-        if (regionLevel === 'municipality' && selectedRegionData && selectedRegionData.districtId) {
+        if (selectedRegionData.type === 'municipality') {
             return `${apiEndPoint}/core/district/?id=${selectedRegionData.districtId}`;
         }
         return undefined;
-    }, [selectedRegionData, regionLevel]);
+    }, [selectedRegionData]);
 
-    const [_, parentRegionResponse] = useRequest<MultiResponse<Region>>(url, 'parent-region');
+    const [parentRegionPending, parentRegionResponse] = useRequest<MultiResponse<Region>>(url, 'parent-region');
+
     const currentDate = new Date().toDateString();
+
+    const dataPending = parentRegionPending || indicatorPending || aggregatedFiveWPending;
 
     return (
         <div
@@ -297,6 +303,11 @@ function Infographics(props: Props) {
                             </div>
                         </div>
                         <div className={styles.firstDetailsRow}>
+                            {dataPending && (
+                                <Backdrop className={styles.backdrop}>
+                                    <LoadingAnimation />
+                                </Backdrop>
+                            )}
                             <div className={styles.regionDetails}>
                                 { numericDataList.map(d => (
                                     <NumberOutput
@@ -312,13 +323,15 @@ function Infographics(props: Props) {
                                 selectedRegion={region}
                             />
                         </div>
-                        <InfographicsCharts
-                            className={styles.charts}
-                            printMode={printMode}
-                            showAddModal={showAddModal}
-                            selectedRegion={region}
-                            onAddModalVisibilityChange={setAddModalVisibility}
-                        />
+                        {regionLevel !== 'municipality' && (
+                            <InfographicsCharts
+                                className={styles.charts}
+                                printMode={printMode}
+                                showAddModal={showAddModal}
+                                selectedRegion={region}
+                                onAddModalVisibilityChange={setAddModalVisibility}
+                            />
+                        )}
                     </div>
                 </div>
             ) : (

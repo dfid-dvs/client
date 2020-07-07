@@ -90,6 +90,11 @@
 
             .first-details-row {
                 display: flex;
+                position: relative;
+
+                .backdrop {
+                    z-index: 1;
+                }
 
                 .region-details {
                     display: flex;

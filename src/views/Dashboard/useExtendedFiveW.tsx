@@ -29,7 +29,7 @@ interface IndicatorValue {
 }
 
 function useExtendedFiveW(
-    regionLevel: RegionLevelOption,
+    regionLevel: RegionLevelOption | undefined,
     programs: number[],
     indicators: number[],
     preserveResponse = true,
@@ -48,7 +48,8 @@ function useExtendedFiveW(
         regionFiveWPending,
         regionFiveWListResponse,
     ] = useRequest<MultiResponse<OriginalFiveW>>(
-        regionFiveWGetUrl,
+        // FIXME: better way to handle this
+        regionLevel ? regionFiveWGetUrl : undefined,
         'fivew',
         undefined,
         preserveResponse,

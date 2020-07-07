@@ -7,6 +7,8 @@ import {
     isFalsyString,
 } from '@togglecorp/fujs';
 
+import LoadingAnimation from '#components/LoadingAnimation';
+import Backdrop from '#components/Backdrop';
 import PolyChart from '#components/PolyChart';
 import ChartModal from '#components/ChartModal';
 import DomainContext from '#components/DomainContext';
@@ -217,35 +219,22 @@ function InfographicsCharts(props: Props) {
         [chartSettings, indicatorMapping],
     );
 
-    const {
-        subsequentRegionLevel,
-        extraUrlParams,
-    } = useMemo(() => {
-        if (regionLevel === 'province') {
-            return {
-                subsequentRegionLevel: 'district',
-                extraUrlParams: {
-                    // eslint-disable-next-line @typescript-eslint/camelcase
-                    province_id: selectedRegion,
-                },
-            };
-        }
-        if (regionLevel === 'district') {
-            return {
-                subsequentRegionLevel: 'municipality',
-                extraUrlParams: {
-                    // eslint-disable-next-line @typescript-eslint/camelcase
-                    district_id: selectedRegion,
-                },
-            };
-        }
-        return {
-            subsequentRegionLevel: regionLevel,
-        };
-    }, [selectedRegion, regionLevel]);
+    // FIXME: the last part doesn't make sense to me
+    const subsequentRegionLevel: RegionLevelOption | undefined = (
+        (regionLevel === 'province' && 'district')
+        || (regionLevel === 'district' && 'municipality')
+        || undefined
+    );
+
+    const extraUrlParams = {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        province_id: regionLevel === 'province' ? selectedRegion : undefined,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        district_id: regionLevel === 'district' ? selectedRegion : undefined,
+    };
 
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
-        subsequentRegionLevel as RegionLevelOption,
+        subsequentRegionLevel,
         programs,
         validSelectedIndicators,
         true,
@@ -274,12 +263,13 @@ function InfographicsCharts(props: Props) {
         [indicatorList],
     );
 
-    if (indicatorListPending || extendedFiveWPending) {
-        return null;
-    }
-
     return (
         <div className={_cs(styles.charts, className)}>
+            {(indicatorListPending || extendedFiveWPending) && (
+                <Backdrop className={styles.backdrop}>
+                    <LoadingAnimation />
+                </Backdrop>
+            )}
             {chartSettings.map(item => (
                 <PolyChart
                     key={item.id}

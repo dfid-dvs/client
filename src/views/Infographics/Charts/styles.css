@@ -1,4 +1,10 @@
 .charts {
+    position: relative;
+
+    .backdrop {
+        z-index: 1;
+    }
+
     .chart-container {
         display: inline-block;
         margin: var(--spacing-medium);
