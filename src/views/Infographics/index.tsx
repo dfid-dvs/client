@@ -2,6 +2,7 @@ import React, { useCallback, useState, useMemo } from 'react';
 import {
     _cs,
     isDefined,
+    sum,
 } from '@togglecorp/fujs';
 
 import LoadingAnimation from '#components/LoadingAnimation';
@@ -88,7 +89,7 @@ interface FiveW {
 }
 
 function getAccumulatedAttributeValue<T>(list: T[], itemSelector: (el: T) => number) {
-    return [...new Set(list.map(d => itemSelector(d)))].reduce((acc, val) => acc + val, 0);
+    return sum(list.map(itemSelector));
 }
 
 function Infographics(props: Props) {

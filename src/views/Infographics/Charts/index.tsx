@@ -221,7 +221,6 @@ function InfographicsCharts(props: Props) {
         [chartSettings, indicatorMapping],
     );
 
-    // FIXME: the last part doesn't make sense to me
     const subsequentRegionLevel: RegionLevelOption | undefined = (
         (regionLevel === 'province' && 'district')
         || (regionLevel === 'district' && 'municipality')
