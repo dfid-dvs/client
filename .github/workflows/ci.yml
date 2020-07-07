@@ -50,6 +50,7 @@ jobs:
         run: NODE_OPTIONS=--max_old_space_size=4096 yarn build
         env:
           REACT_APP_API_SERVER_URL: ${{ secrets.API_SERVER_URL }}
+          REACT_APP_SERVER_URL: ${{ secrets.SERVER_URL }}
           REACT_APP_MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN  }}
 
       - name: Save build files as artifact
