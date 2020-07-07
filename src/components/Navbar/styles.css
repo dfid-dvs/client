@@ -45,6 +45,28 @@
             display: flex;
         }
     }
+
+    .admin-console-link {
+        display: flex;
+        align-items: center;
+        margin: var(--spacing-small);
+        border: var(--width-separator-thin) solid var(--color-separator-light);
+        border-radius: var(--radius-input);
+        background-color: var(--color-button-background);
+        padding: var(--spacing-extra-small) var(--spacing-small);
+        text-decoration: none;
+        color: var(--color-text);
+        font-size: var(--font-size-small);
+        font-weight: var(--font-weight-bold);
+
+        &:hover {
+            filter: brightness(90%)
+        }
+
+        .admin-icon {
+            margin-right: var(--spacing-small);
+        }
+    }
 }
 
 @media print {

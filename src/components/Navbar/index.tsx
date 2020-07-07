@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useContext } from 'react';
 import ReactDOM from 'react-dom';
 import { NavLink } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
+import { RiAdminLine } from 'react-icons/ri';
 
 import NavbarContext from '#components/NavbarContext';
 import { NavbarContextProps } from '#types';
@@ -39,6 +40,8 @@ const Navbar = (props: Props) => {
         [setParentNode],
     );
 
+    const link = process.env.REACT_APP_SERVER_URL || 'https://dvsnaxa.naxa.com.np/';
+
     return (
         <nav className={_cs(className, styles.navbar)}>
             <div className={styles.appBrand}>
@@ -72,6 +75,15 @@ const Navbar = (props: Props) => {
                     ref={filterRef}
                 />
             </div>
+            <a
+                className={styles.adminConsoleLink}
+                href={link}
+                rel="noreferrer noopener"
+                target="_blank"
+            >
+                <RiAdminLine className={styles.adminIcon} />
+                Admin Panel
+            </a>
         </nav>
     );
 };
