@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import Map from '#remap';
@@ -51,7 +51,6 @@ const labelPaint: mapboxgl.SymbolPaint = {
 
 const labelLayout: mapboxgl.SymbolLayout = {
     visibility: 'visible',
-    'text-allow-overlap': true,
     'text-font': ['Source Sans Pro SemiBold', 'Arial Unicode MS Regular'],
     'text-field': ['get', 'name'],
     'text-size': 14,
@@ -75,6 +74,8 @@ function InfographicsMap(props: Props) {
     } = props;
 
     const { regionLevel } = useContext(DomainContext);
+
+    const filter = useMemo(() => ['==', ['id'], selectedRegion], [selectedRegion]);
 
     return (
         <Map
@@ -100,7 +101,6 @@ function InfographicsMap(props: Props) {
                             'source-layer': 'provincecentroidgeo',
                             paint: labelPaint,
                             layout: labelLayout,
-                            filter: ['==', ['id'], selectedRegion],
                         }}
                     />
                 )}
@@ -112,7 +112,6 @@ function InfographicsMap(props: Props) {
                             'source-layer': 'districtcentroidgeo',
                             paint: labelPaint,
                             layout: labelLayout,
-                            // filter: ['==', ['id'], selectedRegion],
                         }}
                     />
                 )}
@@ -124,7 +123,6 @@ function InfographicsMap(props: Props) {
                             'source-layer': 'palikacentroidgeo',
                             paint: labelPaint,
                             layout: labelLayout,
-                            filter: ['==', ['id'], selectedRegion],
                         }}
                     />
                 )}
@@ -144,7 +142,7 @@ function InfographicsMap(props: Props) {
                                 type: 'fill',
                                 'source-layer': 'provincegeo',
                                 paint: fillPaint,
-                                filter: ['==', ['id'], selectedRegion],
+                                filter,
                             }}
                         />
                         <MapLayer
@@ -153,7 +151,6 @@ function InfographicsMap(props: Props) {
                                 type: 'line',
                                 'source-layer': 'provincegeo',
                                 paint: outlinePaint,
-                                // filter: ['==', ['id'], region],
                             }}
                         />
                     </>
@@ -166,7 +163,7 @@ function InfographicsMap(props: Props) {
                                 type: 'fill',
                                 'source-layer': 'districtgeo',
                                 paint: fillPaint,
-                                filter: ['==', ['id'], selectedRegion],
+                                filter,
                             }}
                         />
                         <MapLayer
@@ -187,7 +184,7 @@ function InfographicsMap(props: Props) {
                                 type: 'fill',
                                 'source-layer': 'palikageo',
                                 paint: fillPaint,
-                                filter: ['==', ['id'], selectedRegion],
+                                filter,
                             }}
                         />
                         <MapLayer

@@ -69,12 +69,12 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '1',
         type: 'bar-chart',
-        title: 'By budget',
+        title: 'Top 12 by budget',
         keySelector: item => item.name,
         orientation: 'vertical',
 
         limit: {
-            count: 100,
+            count: 12,
             method: 'max',
             valueSelector: item => item.allocatedBudget,
         },
@@ -90,7 +90,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '3',
         type: 'bar-chart',
-        title: 'Health and Finance for top 10 by budget',
+        title: 'Health and Finance for top 12 by budget',
         keySelector: item => item.name,
         orientation: 'vertical',
         bars: [
@@ -107,7 +107,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         ],
 
         limit: {
-            count: 100,
+            count: 12,
             method: 'max',
             valueSelector: item => item.allocatedBudget,
         },

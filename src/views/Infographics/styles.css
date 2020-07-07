@@ -21,7 +21,7 @@
 
     .sidebar {
         flex-shrink: 0;
-        border-bottom: var(--width-separator-thin) solid var(--color-separator);
+        border-right: var(--width-separator-thin) solid var(--color-separator);
         background-color: var(--color-foreground);
         width: 320px;
 

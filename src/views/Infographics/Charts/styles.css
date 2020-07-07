@@ -14,8 +14,14 @@
     }
 
     .chart {
-        padding: var(--spacing-large);
-        height: 72mm!important;
+        padding: 0;
+        height: 88mm!important;
+
+        :global {
+            text {
+                font-size: 2.3mm!important;
+            }
+        }
     }
 }
 

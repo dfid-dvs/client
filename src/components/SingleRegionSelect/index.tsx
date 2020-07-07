@@ -1,8 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import {
-    _cs,
-    isDefined,
-} from '@togglecorp/fujs';
+import { _cs } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -111,11 +108,7 @@ function RegionSelector(props: Props) {
             const selectedRegionObj = regionListResponse?.results
                 ?.find(r => r.code === String(selectedRegionId));
 
-            if (isDefined(selectedRegionObj)) {
-                setSelectedRegion(selectedRegionId, selectedRegionObj);
-            } else {
-                setSelectedRegion(selectedRegionId, undefined);
-            }
+            setSelectedRegion(selectedRegionId, selectedRegionObj);
         }
     }, [setSelectedRegion, regionListResponse]);
 
