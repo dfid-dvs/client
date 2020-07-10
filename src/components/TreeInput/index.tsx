@@ -33,6 +33,8 @@ interface TreeNodeProps<T, K extends OptionKey> {
     level: number;
 
     relations: Obj<ExtendedRelation<T, K> | undefined>;
+
+    sync: boolean;
 }
 
 function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T, K>) {
@@ -51,6 +53,8 @@ function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T, K>) {
         defaultCollapseLevel,
         onChange,
         relations,
+
+        sync,
     } = props;
 
     const [collapsed, setCollapsed] = useState(level >= defaultCollapseLevel);
@@ -95,6 +99,17 @@ function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T, K>) {
     const handleCheckboxChange = useCallback(
         (val: boolean) => {
             const oldKeys = new Set(value);
+
+            if (!sync) {
+                if (val) {
+                    oldKeys.add(nodeKey);
+                } else {
+                    oldKeys.delete(nodeKey);
+                }
+                onChange([...oldKeys]);
+                return;
+            }
+
             if (val) {
                 // NOTE: Add current node
                 oldKeys.add(nodeKey);
@@ -116,11 +131,16 @@ function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T, K>) {
             }
             onChange([...oldKeys]);
         },
-        [onChange, value, nodeKey, keySelector, allOwnOptions],
+        [onChange, value, nodeKey, keySelector, allOwnOptions, sync],
     );
 
     const handleTreeNodeChange = useCallback(
         (newKeys: K[]) => {
+            if (!sync) {
+                onChange(newKeys);
+                return;
+            }
+
             // if all child keys are selected, then select current as well
             const allChildSelected = ownOptions && ownOptions.every((item) => {
                 const itemKey = keySelector(item);
@@ -140,7 +160,7 @@ function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T, K>) {
                 onChange(newKeys);
             }
         },
-        [onChange, keySelector, ownOptions, nodeKey],
+        [onChange, keySelector, ownOptions, nodeKey, sync],
     );
 
     return (
@@ -173,7 +193,8 @@ function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T, K>) {
                     disabled={disabled}
                     readOnly={readOnly}
                     onChange={handleCheckboxChange}
-                    indeterminate={someSelected}
+                    // FIXME: not need to calculate someSelected if not sync mode
+                    indeterminate={sync && someSelected}
                 >
                     {nodeLabel}
                 </CheckboxButton>
@@ -191,6 +212,7 @@ function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T, K>) {
                         defaultCollapseLevel={defaultCollapseLevel}
                         level={level + 1}
                         onChange={handleTreeNodeChange}
+                        sync={sync}
                     />
                 )}
             </div>
@@ -216,6 +238,8 @@ interface TreeNodeListProps<T, K extends OptionKey> {
     level: number;
 
     relations: Obj<ExtendedRelation<T, K> | undefined>;
+
+    sync: boolean;
 }
 function TreeNodeList<T, K extends OptionKey>(props: TreeNodeListProps<T, K>) {
     const {
@@ -235,6 +259,8 @@ function TreeNodeList<T, K extends OptionKey>(props: TreeNodeListProps<T, K>) {
         level,
         defaultCollapseLevel,
         relations,
+
+        sync,
     } = props;
 
     const rendererParams = useCallback(
@@ -254,12 +280,15 @@ function TreeNodeList<T, K extends OptionKey>(props: TreeNodeListProps<T, K>) {
             level,
             onChange,
             relations,
+
+            sync,
         }),
         [
             value, onChange, relations,
             readOnly, disabled,
             defaultCollapseLevel, level,
             keySelector, labelSelector, parentKeySelector,
+            sync,
         ],
     );
 
@@ -299,6 +328,7 @@ export interface TreeProps<T, K extends OptionKey> {
 
     defaultCollapseLevel: number;
 
+    sync?: boolean;
     // labelRightComponent?: React.ReactNode;
     // labelRightComponentClassName?: string;
 }
@@ -324,6 +354,8 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
         readOnly,
         value,
         defaultCollapseLevel,
+
+        sync = false,
     } = props;
 
     const className = _cs(
@@ -393,6 +425,8 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
 
                 onChange={onChange}
                 visibleOptions={visibleOptions}
+
+                sync={sync}
             />
             <Button
                 onClick={handleClear}
