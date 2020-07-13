@@ -240,7 +240,7 @@ function RegionTooltip(props: RegionTooltipProps) {
             tooltipOptions={tooltipOptions}
             trackPointer
         >
-            <>
+            <div className={styles.hospitalTooltip}>
                 <h3>
                     {header}
                 </h3>
@@ -309,7 +309,7 @@ function RegionTooltip(props: RegionTooltipProps) {
                         fill="#ec49a6"
                     />
                 </BarChart>
-            </>
+            </div>
         </MapTooltip>
     );
 }

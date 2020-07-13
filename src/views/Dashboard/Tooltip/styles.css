@@ -1,20 +1,89 @@
 .tooltip {
     display: flex;
+    position: relative;
     flex-direction: column;
-    max-height: 300px;
+    max-height: 360px;
     overflow-y: auto;
 
-    .heading {
+    .header {
         flex-shrink: 0;
-        padding: var(--spacing-small);
+        padding: var(--spacing-medium);
+    }
+
+    .backdrop {
+        z-index: 1;
     }
 
     .scroll-wrapper {
         flex-grow: 1;
         overflow: auto;
 
-        .content {
-            display: table;
+        .program {
+            margin: var(--spacing-large);
+            border: var(--width-separator-thin) solid var(--color-separator-light);
+            border-radius: var(--radius-input);
+            box-shadow: 0 0 5px -3px rgba(0, 0, 0, .3);
+
+            .program-header {
+                padding: var(--spacing-medium) var(--spacing-medium) var(--spacing-extra-small);
+            }
+
+            .components {
+                padding: var(--spacing-small) var(--spacing-medium);
+
+                .components-header {
+                    padding: 0 var(--spacing-small);
+                    font-weight: var(--font-weight-bold);
+                }
+
+                .component {
+                    padding: var(--spacing-extra-small) var(--spacing-small);
+
+                    .component-details {
+                        padding: 0 var(--spacing-small);
+
+                        .sector-list,
+                        .partner-list {
+                            margin: 0;
+                            padding-inline-start: 20px;
+
+                            .sector-item,
+                            .partner-item {
+                                margin: 0;
+                            }
+                        }
+                    }
+                }
+            }
         }
+    }
+}
+
+.badge {
+    display: inline-flex;
+    margin: 0;
+
+    .title {
+        text-transform: capitalize;
+    }
+
+    .value {
+        display: flex;
+        align-items: center;
+        margin-left: var(--spacing-small);
+
+        &:before {
+            content: '(';
+        }
+        &:after {
+            content: ')';
+        }
+    }
+}
+
+:global {
+    .mapboxgl-popup-content {
+        border: var(--width-separator-thin) solid var(--color-separator);
+        padding: 0;
     }
 }

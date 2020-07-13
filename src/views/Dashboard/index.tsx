@@ -712,8 +712,8 @@ const Dashboard = (props: Props) => {
                         >
                             <Tooltip
                                 feature={clickedRegionProperties.feature}
-                                dfidData={dfidData}
-                                indicatorData={indicatorData}
+                                regionLevel={regionLevel}
+                                programs={programs}
                             />
                         </MapTooltip>
                     )}

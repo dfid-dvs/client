@@ -7,15 +7,23 @@ interface TextOutputProps {
     label: string | number;
     value: React.ReactNode | null;
     multiline?: boolean;
+    noPadding?: boolean;
 }
 
 function TextOutput({
     label,
     value,
     multiline = false,
+    noPadding = false,
 }: TextOutputProps) {
     return (
-        <div className={_cs(styles.textOutput, multiline && styles.multiline)}>
+        <div
+            className={_cs(
+                styles.textOutput,
+                multiline && styles.multiline,
+                noPadding && styles.noPadding,
+            )}
+        >
             <div className={styles.label}>
                 { label }
             </div>
