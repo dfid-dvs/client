@@ -19,4 +19,10 @@
         color: var(--color-text-disabled);
         font-size: var(--font-size-small);
     }
+
+    &.no-padding {
+        .label {
+            padding: 0;
+        }
+    }
 }
