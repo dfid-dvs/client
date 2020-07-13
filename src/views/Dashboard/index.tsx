@@ -6,6 +6,8 @@ import {
 import {
     IoIosClose,
     IoIosInformationCircleOutline,
+    IoIosArrowForward,
+    IoIosArrowBack,
 } from 'react-icons/io';
 
 import MapTooltip from '#remap/MapTooltip';
@@ -265,6 +267,15 @@ const Dashboard = (props: Props) => {
         printMode,
         setPrintMode,
     ] = useState(false);
+    // Show/hide filters
+    const [
+        isFilterHidden,
+        setFilterHidden,
+    ] = React.useState(false);
+
+    const handleToggleFilterVisibilityButtonClick = React.useCallback(() => {
+        setFilterHidden(prevValue => !prevValue);
+    }, [setFilterHidden]);
 
     const covidFields = covidMode ? `${apiEndPoint}/core/covid-fields/` : undefined;
     const [
@@ -592,6 +603,10 @@ const Dashboard = (props: Props) => {
         [setClickedRegionProperties],
     );
 
+    useEffect(() => {
+        handleTooltipClose();
+    }, [hash, handleTooltipClose]);
+
     const handleTtInfoVisibilityChange = useCallback(
         () => {
             setTtInfoVisbility(!ttInfoVisibility);
@@ -645,7 +660,6 @@ const Dashboard = (props: Props) => {
         [selectedHospitalType],
     );
 
-
     return (
         <div className={_cs(
             styles.dashboard,
@@ -666,6 +680,11 @@ const Dashboard = (props: Props) => {
                     </div>
                 </div>
             </SubNavbar>
+            <PrintDetailsBar
+                show={printMode}
+                title={titleForPrintBar}
+                description={selectedIndicatorDetails?.abstract}
+            />
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
                     <LoadingAnimation />
@@ -711,7 +730,10 @@ const Dashboard = (props: Props) => {
                         />
                     )}
                 </IndicatorMap>
-                <Sidepanel className={styles.sidebar} />
+                <Sidepanel
+                    className={styles.sidebar}
+                    printMode={printMode}
+                />
             </div>
             <PrintButton
                 orientation="landscape"
@@ -719,172 +741,190 @@ const Dashboard = (props: Props) => {
                 printMode={printMode}
                 onPrintModeChange={setPrintMode}
             />
-            <div className={styles.mapStyleConfigContainer}>
-                <RegionSelector
-                    className={styles.regionSelector}
-                    onRegionLevelChange={setRegionLevel}
-                    regionLevel={regionLevel}
-                    searchHidden
-                />
-                <div className={styles.separator} />
-                {covidMode && (
-                    <>
-                        <div>
-                            <ToggleButton
-                                className={styles.inputItem}
-                                label="Show health facilities"
-                                value={showHealthResource}
-                                onChange={setShowHealthResource}
-                            />
-                            <div className={styles.travelTimeInputContainer}>
-                                <ToggleButton
-                                    label="Show travel time information"
-                                    disabled={!showHealthResource}
-                                    value={showHealthTravelTime && showHealthResource}
-                                    onChange={setShowHealthTravelTime}
-                                />
-                                <Button
-                                    onClick={handleTtInfoVisibilityChange}
-                                    transparent
-                                    icons={(
-                                        <IoIosInformationCircleOutline />
-                                    )}
-                                />
-                            </div>
-                        </div>
-                        {enableHealthResources && (
-                            <div>
-                                <SegmentInput
-                                    label="Hospitals"
-                                    className={styles.inputItem}
-                                    options={hospitalTypeOptions}
-                                    onChange={setHospitalType}
-                                    value={selectedHospitalType}
-                                    optionLabelSelector={hospitalTypeLabelSelector}
-                                    optionKeySelector={hospitalTypeKeySelector}
-                                />
-                                {selectedHospitals.length > 0 && (
-                                    <div className={styles.hospitals}>
-                                        {selectedHospitals.map(hospital => (
-                                            <Button
-                                                className={styles.button}
-                                                key={hospital}
-                                                name={hospital}
-                                                onClick={handleHospitalToggle}
-                                                icons={(
-                                                    <IoIosClose />
-                                                )}
-                                            >
-                                                {hospital}
-                                            </Button>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                        {enableHealthResources && showHealthTravelTime && (
-                            <div>
-                                <SegmentInput
-                                    label="Travel Time Type"
-                                    className={styles.inputItem}
-                                    options={travelTimeTypeOptions}
-                                    onChange={setTravelTimeType}
-                                    value={selectedTravelTimeType}
-                                    optionLabelSelector={travelTimeTypeLabelSelector}
-                                    optionKeySelector={travelTimeTypeKeySelector}
-                                />
-                                <SegmentInput
-                                    label="Travel Time Season"
-                                    className={styles.inputItem}
-                                    options={seasonOptions}
-                                    onChange={setSeason}
-                                    value={selectedSeason}
-                                    optionLabelSelector={seasonLabelSelector}
-                                    optionKeySelector={seasonKeySelector}
-                                />
-                            </div>
-                        )}
-                        {ttInfoVisibility && (
-                            <div className={styles.abstract}>
-                                <TravelTimeDetails />
-                            </div>
-                        )}
-                        <div className={styles.separator} />
-                    </>
+            <div
+                className={_cs(
+                    styles.mapStyleConfigContainer,
+                    isFilterHidden && styles.hidden,
                 )}
-                <ToggleButton
-                    label="Toggle Choropleth/Bubble"
-                    className={styles.inputItem}
-                    value={mapStyleInverted}
-                    onChange={setMapStyleInverted}
+            >
+                <Button
+                    className={styles.toggleVisibilityButton}
+                    onClick={handleToggleFilterVisibilityButtonClick}
+                    icons={isFilterHidden ? <IoIosArrowForward /> : <IoIosArrowBack />}
+                    transparent
                 />
-                <SelectInput
-                    label="DFID Data"
-                    className={styles.inputItem}
-                    options={fiveWOptions}
-                    onChange={handleFiveWOptionChange}
-                    value={selectedFiveWOption}
-                    optionLabelSelector={fiveWLabelSelector}
-                    groupKeySelector={covidMode ? fiveWGroupKeySelector : undefined}
-                    optionKeySelector={fiveWKeySelector}
-                    pending={covidFieldsPending}
-                />
-                {selectedFiveWOption && !isFiveWOptionKey(selectedFiveWOption) && (
-                    <SelectInput
-                        label="DFID Data Options"
-                        value={selectedFiveWSubOption}
-                        onChange={setFiveWSubOption}
-                        className={styles.inputItem}
-                        optionKeySelector={item => item}
-                        optionLabelSelector={item => item}
-                        nonClearable
-                        options={(
-                            selectedFiveWOption === 'kathmandu_activity'
-                                ? covidFieldsResponse?.kathmanduActivity
-                                : covidFieldsResponse?.other
-                        )}
+                <div className={styles.filters}>
+                    <RegionSelector
+                        className={styles.regionSelector}
+                        onRegionLevelChange={setRegionLevel}
+                        regionLevel={regionLevel}
+                        searchHidden
                     />
-                )}
-                <SelectInput
-                    label="Indicator"
-                    className={styles.inputItem}
-                    disabled={indicatorListPending}
-                    options={indicatorList}
-                    onChange={setSelectedIndicator}
-                    value={validSelectedIndicator}
-                    optionLabelSelector={indicatorLabelSelector}
-                    optionKeySelector={indicatorKeySelector}
-                    groupKeySelector={indicatorGroupKeySelector}
-                    pending={indicatorListPending}
-                />
-                {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
-                    <div className={styles.abstract}>
-                        { selectedIndicatorDetails.abstract }
-                    </div>
-                )}
-                <div className={styles.separator} />
-                <MultiSelectInput
-                    label="Layers"
-                    className={styles.inputItem}
-                    disabled={mapLayerListPending}
-                    options={vectorLayers}
-                    onChange={setSelectedVectorLayers}
-                    value={selectedVectorLayers}
-                    optionKeySelector={layerKeySelector}
-                    optionLabelSelector={layerLabelSelector}
-                />
-                <SelectInput
-                    label="Background Layer"
-                    className={styles.inputItem}
-                    disabled={mapLayerListPending}
-                    options={rasterLayers}
-                    onChange={setSelectedRasterLayer}
-                    value={selectedRasterLayer}
-                    optionKeySelector={layerKeySelector}
-                    optionLabelSelector={layerLabelSelector}
-                />
+                    <div className={styles.separator} />
+                    {covidMode && (
+                        <>
+                            <div>
+                                <ToggleButton
+                                    className={styles.inputItem}
+                                    label="Show health facilities"
+                                    value={showHealthResource}
+                                    onChange={setShowHealthResource}
+                                />
+                                <div className={styles.travelTimeInputContainer}>
+                                    <ToggleButton
+                                        label="Show travel time information"
+                                        disabled={!showHealthResource}
+                                        value={showHealthTravelTime && showHealthResource}
+                                        onChange={setShowHealthTravelTime}
+                                    />
+                                    <Button
+                                        onClick={handleTtInfoVisibilityChange}
+                                        transparent
+                                        icons={(
+                                            <IoIosInformationCircleOutline />
+                                        )}
+                                    />
+                                </div>
+                            </div>
+                            {enableHealthResources && (
+                                <div>
+                                    <SegmentInput
+                                        label="Hospitals"
+                                        className={styles.inputItem}
+                                        options={hospitalTypeOptions}
+                                        onChange={setHospitalType}
+                                        value={selectedHospitalType}
+                                        optionLabelSelector={hospitalTypeLabelSelector}
+                                        optionKeySelector={hospitalTypeKeySelector}
+                                    />
+                                    {selectedHospitals.length > 0 && (
+                                        <div className={styles.hospitals}>
+                                            {selectedHospitals.map(hospital => (
+                                                <Button
+                                                    className={styles.button}
+                                                    key={hospital}
+                                                    name={hospital}
+                                                    onClick={handleHospitalToggle}
+                                                    icons={(
+                                                        <IoIosClose />
+                                                    )}
+                                                >
+                                                    {hospital}
+                                                </Button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            {enableHealthResources && showHealthTravelTime && (
+                                <div>
+                                    <SegmentInput
+                                        label="Travel Time Type"
+                                        className={styles.inputItem}
+                                        options={travelTimeTypeOptions}
+                                        onChange={setTravelTimeType}
+                                        value={selectedTravelTimeType}
+                                        optionLabelSelector={travelTimeTypeLabelSelector}
+                                        optionKeySelector={travelTimeTypeKeySelector}
+                                    />
+                                    <SegmentInput
+                                        label="Travel Time Season"
+                                        className={styles.inputItem}
+                                        options={seasonOptions}
+                                        onChange={setSeason}
+                                        value={selectedSeason}
+                                        optionLabelSelector={seasonLabelSelector}
+                                        optionKeySelector={seasonKeySelector}
+                                    />
+                                </div>
+                            )}
+                            {ttInfoVisibility && (
+                                <div className={styles.abstract}>
+                                    <TravelTimeDetails />
+                                </div>
+                            )}
+                            <div className={styles.separator} />
+                        </>
+                    )}
+                    <ToggleButton
+                        label="Toggle Choropleth/Bubble"
+                        className={styles.inputItem}
+                        value={mapStyleInverted}
+                        onChange={setMapStyleInverted}
+                    />
+                    <SelectInput
+                        label="DFID Data"
+                        className={styles.inputItem}
+                        options={fiveWOptions}
+                        onChange={handleFiveWOptionChange}
+                        value={selectedFiveWOption}
+                        optionLabelSelector={fiveWLabelSelector}
+                        groupKeySelector={covidMode ? fiveWGroupKeySelector : undefined}
+                        optionKeySelector={fiveWKeySelector}
+                        pending={covidFieldsPending}
+                    />
+                    {selectedFiveWOption && !isFiveWOptionKey(selectedFiveWOption) && (
+                        <SelectInput
+                            label="DFID Data Options"
+                            value={selectedFiveWSubOption}
+                            onChange={setFiveWSubOption}
+                            className={styles.inputItem}
+                            optionKeySelector={item => item}
+                            optionLabelSelector={item => item}
+                            nonClearable
+                            options={(
+                                selectedFiveWOption === 'kathmandu_activity'
+                                    ? covidFieldsResponse?.kathmanduActivity
+                                    : covidFieldsResponse?.other
+                            )}
+                        />
+                    )}
+                    <SelectInput
+                        label="Indicator"
+                        className={styles.inputItem}
+                        disabled={indicatorListPending}
+                        options={indicatorList}
+                        onChange={setSelectedIndicator}
+                        value={validSelectedIndicator}
+                        optionLabelSelector={indicatorLabelSelector}
+                        optionKeySelector={indicatorKeySelector}
+                        groupKeySelector={indicatorGroupKeySelector}
+                        pending={indicatorListPending}
+                    />
+                    {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
+                        <div className={styles.abstract}>
+                            { selectedIndicatorDetails.abstract }
+                        </div>
+                    )}
+                    <div className={styles.separator} />
+                    <MultiSelectInput
+                        label="Layers"
+                        className={styles.inputItem}
+                        disabled={mapLayerListPending}
+                        options={vectorLayers}
+                        onChange={setSelectedVectorLayers}
+                        value={selectedVectorLayers}
+                        optionKeySelector={layerKeySelector}
+                        optionLabelSelector={layerLabelSelector}
+                    />
+                    <SelectInput
+                        label="Background Layer"
+                        className={styles.inputItem}
+                        disabled={mapLayerListPending}
+                        options={rasterLayers}
+                        onChange={setSelectedRasterLayer}
+                        value={selectedRasterLayer}
+                        optionKeySelector={layerKeySelector}
+                        optionLabelSelector={layerLabelSelector}
+                    />
+                </div>
             </div>
-            <div className={styles.legendContainer}>
+            <div
+                className={_cs(
+                    styles.legendContainer,
+                    isFilterHidden && styles.hidden,
+                )}
+            >
                 {choroplethSelected && (
                     <ChoroplethLegend
                         className={styles.legend}
@@ -947,11 +987,6 @@ const Dashboard = (props: Props) => {
                     </>
                 )}
             </div>
-            <PrintDetailsBar
-                show={printMode}
-                title={titleForPrintBar}
-                description={selectedIndicatorDetails?.abstract}
-            />
             {hash === 'regions' && (
                 <RegionDetails
                     indicatorListPending={indicatorListPending}

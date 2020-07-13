@@ -2,6 +2,7 @@ import React, { useCallback, useState, useMemo } from 'react';
 import {
     _cs,
     isDefined,
+    isNotDefined,
     sum,
 } from '@togglecorp/fujs';
 
@@ -271,12 +272,6 @@ function Infographics(props: Props) {
             )}
         >
             <div className={styles.sidebar}>
-                <PrintButton
-                    className={styles.printModeButton}
-                    printMode={printMode}
-                    onPrintModeChange={setPrintMode}
-                    orientation="portrait"
-                />
                 <SingleRegionSelect
                     className={styles.regionSelector}
                     onRegionLevelChange={handleRegionLevelChange}
@@ -288,10 +283,17 @@ function Infographics(props: Props) {
                 <Button
                     className={styles.addChartButton}
                     onClick={handleAddChartModalClick}
-                    disabled={printMode}
+                    disabled={printMode || isNotDefined(region)}
                 >
                     Add Chart
                 </Button>
+                <PrintButton
+                    className={styles.printModeButton}
+                    printMode={printMode}
+                    onPrintModeChange={setPrintMode}
+                    disabled={isNotDefined(region)}
+                    orientation="portrait"
+                />
             </div>
             {isDefined(region) ? (
                 <div className={styles.content}>

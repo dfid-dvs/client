@@ -28,6 +28,12 @@
         .region-selector {
             display: flex;
             flex-direction: column;
+            margin: var(--spacing-medium);
+            padding: 0;
+
+            >* {
+                padding: 0;
+            }
         }
 
         .print-mode-button {

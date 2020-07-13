@@ -309,6 +309,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 className={styles.selectAllButton}
                                 transparent
                                 name="select-all"
+                                title="Select all"
                                 onClick={handleSelectAll}
                                 disabled={disabled || !options}
                                 icons={(
@@ -322,6 +323,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 transparent
                                 name="close"
                                 onClick={handleClearClick}
+                                title="Clear all"
                                 disabled={disabled}
                                 icons={(
                                     <IoMdClose />

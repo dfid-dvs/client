@@ -3,7 +3,7 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { IoMdArrowDropright } from 'react-icons/io';
+import { IoMdClose, IoMdArrowDropright } from 'react-icons/io';
 import { _cs, isNotDefined, Obj } from '@togglecorp/fujs';
 
 import { OptionKey } from '../types';
@@ -397,18 +397,30 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
             className={_cs(styles.treeInput, className)}
             title={title}
         >
-            {showLabel && (
-                <Label
-                    className={labelClassName}
-                    disabled={disabled}
-                    error={!!error}
-                    // title={label}
-                    // rightComponent={labelRightComponent}
-                    // rightComponentClassName={labelRightComponentClassName}
+            <div className={styles.labelContainer}>
+                {showLabel && (
+                    <Label
+                        className={_cs(styles.label, labelClassName)}
+                        disabled={disabled}
+                        error={!!error}
+                        // title={label}
+                        // rightComponent={labelRightComponent}
+                        // rightComponentClassName={labelRightComponentClassName}
+                    >
+                        {label}
+                    </Label>
+                )}
+                <Button
+                    onClick={handleClear}
+                    variant="danger"
+                    className={styles.button}
+                    transparent
+                    title="Clear all"
+                    disabled={!value || value.length <= 0}
                 >
-                    {label}
-                </Label>
-            )}
+                    <IoMdClose />
+                </Button>
+            </div>
             <TreeNodeList
                 className={styles.nodeList}
                 defaultCollapseLevel={defaultCollapseLevel}
@@ -428,13 +440,6 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
 
                 sync={sync}
             />
-            <Button
-                onClick={handleClear}
-                transparent
-                disabled={!value || value.length <= 0}
-            >
-                Clear
-            </Button>
             {showHintAndError && (
                 <HintAndError
                     error={error}
