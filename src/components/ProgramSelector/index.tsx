@@ -207,31 +207,6 @@ function ProgramSelector(props: Props) {
                 return programs;
             }
 
-            /*
-            const selectedSectors = selectedSector
-                ?.map((item) => {
-                    const result = item.match(/^sector-(\d+)$/);
-                    if (!result) {
-                        return undefined;
-                    }
-                    return +result[1];
-                })
-                .filter(isDefined);
-
-            const selectedSubSectors = selectedSector
-                ?.map((item) => {
-                    const result = item.match(/^subsector-(\d+)-(\d+)$/);
-                    if (!result) {
-                        return undefined;
-                    }
-                    if (selectedSectors?.includes(+result[1])) {
-                        return undefined;
-                    }
-                    return +result[2];
-                })
-                .filter(isDefined);
-            */
-
             const selectedSectors = selectedSector
                 ?.filter(item => item.startsWith('sector-'))
                 .map(item => +item.substring('sector-'.length));
@@ -249,28 +224,41 @@ function ProgramSelector(props: Props) {
                 .map(item => +item.substring('submarker-'.length));
 
             const filtered = programs.filter((program) => {
-                const sectorOrSubSectorSelected = selectedSector && selectedSector.length > 0;
-                const markerOrSubMarkerSelected = selectedMarker && selectedMarker.length > 0;
+                // FIXME: this can be optimized
 
+                const programSectors = new Set(program.sector.map(item => item.id));
                 const isSelectedSectorsGood = (
-                    !sectorOrSubSectorSelected
-                    || commonCount(selectedSectors, program.sector.map(item => item.id)) > 0
+                    !selectedSectors || selectedSectors.length <= 0
+                ) || (
+                    selectedSectors.every(item => programSectors.has(item))
                 );
+
+                const programSubSectors = new Set(program.subSector.map(item => item.id));
                 const isSelectedSubSectorsGood = (
-                    !sectorOrSubSectorSelected
-                    || commonCount(selectedSubSectors, program.subSector.map(item => item.id)) > 0
+                    !selectedSubSectors || selectedSubSectors.length <= 0
+                ) || (
+                    selectedSubSectors.every(item => programSubSectors.has(item))
                 );
+
+                const programMarkers = new Set(program.markerCategory.map(item => item.id));
                 const isSelectedMarkersGood = (
-                    !markerOrSubMarkerSelected
-                    || commonCount(selectedMarkers, program.markerCategory.map(item => item.id)) > 0
+                    !selectedMarkers || selectedMarkers.length <= 0
+                ) || (
+                    selectedMarkers.every(item => programMarkers.has(item))
                 );
+
+                const programSubMarkers = new Set(program.markerValue.map(item => item.id));
                 const isSelectedSubMarkersGood = (
-                    !markerOrSubMarkerSelected
-                    || commonCount(selectedSubMarkers, program.markerValue.map(item => item.id)) > 0
+                    !selectedSubMarkers || selectedSubMarkers.length <= 0
+                ) || (
+                    selectedSubMarkers.every(item => programSubMarkers.has(item))
                 );
+
                 return (
-                    (isSelectedSectorsGood || isSelectedSubSectorsGood)
-                    && (isSelectedMarkersGood || isSelectedSubMarkersGood)
+                    isSelectedSectorsGood
+                    && isSelectedSubSectorsGood
+                    && isSelectedMarkersGood
+                    && isSelectedSubMarkersGood
                 );
             });
             return filtered;
