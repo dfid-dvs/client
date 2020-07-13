@@ -69,12 +69,11 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '1',
         type: 'bar-chart',
-        title: 'Top 12 by budget',
+        title: 'Top 10 by budget',
         keySelector: item => item.name,
-        orientation: 'vertical',
 
         limit: {
-            count: 12,
+            count: 10,
             method: 'max',
             valueSelector: item => item.allocatedBudget,
         },
@@ -88,50 +87,106 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         ],
     },
     {
-        id: '3',
+        id: '1.1',
         type: 'bar-chart',
-        title: 'Health and Finance for top 12 by budget',
+        title: 'Top 10 by programs',
         keySelector: item => item.name,
-        orientation: 'vertical',
-        bars: [
-            {
-                title: 'Health Facilities',
-                color: tableauColors[2],
-                valueSelector: item => item.indicators[119] || null,
-            },
-            {
-                title: 'Financial Institutions',
-                color: tableauColors[3],
-                valueSelector: item => item.indicators[118] || null,
-            },
-        ],
 
         limit: {
-            count: 12,
+            count: 10,
             method: 'max',
-            valueSelector: item => item.allocatedBudget,
+            valueSelector: item => item.programCount,
         },
 
-        // meta
-        dependencies: [119, 118],
+        bars: [
+            {
+                title: 'Program count',
+                color: tableauColors[2],
+                valueSelector: item => item.programCount,
+            },
+        ],
     },
     {
-        id: '4',
-        type: 'histogram',
-        title: 'Financial Institutions distribution',
-        color: tableauColors[0],
-        binCount: 10,
-        valueSelector: item => item.indicators[118] || 0,
-        dependencies: [118],
+        id: '1.2',
+        type: 'bar-chart',
+        title: 'Top 10 by partners',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.partnerCount,
+        },
+
+        bars: [
+            {
+                title: 'Partner count',
+                color: tableauColors[3],
+                valueSelector: item => item.partnerCount,
+            },
+        ],
     },
     {
-        id: '5',
-        type: 'histogram',
-        title: 'Health Facilities distribution',
-        color: tableauColors[3],
-        binCount: 10,
-        valueSelector: item => item.indicators[119] || 0,
-        dependencies: [119],
+        id: '1.3',
+        type: 'bar-chart',
+        title: 'Top 10 by sectors',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.sectorCount,
+        },
+
+        bars: [
+            {
+                title: 'Sector count',
+                color: tableauColors[4],
+                valueSelector: item => item.sectorCount,
+            },
+        ],
+    },
+    {
+        id: '2',
+        type: 'bar-chart',
+        title: 'Top 10 by population',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.indicators[25] || null,
+        },
+
+        bars: [
+            {
+                title: 'Population',
+                color: tableauColors[5],
+                valueSelector: item => item.indicators[25] || null,
+            },
+        ],
+        dependencies: [25],
+    },
+    {
+        id: '3',
+        type: 'bar-chart',
+        title: 'Top 10 by poverty incidence',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.indicators[132] || null,
+        },
+
+        bars: [
+            {
+                title: 'Poverty Incidence',
+                color: tableauColors[6],
+                valueSelector: item => item.indicators[132] || null,
+            },
+        ],
+        dependencies: [132],
     },
 ];
 

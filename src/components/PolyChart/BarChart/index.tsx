@@ -58,10 +58,10 @@ interface BarChartUnitProps<T> {
 }
 
 const chartMargin = {
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
+    top: 10,
+    right: 10,
+    bottom: 10,
+    left: 10,
 };
 
 export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
