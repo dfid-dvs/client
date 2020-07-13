@@ -730,7 +730,10 @@ const Dashboard = (props: Props) => {
                         />
                     )}
                 </IndicatorMap>
-                <Sidepanel className={styles.sidebar} />
+                <Sidepanel
+                    className={styles.sidebar}
+                    printMode={printMode}
+                />
             </div>
             <PrintButton
                 orientation="landscape"

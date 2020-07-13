@@ -68,10 +68,15 @@ const summaryNepalRendererParams = (key: string, item: Item) => ({
 
 interface Props {
     className?: string;
+    printMode?: boolean;
 }
 
 function Sidepanel(props: Props) {
-    const { className } = props;
+    const {
+        className,
+        printMode,
+    } = props;
+
     const { covidMode, programs } = useContext(DomainContext);
 
     const [isHidden, setIsHidden] = React.useState(false);
@@ -231,29 +236,31 @@ function Sidepanel(props: Props) {
                             />
                         </div>
                     </div>
-                    <div className={styles.exploreData}>
-                        <header className={styles.header}>
-                            <h2 className={styles.heading}>
-                                Explore the data
-                            </h2>
-                        </header>
-                        <div className={styles.actions}>
-                            <Link
-                                className={styles.link}
-                                to="#regions"
-                                replace
-                            >
-                                By regions
-                            </Link>
-                            <Link
-                                className={styles.link}
-                                to="#programs"
-                                replace
-                            >
-                                By programs
-                            </Link>
+                    {!printMode && (
+                        <div className={styles.exploreData}>
+                            <header className={styles.header}>
+                                <h2 className={styles.heading}>
+                                    Explore the data
+                                </h2>
+                            </header>
+                            <div className={styles.actions}>
+                                <Link
+                                    className={styles.link}
+                                    to="#regions"
+                                    replace
+                                >
+                                    By regions
+                                </Link>
+                                <Link
+                                    className={styles.link}
+                                    to="#programs"
+                                    replace
+                                >
+                                    By programs
+                                </Link>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
         </>
