@@ -11,7 +11,8 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import { IoMdTrash } from 'react-icons/io';
-import { compareNumber, isNotDefined, isDefined, _cs } from '@togglecorp/fujs';
+import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
+import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
@@ -22,11 +23,21 @@ import styles from './styles.css';
 
 const orientations: {
     key: 'horizontal' | 'vertical';
-    label: string;
+    label: React.ReactNode;
+    title: string;
 }[] = [
-    { key: 'horizontal', label: 'H' },
-    { key: 'vertical', label: 'V' },
+    { key: 'vertical', label: <RiBarChartHorizontalLine />, title: 'Horizontal' },
+    { key: 'horizontal', label: <RiBarChartLine />, title: 'Vertical' },
 ];
+
+
+const categoryTickFormatter = (value: string) => {
+    const words = value.trim().split(/\s+/);
+    if (words.length <= 1) {
+        return value.slice(0, 3).toUpperCase();
+    }
+    return words.map(item => item[0]).join('').toUpperCase();
+};
 
 const valueTickFormatter: TooltipFormatter = (value) => {
     if (isNotDefined(value)) {
@@ -73,7 +84,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         orientation,
     } = settings;
 
-    const [layout, setLayout] = useState<'horizontal' | 'vertical'>(orientation || 'horizontal');
+    const [layout, setLayout] = useState<'horizontal' | 'vertical'>(orientation || 'vertical');
 
     const Xcomp = layout === 'vertical' ? YAxis : XAxis;
     const Ycomp = layout === 'vertical' ? XAxis : YAxis;
@@ -94,6 +105,17 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         },
         [data, limit],
     );
+
+    const averageLength: number = finalData
+        ? sum(finalData.map(item => keySelector(item).length)) / finalData.length
+        : 0;
+
+
+    const acceptableLength = layout === 'horizontal'
+        ? 5
+        : 15;
+
+    const hasLongTitles = averageLength > acceptableLength;
 
     return (
         <div className={_cs(styles.chartContainer, className)}>
@@ -116,6 +138,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                             options={orientations}
                             optionKeySelector={item => item.key}
                             optionLabelSelector={item => item.label}
+                            optionTitleSelector={item => item.title}
                             value={layout}
                             onChange={setLayout}
                         />
@@ -129,14 +152,17 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                         data={finalData}
                         layout={layout}
                         margin={chartMargin}
-                        barGap={1}
+                        barGap={0}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <Xcomp
                             dataKey={keySelector}
                             type="category"
-                            interval={layout === 'vertical' ? 0 : undefined}
+                            interval={0}
                             width={layout === 'vertical' ? 86 : undefined}
+                            tickFormatter={hasLongTitles && categoryTickFormatter}
+                            angle={layout === 'horizontal' && -45}
+                            textAnchor="end"
                         />
                         <Ycomp
                             type="number"

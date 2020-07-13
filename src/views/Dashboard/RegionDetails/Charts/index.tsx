@@ -77,6 +77,110 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         ],
     },
     {
+        id: '1.1',
+        type: 'bar-chart',
+        title: 'Top 10 by programs',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.programCount,
+        },
+
+        bars: [
+            {
+                title: 'Program count',
+                color: tableauColors[2],
+                valueSelector: item => item.programCount,
+            },
+        ],
+    },
+    {
+        id: '1.2',
+        type: 'bar-chart',
+        title: 'Top 10 by partners',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.partnerCount,
+        },
+
+        bars: [
+            {
+                title: 'Partner count',
+                color: tableauColors[3],
+                valueSelector: item => item.partnerCount,
+            },
+        ],
+    },
+    {
+        id: '1.3',
+        type: 'bar-chart',
+        title: 'Top 10 by sectors',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.sectorCount,
+        },
+
+        bars: [
+            {
+                title: 'Sector count',
+                color: tableauColors[4],
+                valueSelector: item => item.sectorCount,
+            },
+        ],
+    },
+    {
+        id: '2',
+        type: 'bar-chart',
+        title: 'Top 10 by population',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.indicators[25] || null,
+        },
+
+        bars: [
+            {
+                title: 'Population',
+                color: tableauColors[5],
+                valueSelector: item => item.indicators[25] || null,
+            },
+        ],
+        dependencies: [25],
+    },
+    {
+        id: '3',
+        type: 'bar-chart',
+        title: 'Top 10 by poverty incidence',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.indicators[132] || null,
+        },
+
+        bars: [
+            {
+                title: 'Poverty Incidence',
+                color: tableauColors[6],
+                valueSelector: item => item.indicators[132] || null,
+            },
+        ],
+        dependencies: [132],
+    },
+
+    /*
+    {
         id: '2',
         type: 'pie-chart',
         title: 'Total Budget',
@@ -128,6 +232,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         valueSelector: item => item.indicators[119] || 0,
         dependencies: [119],
     },
+     */
 ];
 
 interface Props {

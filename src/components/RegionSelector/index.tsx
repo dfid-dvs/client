@@ -130,6 +130,7 @@ function RegionSelector(props: Props) {
                     value={selectedRegions}
                     optionLabelSelector={regionLabelSelector}
                     optionKeySelector={regionKeySelector}
+                    allSelectable
                 />
             )}
         </div>
