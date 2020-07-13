@@ -122,16 +122,27 @@
     &.print-mode {
         flex-grow: unset;
         margin: auto;
+        border: var(--width-separator-thin) solid var(--color-separator-light);
+        box-shadow: 0 0 5px -3px rgba(0, 0, 0, .3);
         width: 297mm!important;
         height: 210mm!important;
+
+        .print-mode-button {
+            top: calc(var(--height-print-bar) + var(--spacing-medium));
+        }
 
         .map-style-config-container {
             display: none;
         }
 
         .legend-container {
-            bottom: calc(var(--height-print-bar) + var(--spacing-medium));
             left: var(--spacing-medium);
         }
+    }
+}
+
+:global {
+    .mapboxgl-popup {
+        z-index: 1111!important;
     }
 }

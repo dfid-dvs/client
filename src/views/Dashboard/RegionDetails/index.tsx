@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import SegmentInput from '#components/SegmentInput';
 import DomainContext from '#components/DomainContext';
@@ -55,14 +56,23 @@ function RegionDetails(props: Props) {
             parentLink="/dashboard/"
             parentName="dashboard"
             actions={(
-                <div className={styles.tabActions}>
-                    <SegmentInput
-                        options={tabOptions}
-                        optionKeySelector={item => item.key}
-                        optionLabelSelector={item => item.label}
-                        value={selectedTab}
-                        onChange={setSelectedTab}
-                    />
+                <div className={styles.rightContainer}>
+                    <Link
+                        className={styles.link}
+                        to="/infographics/"
+                        exact
+                    >
+                        Create Infographics
+                    </Link>
+                    <div className={styles.tabActions}>
+                        <SegmentInput
+                            options={tabOptions}
+                            optionKeySelector={item => item.key}
+                            optionLabelSelector={item => item.label}
+                            value={selectedTab}
+                            onChange={setSelectedTab}
+                        />
+                    </div>
                 </div>
             )}
         >

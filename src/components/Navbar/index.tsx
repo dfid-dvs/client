@@ -61,14 +61,6 @@ const Navbar = (props: Props) => {
                     >
                         Dashboard
                     </NavLink>
-                    <NavLink
-                        exact
-                        to="/infographics/"
-                        className={styles.link}
-                        activeClassName={styles.active}
-                    >
-                        Infographics
-                    </NavLink>
                 </div>
                 <div
                     className={styles.filters}

@@ -666,6 +666,11 @@ const Dashboard = (props: Props) => {
                     </div>
                 </div>
             </SubNavbar>
+            <PrintDetailsBar
+                show={printMode}
+                title={titleForPrintBar}
+                description={selectedIndicatorDetails?.abstract}
+            />
             {/* pending && (
                 <Backdrop className={styles.backdrop}>
                     <LoadingAnimation />
@@ -947,11 +952,6 @@ const Dashboard = (props: Props) => {
                     </>
                 )}
             </div>
-            <PrintDetailsBar
-                show={printMode}
-                title={titleForPrintBar}
-                description={selectedIndicatorDetails?.abstract}
-            />
             {hash === 'regions' && (
                 <RegionDetails
                     indicatorListPending={indicatorListPending}

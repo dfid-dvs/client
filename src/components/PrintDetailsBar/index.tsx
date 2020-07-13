@@ -1,7 +1,7 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import dfidLogo from '#resources/DfID-logo.svg';
+import infographicLogo from '#resources/infographic-logo.svg';
 
 import styles from './styles.css';
 
@@ -37,7 +37,7 @@ function PrintDetailsBar(props: Props) {
             <div className={styles.rightContainer}>
                 <img
                     className={styles.logo}
-                    src={dfidLogo}
+                    src={infographicLogo}
                     alt="DFID"
                 />
             </div>

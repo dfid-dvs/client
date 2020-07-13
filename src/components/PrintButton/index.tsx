@@ -13,6 +13,7 @@ const setPageSize = (cssPageSize: string) => {
 
 interface Props {
     className?: string;
+    disabled?: boolean;
     printMode: boolean;
     onPrintModeChange: (printMode: boolean) => void;
     orientation: 'portrait' | 'landscape';
@@ -24,6 +25,7 @@ function PrintButton(props: Props) {
         printMode,
         onPrintModeChange,
         orientation,
+        disabled,
     } = props;
 
     const handlePrintPreviewClick = useCallback(() => {
@@ -67,6 +69,7 @@ function PrintButton(props: Props) {
                     className={styles.printPreview}
                     onClick={handlePrintPreviewClick}
                     icons={<AiOutlinePrinter />}
+                    disabled={disabled}
                 >
                     Print preview
                 </Button>

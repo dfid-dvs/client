@@ -51,13 +51,8 @@
             color: var(--color-text-disabled);
         }
 
-        &:not(&:disabled) {
+        &:not(:disabled) {
             cursor: pointer;
-
-            &:hover {
-                border-radius: var(--radius-button);
-                background-color: var(--color-button-background);
-            }
         }
     }
 

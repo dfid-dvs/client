@@ -1,7 +1,8 @@
 .print-details-bar {
     display: flex;
     align-items: center;
-    background-color: var(--color-primary);
+    border-bottom: var(--width-separator-thin) solid var(--color-separator);
+    background-color: var(--color-foreground);
     padding: var(--spacing-small);
     height: var(--height-print-bar);
 
@@ -9,7 +10,6 @@
         display: flex;
         flex-direction: column;
         flex-grow: 1;
-        color: var(--color-text-on-primary);
 
         .heading {
             font-size: var(--font-size-medium);
