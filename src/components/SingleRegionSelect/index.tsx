@@ -13,16 +13,15 @@ import SegmentInput from '#components/SegmentInput';
 
 import styles from './styles.css';
 
-interface Province {
+export interface Province {
     id: number;
     name: string;
     code: string;
     boundary: string;
     bbox: string;
-    type: 'province';
 }
 
-interface District {
+export interface District {
     id: number;
     provinceId: number;
     provinceName: string;
@@ -30,10 +29,9 @@ interface District {
     code: string;
     nCode: number;
     bbox: string;
-    type: 'district';
 }
 
-interface Municipality {
+export interface Municipality {
     id: number;
     name: string;
     provinceId: number;
@@ -43,13 +41,18 @@ interface Municipality {
     code: string;
     population: number;
     bbox: string;
-    type: 'municipality';
+    provinceName: string;
+    districtName: string;
 }
 
-export type Region = Province | District | Municipality;
+type Region = Province | District | Municipality;
 
 const regionKeySelector = (region: Region) => +region.code;
 const regionLabelSelector = (region: Region) => region.name;
+
+// FIXME: shouldn't cast explicitly
+const districtGroupSelector = (region: Region) => (region as District).provinceName;
+const municiplityGroupSelector = (region: Region) => (region as Municipality).districtName;
 
 interface RegionLevelOptionListItem {
     key: RegionLevelOption;
@@ -147,6 +150,12 @@ function RegionSelector(props: Props) {
                     onChange={handleSelectedRegionChange}
                     value={selectedRegion}
                     optionLabelSelector={regionLabelSelector}
+                    groupKeySelector={
+                        (regionLevel === 'municipality' && municiplityGroupSelector)
+                        || (regionLevel === 'district' && districtGroupSelector)
+                        || undefined
+                    }
+                    // groupKeySelector={regionGroupSelector}
                     optionKeySelector={regionKeySelector}
                 />
             )}

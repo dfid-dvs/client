@@ -50,7 +50,7 @@ function useExtendedFiveW(
     ] = useRequest<MultiResponse<OriginalFiveW>>(
         // FIXME: better way to handle this
         regionLevel ? regionFiveWGetUrl : undefined,
-        'fivew',
+        `fivew-${regionLevel}`,
         undefined,
         preserveResponse,
     );

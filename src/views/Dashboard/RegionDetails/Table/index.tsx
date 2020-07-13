@@ -129,6 +129,52 @@ function RegionTable(props: Props) {
         [setOrdering, onIndicatorsChange],
     );
 
+    // Synchornize region level
+    useEffect(
+        () => {
+            setOrdering((oldOrdering) => {
+                const provinceOrder = oldOrdering.findIndex(item => item.name === 'provinceName');
+                const districtOrder = oldOrdering.findIndex(item => item.name === 'districtName');
+
+                let newOrdering = [...oldOrdering];
+
+                if (regionLevel === 'province') {
+                    newOrdering = newOrdering.filter(item => (
+                        item.name !== 'provinceName' && item.name !== 'districtName'
+                    ));
+                }
+                if (regionLevel === 'district') {
+                    newOrdering = newOrdering.filter(item => (
+                        item.name !== 'districtName'
+                    ));
+
+                    if (provinceOrder === -1) {
+                        newOrdering.unshift({
+                            name: 'provinceName',
+                        });
+                    }
+                }
+                if (regionLevel === 'municipality') {
+                    if (provinceOrder === -1) {
+                        newOrdering.unshift({
+                            name: 'provinceName',
+                        });
+                    }
+
+                    if (districtOrder === -1) {
+                        newOrdering.splice(
+                            provinceOrder === -1 ? 1 : provinceOrder + 1,
+                            0,
+                            { name: 'districtName' },
+                        );
+                    }
+                }
+                return newOrdering;
+            });
+        },
+        [regionLevel, setOrdering],
+    );
+
     // Synchronize selected indicators with ordering
     useEffect(
         () => {
@@ -243,6 +289,17 @@ function RegionTable(props: Props) {
                 createColumn(numberColumn, 'sectorCount', 'Sectors (count)'),
             ];
 
+            if (regionLevel === 'district') {
+                staticColumns.unshift(
+                    createColumn(stringColumn, 'provinceName', 'Province Name'),
+                );
+            } else if (regionLevel === 'municipality') {
+                staticColumns.unshift(
+                    createColumn(stringColumn, 'provinceName', 'Province Name'),
+                    createColumn(stringColumn, 'districtName', 'District Name'),
+                );
+            }
+
             // eslint-disable-next-line max-len
             const dynamicNumberColumn = (keySelector: (item: ExtendedFiveW) => number | undefined) => (colName: string) => ({
                 headerCellRenderer: HeaderCell,
@@ -292,6 +349,7 @@ function RegionTable(props: Props) {
             getFilteringItem, setFilteringItem,
             moveOrderingItem, handleUnselectHeader,
             validSelectedIndicators, indicatorMapping,
+            regionLevel,
         ],
     );
 

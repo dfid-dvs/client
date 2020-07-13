@@ -10,7 +10,8 @@
     }
 
     .sector-input,
-    .marker-input {
+    .marker-input,
+    .partner-input {
         display: flex;
         align-items: center;
         padding: 0 var(--spacing-medium);
@@ -28,6 +29,7 @@
 /*
 .program-select-dropdown,
 .sectors-dropdown,
+.partners-dropdown,
 .markers-dropdown {
     z-index: 111;
 }

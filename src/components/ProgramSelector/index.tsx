@@ -1,12 +1,13 @@
 import React, { useMemo, useContext, useEffect } from 'react';
 import { IoMdArrowDropdown } from 'react-icons/io';
-import { _cs, intersection } from '@togglecorp/fujs';
+import { _cs } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
 import {
     MultiResponse,
     Program,
+    Partner,
     DomainContextProps,
 } from '#types';
 
@@ -18,10 +19,6 @@ import DropdownMenu from '#components/DropdownMenu';
 import TreeInput from '#components/TreeInput';
 
 import styles from './styles.css';
-
-function commonCount<T>(foo: T[] | undefined, bar: T[] | undefined) {
-    return intersection(new Set(foo), new Set(bar)).size;
-}
 
 // TODO: move this to utils
 // NOTE: join two array together
@@ -101,11 +98,22 @@ function ProgramSelector(props: Props) {
         setSelectedMarker,
     ] = React.useState<string[] | undefined>(undefined);
 
+    const [
+        selectedPartner,
+        setSelectedPartner,
+    ] = React.useState<string[] | undefined>(undefined);
+
     const programListGetUrl = `${apiEndPoint}/core/program/`;
     const [
         programListPending,
         programListResponse,
     ] = useRequest<MultiResponse<Program>>(programListGetUrl, 'program-list');
+
+    const partnerListGetUrl = `${apiEndPoint}/core/partner/`;
+    const [
+        partnerListPending,
+        partnerListResponse,
+    ] = useRequest<MultiResponse<Partner>>(partnerListGetUrl, 'partner-list');
 
     const sectorGetRequest = `${apiEndPoint}/core/sector/`;
     const [
@@ -130,6 +138,27 @@ function ProgramSelector(props: Props) {
         subMarkerListPending,
         subMarkerListResponse,
     ] = useRequest<MultiResponse<SubMarker>>(subMarkerGetRequest, 'sub-marker-list');
+
+    const partnerOptions: TreeItem[] | undefined = useMemo(
+        () => {
+            const partnerList = programListResponse?.results
+                .map(item => item.partner)
+                .flat()
+                .map(item => item.id);
+            const partnerSet = new Set(partnerList);
+
+            return partnerListResponse?.results
+                .map(({ id, name }) => ({
+                    key: String(id),
+                    parentKey: undefined,
+                    parentId: undefined,
+                    name,
+                    id,
+                }))
+                .filter(item => partnerSet.has(item.id));
+        },
+        [partnerListResponse?.results, programListResponse?.results],
+    );
 
     const sectorOptions: TreeItem[] | undefined = useMemo(
         () => (
@@ -203,9 +232,13 @@ function ProgramSelector(props: Props) {
             if (
                 (!selectedMarker || selectedMarker.length <= 0)
                 && (!selectedSector || selectedSector.length <= 0)
+                && (!selectedPartner || selectedPartner.length <= 0)
             ) {
                 return programs;
             }
+
+            const selectedPartners = selectedPartner
+                ?.map(item => +item);
 
             const selectedSectors = selectedSector
                 ?.filter(item => item.startsWith('sector-'))
@@ -225,6 +258,13 @@ function ProgramSelector(props: Props) {
 
             const filtered = programs.filter((program) => {
                 // FIXME: this can be optimized
+
+                const programPartners = new Set(program.partner.map(item => item.id));
+                const isSelectedPartnersGood = (
+                    !selectedPartners || selectedPartners.length <= 0
+                ) || (
+                    selectedPartners.every(item => programPartners.has(item))
+                );
 
                 const programSectors = new Set(program.sector.map(item => item.id));
                 const isSelectedSectorsGood = (
@@ -255,7 +295,8 @@ function ProgramSelector(props: Props) {
                 );
 
                 return (
-                    isSelectedSectorsGood
+                    isSelectedPartnersGood
+                    && isSelectedSectorsGood
                     && isSelectedSubSectorsGood
                     && isSelectedMarkersGood
                     && isSelectedSubMarkersGood
@@ -266,10 +307,10 @@ function ProgramSelector(props: Props) {
         [
             selectedMarker,
             selectedSector,
+            selectedPartner,
             programListResponse,
         ],
     );
-
 
     useEffect(
         () => {
@@ -285,8 +326,6 @@ function ProgramSelector(props: Props) {
         [filteredPrograms, setSelectedPrograms],
     );
 
-    // TODO: Only selected programs belonging to filtered programs should be valid
-
     return (
         <div className={_cs(className, styles.programSelector)}>
             <MultiSelectInput
@@ -300,6 +339,36 @@ function ProgramSelector(props: Props) {
                 optionKeySelector={programKeySelector}
                 dropdownContainerClassName={styles.programSelectDropdown}
             />
+            <DropdownMenu
+                className={_cs(
+                    styles.partnerInput,
+                    selectedPartner && selectedPartner.length > 0 && styles.applied,
+                )}
+                label={(
+                    <>
+                        Partners
+                        <IoMdArrowDropdown />
+                    </>
+                )}
+                dropdownContainerClassName={styles.partnersDropdown}
+            >
+                {partnerListPending && (
+                    <Backdrop>
+                        <LoadingAnimation />
+                    </Backdrop>
+                )}
+                <TreeInput
+                    className={styles.partnerTree}
+                    label="Filter programs by partner"
+                    keySelector={treeKeySelector}
+                    parentKeySelector={treeParentSelector}
+                    labelSelector={treeLabelSelector}
+                    options={partnerOptions}
+                    value={selectedPartner}
+                    onChange={setSelectedPartner}
+                    defaultCollapseLevel={0}
+                />
+            </DropdownMenu>
             <DropdownMenu
                 className={_cs(
                     styles.sectorInput,
@@ -356,7 +425,7 @@ function ProgramSelector(props: Props) {
                     options={combinedMarkerOptions}
                     value={selectedMarker}
                     onChange={setSelectedMarker}
-                    defaultCollapseLevel={0}
+                    defaultCollapseLevel={1}
                 />
             </DropdownMenu>
         </div>

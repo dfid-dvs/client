@@ -13,6 +13,7 @@ export interface ExtendedProgram extends Program {
     dPortalLink?: string;
     componentCount: number;
     sectorCount: number;
+    partnerCount: number;
 }
 
 function useExtendedProgram(
@@ -36,6 +37,7 @@ function useExtendedProgram(
         ...program,
         componentCount: program.component.length,
         sectorCount: program.sector.length,
+        partnerCount: program.partner.length,
         dPortalLink: program.iati
             ? `http://d-portal.org/ctrack.html?country_code=NP#view=act&aid=${program.iati}`
             : undefined,

@@ -10,6 +10,11 @@ export interface CovidFields {
 export interface OriginalFiveW {
     id: number;
     name: string;
+
+    // FIXME: should have different typings for different levels
+    provinceName?: string;
+    districtName?: string;
+
     code: string;
     allocatedBudget: number; // this may be undefined
     component: string[];
