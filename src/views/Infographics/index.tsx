@@ -20,7 +20,7 @@ import { apiEndPoint } from '#utils/constants';
 
 import { OriginalFiveW } from '#views/Dashboard/types';
 import DomainContext from '#components/DomainContext';
-import SingleRegionSelect, { Region } from '#components/SingleRegionSelect';
+import SingleRegionSelect, { Province, District, Municipality } from '#components/SingleRegionSelect';
 import Numeral from '#components/Numeral';
 import Button from '#components/Button';
 import infographicLogo from '#resources/infographic-logo.svg';
@@ -33,6 +33,18 @@ import styles from './styles.css';
 interface Props {
     className?: string;
 }
+
+interface MyProvince extends Province {
+    type: 'province';
+}
+interface MyDistrict extends District {
+    type: 'district';
+}
+interface MyMunicipality extends Municipality {
+    type: 'municipality';
+}
+
+type Region = MyProvince | MyDistrict | MyMunicipality;
 
 type numericDataKey = 'finance' | 'healthPerThousand' | 'population'
 | 'povertyGap' | 'budget' | 'programs' | 'partners' | 'sectors';
@@ -110,6 +122,7 @@ function Infographics(props: Props) {
 
     const regionFiveWUrl = `${apiEndPoint}/core/fivew-${regionLevel}/`;
 
+    // FIXME: use prepareUrlParams
     const indicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/?indicator_id=25,54,118,119,145`;
 
     const [indicatorPending, indicatorResponse] = useRequest<MultiResponse<IndicatorValue>>(
@@ -163,7 +176,7 @@ function Infographics(props: Props) {
         aggregatedFiveWResponse,
     ] = useRequest<MultiResponse<OriginalFiveW>>(
         regionFiveWUrl,
-        'fivew',
+        `fivew-${regionLevel}`,
         undefined,
     );
 
@@ -232,10 +245,12 @@ function Infographics(props: Props) {
         if (!selectedRegionData) {
             return undefined;
         }
-        if (selectedRegionData.type === 'district') {
+        if (selectedRegionData.type === 'district' && selectedRegionData.provinceId) {
+            // FIXME: use prepareUrlParams
             return `${apiEndPoint}/core/province/?id=${selectedRegionData.provinceId}`;
         }
-        if (selectedRegionData.type === 'municipality') {
+        if (selectedRegionData.type === 'municipality' && selectedRegionData.districtId) {
+            // FIXME: use prepareUrlParams
             return `${apiEndPoint}/core/district/?id=${selectedRegionData.districtId}`;
         }
         return undefined;

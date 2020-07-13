@@ -41,7 +41,7 @@ function useMapStateForFiveW(
         regionFiveWListResponse,
     ] = useRequest<MultiResponse<OriginalFiveW>>(
         regionFiveWGetUrl,
-        'fivew',
+        `fivew-${regionLevel}`,
         undefined,
         preserveResponse,
     );

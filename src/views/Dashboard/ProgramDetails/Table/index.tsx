@@ -16,7 +16,7 @@ import useOrdering, { useOrderState } from '#components/Table/useOrdering';
 import useSorting, { useSortState } from '#components/Table/useSorting';
 import { SortDirection, FilterType } from '#components/Table/types';
 
-import { ExtractKeys, prepareUrlParams as p } from '#utils/common';
+import { ExtractKeys } from '#utils/common';
 import useExtendedPrograms, { ExtendedProgram } from '../../useExtendedPrograms';
 
 import styles from './styles.css';
@@ -54,6 +54,7 @@ const staticColumnOrdering: ColumnOrderingItem[] = [
     { name: 'code' },
     { name: 'totalBudget' },
     { name: 'componentCount' },
+    { name: 'partnerCount' },
     { name: 'sectorCount' },
     { name: 'devTrackerLink' },
     { name: 'dPortalLink' },
@@ -181,6 +182,7 @@ function ProgramTable(props: Props) {
                 createColumn(stringColumn, 'code', 'Code'),
                 createColumn(numberColumn, 'totalBudget', 'Allocated Budget (£)'),
                 createColumn(numberColumn, 'componentCount', 'Components (count)'),
+                createColumn(numberColumn, 'partnerCount', 'Partners (count)'),
                 createColumn(numberColumn, 'sectorCount', 'Sectors (count)'),
                 createColumn(linkColumn, 'devTrackerLink', 'Dev Tracker'),
                 createColumn(linkColumn, 'dPortalLink', 'D-Portal'),

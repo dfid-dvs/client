@@ -168,9 +168,9 @@ const userDefinedSchemas: Schema[] = [
                                     id: { type: 'uint', required: true },
                                     layer: { type: 'uint', required: true },
 
-                                    circleColor: { type: 'string', required: true },
-                                    circleRadius: { type: 'uint', required: true },
-                                    fillColor: { type: 'string', required: true },
+                                    circleColor: { type: 'string' },
+                                    circleRadius: { type: 'uint' },
+                                    fillColor: { type: 'string' },
                                 },
                             },
                             required: true,
@@ -300,6 +300,8 @@ const userDefinedSchemas: Schema[] = [
                         markerValue: { type: 'array.base-entity', required: true },
 
                         component: { type: 'array.base-entity', required: true },
+
+                        partner: { type: 'array.base-entity', required: true },
                     },
                 },
                 required: true,
@@ -331,6 +333,34 @@ const userDefinedSchemas: Schema[] = [
                         provinceCode: { type: 'string' },
                         secondTierPartner: { type: 'string', required: true },
                         sector: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'partner-list',
+        description: 'Get partners',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'partner-list-item',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        name: { type: 'string', required: true },
+                        code: { type: 'string', required: true },
+
+                        description: { type: 'string' },
+                        typeOfInstitution: { type: 'string' },
+                        address: { type: 'string' },
+                        email: { type: 'string' },
+                        phoneNumber: { type: 'string' },
+                        image: { type: 'string' },
+                        thumbnail: { type: 'string' },
                     },
                 },
                 required: true,
@@ -390,25 +420,60 @@ const userDefinedSchemas: Schema[] = [
         },
     },
     {
-        name: 'fivew',
-        description: 'Get 5W data for province, district or municipality',
+        name: 'fivew-item',
+        description: 'extendable fivew data',
+        fields: {
+            id: { type: 'uint', required: true },
+            code: { type: 'string', required: true },
+            name: { type: 'string', required: true },
+
+            provinceName: { type: 'string' },
+            districtName: { type: 'string' },
+
+            allocatedBudget: { type: 'number' },
+            program: { type: 'array.string', required: true },
+            component: { type: 'array.string', required: true },
+            partner: { type: 'array.string', required: true },
+            sector: { type: 'array.string', required: true },
+            subSector: { type: 'array.string', required: true },
+            // markerCategory: { type: 'array.string', required: true },
+            // markerValue: { type: 'array.string', required: true },
+        },
+    },
+    {
+        name: 'fivew-province',
+        description: 'Get 5W data for province',
+        fields: {
+            results: { type: 'array.fivew-item', required: true },
+        },
+    },
+    {
+        name: 'fivew-district',
+        description: 'Get 5W data for district',
         fields: {
             results: {
                 arrayType: {
-                    name: 'fivew-item',
+                    extends: 'fivew-item',
+                    name: 'fivew-item-district',
                     fields: {
-                        id: { type: 'uint', required: true },
-                        code: { type: 'string', required: true },
-                        name: { type: 'string', required: true },
-
-                        allocatedBudget: { type: 'number' },
-                        program: { type: 'array.string', required: true },
-                        component: { type: 'array.string', required: true },
-                        partner: { type: 'array.string', required: true },
-                        sector: { type: 'array.string', required: true },
-                        subSector: { type: 'array.string', required: true },
-                        // markerCategory: { type: 'array.string', required: true },
-                        // markerValue: { type: 'array.string', required: true },
+                        provinceName: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'fivew-municipality',
+        description: 'Get 5W data for municipality',
+        fields: {
+            results: {
+                arrayType: {
+                    extends: 'fivew-item',
+                    name: 'fivew-item-municipality',
+                    fields: {
+                        provinceName: { type: 'string', required: true },
+                        districtName: { type: 'string', required: true },
                     },
                 },
                 required: true,
@@ -430,6 +495,7 @@ const userDefinedSchemas: Schema[] = [
                         code: { type: 'string', required: true },
                         provinceId: { type: 'uint', required: true },
                         name: { type: 'string', required: true },
+                        provinceName: { type: 'string', required: true },
 
                         nCode: { type: 'number' }, // Not used
                         // TODO: Fix this
@@ -458,6 +524,9 @@ const userDefinedSchemas: Schema[] = [
                         name: { type: 'string', required: true },
                         // TODO: Fix this
                         bbox: { type: 'string', required: true },
+
+                        districtName: { type: 'string', required: true },
+                        provinceName: { type: 'string', required: true },
 
                         gnTypeNp: { type: 'string' }, // Gaunpalika, Nagarpalika, Mahanagarpalika, Upamahanagarpalika
                         hlcitCode: { type: 'string' }, // Not used

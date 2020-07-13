@@ -124,7 +124,21 @@ export interface Program {
     subSector: BaseEntity[];
     markerCategory: BaseEntity[];
     markerValue: BaseEntity[];
-    // partner: BaseEntity[];
+    partner: BaseEntity[];
+}
+
+export interface Partner {
+    id: number;
+    name: string;
+    code: string;
+
+    description?: string;
+    typeOfInstitution?: string;
+    address?: string;
+    email?: string;
+    phoneNumber?: string;
+    image?: string;
+    thumbnail?: string;
 }
 
 interface LinkData {

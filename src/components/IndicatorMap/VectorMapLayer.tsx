@@ -114,8 +114,8 @@ function VectorMapLayer(props: VectorMapLayerProps) {
                     type: 'circle',
                     'source-layer': layerName,
                     paint: {
-                        'circle-color': myStyle.circleColor,
-                        'circle-radius': myStyle.circleRadius,
+                        'circle-color': myStyle.circleColor || 'gray',
+                        'circle-radius': myStyle.circleRadius || 6,
                         'circle-opacity': 0.4,
 
                         'circle-stroke-color': 'black',
@@ -133,7 +133,7 @@ function VectorMapLayer(props: VectorMapLayerProps) {
                 type: 'fill',
                 'source-layer': layerName,
                 paint: {
-                    'fill-color': myStyle.fillColor,
+                    'fill-color': myStyle.fillColor || 'gray',
                     'fill-opacity': 0.5,
                 },
             };
