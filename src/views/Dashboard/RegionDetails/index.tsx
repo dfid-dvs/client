@@ -30,6 +30,9 @@ interface Props {
     indicatorListPending: boolean | undefined;
 }
 
+const optionKeySelector = (item: TabOption) => item.key;
+const optionLabelSelector = (item: TabOption) => item.label;
+
 function RegionDetails(props: Props) {
     const {
         className,
@@ -62,13 +65,13 @@ function RegionDetails(props: Props) {
                         to="/infographics/"
                         exact
                     >
-                        Create Infographics
+                        Create Custom Infographic
                     </Link>
                     <div className={styles.tabActions}>
                         <SegmentInput
                             options={tabOptions}
-                            optionKeySelector={item => item.key}
-                            optionLabelSelector={item => item.label}
+                            optionKeySelector={optionKeySelector}
+                            optionLabelSelector={optionLabelSelector}
                             value={selectedTab}
                             onChange={setSelectedTab}
                         />

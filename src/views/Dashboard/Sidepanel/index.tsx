@@ -76,7 +76,6 @@ function Sidepanel(props: Props) {
 
     const [isHidden, setIsHidden] = React.useState(false);
 
-
     const [
         statusPending,
         status,
@@ -232,21 +231,28 @@ function Sidepanel(props: Props) {
                             />
                         </div>
                     </div>
-                    <div className={styles.actions}>
-                        <Link
-                            className={styles.link}
-                            to="#regions"
-                            replace
-                        >
-                            Go to regions
-                        </Link>
-                        <Link
-                            className={styles.link}
-                            to="#programs"
-                            replace
-                        >
-                            Go to programs
-                        </Link>
+                    <div className={styles.exploreData}>
+                        <header className={styles.header}>
+                            <h2 className={styles.heading}>
+                                Explore the data
+                            </h2>
+                        </header>
+                        <div className={styles.actions}>
+                            <Link
+                                className={styles.link}
+                                to="#regions"
+                                replace
+                            >
+                                By regions
+                            </Link>
+                            <Link
+                                className={styles.link}
+                                to="#programs"
+                                replace
+                            >
+                                By programs
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -28,6 +28,7 @@
         overflow-y: auto;
 
         .covid-summary,
+        .explore-data,
         .region-summary,
         .DFID-summary {
             position: relative;
