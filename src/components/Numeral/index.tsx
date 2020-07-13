@@ -41,7 +41,7 @@ export function formatNumber(
         const { number, normalizeSuffix = '' } = formattedNormalize(sanitizedValue, Lang.en);
         suffix = normalizeSuffix;
         if (suffix !== '') {
-            output = number.toFixed(2);
+            output = number.toFixed(1);
         } else {
             output = number.toFixed(precision);
         }

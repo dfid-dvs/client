@@ -338,6 +338,7 @@ function ProgramSelector(props: Props) {
                 optionLabelSelector={programLabelSelector}
                 optionKeySelector={programKeySelector}
                 dropdownContainerClassName={styles.programSelectDropdown}
+                allSelectable
             />
             <DropdownMenu
                 className={_cs(

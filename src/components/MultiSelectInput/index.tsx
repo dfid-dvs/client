@@ -90,6 +90,8 @@ interface Props<T, K> {
     // labelRightComponentClassName?: string;
 
     groupKeySelector?: (d: T) => string;
+
+    allSelectable?: boolean;
 }
 
 function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
@@ -108,6 +110,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
         hideLabel,
         label,
         error,
+        allSelectable,
         // labelRightComponent,
         // labelRightComponentClassName,
     } = props;
@@ -304,7 +307,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 {value.length}
                             </div>
                         )}
-                        {(optionsLength !== 0 && valueLength !== optionsLength) && (
+                        {(optionsLength !== 0 && valueLength !== optionsLength && allSelectable) && ( // eslint-disable-line max-len
                             <Button
                                 className={styles.selectAllButton}
                                 transparent

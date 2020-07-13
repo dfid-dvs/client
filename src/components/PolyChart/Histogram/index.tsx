@@ -36,10 +36,10 @@ interface HistogramUnitProps<T> {
 }
 
 const chartMargin = {
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
+    top: 10,
+    right: 10,
+    bottom: 10,
+    left: 10,
 };
 
 export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
@@ -128,6 +128,10 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                         <XAxis
                             dataKey="key"
                             type="category"
+                            interval={0}
+                            angle={-45}
+                            textAnchor="end"
+                            height={80}
                         />
                         <YAxis
                             type="number"
