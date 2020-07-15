@@ -41,9 +41,15 @@ function Loading({ message }: LoadingProps) {
 
 interface Props {
     className?: string;
+    onLogout: () => void;
+    administrator?: boolean;
 }
 function Multiplexer(props: Props) {
-    const { className } = props;
+    const {
+        className,
+        onLogout,
+        administrator,
+    } = props;
 
     const [regionLevel, setRegionLevel] = React.useState<RegionLevelOption>('province');
     const [programs, setPrograms] = React.useState<number[]>([]);
@@ -68,7 +74,11 @@ function Multiplexer(props: Props) {
     return (
         <div className={_cs(className, styles.multiplexer)}>
             <NavbarContext.Provider value={navbarContextProvider}>
-                <Navbar className={styles.navbar} />
+                <Navbar
+                    className={styles.navbar}
+                    onLogout={onLogout}
+                    administrator={administrator}
+                />
                 <ErrorBoundary
                     fallback={(
                         <div className={styles.page}>

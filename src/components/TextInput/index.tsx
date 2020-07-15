@@ -42,9 +42,9 @@ function TextInput<T>(props: Props<T>) {
             error={error}
         >
             <RawInput
+                type="text"
                 {...otherProps}
                 disabled={disabled}
-                type="text"
                 elementRef={inputRef}
                 className={_cs(styles.input, inputClassName)}
             />

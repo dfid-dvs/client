@@ -24,7 +24,7 @@ import DomainContext from '#components/DomainContext';
 import SingleRegionSelect, { Province, District, Municipality } from '#components/SingleRegionSelect';
 import Numeral from '#components/Numeral';
 import Button from '#components/Button';
-import infographicLogo from '#resources/infographic-logo.svg';
+import dfidLogo from '#resources/dfid-logo.png';
 
 import InfographicsMap from './Map';
 import InfographicsCharts from './Charts';
@@ -315,7 +315,7 @@ function Infographics(props: Props) {
                             <div className={styles.appBrand}>
                                 <img
                                     className={styles.logo}
-                                    src={infographicLogo}
+                                    src={dfidLogo}
                                     alt="DFID"
                                 />
                             </div>
