@@ -51,6 +51,7 @@ text-placeholder: #7a8898
     --spacing-medium: 10px;
     --spacing-large-medium: 13px;
     --spacing-large: 16px;
+    --spacing-extra-large: 24px;
 
     /* RADIUS */
 
@@ -151,7 +152,57 @@ body {
     font-size: var(--font-size-medium);
 }
 
-.logo {
-    background-color: red;
-    height: 68px;
+.password-prompt {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+
+    .navbar {
+        flex-shrink: 0;
+        padding: var(--spacing-large);
+
+        .logo {
+            height: 96px;
+        }
+    }
+
+    .content {
+        display: flex;
+        align-items: center;
+        align-self: center;
+        flex-grow: 1;
+        justify-content: center;
+
+        .login-card {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            border: var(--width-separator-thin) solid var(--color-separator-light);
+            box-shadow: 0 0 5px -3px rgba(0, 0, 0, .3);
+            padding: calc(2 * var(--spacing-extra-large));
+            min-width: 480px;
+
+            .heading {
+                padding-bottom: var(--spacing-extra-large);
+                color: var(--color-primary);
+                font-size: var(--font-size-extra-large);
+            }
+
+            .error {
+                padding: var(--spacing-small) 0;
+                color: var(--color-danger);
+                font-size: var(--font-size-small);
+            }
+
+            .login-button {
+                align-self: flex-end;
+                margin-top: var(--spacing-extra-large);
+
+                &:disabled {
+                    color: var(--color-text-disabled)!important;
+                }
+            }
+        }
+    }
 }

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { isNotDefined } from '@togglecorp/fujs';
 
-import dfidLogo from '#resources/DfID-logo.svg';
+import dfidLogo from '#resources/dfid-logo.png';
 import TextInput from '#components/TextInput';
 import Button from '#components/Button';
 
@@ -56,11 +56,14 @@ function App() {
     );
 
     const handleSubmit = useCallback(
-        async () => {
+        async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
             const hash = await digestMessage(password);
 
-            const isAdminUser = hash === '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
-            const isNormalUser = hash === 'e606e38b0d8c19b24cf0ee3808183162ea7cd63ff7912dbb22b5e803286b4446';
+            const isAdminUser = hash === 'f950d2713fde71188f307f8e7c5b454d4e98eed6f9880c8579c8333cfc8a9c82';
+            const isNormalUser = hash === 'cdfbc2f2ef35a6e7a717e28c916ba861f0c1c9cafb1a3dd6934000c722c2a083';
 
             const success = isAdminUser || isNormalUser;
             if (success) {
@@ -77,37 +80,49 @@ function App() {
         () => {
             setLoggedIn('false');
         },
-        [],
+        [setLoggedIn],
     );
 
     if (loggedIn !== 'true') {
         return (
-            <div>
-                <img
-                    className={styles.logo}
-                    src={dfidLogo}
-                    alt="DFID"
-                />
-                <h3>
-                    Login to DVS Nepal
-                </h3>
-                {error && (
-                    <div>
-                        {error}
-                    </div>
-                )}
-                <TextInput
-                    label="Password"
-                    autoFocus
-                    value={password}
-                    onChange={handlePasswordChange}
-                />
-                <Button
-                    disabled={!password}
-                    onClick={handleSubmit}
-                >
-                    Submit
-                </Button>
+            <div className={styles.passwordPrompt}>
+                <div className={styles.navbar}>
+                    <img
+                        className={styles.logo}
+                        src={dfidLogo}
+                        alt="DFID"
+                    />
+                </div>
+                <div className={styles.content}>
+                    <form
+                        className={styles.loginCard}
+                        onSubmit={handleSubmit}
+                    >
+                        <h3 className={styles.heading}>
+                            Login to DVS Nepal
+                        </h3>
+                        {error && (
+                            <div>
+                                {error}
+                            </div>
+                        )}
+                        <TextInput
+                            label="Password"
+                            type="password"
+                            autoFocus
+                            value={password}
+                            onChange={handlePasswordChange}
+                        />
+                        <Button
+                            className={styles.loginButton}
+                            disabled={!password}
+                            variant="primary"
+                            type="submit"
+                        >
+                            Submit
+                        </Button>
+                    </form>
+                </div>
             </div>
         );
     }
