@@ -1,6 +1,5 @@
 .tooltip {
     display: flex;
-    position: relative;
     flex-direction: column;
     max-height: 360px;
     overflow-y: auto;
@@ -15,7 +14,10 @@
     }
 
     .scroll-wrapper {
+        position: relative;
         flex-grow: 1;
+        min-width: 100px;
+        min-height: 30px;
         overflow: auto;
 
         .program {

@@ -151,3 +151,7 @@ body {
     font-size: var(--font-size-medium);
 }
 
+.logo {
+    background-color: red;
+    height: 68px;
+}

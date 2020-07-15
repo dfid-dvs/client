@@ -5,6 +5,7 @@ import { _cs } from '@togglecorp/fujs';
 import { RiAdminLine } from 'react-icons/ri';
 
 import NavbarContext from '#components/NavbarContext';
+import Button from '#components/Button';
 import { NavbarContextProps } from '#types';
 
 import dfidLogo from '#resources/DfID-logo.svg';
@@ -24,10 +25,16 @@ export const SubNavbar = ({ children }: ChildProps) => {
 
 interface Props {
     className?: string;
+    onLogout: () => void;
+    administrator?: boolean;
 }
 
 const Navbar = (props: Props) => {
-    const { className } = props;
+    const {
+        className,
+        onLogout,
+        administrator,
+    } = props;
 
     const filterRef = useRef<HTMLDivElement>(null);
 
@@ -67,15 +74,22 @@ const Navbar = (props: Props) => {
                     ref={filterRef}
                 />
             </div>
-            <a
-                className={styles.adminConsoleLink}
-                href={link}
-                rel="noreferrer noopener"
-                target="_blank"
+            {administrator && (
+                <a
+                    className={styles.adminConsoleLink}
+                    href={link}
+                    rel="noreferrer noopener"
+                    target="_blank"
+                >
+                    <RiAdminLine className={styles.adminIcon} />
+                    Admin Panel
+                </a>
+            )}
+            <Button
+                onClick={onLogout}
             >
-                <RiAdminLine className={styles.adminIcon} />
-                Admin Panel
-            </a>
+                Logout
+            </Button>
         </nav>
     );
 };

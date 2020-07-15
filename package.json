@@ -7,7 +7,6 @@
     "author": "",
     "license": "ISC",
     "sideEffects": [
-        "./src/Root/App/styles.css",
         "./node_modules/mapbox-gl/dist/mapbox-gl.css"
     ],
     "scripts": {

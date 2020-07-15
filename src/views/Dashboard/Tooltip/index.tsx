@@ -121,11 +121,6 @@ const Tooltip = (props: Props) => {
 
     return (
         <div className={styles.tooltip}>
-            {popupDataPending && (
-                <Backdrop className={styles.backdrop}>
-                    <LoadingAnimation />
-                </Backdrop>
-            )}
             <div className={styles.header}>
                 <h2 className={styles.heading}>
                     { name }
@@ -138,89 +133,92 @@ const Tooltip = (props: Props) => {
                     />
                 )}
             </div>
-            {isDefined(details) && (
-                <div className={styles.scrollWrapper}>
-                    {details?.programs?.map((program, pIndex) => (
-                        <div
-                            className={styles.program}
-                            key={program.id}
-                        >
-                            <div className={styles.programHeader}>
-                                <h3 className={styles.programTitle}>
-                                    {`${pIndex + 1}. ${program.program}`}
-                                </h3>
-                                <TextOutput
-                                    noPadding
-                                    label="Total Budget (£)"
-                                    value={(<Numeral value={program.programBudget} />)}
-                                />
-                            </div>
-                            <div className={styles.components}>
-                                {program?.components?.length > 0 && (
-                                    <div className={styles.componentsHeader}>
-                                        Components
-                                    </div>
-                                )}
-                                {program?.components?.map((component, cIndex) => (
-                                    <div
-                                        className={styles.component}
-                                        key={component.id}
-                                    >
-                                        <h4 className={styles.componentTitle}>
-                                            {`${pIndex + 1}.${cIndex + 1}. ${component.name}`}
-                                        </h4>
-                                        <div className={styles.componentDetails}>
-                                            <TextOutput
-                                                noPadding
-                                                label="Total Budget (£)"
-                                                value={(
-                                                    <Numeral value={component.componentBudget} />
-                                                )}
-                                            />
-                                            <h5 className={styles.sectorTitle}>
-                                                Sectors
-                                            </h5>
-                                            <ul className={styles.sectorList}>
-                                                {(unique(
-                                                    component?.sectors,
-                                                    d => d.sector,
-                                                )?.map(sector => (
-                                                    <li
-                                                        key={id}
-                                                        className={styles.sectorItem}
-                                                    >
-                                                        <Badge title={sector.sector} />
-                                                    </li>
-                                                )))}
-                                            </ul>
-                                            <h5 className={styles.partnerTitle}>
-                                                Partners
-                                            </h5>
-                                            <ul className={styles.partnerList}>
-                                                {(component?.partners?.map(partner => (
-                                                    <li
-                                                        key={id}
-                                                        className={styles.partnerItem}
-                                                    >
-                                                        <Badge
-                                                            title={partner.name}
-                                                            value={(
-                                                                <Numeral
-                                                                    value={partner.partnerBudget}
-                                                                />
-                                                            )}
-                                                        />
-                                                    </li>
-                                                )))}
-                                            </ul>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+            <div className={styles.scrollWrapper}>
+                {popupDataPending && (
+                    <Backdrop className={styles.backdrop}>
+                        <LoadingAnimation />
+                    </Backdrop>
+                )}
+                {details?.programs?.map((program, pIndex) => (
+                    <div
+                        className={styles.program}
+                        key={program.id}
+                    >
+                        <div className={styles.programHeader}>
+                            <h3 className={styles.programTitle}>
+                                {`${pIndex + 1}. ${program.program}`}
+                            </h3>
+                            <TextOutput
+                                noPadding
+                                label="Total Budget (£)"
+                                value={(<Numeral value={program.programBudget} />)}
+                            />
                         </div>
-                    ))}
-                </div>
-            )}
+                        <div className={styles.components}>
+                            {program?.components?.length > 0 && (
+                                <div className={styles.componentsHeader}>
+                                    Components
+                                </div>
+                            )}
+                            {program?.components?.map((component, cIndex) => (
+                                <div
+                                    className={styles.component}
+                                    key={component.id}
+                                >
+                                    <h4 className={styles.componentTitle}>
+                                        {`${pIndex + 1}.${cIndex + 1}. ${component.name}`}
+                                    </h4>
+                                    <div className={styles.componentDetails}>
+                                        <TextOutput
+                                            noPadding
+                                            label="Total Budget (£)"
+                                            value={(
+                                                <Numeral value={component.componentBudget} />
+                                            )}
+                                        />
+                                        <h5 className={styles.sectorTitle}>
+                                            Sectors
+                                        </h5>
+                                        <ul className={styles.sectorList}>
+                                            {(unique(
+                                                component?.sectors,
+                                                d => d.sector,
+                                            )?.map(sector => (
+                                                <li
+                                                    key={id}
+                                                    className={styles.sectorItem}
+                                                >
+                                                    <Badge title={sector.sector} />
+                                                </li>
+                                            )))}
+                                        </ul>
+                                        <h5 className={styles.partnerTitle}>
+                                            Partners
+                                        </h5>
+                                        <ul className={styles.partnerList}>
+                                            {(component?.partners?.map(partner => (
+                                                <li
+                                                    key={id}
+                                                    className={styles.partnerItem}
+                                                >
+                                                    <Badge
+                                                        title={partner.name}
+                                                        value={(
+                                                            <Numeral
+                                                                value={partner.partnerBudget}
+                                                            />
+                                                        )}
+                                                    />
+                                                </li>
+                                            )))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };
