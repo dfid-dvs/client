@@ -11,19 +11,21 @@ import '../../../node_modules/mapbox-gl/dist/mapbox-gl.css';
 import styles from './styles.css';
 
 // eslint-disable-next-line import/prefer-default-export
-export function useStoredState<T extends string>(key: string, defaultValue: T): [
+export function useStoredState<T>(key: string, defaultValue: T): [
     T,
     (v: T) => void,
 ] {
-    const [value, setValue] = useState<T>(() => {
-        const val = localStorage.getItem(key) as T;
-        return isNotDefined(val) ? defaultValue : val;
+    const [value, setValue] = useState<T>((): T => {
+        const val = localStorage.getItem(key);
+        return val === null || value === undefined
+            ? defaultValue
+            : JSON.parse(val) as T;
     });
 
     const setValueAndStore = useCallback(
         (v: T) => {
             setValue(v);
-            localStorage.setItem(key, v);
+            localStorage.setItem(key, JSON.stringify(v));
         },
         [key],
     );
@@ -42,7 +44,10 @@ async function digestMessage(message: string) {
 }
 
 function App() {
-    const [loggedIn, setLoggedIn] = useStoredState<string>('dfid-login', 'false');
+    const [loggedIn, setLoggedIn] = useStoredState<string>(
+        'dfid-login',
+        'false',
+    );
     const [password, setPassword] = useState('');
     const [administrator, setAdministrator] = useState(false);
     const [error, setError] = useState('');
@@ -83,7 +88,7 @@ function App() {
         [setLoggedIn],
     );
 
-    if (loggedIn !== 'true') {
+    if (process.env.NODE_ENV !== 'development' && loggedIn !== 'true') {
         return (
             <div className={styles.passwordPrompt}>
                 <div className={styles.navbar}>

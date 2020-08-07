@@ -31,10 +31,10 @@ const routeSettings: SomeRoute[] = [
         load: lazy(() => import('../../../views/Dashboard')),
     },
     {
-        path: '/dashboard/',
-        name: 'dashboard',
-        title: 'Dashboard',
-        load: lazy(() => import('../../../views/Dashboard')),
+        path: '/output/',
+        name: 'output',
+        title: 'Output',
+        load: lazy(() => import('../../../views/Output')),
     },
     {
         path: '/infographics/',

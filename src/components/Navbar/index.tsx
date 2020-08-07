@@ -64,9 +64,17 @@ const Navbar = (props: Props) => {
                         exact
                         className={styles.link}
                         activeClassName={styles.active}
-                        to="/dashboard/"
+                        to="/"
                     >
                         Dashboard
+                    </NavLink>
+                    <NavLink
+                        exact
+                        className={styles.link}
+                        activeClassName={styles.active}
+                        to="/output/"
+                    >
+                        Output
                     </NavLink>
                 </div>
                 <div
