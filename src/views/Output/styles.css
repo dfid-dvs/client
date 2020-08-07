@@ -1,14 +1,16 @@
 .output {
     display: flex;
-    align-items: center;
     flex-direction: column;
     flex-grow: 1;
-    justify-content: center;
+    background-color: var(--color-foreground);
+    padding: var(--spacing-extra-large);
     height: var(--height-content);
+    overflow: auto;
 
     .heading {
-        color: var(--color-danger);
-        font-size: var(--font-size-super-large-alt);
+        padding-bottom: var(--spacing-large);
+        color: var(--color-primary);
+        font-size: var(--font-size-super-large);
         font-weight: var(--font-weight-bold);
     }
 
@@ -16,5 +18,39 @@
         margin: var(--spacing-large) 0;
         text-align: center;
         font-size: var(--font-size-large-alt);
+    }
+
+    .table-container {
+        padding: var(--spacing-small);
+        overflow: auto;
+
+        .table {
+            border: var(--width-separator-thin) solid var(--color-separator);
+            overflow: auto;
+            border-collapse: none;
+            border-spacing: 0;
+
+            .indicator-col {
+                padding: 0 var(--spacing-extra-large);
+            }
+
+            .data-row {
+                &:hover {
+                    background-color: var(--color-background-accent-hint);
+                }
+            }
+
+            :global {
+                th {
+                    border-bottom: var(--width-separator-thin) solid var(--color-separator);
+                    border-left: var(--width-separator-thin) solid var(--color-separator);
+                    padding: var(--spacing-extra-small) var(--spacing-small);
+                }
+                td {
+                    border-bottom: var(--width-separator-thin) solid var(--color-separator);
+                    border-left: var(--width-separator-thin) solid var(--color-separator);
+                }
+            }
+        }
     }
 }

@@ -1,5 +1,4 @@
 import React from 'react';
-
 import styles from './styles.css';
 
 import useRequest from '#hooks/useRequest';
@@ -121,126 +120,136 @@ function Output() {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            <table>
-                <tr>
-                    <th rowSpan={3}>Indicators</th>
-                    {years.map(year => (
+            <div className={styles.tableContainer}>
+                <table className={styles.table}>
+                    <tr>
                         <th
-                            key={year}
-                            colSpan={8}
+                            className={styles.indicatorCol}
+                            rowSpan={3}
                         >
-                            {year}
+                            Indicators
                         </th>
-                    ))}
-                </tr>
-                <tr>
-                    {years.map(year => (
-                        <>
+                        {years.map(year => (
                             <th
-                                key={`${year}_forecast`}
-                                colSpan={4}
+                                key={year}
+                                colSpan={8}
                             >
-                                Forecast
+                                {year}
                             </th>
-                            <th
-                                key={`${year}_achieved`}
-                                colSpan={4}
-                            >
-                                Achieved
-                            </th>
-                        </>
-                    ))}
-                </tr>
-                <tr>
-                    {years.map(year => (
-                        <>
-                            <th key={`${year}_forecast_male`}>
-                                Male
-                            </th>
-                            <th key={`${year}_forecast_female`}>
-                                Female
-                            </th>
-                            <th key={`${year}_forecast_disability`}>
-                                Disability
-                            </th>
-                            <th key={`${year}_forecast_total`}>
-                                Total
-                            </th>
-                            <th key={`${year}_achieved_male`}>
-                                Male
-                            </th>
-                            <th key={`${year}_achieved_female`}>
-                                Female
-                            </th>
-                            <th key={`${year}_achieved_disability`}>
-                                Disability
-                            </th>
-                            <th key={`${year}_achieved_total`}>
-                                Total
-                            </th>
-                        </>
-                    ))}
-                </tr>
-                {outputListResponse?.results.map(item => (
-                    <tr key={item.id}>
-                        <td key="indicator">
-                            {item.indicator}
-                        </td>
+                        ))}
+                    </tr>
+                    <tr>
                         {years.map(year => (
                             <>
-                                <td key={`${year}_forecast_male`}>
-                                    <Numeral
-                                        value={item[`maleForecast_${year}` as numericKeys]}
-                                        normalize
-                                    />
-                                </td>
-                                <td key={`${year}_forecast_female`}>
-                                    <Numeral
-                                        value={item[`femaleForecast_${year}` as numericKeys]}
-                                        normalize
-                                    />
-                                </td>
-                                <td key={`${year}_forecast_disability`}>
-                                    <Numeral
-                                        value={item[`disabilityForecast_${year}` as numericKeys]}
-                                        normalize
-                                    />
-                                </td>
-                                <td key={`${year}_forecast_total`}>
-                                    <Numeral
-                                        value={item[`totalForecast_${year}` as numericKeys]}
-                                        normalize
-                                    />
-                                </td>
-                                <td key={`${year}_achieved_male`}>
-                                    <Numeral
-                                        value={item[`maleAchieved_${year}` as numericKeys]}
-                                        normalize
-                                    />
-                                </td>
-                                <td key={`${year}_achieved_female`}>
-                                    <Numeral
-                                        value={item[`femaleAchieved_${year}` as numericKeys]}
-                                        normalize
-                                    />
-                                </td>
-                                <td key={`${year}_achieved_disability`}>
-                                    <Numeral
-                                        value={item[`disabilityAchieved_${year}` as numericKeys]}
-                                        normalize
-                                    />
-                                </td>
-                                <td key={`${year}_achieved_total`}>
-                                    <Numeral
-                                        value={item[`totalAchieved_${year}` as numericKeys]}
-                                        normalize
-                                    />
-                                </td>
+                                <th
+                                    key={`${year}_forecast`}
+                                    colSpan={4}
+                                >
+                                    Forecast
+                                </th>
+                                <th
+                                    key={`${year}_achieved`}
+                                    colSpan={4}
+                                >
+                                    Achieved
+                                </th>
                             </>
                         ))}
                     </tr>
-                ))}
-            </table>
+                    <tr>
+                        {years.map(year => (
+                            <>
+                                <th key={`${year}_forecast_male`}>
+                                    Male
+                                </th>
+                                <th key={`${year}_forecast_female`}>
+                                    Female
+                                </th>
+                                <th key={`${year}_forecast_disability`}>
+                                    Disability
+                                </th>
+                                <th key={`${year}_forecast_total`}>
+                                    Total
+                                </th>
+                                <th key={`${year}_achieved_male`}>
+                                    Male
+                                </th>
+                                <th key={`${year}_achieved_female`}>
+                                    Female
+                                </th>
+                                <th key={`${year}_achieved_disability`}>
+                                    Disability
+                                </th>
+                                <th key={`${year}_achieved_total`}>
+                                    Total
+                                </th>
+                            </>
+                        ))}
+                    </tr>
+                    {outputListResponse?.results.map(item => (
+                        <tr
+                            className={styles.dataRow}
+                            key={item.id}
+                        >
+                            <td key="indicator">
+                                {item.indicator}
+                            </td>
+                            {years.map(year => (
+                                <>
+                                    <td key={`${year}_forecast_male`}>
+                                        <Numeral
+                                            value={item[`maleForecast_${year}` as numericKeys]}
+                                            normalize
+                                        />
+                                    </td>
+                                    <td key={`${year}_forecast_female`}>
+                                        <Numeral
+                                            value={item[`femaleForecast_${year}` as numericKeys]}
+                                            normalize
+                                        />
+                                    </td>
+                                    <td key={`${year}_forecast_disability`}>
+                                        <Numeral
+                                            value={item[`disabilityForecast_${year}` as numericKeys]}
+                                            normalize
+                                        />
+                                    </td>
+                                    <td key={`${year}_forecast_total`}>
+                                        <Numeral
+                                            value={item[`totalForecast_${year}` as numericKeys]}
+                                            normalize
+                                        />
+                                    </td>
+                                    <td key={`${year}_achieved_male`}>
+                                        <Numeral
+                                            value={item[`maleAchieved_${year}` as numericKeys]}
+                                            normalize
+                                        />
+                                    </td>
+                                    <td key={`${year}_achieved_female`}>
+                                        <Numeral
+                                            value={item[`femaleAchieved_${year}` as numericKeys]}
+                                            normalize
+                                        />
+                                    </td>
+                                    <td key={`${year}_achieved_disability`}>
+                                        <Numeral
+                                            value={item[`disabilityAchieved_${year}` as numericKeys]}
+                                            normalize
+                                        />
+                                    </td>
+                                    <td key={`${year}_achieved_total`}>
+                                        <Numeral
+                                            value={item[`totalAchieved_${year}` as numericKeys]}
+                                            normalize
+                                        />
+                                    </td>
+                                </>
+                            ))}
+                        </tr>
+                    ))}
+                </table>
+            </div>
         </div>
     );
 }
