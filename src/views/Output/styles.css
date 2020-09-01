@@ -1,5 +1,6 @@
 .output {
     display: flex;
+    position: relative;
     flex-direction: column;
     flex-grow: 1;
     background-color: var(--color-foreground);
@@ -21,7 +22,6 @@
     }
 
     .table-container {
-        padding: var(--spacing-small);
         overflow: auto;
 
         .table {
@@ -44,11 +44,12 @@
                 th {
                     border-bottom: var(--width-separator-thin) solid var(--color-separator);
                     border-left: var(--width-separator-thin) solid var(--color-separator);
-                    padding: var(--spacing-extra-small) var(--spacing-small);
+                    padding: var(--spacing-small) var(--spacing-small);
                 }
                 td {
                     border-bottom: var(--width-separator-thin) solid var(--color-separator);
                     border-left: var(--width-separator-thin) solid var(--color-separator);
+                    padding: var(--spacing-small) var(--spacing-small);
                 }
             }
         }
