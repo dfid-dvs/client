@@ -217,7 +217,7 @@ module.exports = (env) => {
                 runtimeCaching: [
                     {
                         urlPattern: /assets/,
-                        handler: 'cacheFirst',
+                        handler: 'CacheFirst',
                     },
                 ],
             }),

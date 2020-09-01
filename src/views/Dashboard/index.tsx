@@ -150,8 +150,8 @@ const staticFiveWOptions: FiveWOption[] = [
 ];
 
 const hospitalTypeOptions: HospitalType[] = [
-    { key: 'deshosp', label: 'Covid Designated' },
-    { key: 'allcovidhfs', label: 'All' },
+    { key: 'deshosp', label: 'Level Hospitals' },
+    { key: 'allcovidhfs', label: 'All Covid Clinics' },
 ];
 
 const seasonOptions: Season[] = [

@@ -160,7 +160,7 @@ function HospitalTooltip(props: HospitalTooltipProps) {
             tooltipOptions={tooltipOptions}
             trackPointer
         >
-            <>
+            <div className={styles.hospitalTooltip}>
                 <h3>
                     {name}
                 </h3>
@@ -176,7 +176,7 @@ function HospitalTooltip(props: HospitalTooltipProps) {
                     label="Contact"
                     value={contactNumber}
                 />
-            </>
+            </div>
         </MapTooltip>
     );
 }
