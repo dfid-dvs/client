@@ -160,7 +160,7 @@
         "abort-controller": "^3.0.0",
         "core-js": "3",
         "file-saver": "^2.0.2",
-        "immer": "^6.0.2",
+        "immer": "^8.0.1",
         "mapbox-gl": "^1.9.0",
         "memoize-one": "^5.0.5",
         "react": "^0.0.0-experimental-e5d06e34b",
