@@ -23,6 +23,7 @@
         flex-grow: 1;
         margin-bottom: var(--spacing-medium);
         padding: var(--spacing-medium);
+        width: 75%;
         overflow: auto;
     }
 

@@ -9,6 +9,7 @@ import {
 } from '#components/Tabs';
 
 import AboutPage from './AboutPage';
+import FaqPage from './FaqPage';
 import styles from './styles.css';
 
 interface AboutProps {
@@ -20,7 +21,7 @@ export default function About(props: AboutProps) {
         className,
     } = props;
 
-    const [activeTab, setActiveTab] = useState<'about' | 'faqs' | 'termsandconditions' | 'feedback'>('about');
+    const [activeTab, setActiveTab] = useState<'about' | 'faqs' | 'termsandconditions' | 'feedback'>('faqs');
 
     return (
         <div className={_cs(styles.aboutTabs, className)}>
@@ -52,7 +53,7 @@ export default function About(props: AboutProps) {
                     name="faqs"
                     className={styles.faq}
                 >
-                    FAQS
+                    <FaqPage />
                 </TabPanel>
                 <TabPanel
                     name="termsandconditions"
