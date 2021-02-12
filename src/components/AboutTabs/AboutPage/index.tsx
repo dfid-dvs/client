@@ -1,30 +1,14 @@
 import React from 'react';
 import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
 
-import styles from './styles.css';
+import useRequest from '#hooks/useRequest';
+import { apiEndPoint } from '#utils/constants';
 
-const stats = [
-    {
-        title: 'Allocated Budget (£)',
-        value: '362.4M',
-    },
-    {
-        title: 'Programs',
-        value: '16',
-    },
-    {
-        title: 'Components',
-        value: '55',
-    },
-    {
-        title: 'Partners (1st tier)',
-        value: '42',
-    },
-    {
-        title: 'Sectors',
-        value: '12',
-    },
-];
+import LoadingAnimation from '#components/LoadingAnimation';
+import Backdrop from '#components/Backdrop';
+
+import StatItem from './StatItem';
+import styles from './styles.css';
 
 const listedData = [
     'Development Tracker to explore international development projects funded by the UK government by country and sector',
@@ -57,7 +41,22 @@ const articleTitle = 'Following successful elections in late 2017';
 // eslint-disable-next-line max-len
 const articleDescription = 'Nepal has the potential for higher, inclusive economic growth through the development of hydro-electric power and through sectors like agro-processing, light manufacturing and tourism, which present significant opportunities for UK business, and trade with India and China. This potential is hampered by complex investment rules and processes, costly and unreliable energy supply, poor transport infrastructure, political instability, weak institutions, poor governance and gender disparity. Nepal is highly vulnerable to natural disasters and climate change which can push populations back into poverty, destroy infrastructure and undermine growth. The 2015 earthquakes caused extensive damage and Nepal remains at high risk of a catastrophic earthquake.';
 
+interface Summary {
+    allocatedBudget: number;
+    program: number;
+    partner: number;
+    component: number;
+    sector: number;
+}
+
 export default function AboutPage() {
+    const summaryUrl = `${apiEndPoint}/core/summary/`;
+
+    const [
+        summaryPending,
+        summary,
+    ] = useRequest<Summary>(summaryUrl, 'fivew-summary');
+
     return (
         <div className={styles.container}>
             <div className={styles.firstSection}>
@@ -69,19 +68,31 @@ export default function AboutPage() {
                 </div>
             </div>
             <div className={styles.stats}>
-                {stats.map(stat => (
-                    <div
-                        key={stat.title}
-                        className={styles.statItem}
-                    >
-                        <div className={styles.value}>
-                            {stat.value}
-                        </div>
-                        <div className={styles.title}>
-                            {stat.title}
-                        </div>
-                    </div>
-                ))}
+                {summaryPending && (
+                    <Backdrop>
+                        <LoadingAnimation />
+                    </Backdrop>
+                )}
+                <StatItem
+                    value={summary?.allocatedBudget}
+                    label="Allocated Budget (£)"
+                />
+                <StatItem
+                    value={summary?.program}
+                    label="Programs"
+                />
+                <StatItem
+                    value={summary?.component}
+                    label="Components"
+                />
+                <StatItem
+                    value={summary?.partner}
+                    label="Partners (1st tier)"
+                />
+                <StatItem
+                    value={summary?.sector}
+                    label="Sectors"
+                />
             </div>
             <div className={styles.details}>
                 <div className={styles.left}>

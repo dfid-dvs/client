@@ -28,21 +28,6 @@
         background: var(--color-background);
         padding: calc(3 * var(--spacing-medium)) calc(10 * var(--spacing-medium));
         width: 100%;
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            flex-direction: column;
-
-            .value {
-                font-size: var(--font-size-ultra-large);
-                font-weight: var(--bold);
-            }
-        
-            .title {
-                font-size: var(--font-size-large);
-            }
-        }
     }
 
     .details {
