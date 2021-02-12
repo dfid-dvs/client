@@ -5,47 +5,5 @@
     flex-direction: column;
     flex-grow: 1;
     background-color: var(--color-foreground);
-    padding: var(--spacing-extra-large);
-    overflow: auto;
-
-    .tab-list {
-        display: flex;
-
-        >* {
-            flex-grow: 1;
-            padding: var(--spacing-medium);
-        }
-
-        .errored {
-            color: var(--color-danger);
-        }
-    }
-
-    .about {
-        flex-grow: 1;
-        margin-bottom: var(--spacing-medium);
-        padding: var(--spacing-medium);
-        overflow: auto;
-    }
-
-    .faq {
-        flex-grow: 1;
-        margin-bottom: var(--spacing-medium);
-        padding: var(--spacing-medium);
-        overflow: auto;
-    }
-
-    .terms-and-conditions {
-        flex-grow: 1;
-        margin-bottom: var(--spacing-medium);
-        padding: var(--spacing-medium);
-        overflow: auto;
-    }
-
-    .feedback {
-        flex-grow: 1;
-        margin-bottom: var(--spacing-medium);
-        padding: var(--spacing-medium);
-        overflow: auto;
-    }
+    padding-top: var(--spacing-extra-large);
 }
