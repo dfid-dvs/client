@@ -10,6 +10,8 @@ import {
 
 import AboutPage from './AboutPage';
 import FaqPage from './FaqPage';
+import Footer from './Footer';
+
 import styles from './styles.css';
 
 interface AboutProps {
@@ -68,6 +70,7 @@ export default function About(props: AboutProps) {
                     Feedback
                 </TabPanel>
             </Tabs>
+            <Footer className={styles.footer} />
         </div>
     );
 }
