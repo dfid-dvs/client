@@ -11,6 +11,7 @@ import {
 import AboutPage from './AboutPage';
 import FaqPage from './FaqPage';
 import Footer from './Footer';
+import TermsAndConditionsPage from './TermsAndConditionsPage';
 
 import styles from './styles.css';
 
@@ -23,7 +24,7 @@ export default function About(props: AboutProps) {
         className,
     } = props;
 
-    const [activeTab, setActiveTab] = useState<'about' | 'faqs' | 'termsandconditions' | 'feedback'>('faqs');
+    const [activeTab, setActiveTab] = useState<'about' | 'faqs' | 'termsandconditions' | 'feedback'>('termsandconditions');
 
     return (
         <div className={_cs(styles.aboutTabs, className)}>
@@ -61,7 +62,7 @@ export default function About(props: AboutProps) {
                     name="termsandconditions"
                     className={styles.termsAndConditions}
                 >
-                    Terms & Conditions
+                    <TermsAndConditionsPage />
                 </TabPanel>
                 <TabPanel
                     name="feedback"
