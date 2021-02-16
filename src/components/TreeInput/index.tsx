@@ -323,6 +323,7 @@ export interface TreeProps<T, K extends OptionKey> {
     readOnly: boolean;
     showHintAndError: boolean;
     showLabel: boolean;
+    showClearButton: boolean;
     title?: string;
     value: K[];
 
@@ -345,6 +346,7 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
         // labelRightComponentClassName,
         showHintAndError,
         showLabel,
+        showClearButton,
         title,
         keySelector,
         parentKeySelector,
@@ -410,16 +412,18 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
                         {label}
                     </Label>
                 )}
-                <Button
-                    onClick={handleClear}
-                    variant="danger"
-                    className={styles.button}
-                    transparent
-                    title="Clear all"
-                    disabled={!value || value.length <= 0}
-                >
-                    <IoMdClose />
-                </Button>
+                {showClearButton && (
+                    <Button
+                        onClick={handleClear}
+                        variant="danger"
+                        className={styles.button}
+                        transparent
+                        title="Clear all"
+                        disabled={!value || value.length <= 0}
+                    >
+                        <IoMdClose />
+                    </Button>
+                )}
             </div>
             <TreeNodeList
                 className={styles.nodeList}
@@ -454,6 +458,7 @@ TreeInput.defaultProps = {
     readOnly: false,
     showHintAndError: true,
     showLabel: true,
+    showClearButton: true,
     value: [],
     options: [],
     defaultCollapseLevel: 1,

@@ -43,18 +43,20 @@
     }
 
     --width-config-container: 320px;
+    --width-collapsed-config-container: 80px;
 
     .map-style-config-container {
         display: flex;
         position: absolute;
-        bottom: var(--spacing-medium);
-        left: var(--spacing-medium);
+        /* bottom: var(--spacing-medium); */
+        /* left: var(--spacing-medium); */
         flex-direction: column;
         transition: .2s left ease-in-out;
         border: var(--width-separator-thin) solid var(--color-separator);
         background-color: var(--color-foreground);
         width: var(--width-config-container);
-        max-height: calc(100% - 3 * var(--spacing-medium) - 1em - 3 * var(--spacing-small));
+        height: 100%;
+        /* max-height: calc(100% - 3 * var(--spacing-medium) - 1em - 3 * var(--spacing-small)); */
 
         .toggle-visibility-button {
             position: absolute;
@@ -71,6 +73,10 @@
 
         &.hidden {
             left: calc(-1 * var(--width-config-container));
+        }
+
+        &.filter-minimized {
+            width: var(--width-collapsed-config-container);
         }
 
         .filters {
@@ -114,6 +120,10 @@
             padding: var(--spacing-small);
             font-size: var(--font-size-small);
         }
+
+        .filters-panel {
+            height: 100%;
+        }
     }
 
     --width-max-legend-container: 512px;
@@ -128,15 +138,20 @@
         max-width: var(--width-max-legend-container);
         max-height: var(--height-max-legend-container);
 
-        &.hidden {
-            left: 0;
+        &.filter-minimized {
+            left: calc(var(--width-collapsed-config-container) + var(--spacing-medium));
         }
 
         .legend {
+            flex-direction: row;
             margin-left: var(--spacing-medium);
             border: var(--width-separator-thin) solid var(--color-separator);
             background-color: var(--color-foreground);
             padding: var(--spacing-large);
+        }
+
+        .legend-element {
+            flex-direction: row;
         }
     }
 

@@ -72,6 +72,7 @@ import Sidepanel from './Sidepanel';
 
 import useMapStateForFiveW from './useMapStateForFiveW';
 import useMapStateForIndicator from './useMapStateForIndicator';
+import FiltersPanel from './FiltersPanel';
 
 import {
     FiveWOptionKey,
@@ -269,13 +270,12 @@ const Dashboard = (props: Props) => {
     ] = useState(false);
     // Show/hide filters
     const [
-        isFilterHidden,
-        setFilterHidden,
-    ] = React.useState(false);
-
-    const handleToggleFilterVisibilityButtonClick = React.useCallback(() => {
-        setFilterHidden(prevValue => !prevValue);
-    }, [setFilterHidden]);
+        isFilterMinimized,
+        setFilterMinimized,
+    ] = useState(false);
+    const handleToggleFilterButtonClick = React.useCallback(() => {
+        setFilterMinimized(prevValue => !prevValue);
+    }, [setFilterMinimized]);
 
     const covidFields = covidMode ? `${apiEndPoint}/core/covid-fields/` : undefined;
     const [
@@ -744,16 +744,20 @@ const Dashboard = (props: Props) => {
             <div
                 className={_cs(
                     styles.mapStyleConfigContainer,
-                    isFilterHidden && styles.hidden,
+                    isFilterMinimized && styles.filterMinimized,
                 )}
             >
                 <Button
                     className={styles.toggleVisibilityButton}
-                    onClick={handleToggleFilterVisibilityButtonClick}
-                    icons={isFilterHidden ? <IoIosArrowForward /> : <IoIosArrowBack />}
+                    onClick={handleToggleFilterButtonClick}
+                    icons={isFilterMinimized ? <IoIosArrowForward /> : <IoIosArrowBack />}
                     transparent
                 />
-                <div className={styles.filters}>
+                <FiltersPanel
+                    className={styles.filtersPanel}
+                    isMinimized={isFilterMinimized}
+                />
+                {/* <div className={styles.filters}>
                     <RegionSelector
                         className={styles.regionSelector}
                         onRegionLevelChange={setRegionLevel}
@@ -918,11 +922,12 @@ const Dashboard = (props: Props) => {
                         optionLabelSelector={layerLabelSelector}
                     />
                 </div>
+             */}
             </div>
             <div
                 className={_cs(
                     styles.legendContainer,
-                    isFilterHidden && styles.hidden,
+                    isFilterMinimized && styles.filterMinimized,
                 )}
             >
                 {choroplethSelected && (
