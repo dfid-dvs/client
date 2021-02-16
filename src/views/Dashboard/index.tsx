@@ -667,7 +667,7 @@ const Dashboard = (props: Props) => {
             printMode && styles.printMode,
         )}
         >
-            <SubNavbar>
+            {/* <SubNavbar>
                 <div className={styles.subNavbar}>
                     <ProgramSelector className={styles.programSelector} />
                     <div className={styles.actions}>
@@ -679,7 +679,7 @@ const Dashboard = (props: Props) => {
                         />
                     </div>
                 </div>
-            </SubNavbar>
+            </SubNavbar> */}
             <PrintDetailsBar
                 show={printMode}
                 title={titleForPrintBar}
@@ -757,7 +757,7 @@ const Dashboard = (props: Props) => {
                     className={styles.filtersPanel}
                     isMinimized={isFilterMinimized}
                 />
-                {/* <div className={styles.filters}>
+                <div className={styles.filters}>
                     <RegionSelector
                         className={styles.regionSelector}
                         onRegionLevelChange={setRegionLevel}
@@ -922,7 +922,6 @@ const Dashboard = (props: Props) => {
                         optionLabelSelector={layerLabelSelector}
                     />
                 </div>
-             */}
             </div>
             <div
                 className={_cs(

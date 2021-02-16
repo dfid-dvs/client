@@ -150,6 +150,26 @@ function ProgramSelectors(props: Props) {
         subMarkerListResponse,
     ] = useRequest<MultiResponse<SubMarker>>(subMarkerGetRequest, 'sub-marker-list');
 
+    const [
+        programSearchText,
+        setProgramSearchText,
+    ] = useState<string>();
+
+    const [
+        partnerSearchText,
+        setPartnerSearchText,
+    ] = useState<string>();
+
+    const [
+        sectorSearchText,
+        setSectorSearchText,
+    ] = useState<string>();
+
+    const [
+        markerSearchText,
+        setMarkerSearchText,
+    ] = useState<string>();
+
     const partnerOptions: TreeItem[] | undefined = useMemo(
         () => {
             const partnerList = programListResponse?.results
@@ -158,7 +178,7 @@ function ProgramSelectors(props: Props) {
                 .map(item => item.id);
             const partnerSet = new Set(partnerList);
 
-            return partnerListResponse?.results
+            const mappedPartnerList = partnerListResponse?.results
                 .map(({ id, name }) => ({
                     key: String(id),
                     parentKey: undefined,
@@ -167,22 +187,36 @@ function ProgramSelectors(props: Props) {
                     id,
                 }))
                 .filter(item => partnerSet.has(item.id));
+
+            if (!partnerSearchText) {
+                return mappedPartnerList;
+            }
+
+            const searchText = partnerSearchText.toLowerCase();
+            return mappedPartnerList?.filter(item => item.name.toLowerCase().includes(searchText));
         },
-        [partnerListResponse?.results, programListResponse?.results],
+        [partnerListResponse?.results, programListResponse?.results, partnerSearchText],
     );
 
     const sectorOptions: TreeItem[] | undefined = useMemo(
-        () => (
-            sectorListResponse?.results
+        () => {
+            const mappedSectorList = sectorListResponse?.results
                 .map(({ id, name }) => ({
                     key: `sector-${id}`,
                     parentKey: undefined,
                     parentId: undefined,
                     name,
                     id,
-                }))
-        ),
-        [sectorListResponse?.results],
+                }));
+
+            if (!sectorSearchText) {
+                return mappedSectorList;
+            }
+
+            const searchText = sectorSearchText.toLowerCase();
+            return mappedSectorList?.filter(item => item.name.toLowerCase().includes(searchText));
+        },
+        [sectorListResponse?.results, sectorSearchText],
     );
     const subSectorOptions: TreeItem[] | undefined = useMemo(
         () => (
@@ -204,17 +238,23 @@ function ProgramSelectors(props: Props) {
     );
 
     const markerOptions: TreeItem[] | undefined = useMemo(
-        () => (
-            markerListResponse?.results
+        () => {
+            const mappedMarkerList = markerListResponse?.results
                 .map(({ id, name }) => ({
                     key: `marker-${id}`,
                     parentKey: undefined,
                     parentId: undefined,
                     name,
                     id,
-                }))
-        ),
-        [markerListResponse?.results],
+                }));
+
+            if (!markerSearchText) {
+                return mappedMarkerList;
+            }
+            const searchText = markerSearchText.toLowerCase();
+            return mappedMarkerList?.filter(item => item.name.toLowerCase().includes(searchText));
+        },
+        [markerListResponse?.results, markerSearchText],
     );
     const subMarkerOptions: TreeItem[] | undefined = useMemo(
         () => (
@@ -234,13 +274,22 @@ function ProgramSelectors(props: Props) {
         [markerOptions, subMarkerOptions],
     );
 
-    const filteredPrograms = useMemo(
+    const filteredPrograms: TreeItem[] | undefined = useMemo(
         () => {
             if (!programListResponse) {
                 return undefined;
             }
             const { results: programsList } = programListResponse;
-            const programs = programsList.map(p => ({ ...p, key: String(p.id) }));
+            const searchedProgram = programSearchText ? programsList.filter(
+                item => item.name.toLowerCase().includes(programSearchText.toLowerCase()),
+            ) : programsList;
+
+            const programs = searchedProgram.map(p => ({
+                ...p,
+                key: String(p.id),
+                parentKey: undefined,
+                parentId: undefined,
+            }));
             if (
                 (!selectedMarker || selectedMarker.length <= 0)
                 && (!selectedSector || selectedSector.length <= 0)
@@ -321,6 +370,7 @@ function ProgramSelectors(props: Props) {
             selectedSector,
             selectedPartner,
             programListResponse,
+            programSearchText,
         ],
     );
 
@@ -340,8 +390,6 @@ function ProgramSelectors(props: Props) {
 
     // eslint-disable-next-line max-len
     const loading = programListPending || partnerListPending || markerListPending || subMarkerListPending || sectorListPending || subSectorListPending;
-    console.log(filteredPrograms);
-    console.log('po', partnerOptions);
 
     return (
         <div className={_cs(className, styles.programSelector)}>
@@ -350,7 +398,7 @@ function ProgramSelectors(props: Props) {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            // FIXME : options, value, setSelectedValue type mismatch
+            {/* FIXME : options, value, setSelectedValue type mismatch */}
             <SelectorItem
                 name="programs"
                 className={styles.programTree}
@@ -361,8 +409,9 @@ function ProgramSelectors(props: Props) {
                 setExpandedFilters={setExpanedFilters}
                 isMinimized={isMinimized}
                 icon={<IoIosDocument />}
+                searchText={programSearchText}
+                setSearchText={setProgramSearchText}
             />
-
             <SelectorItem
                 name="partners"
                 className={styles.partnerTree}
@@ -373,8 +422,9 @@ function ProgramSelectors(props: Props) {
                 setExpandedFilters={setExpanedFilters}
                 isMinimized={isMinimized}
                 icon={<FaRegBuilding />}
+                searchText={partnerSearchText}
+                setSearchText={setPartnerSearchText}
             />
-
             <SelectorItem
                 name="sectors"
                 className={styles.sectorTree}
@@ -385,8 +435,9 @@ function ProgramSelectors(props: Props) {
                 setExpandedFilters={setExpanedFilters}
                 isMinimized={isMinimized}
                 icon={<FaShapes />}
+                searchText={sectorSearchText}
+                setSearchText={setSectorSearchText}
             />
-
             <SelectorItem
                 name="markers"
                 className={styles.markerTree}
@@ -398,6 +449,8 @@ function ProgramSelectors(props: Props) {
                 isMinimized={isMinimized}
                 collapseLevel={1}
                 icon={<IoMdPeople />}
+                searchText={markerSearchText}
+                setSearchText={setMarkerSearchText}
             />
         </div>
     );

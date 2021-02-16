@@ -1,10 +1,11 @@
 import React, { useCallback } from 'react';
-import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle, IoIosDocument } from 'react-icons/io';
+import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle, IoIosDocument, IoIosSearch } from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
 
 import TreeInput from '#components/TreeInput';
 
 import styles from './styles.css';
+import TextInput from '#components/TextInput';
 
 interface TreeItem {
     key: string;
@@ -30,6 +31,8 @@ interface SelectorItemProps {
     setExpandedFilters: React.Dispatch<React.SetStateAction<ExpanedFilter[]>>;
     isMinimized?: boolean;
     icon?: JSX.Element;
+    searchText?: string;
+    setSearchText?: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 export default function SelectorItem(props: SelectorItemProps) {
     const {
@@ -43,6 +46,8 @@ export default function SelectorItem(props: SelectorItemProps) {
         setExpandedFilters,
         isMinimized,
         icon,
+        searchText,
+        setSearchText,
     } = props;
 
     const isFilterExpanded = !!expandedFilters.find(e => e === name);
@@ -90,6 +95,13 @@ export default function SelectorItem(props: SelectorItemProps) {
                     {name}
                 </div>
             </div>
+            <TextInput
+                placeholder="Search"
+                value={searchText}
+                onChange={setSearchText}
+                autoFocus
+                icons={<IoIosSearch />}
+            />
             {isFilterExpanded && (
                 <TreeInput
                     className={_cs(className, styles.treeInput)}
