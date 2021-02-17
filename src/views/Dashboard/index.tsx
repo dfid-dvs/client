@@ -9,6 +9,7 @@ import {
     IoIosArrowForward,
     IoIosArrowBack,
 } from 'react-icons/io';
+import { MdFilterList } from 'react-icons/md';
 
 import MapTooltip from '#remap/MapTooltip';
 
@@ -741,6 +742,103 @@ const Dashboard = (props: Props) => {
                 printMode={printMode}
                 onPrintModeChange={setPrintMode}
             />
+            <div className={styles.filtersByRegion}>
+                <Button
+                    className={styles.button}
+                    icons={<MdFilterList />}
+                >
+                    Filters
+                </Button>
+                <RegionSelector
+                    className={styles.regionSelectorContainer}
+                    onRegionLevelChange={setRegionLevel}
+                    regionLevel={regionLevel}
+                    searchHidden
+                />
+            </div>
+            <div className={styles.filtersByMap}>
+                <Button
+                    className={styles.button}
+                >
+                    Map Options
+                </Button>
+                <div className={styles.mapSelectorContainer}>
+                    <SelectInput
+                        placeholder="DFID Data"
+                        className={styles.inputItem}
+                        options={fiveWOptions}
+                        onChange={handleFiveWOptionChange}
+                        value={selectedFiveWOption}
+                        optionLabelSelector={fiveWLabelSelector}
+                        groupKeySelector={covidMode ? fiveWGroupKeySelector : undefined}
+                        optionKeySelector={fiveWKeySelector}
+                        pending={covidFieldsPending}
+                    />
+                    {selectedFiveWOption && !isFiveWOptionKey(selectedFiveWOption) && (
+                        <SelectInput
+                            label="DFID Data Options"
+                            value={selectedFiveWSubOption}
+                            onChange={setFiveWSubOption}
+                            className={styles.inputItem}
+                            optionKeySelector={item => item}
+                            optionLabelSelector={item => item}
+                            nonClearable
+                            options={(
+                                selectedFiveWOption === 'kathmandu_activity'
+                                    ? covidFieldsResponse?.kathmanduActivity
+                                    : covidFieldsResponse?.other
+                            )}
+                        />
+                    )}
+                    <SelectInput
+                        // label="Indicator"
+                        placeholder="Indicator"
+                        className={styles.inputItem}
+                        disabled={indicatorListPending}
+                        options={indicatorList}
+                        onChange={setSelectedIndicator}
+                        value={validSelectedIndicator}
+                        optionLabelSelector={indicatorLabelSelector}
+                        optionKeySelector={indicatorKeySelector}
+                        groupKeySelector={indicatorGroupKeySelector}
+                        pending={indicatorListPending}
+                    />
+                    {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
+                        <div className={styles.abstract}>
+                            { selectedIndicatorDetails.abstract }
+                        </div>
+                    )}
+                    <ToggleButton
+                        label="Toggle Choropleth/Bubble"
+                        className={styles.inputItem}
+                        value={mapStyleInverted}
+                        onChange={setMapStyleInverted}
+                    />
+                    <div className={styles.separator} />
+                    <MultiSelectInput
+                        // label="Layers"
+                        placeholder="Layers"
+                        className={styles.inputItem}
+                        disabled={mapLayerListPending}
+                        options={vectorLayers}
+                        onChange={setSelectedVectorLayers}
+                        value={selectedVectorLayers}
+                        optionKeySelector={layerKeySelector}
+                        optionLabelSelector={layerLabelSelector}
+                    />
+                    <SelectInput
+                        // label="Background Layer"
+                        placeholder="Background Layer"
+                        className={styles.inputItem}
+                        disabled={mapLayerListPending}
+                        options={rasterLayers}
+                        onChange={setSelectedRasterLayer}
+                        value={selectedRasterLayer}
+                        optionKeySelector={layerKeySelector}
+                        optionLabelSelector={layerLabelSelector}
+                    />
+                </div>
+            </div>
             <div
                 className={_cs(
                     styles.mapStyleConfigContainer,
@@ -757,13 +855,7 @@ const Dashboard = (props: Props) => {
                     className={styles.filtersPanel}
                     isMinimized={isFilterMinimized}
                 />
-                <div className={styles.filters}>
-                    <RegionSelector
-                        className={styles.regionSelector}
-                        onRegionLevelChange={setRegionLevel}
-                        regionLevel={regionLevel}
-                        searchHidden
-                    />
+                {/* <div className={styles.filters}>
                     <div className={styles.separator} />
                     {covidMode && (
                         <>
@@ -921,7 +1013,7 @@ const Dashboard = (props: Props) => {
                         optionKeySelector={layerKeySelector}
                         optionLabelSelector={layerLabelSelector}
                     />
-                </div>
+                </div> */}
             </div>
             <div
                 className={_cs(

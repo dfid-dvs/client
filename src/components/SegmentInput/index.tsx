@@ -21,6 +21,7 @@ interface Props<T, V> {
     disabled?: boolean;
     hideLabel?: boolean;
     error?: string;
+    labelClassName?: string;
 }
 
 
@@ -39,6 +40,7 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
         name,
         disabled,
         error,
+        labelClassName,
     } = props;
 
     return (
@@ -47,6 +49,7 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
                 <Label
                     disabled={disabled}
                     error={!!error}
+                    className={_cs(styles.className, labelClassName)}
                 >
                     {label}
                 </Label>

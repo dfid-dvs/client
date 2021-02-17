@@ -110,18 +110,19 @@ function RegionSelector(props: Props) {
             {!selectionHidden && (
                 <SegmentInput
                     className={styles.regionLevelSelection}
-                    label="Admin Level"
+                    label="VIEW BY"
                     options={regionLevelOptionList}
                     optionKeySelector={regionLevelOptionListKeySelector}
                     optionLabelSelector={regionLevelOptionListLabelSelector}
                     value={regionLevel}
                     onChange={setRegionLevelSafely}
+                    labelClassName={styles.labelClassName}
                 />
             )}
-            {!searchHidden && setSelectedRegions && (
+            {((!searchHidden && setSelectedRegions) || 1) && (
                 <MultiSelectInput
                     pending={regionListPending}
-                    label={regionLevelLabel}
+                    // label={regionLevelLabel}
                     placeholder={`Select ${regionLevelLabel}`}
                     className={styles.regionSelectInput}
                     disabled={regionListPending}

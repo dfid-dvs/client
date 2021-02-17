@@ -45,6 +45,77 @@
     --width-config-container: 320px;
     --width-collapsed-config-container: 80px;
 
+    .filters-by-region {
+        display: flex;
+        position: absolute;
+        top: calc(6 * var(--spacing-medium));
+        left: calc(15 * var(--spacing-medium) + var(--width-config-container));
+        flex-direction: column;
+
+        .region-selector-container {
+            visibility: hidden;
+        }
+
+        .button {
+            background: var(--color-foreground);
+            width: calc(10 * var(--spacing-medium));
+        }
+
+        &:hover {
+            background-color: transparent;
+
+            .region-selector-container {
+                visibility: visible;
+                margin-top: var(--spacing-medium);
+                box-shadow: 2px 1px 6px 4px rgba(0, 0, 0, .1);
+                background: var(--color-foreground);
+                padding: var(--spacing-medium);
+            }
+        }
+    }
+
+    .filters-by-map {
+        display: flex;
+        position: absolute;
+        top: calc(6 * var(--spacing-medium));
+        right: calc(30 * var(--spacing-medium) + var(--width-config-container));
+        align-items: flex-end;
+        flex-direction: column;
+
+        .map-selector-container {
+            visibility: hidden;
+
+            .input-item {
+                margin: var(--spacing-medium) 0;
+                border-radius: 0;
+            }
+        }
+
+        .button {
+            background: var(--color-foreground);
+            width: calc(12 * var(--spacing-medium));
+        }
+
+        .separator {
+            margin: var(--spacing-large) calc(-1 * var(--spacing-large));
+            border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
+            width: calc(100% + var(--spacing-large) * 2);
+        }
+
+        &:hover {
+            background-color: transparent;
+
+            .map-selector-container {
+                visibility: visible;
+                margin-top: var(--spacing-medium);
+                box-shadow: 2px 1px 6px 4px rgba(0, 0, 0, .1);
+                background: var(--color-foreground);
+                padding: var(--spacing-large);
+                width: calc(12 * var(--spacing-extra-large));
+            }
+        }
+    }
+
     .map-style-config-container {
         display: flex;
         position: absolute;
@@ -89,11 +160,11 @@
             align-self: flex-start;
         }
 
-        .separator {
+        /* .separator {
             margin: var(--spacing-large) calc(-1 * var(--spacing-large));
             border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
             width: calc(100% + var(--spacing-large) * 2);
-        }
+        } */
 
         .hospitals {
             .button {
@@ -106,9 +177,9 @@
             color: var(--color-accent);
         }
 
-        .input-item {
+        /* .input-item {
             margin: var(--spacing-medium) 0;
-        }
+        } */
 
         .travel-time-input-container {
             display: flex;
