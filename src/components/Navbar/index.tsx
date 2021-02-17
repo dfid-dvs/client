@@ -8,9 +8,8 @@ import NavbarContext from '#components/NavbarContext';
 import Button from '#components/Button';
 import { NavbarContextProps } from '#types';
 
-import dfidLogo from '#resources/DfID-logo.svg';
+import * as dfidLogo from '#resources/dfid-crown.png';
 import styles from './styles.css';
-
 
 interface ChildProps {
     children: React.ReactNode;

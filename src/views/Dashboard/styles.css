@@ -19,7 +19,9 @@
 .dashboard {
     display: flex;
     position: relative;
+    align-self: center;
     flex-direction: column;
+    width: 88%;
 
     .main-content {
         display: flex;
@@ -142,7 +144,7 @@
         /* left: var(--spacing-medium); */
         flex-direction: column;
         transition: .2s left ease-in-out;
-        border: var(--width-separator-thin) solid var(--color-separator);
+        /* border: var(--width-separator-thin) solid var(--color-separator); */
         background-color: var(--color-foreground);
         width: var(--width-config-container);
         height: 100%;
