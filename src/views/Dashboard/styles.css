@@ -43,13 +43,13 @@
     }
 
     --width-config-container: 320px;
-    --width-collapsed-config-container: 80px;
+    --width-collapsed-config-container: 70px;
 
     .filters-by-region {
         display: flex;
         position: absolute;
         top: calc(6 * var(--spacing-medium));
-        left: calc(15 * var(--spacing-medium) + var(--width-config-container));
+        left: calc(3 * var(--spacing-medium) + var(--width-config-container));
         flex-direction: column;
 
         .region-selector-container {
@@ -72,13 +72,32 @@
                 padding: var(--spacing-medium);
             }
         }
+
+        &.filter-minimized {
+            left: calc(3 * var(--spacing-medium) + var(--width-collapsed-config-container));
+        }
+    }
+
+    .summary {
+        display: flex;
+        position: absolute;
+        top: calc(6 * var(--spacing-medium));
+        right: calc(2 * var(--spacing-extra-large));
+        flex-direction: column;
+        width: var(--width-config-container);
+        
+        .title {
+            margin-bottom: var(--spacing-medium);
+            font-size: var(--font-size-extra-large);
+            font-weight: var(--font-weight-bold);
+        }
     }
 
     .filters-by-map {
         display: flex;
         position: absolute;
         top: calc(6 * var(--spacing-medium));
-        right: calc(30 * var(--spacing-medium) + var(--width-config-container));
+        right: calc(8 * var(--spacing-medium) + var(--width-config-container));
         align-items: flex-end;
         flex-direction: column;
 

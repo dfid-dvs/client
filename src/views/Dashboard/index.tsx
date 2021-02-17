@@ -74,6 +74,7 @@ import Sidepanel from './Sidepanel';
 import useMapStateForFiveW from './useMapStateForFiveW';
 import useMapStateForIndicator from './useMapStateForIndicator';
 import FiltersPanel from './FiltersPanel';
+import Summary from './Summary';
 
 import {
     FiveWOptionKey,
@@ -731,18 +732,23 @@ const Dashboard = (props: Props) => {
                         />
                     )}
                 </IndicatorMap>
-                <Sidepanel
+                {/* <Sidepanel
                     className={styles.sidebar}
                     printMode={printMode}
-                />
+                /> */}
             </div>
-            <PrintButton
+            {/* <PrintButton
                 orientation="landscape"
                 className={styles.printModeButton}
                 printMode={printMode}
                 onPrintModeChange={setPrintMode}
-            />
-            <div className={styles.filtersByRegion}>
+            /> */}
+            <div
+                className={_cs(
+                    styles.filtersByRegion,
+                    isFilterMinimized && styles.filterMinimized,
+                )}
+            >
                 <Button
                     className={styles.button}
                     icons={<MdFilterList />}
@@ -838,6 +844,14 @@ const Dashboard = (props: Props) => {
                         optionLabelSelector={layerLabelSelector}
                     />
                 </div>
+            </div>
+            <div className={styles.summary}>
+                <div
+                    className={styles.title}
+                >
+                    Summary
+                </div>
+                <Summary />
             </div>
             <div
                 className={_cs(
