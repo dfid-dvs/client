@@ -21,7 +21,7 @@
     position: relative;
     align-self: center;
     flex-direction: column;
-    width: 88%;
+    width: 87%;
 
     .main-content {
         display: flex;
@@ -44,13 +44,13 @@
         }
     }
 
-    --width-config-container: 320px;
+    --width-config-container: 340px;
     --width-collapsed-config-container: 70px;
 
     .filters-by-region {
         display: flex;
         position: absolute;
-        top: calc(6 * var(--spacing-medium));
+        top: calc(1.5 * var(--spacing-medium));
         left: calc(3 * var(--spacing-medium) + var(--width-config-container));
         flex-direction: column;
 
@@ -83,7 +83,7 @@
     .summary {
         display: flex;
         position: absolute;
-        top: calc(6 * var(--spacing-medium));
+        top: calc(1.5 * var(--spacing-medium));
         right: calc(2 * var(--spacing-extra-large));
         flex-direction: column;
         width: var(--width-config-container);
@@ -98,7 +98,7 @@
     .filters-by-map {
         display: flex;
         position: absolute;
-        top: calc(6 * var(--spacing-medium));
+        top: calc(1.5 * var(--spacing-medium));
         right: calc(8 * var(--spacing-medium) + var(--width-config-container));
         align-items: flex-end;
         flex-direction: column;
@@ -145,7 +145,7 @@
         flex-direction: column;
         transition: .2s left ease-in-out;
         /* border: var(--width-separator-thin) solid var(--color-separator); */
-        background-color: var(--color-foreground);
+        background-color: var(--color-background);
         width: var(--width-config-container);
         height: 100%;
         /* max-height: calc(100% - 3 * var(--spacing-medium) - 1em - 3 * var(--spacing-small)); */

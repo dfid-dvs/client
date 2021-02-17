@@ -1,0 +1,9 @@
+.summary-container {
+    background: #ffffff;
+    padding: var(--spacing-small);
+
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+    }
+}

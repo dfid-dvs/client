@@ -1,0 +1,30 @@
+.summary-item {
+    padding: var(--spacing-medium) calc(var(--spacing-medium) - var(--spacing-extra-small));
+
+    .label {
+        margin-bottom: var(--spacing-extra-small);
+        padding: 0 var(--spacing-extra-small);
+        text-transform: uppercase;
+        letter-spacing: var(--spacing-super-small);
+        color: var(--color-link);
+        font-size: var(--font-size-medium);
+    }
+
+    .data-line {
+        display: flex;
+        align-items: center;
+        .value {
+            padding: 0 var(--spacing-extra-small);
+            width: 40%;
+            color: var(--color-text);
+            font-size: var(--font-size-large);
+            font-weight: var(--font-weight-bold);
+        }
+    
+        .line {
+            background-color: var(--color-shadow);
+            width: 60%;
+            height: var(--spacing-small);
+        }
+    }
+}

@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { IoIosArrowDropdownCircle, IoIosArrowDropupCircle, IoIosDocument, IoIosSearch } from 'react-icons/io';
+import { IoIosSearch, IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
 
 import TreeInput from '#components/TreeInput';
@@ -77,12 +77,12 @@ export default function SelectorItem(props: SelectorItemProps) {
         <div className={styles.selectorItem}>
             <div className={styles.heading}>
                 {isFilterExpanded ? (
-                    <IoIosArrowDropupCircle
+                    <IoMdArrowDropup
                         onClick={onCollapseFilter}
                         className={styles.collapseIcon}
                     />
                 ) : (
-                    <IoIosArrowDropdownCircle
+                    <IoMdArrowDropdown
                         onClick={onExpandFilter}
                         className={styles.collapseIcon}
                     />
@@ -95,13 +95,15 @@ export default function SelectorItem(props: SelectorItemProps) {
                     {name}
                 </div>
             </div>
-            <TextInput
-                placeholder="Search"
-                value={searchText}
-                onChange={setSearchText}
-                autoFocus
-                icons={<IoIosSearch />}
-            />
+            {isFilterExpanded && (
+                <TextInput
+                    placeholder="Search"
+                    value={searchText}
+                    onChange={setSearchText}
+                    autoFocus
+                    icons={<IoIosSearch className={styles.searchIcon} />}
+                />
+            )}
             {isFilterExpanded && (
                 <TreeInput
                     className={_cs(className, styles.treeInput)}
