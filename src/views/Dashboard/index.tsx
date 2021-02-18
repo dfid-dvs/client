@@ -87,6 +87,7 @@ import {
 } from './types';
 
 import styles from './styles.css';
+import ExploreData from './ExploreData';
 
 interface Region {
     name: string;
@@ -853,6 +854,7 @@ const Dashboard = (props: Props) => {
                 </div>
                 <Summary />
             </div>
+            <ExploreData className={styles.exploreData} />
             <div
                 className={_cs(
                     styles.mapStyleConfigContainer,
