@@ -1,0 +1,35 @@
+.qa-item {
+    display: flex;
+    flex-direction: column;
+
+    .value {
+        font-size: var(--font-size-ultra-large);
+        font-weight: var(--font-weight-bold);
+    }
+
+    .question-section {
+        display: flex;
+        align-items: center;
+        border-top: 1px solid var(--color-separator);
+        padding: calc(var(--spacing-small-medium) + var(--spacing-medium)) 0px;
+
+        .question {
+            width: 92%;
+            font-size: var(--font-size-large-medium);
+            font-weight: var(--font-weight-bold);
+        }
+        .icon {
+            width: 8%;
+            font-size: var(--font-size-large-medium);
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+
+    .answer {
+        padding-bottom: calc(var(--spacing-small-medium) + var(--spacing-medium));
+        font-size: var(--font-size-large-medium);
+    }
+}

@@ -37,6 +37,12 @@ const routeSettings: SomeRoute[] = [
         load: lazy(() => import('../../../views/Output')),
     },
     {
+        path: '/about/',
+        name: 'about',
+        title: 'About',
+        load: lazy(() => import('../../../views/About')),
+    },
+    {
         path: '/infographics/',
         name: 'infographics',
         title: 'Infographics',

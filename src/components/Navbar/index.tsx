@@ -76,6 +76,14 @@ const Navbar = (props: Props) => {
                     >
                         Output
                     </NavLink>
+                    <NavLink
+                        exact
+                        className={styles.link}
+                        activeClassName={styles.active}
+                        to="/about/"
+                    >
+                        About
+                    </NavLink>
                 </div>
                 <div
                     className={styles.filters}

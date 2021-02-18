@@ -1,0 +1,52 @@
+.about-tabs {
+    display: flex;
+    position: relative;
+    align-items: center;
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: var(--color-foreground);
+    padding-top: var(--spacing-extra-large);
+
+    .tab-list {
+        display: flex;
+
+        >* {
+            flex-grow: 1;
+            padding: var(--spacing-medium);
+        }
+
+        .errored {
+            color: var(--color-danger);
+        }
+    }
+
+    .about {
+        flex-grow: 1;
+        margin-bottom: var(--spacing-medium);
+        width: 85%;
+    }
+
+    .faq {
+        flex-grow: 1;
+        padding: var(--spacing-medium);
+        width: 75%;
+    }
+
+    .terms-and-conditions {
+        flex-grow: 1;
+        margin-bottom: var(--spacing-medium);
+        padding: var(--spacing-medium);
+        overflow: auto;
+    }
+
+    .feedback {
+        flex-grow: 1;
+        margin-bottom: var(--spacing-medium);
+        padding: var(--spacing-medium);
+        overflow: auto;
+    }
+
+    .footer {
+        padding: calc(2 * var(--spacing-large));
+    }
+}
