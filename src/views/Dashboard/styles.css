@@ -55,24 +55,16 @@
         flex-direction: column;
 
         .region-selector-container {
-            visibility: hidden;
+            visibility: visible;
+            margin-top: var(--spacing-medium);
+            box-shadow: 2px 1px 6px 4px rgba(0, 0, 0, .1);
+            background: var(--color-foreground);
+            padding: var(--spacing-medium);
         }
 
         .button {
             background: var(--color-foreground);
             width: calc(10 * var(--spacing-medium));
-        }
-
-        &:hover {
-            background-color: transparent;
-
-            .region-selector-container {
-                visibility: visible;
-                margin-top: var(--spacing-medium);
-                box-shadow: 2px 1px 6px 4px rgba(0, 0, 0, .1);
-                background: var(--color-foreground);
-                padding: var(--spacing-medium);
-            }
         }
 
         &.filter-minimized {

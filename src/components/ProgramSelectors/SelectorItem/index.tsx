@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { IoIosSearch, IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
 
@@ -50,7 +50,12 @@ export default function SelectorItem(props: SelectorItemProps) {
         setSearchText,
     } = props;
 
-    const isFilterExpanded = !!expandedFilters.find(e => e === name);
+    const isFilterExpanded = useMemo(
+        () => (
+            !!expandedFilters.find(e => e === name)
+        ),
+        [expandedFilters, name],
+    );
 
     const onExpandFilter = useCallback(() => {
         setExpandedFilters([...expandedFilters, name]);

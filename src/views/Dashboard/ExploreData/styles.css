@@ -23,7 +23,7 @@
             visibility: visible;
             background: var(--color-foreground);
             padding: var(--spacing-small) 0;
-            width: calc(7 * var(--spacing-extra-large));
+            width: 168px;
     
             .link {
                 padding: var(--spacing-small) var(--spacing-medium);

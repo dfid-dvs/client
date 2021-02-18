@@ -29,6 +29,7 @@ import RegionSelector from '#components/RegionSelector';
 import SelectInput from '#components/SelectInput';
 import MultiSelectInput from '#components/MultiSelectInput';
 import ToggleButton from '#components/ToggleButton';
+import Modal from '#components/Modal';
 
 import useRequest from '#hooks/useRequest';
 import useHash from '#hooks/useHash';
@@ -54,6 +55,7 @@ import {
     colorDomain,
     apiEndPoint,
 } from '#utils/constants';
+import useBasicToggle from '#hooks/useBasicToggle';
 
 import TravelTimeLayer, {
     DesignatedHospital,
@@ -663,6 +665,18 @@ const Dashboard = (props: Props) => {
         [selectedHospitalType],
     );
 
+    const [
+        regionFilterShown,
+        showRegionFilter,
+        hideRegionFilter,
+    ] = useBasicToggle();
+
+    const [
+        mapFilterShown,
+        showMapFilter,
+        hideMapFilter,
+    ] = useBasicToggle();
+
     return (
         <div className={_cs(
             styles.dashboard,
@@ -747,98 +761,113 @@ const Dashboard = (props: Props) => {
                 <Button
                     className={styles.button}
                     icons={<MdFilterList />}
+                    onClick={showRegionFilter}
                 >
                     Filters
                 </Button>
-                <RegionSelector
-                    className={styles.regionSelectorContainer}
-                    onRegionLevelChange={setRegionLevel}
-                    regionLevel={regionLevel}
-                    searchHidden
-                />
+                {regionFilterShown && (
+                    <Modal
+                        onClose={hideRegionFilter}
+                        className={styles.regionSelectorContainer}
+                    >
+                        <RegionSelector
+                            className={styles.regionSelectorContainer}
+                            onRegionLevelChange={setRegionLevel}
+                            regionLevel={regionLevel}
+                            searchHidden
+                        />
+                    </Modal>
+                )}
             </div>
             <div className={styles.filtersByMap}>
                 <Button
                     className={styles.button}
+                    onClick={showMapFilter}
                 >
                     Map Options
                 </Button>
-                <div className={styles.mapSelectorContainer}>
-                    <SelectInput
-                        placeholder="DFID Data"
-                        className={styles.inputItem}
-                        options={fiveWOptions}
-                        onChange={handleFiveWOptionChange}
-                        value={selectedFiveWOption}
-                        optionLabelSelector={fiveWLabelSelector}
-                        groupKeySelector={covidMode ? fiveWGroupKeySelector : undefined}
-                        optionKeySelector={fiveWKeySelector}
-                        pending={covidFieldsPending}
-                    />
-                    {selectedFiveWOption && !isFiveWOptionKey(selectedFiveWOption) && (
-                        <SelectInput
-                            label="DFID Data Options"
-                            value={selectedFiveWSubOption}
-                            onChange={setFiveWSubOption}
-                            className={styles.inputItem}
-                            optionKeySelector={item => item}
-                            optionLabelSelector={item => item}
-                            nonClearable
-                            options={(
-                                selectedFiveWOption === 'kathmandu_activity'
-                                    ? covidFieldsResponse?.kathmanduActivity
-                                    : covidFieldsResponse?.other
+                {mapFilterShown && (
+                    <Modal
+                        onClose={hideMapFilter}
+                    >
+                        <div className={styles.mapSelectorContainer}>
+                            <SelectInput
+                                placeholder="DFID Data"
+                                className={styles.inputItem}
+                                options={fiveWOptions}
+                                onChange={handleFiveWOptionChange}
+                                value={selectedFiveWOption}
+                                optionLabelSelector={fiveWLabelSelector}
+                                groupKeySelector={covidMode ? fiveWGroupKeySelector : undefined}
+                                optionKeySelector={fiveWKeySelector}
+                                pending={covidFieldsPending}
+                            />
+                            {selectedFiveWOption && !isFiveWOptionKey(selectedFiveWOption) && (
+                                <SelectInput
+                                    label="DFID Data Options"
+                                    value={selectedFiveWSubOption}
+                                    onChange={setFiveWSubOption}
+                                    className={styles.inputItem}
+                                    optionKeySelector={item => item}
+                                    optionLabelSelector={item => item}
+                                    nonClearable
+                                    options={(
+                                        selectedFiveWOption === 'kathmandu_activity'
+                                            ? covidFieldsResponse?.kathmanduActivity
+                                            : covidFieldsResponse?.other
+                                    )}
+                                />
                             )}
-                        />
-                    )}
-                    <SelectInput
-                        // label="Indicator"
-                        placeholder="Indicator"
-                        className={styles.inputItem}
-                        disabled={indicatorListPending}
-                        options={indicatorList}
-                        onChange={setSelectedIndicator}
-                        value={validSelectedIndicator}
-                        optionLabelSelector={indicatorLabelSelector}
-                        optionKeySelector={indicatorKeySelector}
-                        groupKeySelector={indicatorGroupKeySelector}
-                        pending={indicatorListPending}
-                    />
-                    {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
-                        <div className={styles.abstract}>
-                            { selectedIndicatorDetails.abstract }
+                            <SelectInput
+                                // label="Indicator"
+                                placeholder="Indicator"
+                                className={styles.inputItem}
+                                disabled={indicatorListPending}
+                                options={indicatorList}
+                                onChange={setSelectedIndicator}
+                                value={validSelectedIndicator}
+                                optionLabelSelector={indicatorLabelSelector}
+                                optionKeySelector={indicatorKeySelector}
+                                groupKeySelector={indicatorGroupKeySelector}
+                                pending={indicatorListPending}
+                            />
+                            {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
+                                <div className={styles.abstract}>
+                                    { selectedIndicatorDetails.abstract }
+                                </div>
+                            )}
+                            <ToggleButton
+                                label="Toggle Choropleth/Bubble"
+                                className={styles.inputItem}
+                                value={mapStyleInverted}
+                                onChange={setMapStyleInverted}
+                            />
+                            <div className={styles.separator} />
+                            <MultiSelectInput
+                                // label="Layers"
+                                placeholder="Layers"
+                                className={styles.inputItem}
+                                disabled={mapLayerListPending}
+                                options={vectorLayers}
+                                onChange={setSelectedVectorLayers}
+                                value={selectedVectorLayers}
+                                optionKeySelector={layerKeySelector}
+                                optionLabelSelector={layerLabelSelector}
+                            />
+                            <SelectInput
+                                // label="Background Layer"
+                                placeholder="Background Layer"
+                                className={styles.inputItem}
+                                disabled={mapLayerListPending}
+                                options={rasterLayers}
+                                onChange={setSelectedRasterLayer}
+                                value={selectedRasterLayer}
+                                optionKeySelector={layerKeySelector}
+                                optionLabelSelector={layerLabelSelector}
+                            />
                         </div>
-                    )}
-                    <ToggleButton
-                        label="Toggle Choropleth/Bubble"
-                        className={styles.inputItem}
-                        value={mapStyleInverted}
-                        onChange={setMapStyleInverted}
-                    />
-                    <div className={styles.separator} />
-                    <MultiSelectInput
-                        // label="Layers"
-                        placeholder="Layers"
-                        className={styles.inputItem}
-                        disabled={mapLayerListPending}
-                        options={vectorLayers}
-                        onChange={setSelectedVectorLayers}
-                        value={selectedVectorLayers}
-                        optionKeySelector={layerKeySelector}
-                        optionLabelSelector={layerLabelSelector}
-                    />
-                    <SelectInput
-                        // label="Background Layer"
-                        placeholder="Background Layer"
-                        className={styles.inputItem}
-                        disabled={mapLayerListPending}
-                        options={rasterLayers}
-                        onChange={setSelectedRasterLayer}
-                        value={selectedRasterLayer}
-                        optionKeySelector={layerKeySelector}
-                        optionLabelSelector={layerLabelSelector}
-                    />
-                </div>
+                    </Modal>
+                )}
             </div>
 
             <Summary
