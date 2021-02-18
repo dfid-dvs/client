@@ -255,8 +255,8 @@
 
     .print-mode-button {
         position: absolute;
-        top: var(--spacing-medium);
-        left: var(--spacing-medium);
+        right: var(--spacing-small-medium);
+        bottom: calc( 8 * var(--spacing-extra-large));
     }
 
     &.print-mode {
@@ -268,7 +268,9 @@
         height: 210mm!important;
 
         .print-mode-button {
-            top: calc(var(--height-print-bar) + var(--spacing-medium));
+            /* top: calc(var(--height-print-bar) + var(--spacing-medium)); */
+            right: var(--spacing-small-medium);
+            bottom: calc( 8 * var(--spacing-extra-large));
         }
 
         .map-style-config-container {

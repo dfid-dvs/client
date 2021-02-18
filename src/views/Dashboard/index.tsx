@@ -738,12 +738,6 @@ const Dashboard = (props: Props) => {
                     printMode={printMode}
                 /> */}
             </div>
-            {/* <PrintButton
-                orientation="landscape"
-                className={styles.printModeButton}
-                printMode={printMode}
-                onPrintModeChange={setPrintMode}
-            /> */}
             <div
                 className={_cs(
                     styles.filtersByRegion,
@@ -1031,6 +1025,12 @@ const Dashboard = (props: Props) => {
                     />
                 </div> */}
             </div>
+            <PrintButton
+                orientation="portrait"
+                className={styles.printModeButton}
+                printMode={printMode}
+                onPrintModeChange={setPrintMode}
+            />
             <div
                 className={_cs(
                     styles.legendContainer,

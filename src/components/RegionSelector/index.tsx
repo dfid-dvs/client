@@ -119,10 +119,10 @@ function RegionSelector(props: Props) {
                     labelClassName={styles.labelClassName}
                 />
             )}
-            {((!searchHidden && setSelectedRegions) || 1) && (
+            {searchHidden && setSelectedRegions && (
                 <MultiSelectInput
                     pending={regionListPending}
-                    // label={regionLevelLabel}
+                    label={regionLevelLabel}
                     placeholder={`Select ${regionLevelLabel}`}
                     className={styles.regionSelectInput}
                     disabled={regionListPending}

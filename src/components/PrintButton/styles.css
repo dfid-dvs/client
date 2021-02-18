@@ -5,6 +5,10 @@
     .print {
         margin-right: var(--spacing-small);
     }
+
+    .print-preview {
+        padding: var(--spacing-small);
+    }
 }
 
 @media print {
