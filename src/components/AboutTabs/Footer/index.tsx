@@ -1,7 +1,4 @@
-import { _cs } from '@togglecorp/fujs';
 import React from 'react';
-
-import styles from './styles.css';
 
 interface FooterProps {
     className?: string;

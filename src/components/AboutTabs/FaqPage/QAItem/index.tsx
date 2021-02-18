@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
-import { IoIosArrowDropdown, IoIosArrowDropup, IoIosArrowDropupCircle } from 'react-icons/io';
+import { IoIosArrowDropdown, IoIosArrowDropup } from 'react-icons/io';
 
 import styles from './styles.css';
 

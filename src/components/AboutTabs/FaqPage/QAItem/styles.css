@@ -4,7 +4,7 @@
 
     .value {
         font-size: var(--font-size-ultra-large);
-        font-weight: var(--bold);
+        font-weight: var(--font-weight-bold);
     }
 
     .question-section {
@@ -16,7 +16,7 @@
         .question {
             width: 92%;
             font-size: var(--font-size-large-medium);
-            font-weight: var(--bold);
+            font-weight: var(--font-weight-bold);
         }
         .icon {
             width: 8%;
@@ -33,4 +33,3 @@
         font-size: var(--font-size-large-medium);
     }
 }
-
