@@ -21,7 +21,7 @@
     position: relative;
     align-self: center;
     flex-direction: column;
-    width: 87%;
+    width: 100%;
 
     .main-content {
         display: flex;
@@ -87,12 +87,6 @@
         right: calc(2 * var(--spacing-extra-large));
         flex-direction: column;
         width: var(--width-config-container);
-        
-        .title {
-            margin-bottom: var(--spacing-medium);
-            font-size: var(--font-size-extra-large);
-            font-weight: var(--font-weight-bold);
-        }
     }
 
     .explore-data {

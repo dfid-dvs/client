@@ -1,3 +1,9 @@
+.title {
+    margin-bottom: var(--spacing-medium);
+    font-size: var(--font-size-extra-large);
+    font-weight: var(--font-weight-bold);
+}
+
 .summary-container {
     background: #ffffff;
     padding: var(--spacing-small);

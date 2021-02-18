@@ -840,14 +840,10 @@ const Dashboard = (props: Props) => {
                     />
                 </div>
             </div>
-            <div className={styles.summary}>
-                <div
-                    className={styles.title}
-                >
-                    Summary
-                </div>
-                <Summary />
-            </div>
+
+            <Summary
+                className={styles.summary}
+            />
             <ExploreData className={styles.exploreData} />
             <div
                 className={_cs(

@@ -46,37 +46,44 @@ function Summary(props: SummaryProps) {
         summary,
     ] = useRequest<Summary>(summaryUrl, 'fivew-summary');
     return (
-        <div className={styles.summaryContainer}>
-            {summaryPending && (
-                <Backdrop>
-                    <LoadingAnimation />
-                </Backdrop>
-            )}
-            <SummaryItem
-                className={styles.summaryItem}
-                label="Allocated Budget (£)"
-                value={summary?.allocatedBudget}
-            />
-            <SummaryItem
-                className={styles.summaryItem}
-                label="Programs"
-                value={summary?.program}
-            />
-            <SummaryItem
-                className={styles.summaryItem}
-                label="Partners"
-                value={summary?.partner}
-            />
-            <SummaryItem
-                className={styles.summaryItem}
-                label="Components"
-                value={summary?.component}
-            />
-            <SummaryItem
-                className={styles.summaryItem}
-                label="Sectors"
-                value={summary?.sector}
-            />
+        <div className={className}>
+            <div
+                className={styles.title}
+            >
+                Summary
+            </div>
+            <div className={styles.summaryContainer}>
+                {summaryPending && (
+                    <Backdrop>
+                        <LoadingAnimation />
+                    </Backdrop>
+                )}
+                <SummaryItem
+                    className={styles.summaryItem}
+                    label="Allocated Budget (£)"
+                    value={summary?.allocatedBudget}
+                />
+                <SummaryItem
+                    className={styles.summaryItem}
+                    label="Programs"
+                    value={summary?.program}
+                />
+                <SummaryItem
+                    className={styles.summaryItem}
+                    label="Partners"
+                    value={summary?.partner}
+                />
+                <SummaryItem
+                    className={styles.summaryItem}
+                    label="Components"
+                    value={summary?.component}
+                />
+                <SummaryItem
+                    className={styles.summaryItem}
+                    label="Sectors"
+                    value={summary?.sector}
+                />
+            </div>
         </div>
     );
 }

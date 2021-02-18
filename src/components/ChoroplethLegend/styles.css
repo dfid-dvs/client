@@ -5,7 +5,7 @@
     .heading {
         margin-bottom: var(--spacing-medium);
         text-transform: uppercase;
-        color: #8196c2;
+        color: var(--color-text-pastel-blue);
         font-size: var(--font-size-large-medium);
     }
 
@@ -15,7 +15,6 @@
         flex-direction: flex;
 
         .legend-element {
-            /* display: flex; */
             flex-grow: 1;
 
             .color {

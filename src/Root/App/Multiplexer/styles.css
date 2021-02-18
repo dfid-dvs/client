@@ -10,7 +10,7 @@
     .navbar {
         align-self: center;
         flex-shrink: 0;
-        width: 87%;
+        width: 100%;
     }
 
     .page {
