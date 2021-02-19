@@ -12,11 +12,6 @@ export interface DomainContextProps {
     setPrograms: (programs: number[] | ((p: number[]) => number[])) => void;
 }
 
-export interface NavbarContextProps {
-    parentNode: HTMLDivElement | null | undefined;
-    setParentNode: (node: HTMLDivElement | null | undefined) => void;
-}
-
 export interface MultiResponse<T> {
     count: number;
     results: T[];

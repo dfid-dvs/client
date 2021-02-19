@@ -13,7 +13,7 @@ import { apiEndPoint } from '#utils/constants';
 import styles from './styles.css';
 import SummaryItem from './SummaryItem';
 
-interface Summary {
+interface SummaryInfo {
     allocatedBudget: number;
     program: number;
     partner: number;
@@ -23,11 +23,13 @@ interface Summary {
 
 interface SummaryProps {
     className?: string;
+    actions?: React.ReactNode;
 }
 
 function Summary(props: SummaryProps) {
     const {
         className,
+        actions,
     } = props;
 
     const { programs } = useContext(DomainContext);
@@ -44,13 +46,16 @@ function Summary(props: SummaryProps) {
     const [
         summaryPending,
         summary,
-    ] = useRequest<Summary>(summaryUrl, 'fivew-summary');
+    ] = useRequest<SummaryInfo>(summaryUrl, 'fivew-summary');
     return (
         <div className={className}>
             <div
-                className={styles.title}
+                className={styles.titleContainer}
             >
-                Summary
+                <div className={styles.title}>
+                    Summary
+                </div>
+                {actions}
             </div>
             <div className={styles.summaryContainer}>
                 {summaryPending && (

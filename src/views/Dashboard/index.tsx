@@ -9,8 +9,6 @@ import {
 } from 'react-icons/io';
 import { MdFilterList } from 'react-icons/md';
 
-import MapTooltip from '#remap/MapTooltip';
-
 import BubbleLegend, { BubbleLegendType } from '#components/BubbleLegend';
 import Button from '#components/Button';
 import ChoroplethLegend from '#components/ChoroplethLegend';
@@ -75,13 +73,6 @@ interface ClickedRegion {
     feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
     lngLat: mapboxgl.LngLatLike;
 }
-
-const onClickTooltipOptions: mapboxgl.PopupOptions = {
-    closeOnClick: true,
-    closeButton: false,
-    maxWidth: '480px',
-    // offset: 8,
-};
 
 const fiveWOptions: FiveWOption[] = [
     {
@@ -463,21 +454,7 @@ const Dashboard = (props: Props) => {
                     onClick={handleMapRegionClick}
                     printMode={printMode}
                     // hideTooltipOnHover
-                >
-                    {clickedRegionProperties && (
-                        <MapTooltip
-                            coordinates={clickedRegionProperties.lngLat}
-                            tooltipOptions={onClickTooltipOptions}
-                            onHide={handleTooltipClose}
-                        >
-                            <Tooltip
-                                feature={clickedRegionProperties.feature}
-                                regionLevel={regionLevel}
-                                programs={programs}
-                            />
-                        </MapTooltip>
-                    )}
-                </IndicatorMap>
+                />
             </div>
             <div
                 className={_cs(
@@ -568,12 +545,20 @@ const Dashboard = (props: Props) => {
                 )}
             </div>
 
-            <Summary
-                className={styles.summary}
-            />
-            <ExploreData
-                className={styles.exploreData}
-            />
+            <div className={styles.summaryContainer}>
+                <Summary
+                    actions={(
+                        <ExploreData />
+                    )}
+                />
+                {clickedRegionProperties && (
+                    <Tooltip
+                        feature={clickedRegionProperties.feature}
+                        regionLevel={regionLevel}
+                        programs={programs}
+                    />
+                )}
+            </div>
             <div
                 className={_cs(
                     styles.mapStyleConfigContainer,

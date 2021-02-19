@@ -72,6 +72,7 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
                     return (
                         <RenderOption
                             key={key}
+                            // FIXME: pass name inside render option
                             onClick={onChange ? (() => onChange(key, name)) : undefined}
                             isActive={isActive}
                             label={optionLabel}

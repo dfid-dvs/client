@@ -71,19 +71,13 @@
         }
     }
 
-    .summary {
+    .summary-container {
         display: flex;
         position: absolute;
         top: calc(1.5 * var(--spacing-medium));
         right: calc(2 * var(--spacing-extra-large));
         flex-direction: column;
         width: var(--width-config-container);
-    }
-
-    .explore-data {
-        position: absolute;
-        top: calc(1.5 * var(--spacing-medium));
-        right: calc(2 * var(--spacing-extra-large));
     }
 
     .filters-by-map {
