@@ -8,8 +8,6 @@ export interface BaseEntity {
 export interface DomainContextProps {
     regionLevel: RegionLevelOption;
     setRegionLevel: (v: RegionLevelOption) => void;
-    covidMode: boolean;
-    setCovidMode: (m: boolean) => void;
     programs: number[];
     setPrograms: (programs: number[] | ((p: number[]) => number[])) => void;
 }

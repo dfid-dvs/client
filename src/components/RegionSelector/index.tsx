@@ -68,7 +68,6 @@ interface Props {
 
     regions?: number[] | undefined;
     onRegionsChange?: (item: number[]) => void;
-    onClose?: () => void;
 }
 function RegionSelector(props: Props) {
     const {
@@ -79,7 +78,6 @@ function RegionSelector(props: Props) {
         regionLevel,
         regions: selectedRegions,
         onRegionsChange: setSelectedRegions,
-        onClose: hideRegionSelector,
     } = props;
 
     const setRegionLevelSafely = useCallback(
@@ -112,30 +110,16 @@ function RegionSelector(props: Props) {
     return (
         <div className={className}>
             {!selectionHidden && (
-                <div
-                    className={styles.row}
-                >
-                    <SegmentInput
-                        className={styles.regionLevelSelection}
-                        label="VIEW BY"
-                        options={regionLevelOptionList}
-                        optionKeySelector={regionLevelOptionListKeySelector}
-                        optionLabelSelector={regionLevelOptionListLabelSelector}
-                        value={regionLevel}
-                        onChange={setRegionLevelSafely}
-                        labelClassName={styles.labelClassName}
-                    />
-                    {hideRegionSelector && (
-                        <Button
-                            className={styles.closeButton}
-                            onClick={hideRegionSelector}
-                            transparent
-                            title="Close"
-                        >
-                            <IoMdClose />
-                        </Button>
-                    )}
-                </div>
+                <SegmentInput
+                    className={styles.regionLevelSelection}
+                    label="View by"
+                    options={regionLevelOptionList}
+                    optionKeySelector={regionLevelOptionListKeySelector}
+                    optionLabelSelector={regionLevelOptionListLabelSelector}
+                    value={regionLevel}
+                    onChange={setRegionLevelSafely}
+                    labelClassName={styles.labelClassName}
+                />
             )}
             {!searchHidden && setSelectedRegions && (
                 <MultiSelectInput

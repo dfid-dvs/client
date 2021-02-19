@@ -12,23 +12,6 @@ const userDefinedSchemas: Schema[] = [
         },
     },
     {
-        name: 'covid-fields',
-        fields: {
-            field: {
-                arrayType: {
-                    name: 'covid-field',
-                    fields: {
-                        name: { type: 'string', required: true },
-                        value: { type: 'string', required: true },
-                    },
-                },
-                required: true,
-            },
-            kathmanduActivity: { type: 'array.string', required: true },
-            other: { type: 'array.string', required: true },
-        },
-    },
-    {
         name: 'sankey-data',
         fields: {
             minThreshold: { type: 'number' },
@@ -82,39 +65,6 @@ const userDefinedSchemas: Schema[] = [
             l15_49: { type: 'uint', required: true },
             l50plus: { type: 'uint', required: true },
             ltotal: { type: 'uint', required: true },
-        },
-    },
-    {
-        name: 'corona-data',
-        description: 'Get corona data from nepalcorona.info',
-        fields: {
-            tested_positive: { type: 'uint', required: true },
-            tested_negative: { type: 'uint', required: true },
-            tested_total: { type: 'uint', required: true },
-            in_isolation: { type: 'uint', required: true },
-            quarantined: { type: 'uint', required: true },
-            tested_rdt: { type: 'uint', required: true },
-            pending_result: { type: 'uint', required: true },
-            recovered: { type: 'uint', required: true },
-            deaths: { type: 'uint', required: true },
-            source: { type: 'string', required: true }, // url
-            updated_at: { type: 'string', required: true }, // date
-            latest_sit_report: {
-                type: {
-                    name: 'sit-report',
-                    fields: {
-                        type: { type: 'string', required: true }, // date
-                        _id: { type: 'string', required: true }, // date
-                        no: { type: 'uint', required: true },
-                        date: { type: 'string', required: true },
-                        url: { type: 'string', required: true },
-                        created_at: { type: 'string', required: true },
-                        updated_at: { type: 'string', required: true },
-                        __v: { type: 'uint', required: true },
-                    },
-                },
-                required: false,
-            },
         },
     },
     {
@@ -302,37 +252,6 @@ const userDefinedSchemas: Schema[] = [
                         component: { type: 'array.base-entity', required: true },
 
                         partner: { type: 'array.base-entity', required: true },
-                    },
-                },
-                required: true,
-            },
-        },
-    },
-    {
-        name: 'covid-program-list',
-        description: 'Get covid programs',
-        fields: {
-            count: { type: 'number', required: true },
-            next: { type: 'unknown' },
-            previous: { type: 'unknown' },
-            results: {
-                arrayType: {
-                    name: 'covid-program',
-                    fields: {
-                        budget: { type: 'uint', required: true },
-                        component: { type: 'string', required: true },
-                        covidPriority_3_12_Months: { type: 'string' },
-                        covidRecoveryPriority: { type: 'string', required: true },
-                        deliveryInLockdown: { type: 'string', required: true },
-                        districtCode: { type: 'string' },
-                        id: { type: 'uint', required: true },
-                        kathmanduActivity: { type: 'string', required: true },
-                        municipalityCode: { type: 'string' },
-                        projectStatus: { type: 'string', required: true },
-                        providingTaToLocalGovernment: { type: 'string', required: true },
-                        provinceCode: { type: 'string' },
-                        secondTierPartner: { type: 'string', required: true },
-                        sector: { type: 'string', required: true },
                     },
                 },
                 required: true,

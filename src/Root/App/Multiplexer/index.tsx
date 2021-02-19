@@ -53,13 +53,10 @@ function Multiplexer(props: Props) {
 
     const [regionLevel, setRegionLevel] = React.useState<RegionLevelOption>('province');
     const [programs, setPrograms] = React.useState<number[]>([]);
-    const [covidMode, setCovidMode] = React.useState(false);
 
     const domainContextProvider: DomainContextProps = {
         regionLevel,
         setRegionLevel,
-        covidMode,
-        setCovidMode,
         programs,
         setPrograms,
     };
