@@ -36,14 +36,12 @@
         flex-grow: 1;
         margin-bottom: var(--spacing-medium);
         padding: var(--spacing-medium);
-        overflow: auto;
     }
 
     .feedback {
         flex-grow: 1;
         margin-bottom: var(--spacing-medium);
         padding: var(--spacing-medium);
-        overflow: auto;
     }
 
     .footer {
