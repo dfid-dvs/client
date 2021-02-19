@@ -60,10 +60,10 @@ interface SubMarker {
 }
 
 
-interface TreeItem {
-    key: string;
+interface TreeItem<T = string> {
+    key: T;
     id: number;
-    parentKey: string | undefined;
+    parentKey: T | undefined;
     parentId: number | undefined;
     name: string;
 }
@@ -88,17 +88,17 @@ function ProgramSelector(props: Props) {
     const [
         selectedSector,
         setSelectedSector,
-    ] = useState<string[] | undefined>(undefined);
+    ] = useState<string[]>([]);
 
     const [
         selectedMarker,
         setSelectedMarker,
-    ] = useState<string[] | undefined>(undefined);
+    ] = useState<string[]>([]);
 
     const [
         selectedPartner,
         setSelectedPartner,
-    ] = useState<string[] | undefined>(undefined);
+    ] = useState<string[]>([]);
 
     const [
         expandedFilters,
@@ -144,22 +144,22 @@ function ProgramSelector(props: Props) {
     const [
         programSearchText,
         setProgramSearchText,
-    ] = useState<string>();
+    ] = useState('');
 
     const [
         partnerSearchText,
         setPartnerSearchText,
-    ] = useState<string>();
+    ] = useState('');
 
     const [
         sectorSearchText,
         setSectorSearchText,
-    ] = useState<string>();
+    ] = useState('');
 
     const [
         markerSearchText,
         setMarkerSearchText,
-    ] = useState<string>();
+    ] = useState('');
 
     const partnerOptions: TreeItem[] | undefined = useMemo(
         () => {
@@ -177,6 +177,7 @@ function ProgramSelector(props: Props) {
                     name,
                     id,
                 }))
+                // Just remove partners which are not active in any program
                 .filter(item => partnerSet.has(item.id));
 
             if (!partnerSearchText) {
@@ -265,118 +266,23 @@ function ProgramSelector(props: Props) {
         [markerOptions, subMarkerOptions],
     );
 
-    const filteredPrograms: TreeItem[] | undefined = useMemo(
+    const programOptions: TreeItem<number>[] | undefined = useMemo(
         () => {
-            if (!programListResponse) {
-                return undefined;
-            }
-            const { results: programsList } = programListResponse;
-            const searchedProgram = programSearchText ? programsList.filter(
-                item => item.name.toLowerCase().includes(programSearchText.toLowerCase()),
-            ) : programsList;
-
-            const programs = searchedProgram.map(p => ({
+            const programList = programListResponse?.results.map(p => ({
                 ...p,
-                key: String(p.id),
+                key: p.id,
                 parentKey: undefined,
                 parentId: undefined,
             }));
-            if (
-                (!selectedMarker || selectedMarker.length <= 0)
-                && (!selectedSector || selectedSector.length <= 0)
-                && (!selectedPartner || selectedPartner.length <= 0)
-            ) {
-                return programs;
+
+            if (!programSearchText) {
+                return programList;
             }
 
-            const selectedPartners = selectedPartner
-                ?.map(item => +item);
-
-            const selectedSectors = selectedSector
-                ?.filter(item => item.startsWith('sector-'))
-                .map(item => +item.substring('sector-'.length));
-
-            const selectedSubSectors = selectedSector
-                ?.filter(item => item.startsWith('subsector-'))
-                .map(item => +item.substring('subsector-'.length));
-
-            const selectedMarkers = selectedMarker
-                ?.filter(item => item.startsWith('marker-'))
-                .map(item => +item.substring('marker-'.length));
-
-            const selectedSubMarkers = selectedMarker
-                ?.filter(item => item.startsWith('submarker-'))
-                .map(item => +item.substring('submarker-'.length));
-
-            const filtered = programs.filter((program) => {
-                // FIXME: this can be optimized
-
-                const programPartners = new Set(program.partner.map(item => item.id));
-                const isSelectedPartnersGood = (
-                    !selectedPartners || selectedPartners.length <= 0
-                ) || (
-                    selectedPartners.every(item => programPartners.has(item))
-                );
-
-                const programSectors = new Set(program.sector.map(item => item.id));
-                const isSelectedSectorsGood = (
-                    !selectedSectors || selectedSectors.length <= 0
-                ) || (
-                    selectedSectors.every(item => programSectors.has(item))
-                );
-
-                const programSubSectors = new Set(program.subSector.map(item => item.id));
-                const isSelectedSubSectorsGood = (
-                    !selectedSubSectors || selectedSubSectors.length <= 0
-                ) || (
-                    selectedSubSectors.every(item => programSubSectors.has(item))
-                );
-
-                const programMarkers = new Set(program.markerCategory.map(item => item.id));
-                const isSelectedMarkersGood = (
-                    !selectedMarkers || selectedMarkers.length <= 0
-                ) || (
-                    selectedMarkers.every(item => programMarkers.has(item))
-                );
-
-                const programSubMarkers = new Set(program.markerValue.map(item => item.id));
-                const isSelectedSubMarkersGood = (
-                    !selectedSubMarkers || selectedSubMarkers.length <= 0
-                ) || (
-                    selectedSubMarkers.every(item => programSubMarkers.has(item))
-                );
-
-                return (
-                    isSelectedPartnersGood
-                    && isSelectedSectorsGood
-                    && isSelectedSubSectorsGood
-                    && isSelectedMarkersGood
-                    && isSelectedSubMarkersGood
-                );
-            });
-            return filtered;
+            const searchText = programSearchText.toLowerCase();
+            return programList?.filter(item => item.name.toLowerCase().includes(searchText));
         },
-        [
-            selectedMarker,
-            selectedSector,
-            selectedPartner,
-            programListResponse,
-            programSearchText,
-        ],
-    );
-
-    useEffect(
-        () => {
-            setSelectedPrograms((programs) => {
-                if (!filteredPrograms) {
-                    return [];
-                }
-                const newSet = new Set(filteredPrograms.map(item => item.id));
-
-                return programs.filter(item => newSet.has(item));
-            });
-        },
-        [filteredPrograms, setSelectedPrograms],
+        [programListResponse?.results, programSearchText],
     );
 
     // eslint-disable-next-line max-len
@@ -393,7 +299,7 @@ function ProgramSelector(props: Props) {
             <SelectorItem
                 name="programs"
                 className={styles.programTree}
-                options={filteredPrograms}
+                options={programOptions}
                 value={selectedProgram}
                 setSelectedValue={setSelectedPrograms}
                 expandedFilters={expandedFilters}

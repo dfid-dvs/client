@@ -7,34 +7,40 @@ import TreeInput from '#components/TreeInput';
 import styles from './styles.css';
 import TextInput from '#components/TextInput';
 
-interface TreeItem {
-    key: string;
+interface TreeItem<T extends string | number> {
+    key: T;
     id: number;
-    parentKey: string | undefined;
+    parentKey: T | undefined;
     parentId: number | undefined;
     name: string;
 }
-const treeKeySelector = (item: TreeItem) => item.key;
-const treeParentSelector = (item: TreeItem) => item.parentKey;
-const treeLabelSelector = (item: TreeItem) => item.name;
+function treeKeySelector<T extends string | number>(item: TreeItem<T>) {
+    return item.key;
+}
+function treeParentSelector<T extends string | number>(item: TreeItem<T>) {
+    return item.parentKey;
+}
+function treeLabelSelector<T extends string | number>(item: TreeItem<T>) {
+    return item.name;
+}
 
 type ExpanedFilter = 'programs' | 'partners' | 'sectors' | 'markers';
 
-interface SelectorItemProps {
+interface SelectorItemProps<T extends string | number> {
     name: ExpanedFilter;
     className?: string;
-    options: TreeItem[] | undefined;
-    value: string[] | undefined;
-    setSelectedValue: React.Dispatch<React.SetStateAction<string[] | undefined>>;
+    options: TreeItem<T>[] | undefined;
+    value: T[] | undefined;
+    setSelectedValue: React.Dispatch<React.SetStateAction<T[]>>;
     collapseLevel?: number;
     expandedFilters: ExpanedFilter[];
     setExpandedFilters: React.Dispatch<React.SetStateAction<ExpanedFilter[]>>;
     isMinimized?: boolean;
     icon?: JSX.Element;
-    searchText?: string;
-    setSearchText?: React.Dispatch<React.SetStateAction<string | undefined>>;
+    searchText: string;
+    setSearchText: React.Dispatch<React.SetStateAction<string>>;
 }
-export default function SelectorItem(props: SelectorItemProps) {
+export default function SelectorItem<T extends string | number>(props: SelectorItemProps<T>) {
     const {
         name,
         className,
