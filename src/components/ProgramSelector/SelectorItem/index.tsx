@@ -95,7 +95,6 @@ export default function SelectorItem(props: SelectorItemProps) {
                 <div className={styles.icon}>
                     {icon}
                 </div>
-                {/* <IoIosDocument className={styles.icon} /> */}
                 <div className={styles.name}>
                     {name}
                 </div>

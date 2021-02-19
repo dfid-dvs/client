@@ -9,7 +9,7 @@
         flex-direction: row;
         justify-content: flex-end;
         padding: var(--spacing-small-medium) 0;
-        color: #e32237;
+        color: var(--color-danger);
         font-size: var(--font-size-large-medium);
         font-weight: var(--font-weight-bold);
     }

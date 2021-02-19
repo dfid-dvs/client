@@ -1,5 +1,6 @@
-import React, { useMemo, useContext, useEffect } from 'react';
-import { IoMdArrowDropdown } from 'react-icons/io';
+import React, { useMemo, useContext, useEffect, useState } from 'react';
+import { IoIosDocument, IoMdPeople } from 'react-icons/io';
+import { FaRegBuilding, FaShapes } from 'react-icons/fa';
 import { _cs } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
@@ -14,9 +15,7 @@ import {
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import DomainContext from '#components/DomainContext';
-import MultiSelectInput from '#components/MultiSelectInput';
-import DropdownMenu from '#components/DropdownMenu';
-import TreeInput from '#components/TreeInput';
+import SelectorItem from './SelectorItem';
 
 import styles from './styles.css';
 
@@ -34,9 +33,6 @@ function join<T>(foo: T[] | undefined, bar: T[] | undefined) {
     }
     return [...foo, ...bar];
 }
-
-const programKeySelector = (p: Program) => p.id;
-const programLabelSelector = (p: Program) => p.name;
 
 interface Sector {
     id: number;
@@ -71,16 +67,17 @@ interface TreeItem {
     parentId: number | undefined;
     name: string;
 }
-const treeKeySelector = (item: TreeItem) => item.key;
-const treeParentSelector = (item: TreeItem) => item.parentKey;
-const treeLabelSelector = (item: TreeItem) => item.name;
+
+type ExpanedFilter = 'programs' | 'partners' | 'sectors' | 'markers';
 
 interface Props {
     className?: string;
+    isMinimized?: boolean;
 }
 function ProgramSelector(props: Props) {
     const {
         className,
+        isMinimized,
     } = props;
 
     const {
@@ -91,17 +88,22 @@ function ProgramSelector(props: Props) {
     const [
         selectedSector,
         setSelectedSector,
-    ] = React.useState<string[] | undefined>(undefined);
+    ] = useState<string[] | undefined>(undefined);
 
     const [
         selectedMarker,
         setSelectedMarker,
-    ] = React.useState<string[] | undefined>(undefined);
+    ] = useState<string[] | undefined>(undefined);
 
     const [
         selectedPartner,
         setSelectedPartner,
-    ] = React.useState<string[] | undefined>(undefined);
+    ] = useState<string[] | undefined>(undefined);
+
+    const [
+        expandedFilters,
+        setExpanedFilters,
+    ] = useState<ExpanedFilter[]>(['programs']);
 
     const programListGetUrl = `${apiEndPoint}/core/program/`;
     const [
@@ -139,6 +141,26 @@ function ProgramSelector(props: Props) {
         subMarkerListResponse,
     ] = useRequest<MultiResponse<SubMarker>>(subMarkerGetRequest, 'sub-marker-list');
 
+    const [
+        programSearchText,
+        setProgramSearchText,
+    ] = useState<string>();
+
+    const [
+        partnerSearchText,
+        setPartnerSearchText,
+    ] = useState<string>();
+
+    const [
+        sectorSearchText,
+        setSectorSearchText,
+    ] = useState<string>();
+
+    const [
+        markerSearchText,
+        setMarkerSearchText,
+    ] = useState<string>();
+
     const partnerOptions: TreeItem[] | undefined = useMemo(
         () => {
             const partnerList = programListResponse?.results
@@ -147,7 +169,7 @@ function ProgramSelector(props: Props) {
                 .map(item => item.id);
             const partnerSet = new Set(partnerList);
 
-            return partnerListResponse?.results
+            const mappedPartnerList = partnerListResponse?.results
                 .map(({ id, name }) => ({
                     key: String(id),
                     parentKey: undefined,
@@ -156,22 +178,36 @@ function ProgramSelector(props: Props) {
                     id,
                 }))
                 .filter(item => partnerSet.has(item.id));
+
+            if (!partnerSearchText) {
+                return mappedPartnerList;
+            }
+
+            const searchText = partnerSearchText.toLowerCase();
+            return mappedPartnerList?.filter(item => item.name.toLowerCase().includes(searchText));
         },
-        [partnerListResponse?.results, programListResponse?.results],
+        [partnerListResponse?.results, programListResponse?.results, partnerSearchText],
     );
 
     const sectorOptions: TreeItem[] | undefined = useMemo(
-        () => (
-            sectorListResponse?.results
+        () => {
+            const mappedSectorList = sectorListResponse?.results
                 .map(({ id, name }) => ({
                     key: `sector-${id}`,
                     parentKey: undefined,
                     parentId: undefined,
                     name,
                     id,
-                }))
-        ),
-        [sectorListResponse?.results],
+                }));
+
+            if (!sectorSearchText) {
+                return mappedSectorList;
+            }
+
+            const searchText = sectorSearchText.toLowerCase();
+            return mappedSectorList?.filter(item => item.name.toLowerCase().includes(searchText));
+        },
+        [sectorListResponse?.results, sectorSearchText],
     );
     const subSectorOptions: TreeItem[] | undefined = useMemo(
         () => (
@@ -193,17 +229,23 @@ function ProgramSelector(props: Props) {
     );
 
     const markerOptions: TreeItem[] | undefined = useMemo(
-        () => (
-            markerListResponse?.results
+        () => {
+            const mappedMarkerList = markerListResponse?.results
                 .map(({ id, name }) => ({
                     key: `marker-${id}`,
                     parentKey: undefined,
                     parentId: undefined,
                     name,
                     id,
-                }))
-        ),
-        [markerListResponse?.results],
+                }));
+
+            if (!markerSearchText) {
+                return mappedMarkerList;
+            }
+            const searchText = markerSearchText.toLowerCase();
+            return mappedMarkerList?.filter(item => item.name.toLowerCase().includes(searchText));
+        },
+        [markerListResponse?.results, markerSearchText],
     );
     const subMarkerOptions: TreeItem[] | undefined = useMemo(
         () => (
@@ -223,12 +265,22 @@ function ProgramSelector(props: Props) {
         [markerOptions, subMarkerOptions],
     );
 
-    const filteredPrograms = useMemo(
+    const filteredPrograms: TreeItem[] | undefined = useMemo(
         () => {
             if (!programListResponse) {
                 return undefined;
             }
-            const { results: programs } = programListResponse;
+            const { results: programsList } = programListResponse;
+            const searchedProgram = programSearchText ? programsList.filter(
+                item => item.name.toLowerCase().includes(programSearchText.toLowerCase()),
+            ) : programsList;
+
+            const programs = searchedProgram.map(p => ({
+                ...p,
+                key: String(p.id),
+                parentKey: undefined,
+                parentId: undefined,
+            }));
             if (
                 (!selectedMarker || selectedMarker.length <= 0)
                 && (!selectedSector || selectedSector.length <= 0)
@@ -309,6 +361,7 @@ function ProgramSelector(props: Props) {
             selectedSector,
             selectedPartner,
             programListResponse,
+            programSearchText,
         ],
     );
 
@@ -326,109 +379,70 @@ function ProgramSelector(props: Props) {
         [filteredPrograms, setSelectedPrograms],
     );
 
+    // eslint-disable-next-line max-len
+    const loading = programListPending || partnerListPending || markerListPending || subMarkerListPending || sectorListPending || subSectorListPending;
+
     return (
         <div className={_cs(className, styles.programSelector)}>
-            <MultiSelectInput
-                placeholder={`Select from ${filteredPrograms?.length || 0} programs`}
-                className={styles.indicatorSelectInput}
-                pending={programListPending}
+            {loading && (
+                <Backdrop>
+                    <LoadingAnimation />
+                </Backdrop>
+            )}
+            {/* FIXME : options, value, setSelectedValue type mismatch */}
+            <SelectorItem
+                name="programs"
+                className={styles.programTree}
                 options={filteredPrograms}
-                onChange={setSelectedPrograms}
                 value={selectedProgram}
-                optionLabelSelector={programLabelSelector}
-                optionKeySelector={programKeySelector}
-                dropdownContainerClassName={styles.programSelectDropdown}
-                allSelectable
+                setSelectedValue={setSelectedPrograms}
+                expandedFilters={expandedFilters}
+                setExpandedFilters={setExpanedFilters}
+                isMinimized={isMinimized}
+                icon={<IoIosDocument />}
+                searchText={programSearchText}
+                setSearchText={setProgramSearchText}
             />
-            <DropdownMenu
-                className={_cs(
-                    styles.partnerInput,
-                    selectedPartner && selectedPartner.length > 0 && styles.applied,
-                )}
-                label={(
-                    <>
-                        Partners
-                        <IoMdArrowDropdown />
-                    </>
-                )}
-                dropdownContainerClassName={styles.partnersDropdown}
-            >
-                {partnerListPending && (
-                    <Backdrop>
-                        <LoadingAnimation />
-                    </Backdrop>
-                )}
-                <TreeInput
-                    className={styles.partnerTree}
-                    label="Filter programs by partner"
-                    keySelector={treeKeySelector}
-                    parentKeySelector={treeParentSelector}
-                    labelSelector={treeLabelSelector}
-                    options={partnerOptions}
-                    value={selectedPartner}
-                    onChange={setSelectedPartner}
-                    defaultCollapseLevel={0}
-                />
-            </DropdownMenu>
-            <DropdownMenu
-                className={_cs(
-                    styles.sectorInput,
-                    selectedSector && selectedSector.length > 0 && styles.applied,
-                )}
-                label={(
-                    <>
-                        Sectors
-                        <IoMdArrowDropdown />
-                    </>
-                )}
-            >
-                {(sectorListPending || subSectorListPending) && (
-                    <Backdrop>
-                        <LoadingAnimation />
-                    </Backdrop>
-                )}
-                <TreeInput
-                    className={styles.sectorTree}
-                    label="Filter programs by sector"
-                    keySelector={treeKeySelector}
-                    parentKeySelector={treeParentSelector}
-                    labelSelector={treeLabelSelector}
-                    options={combinedSectorOptions}
-                    value={selectedSector}
-                    onChange={setSelectedSector}
-                    defaultCollapseLevel={0}
-                />
-            </DropdownMenu>
-            <DropdownMenu
-                className={_cs(
-                    styles.markerInput,
-                    selectedMarker && selectedMarker.length > 0 && styles.applied,
-                )}
-                label={(
-                    <>
-                        Markers
-                        <IoMdArrowDropdown />
-                    </>
-                )}
-                dropdownContainerClassName={styles.markersDropdown}
-            >
-                {(markerListPending || subMarkerListPending) && (
-                    <Backdrop>
-                        <LoadingAnimation />
-                    </Backdrop>
-                )}
-                <TreeInput
-                    className={styles.markerTree}
-                    label="Filter programs by marker"
-                    keySelector={treeKeySelector}
-                    parentKeySelector={treeParentSelector}
-                    labelSelector={treeLabelSelector}
-                    options={combinedMarkerOptions}
-                    value={selectedMarker}
-                    onChange={setSelectedMarker}
-                    defaultCollapseLevel={1}
-                />
-            </DropdownMenu>
+            <SelectorItem
+                name="partners"
+                className={styles.partnerTree}
+                options={partnerOptions}
+                value={selectedPartner}
+                setSelectedValue={setSelectedPartner}
+                expandedFilters={expandedFilters}
+                setExpandedFilters={setExpanedFilters}
+                isMinimized={isMinimized}
+                icon={<FaRegBuilding />}
+                searchText={partnerSearchText}
+                setSearchText={setPartnerSearchText}
+            />
+            <SelectorItem
+                name="sectors"
+                className={styles.sectorTree}
+                options={combinedSectorOptions}
+                value={selectedSector}
+                setSelectedValue={setSelectedSector}
+                expandedFilters={expandedFilters}
+                setExpandedFilters={setExpanedFilters}
+                isMinimized={isMinimized}
+                icon={<FaShapes />}
+                searchText={sectorSearchText}
+                setSearchText={setSectorSearchText}
+            />
+            <SelectorItem
+                name="markers"
+                className={styles.markerTree}
+                options={combinedMarkerOptions}
+                value={selectedMarker}
+                setSelectedValue={setSelectedMarker}
+                expandedFilters={expandedFilters}
+                setExpandedFilters={setExpanedFilters}
+                isMinimized={isMinimized}
+                collapseLevel={1}
+                icon={<IoMdPeople />}
+                searchText={markerSearchText}
+                setSearchText={setMarkerSearchText}
+            />
         </div>
     );
 }

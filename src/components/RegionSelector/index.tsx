@@ -1,4 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
+import { IoMdClose } from 'react-icons/io';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -9,6 +10,7 @@ import {
 
 import MultiSelectInput from '#components/MultiSelectInput';
 import SegmentInput from '#components/SegmentInput';
+import Button from '#components/Button';
 
 import styles from './styles.css';
 
@@ -66,6 +68,7 @@ interface Props {
 
     regions?: number[] | undefined;
     onRegionsChange?: (item: number[]) => void;
+    onClose?: () => void;
 }
 function RegionSelector(props: Props) {
     const {
@@ -76,6 +79,7 @@ function RegionSelector(props: Props) {
         regionLevel,
         regions: selectedRegions,
         onRegionsChange: setSelectedRegions,
+        onClose: hideRegionSelector,
     } = props;
 
     const setRegionLevelSafely = useCallback(
@@ -108,18 +112,32 @@ function RegionSelector(props: Props) {
     return (
         <div className={className}>
             {!selectionHidden && (
-                <SegmentInput
-                    className={styles.regionLevelSelection}
-                    label="VIEW BY"
-                    options={regionLevelOptionList}
-                    optionKeySelector={regionLevelOptionListKeySelector}
-                    optionLabelSelector={regionLevelOptionListLabelSelector}
-                    value={regionLevel}
-                    onChange={setRegionLevelSafely}
-                    labelClassName={styles.labelClassName}
-                />
+                <div
+                    className={styles.row}
+                >
+                    <SegmentInput
+                        className={styles.regionLevelSelection}
+                        label="VIEW BY"
+                        options={regionLevelOptionList}
+                        optionKeySelector={regionLevelOptionListKeySelector}
+                        optionLabelSelector={regionLevelOptionListLabelSelector}
+                        value={regionLevel}
+                        onChange={setRegionLevelSafely}
+                        labelClassName={styles.labelClassName}
+                    />
+                    {hideRegionSelector && (
+                        <Button
+                            className={styles.closeButton}
+                            onClick={hideRegionSelector}
+                            transparent
+                            title="Close"
+                        >
+                            <IoMdClose />
+                        </Button>
+                    )}
+                </div>
             )}
-            {searchHidden && setSelectedRegions && (
+            {!searchHidden && setSelectedRegions && (
                 <MultiSelectInput
                     pending={regionListPending}
                     label={regionLevelLabel}

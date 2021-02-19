@@ -1,5 +1,5 @@
 import React from 'react';
-import ProgramSelectors from '#components/ProgramSelectors';
+import ProgramSelector from '#components/ProgramSelector';
 
 interface FiltersPanelProps {
     className?: string;
@@ -11,7 +11,7 @@ export default function FiltersPanel(props: FiltersPanelProps) {
         isMinimized,
     } = props;
     return (
-        <ProgramSelectors
+        <ProgramSelector
             className={className}
             isMinimized={isMinimized}
         />

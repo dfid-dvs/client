@@ -19,7 +19,7 @@
 
             .color {
                 flex-shrink: 0;
-                width: calc(6 * var(--spacing-medium));
+                width: 60px;
                 height: var(--spacing-large-medium);
             }
 
