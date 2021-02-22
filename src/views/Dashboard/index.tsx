@@ -19,9 +19,6 @@ import PrintDetailsBar from '#components/PrintDetailsBar';
 import RasterLegend from '#components/RasterLegend';
 import VectorLegend from '#components/VectorLegend';
 import RegionSelector from '#components/RegionSelector';
-import SelectInput from '#components/SelectInput';
-import MultiSelectInput from '#components/MultiSelectInput';
-import ToggleButton from '#components/ToggleButton';
 
 import useRequest from '#hooks/useRequest';
 import useHash from '#hooks/useHash';
@@ -50,7 +47,6 @@ import {
 import useBasicToggle from '#hooks/useBasicToggle';
 
 import Tooltip from './Tooltip';
-import Sidepanel from './Sidepanel';
 
 import useMapStateForFiveW from './useMapStateForFiveW';
 import useMapStateForIndicator from './useMapStateForIndicator';
@@ -64,6 +60,7 @@ import {
 
 import styles from './styles.css';
 import ExploreData from './ExploreData';
+import MapOptions from './MapOptions';
 
 interface Region {
     name: string;
@@ -113,12 +110,7 @@ const legendKeySelector = (option: LegendItem) => option.radius;
 const legendValueSelector = (option: LegendItem) => option.value;
 const legendRadiusSelector = (option: LegendItem) => option.radius;
 
-const indicatorKeySelector = (indicator: Indicator) => indicator.id;
-const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
-// const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
-
-const layerKeySelector = (d: Layer) => d.id;
-const layerLabelSelector = (d: Layer) => d.name;
+type MapType = 'Choropleth' | 'Bubble';
 
 interface Props {
     className?: string;
@@ -142,9 +134,9 @@ const Dashboard = (props: Props) => {
         setFiveWOption,
     ] = useState<string | undefined>('allocatedBudget');
     const [
-        mapStyleInverted,
-        setMapStyleInverted,
-    ] = useState(false);
+        mapType,
+        setMapType,
+    ] = useState<MapType>('Choropleth');
     const [
         selectedRasterLayer,
         setSelectedRasterLayer,
@@ -277,8 +269,8 @@ const Dashboard = (props: Props) => {
         const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
 
         const title = [fiveWTitle, selectedIndicatorDetails?.fullTitle].filter(isDefined).join(' & ');
-
-        if (mapStyleInverted) {
+        const mapStyleBubbled = mapType === 'Bubble';
+        if (mapStyleBubbled) {
             return {
                 choroplethMapState: indicatorMapState,
                 choroplethPending: indicatorMapStatePending,
@@ -315,7 +307,7 @@ const Dashboard = (props: Props) => {
             titleForPrintBar: title,
         };
     }, [
-        mapStyleInverted,
+        mapType,
         indicatorMapState,
         fiveWMapState,
         indicatorMapStatePending,
@@ -487,61 +479,25 @@ const Dashboard = (props: Props) => {
                     Map Options
                 </Button>
                 {mapFilterShown && (
-                    <div className={styles.mapSelectorContainer}>
-                        <SelectInput
-                            placeholder="DFID Data"
-                            className={styles.inputItem}
-                            options={fiveWOptions}
-                            onChange={handleFiveWOptionChange}
-                            value={selectedFiveWOption}
-                            optionLabelSelector={fiveWLabelSelector}
-                            optionKeySelector={fiveWKeySelector}
-                        />
-                        <SelectInput
-                            placeholder="Indicator"
-                            className={styles.inputItem}
-                            disabled={indicatorListPending}
-                            options={indicatorList}
-                            onChange={setSelectedIndicator}
-                            value={validSelectedIndicator}
-                            optionLabelSelector={indicatorLabelSelector}
-                            optionKeySelector={indicatorKeySelector}
-                            // groupKeySelector={indicatorGroupKeySelector}
-                            pending={indicatorListPending}
-                        />
-                        {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
-                            <div className={styles.abstract}>
-                                { selectedIndicatorDetails.abstract }
-                            </div>
-                        )}
-                        <ToggleButton
-                            label="Toggle Choropleth/Bubble"
-                            className={styles.inputItem}
-                            value={mapStyleInverted}
-                            onChange={setMapStyleInverted}
-                        />
-                        <div className={styles.separator} />
-                        <MultiSelectInput
-                            placeholder="Layers"
-                            className={styles.inputItem}
-                            disabled={mapLayerListPending}
-                            options={vectorLayers}
-                            onChange={setSelectedVectorLayers}
-                            value={selectedVectorLayers}
-                            optionKeySelector={layerKeySelector}
-                            optionLabelSelector={layerLabelSelector}
-                        />
-                        <SelectInput
-                            placeholder="Background Layer"
-                            className={styles.inputItem}
-                            disabled={mapLayerListPending}
-                            options={rasterLayers}
-                            onChange={setSelectedRasterLayer}
-                            value={selectedRasterLayer}
-                            optionKeySelector={layerKeySelector}
-                            optionLabelSelector={layerLabelSelector}
-                        />
-                    </div>
+                    <MapOptions
+                        fiveWOptions={fiveWOptions}
+                        selectedFiveWOption={selectedFiveWOption}
+                        handleFiveWOptionChange={handleFiveWOptionChange}
+                        indicatorListPending={indicatorListPending}
+                        indicatorList={indicatorList}
+                        setSelectedIndicator={setSelectedIndicator}
+                        validSelectedIndicator={validSelectedIndicator}
+                        selectedIndicatorDetails={selectedIndicatorDetails}
+                        mapType={mapType}
+                        setMapType={setMapType}
+                        mapLayerListPending={mapLayerListPending}
+                        vectorLayers={vectorLayers}
+                        setSelectedVectorLayers={setSelectedVectorLayers}
+                        selectedVectorLayers={selectedVectorLayers}
+                        rasterLayers={rasterLayers}
+                        setSelectedRasterLayer={setSelectedRasterLayer}
+                        selectedRasterLayer={selectedRasterLayer}
+                    />
                 )}
             </div>
 

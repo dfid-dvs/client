@@ -1,0 +1,23 @@
+.map-selector-container {
+    visibility: visible;
+    margin-top: var(--spacing-medium);
+    box-shadow: 2px 1px 6px 4px rgba(0, 0, 0, .1);
+    background: var(--color-foreground);
+    padding: var(--spacing-large);
+    width: 320px;
+
+    .input-item {
+        margin: var(--spacing-medium) 0;
+        border-radius: 0;
+    }
+
+    .segment-input-item {
+        margin: var(--spacing-medium) 0;
+    }
+
+    .separator {
+        margin: var(--spacing-large) calc(-1 * var(--spacing-large));
+        border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
+        width: calc(100% + var(--spacing-large) * 2);
+    }
+}
