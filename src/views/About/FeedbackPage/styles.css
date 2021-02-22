@@ -6,7 +6,7 @@
     flex-direction: column;
 
     .first-section {
-        padding: calc(6 * var(--spacing-medium)) var(--spacing-medium);
+        padding: calc(6 * var(--spacing-medium)) var(--spacing-medium) var(--spacing-medium) var(--spacing-medium);
 
         .title {
             margin-bottom: calc(2 * var(--spacing-medium));
@@ -31,6 +31,12 @@
             width: 400px;
         }
 
+        .text-area-input {
+            padding: var(--spacing-medium);
+            width: 400px;
+            min-height: 70px;
+        }
+
         .select-input {
             padding: var(--spacing-medium);
             width: 400px;
@@ -46,8 +52,11 @@
         }
 
         .button {
+            margin-top: var(--spacing-large-medium);
+            background: var(--color-accent);
             padding: var(--spacing-small-medium) var(--spacing-large);
             width: fit-content;
+            color: var(--color-foreground);
         }
     }
 }

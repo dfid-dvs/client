@@ -1,0 +1,9 @@
+.raw-text-area-input {
+    outline: none;
+    border: 0;
+    background-color: transparent;
+    height: 1rem;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+}
