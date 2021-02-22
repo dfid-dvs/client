@@ -81,24 +81,15 @@ function ProgramSelector(props: Props) {
     } = props;
 
     const {
+        markers: selectedMarker,
+        setMarkers: setSelectedMarker,
         programs: selectedProgram,
         setPrograms: setSelectedPrograms,
+        partners: selectedPartner,
+        setPartners: setSelectedPartner,
+        sectors: selectedSector,
+        setSectors: setSelectedSector,
     } = useContext<DomainContextProps>(DomainContext);
-
-    const [
-        selectedSector,
-        setSelectedSector,
-    ] = useState<string[]>([]);
-
-    const [
-        selectedMarker,
-        setSelectedMarker,
-    ] = useState<string[]>([]);
-
-    const [
-        selectedPartner,
-        setSelectedPartner,
-    ] = useState<string[]>([]);
 
     const [
         expandedFilters,
@@ -166,7 +157,7 @@ function ProgramSelector(props: Props) {
             const partnerList = programListResponse?.results
                 .map(item => item.partner)
                 .flat()
-                .map(item => item.id);
+                .map(item => item?.id);
             const partnerSet = new Set(partnerList);
 
             const mappedPartnerList = partnerListResponse?.results
@@ -288,6 +279,9 @@ function ProgramSelector(props: Props) {
     // eslint-disable-next-line max-len
     const loading = programListPending || partnerListPending || markerListPending || subMarkerListPending || sectorListPending || subSectorListPending;
 
+    // TODO 1: Disable programs based on marker selected
+    // TODO 2: Disable partners and sectors based on programs selected
+    // TODO 3: Show componets of programs
     return (
         <div className={_cs(className, styles.programSelector)}>
             {loading && (
@@ -295,7 +289,20 @@ function ProgramSelector(props: Props) {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            {/* FIXME : options, value, setSelectedValue type mismatch */}
+            <SelectorItem
+                name="markers"
+                className={styles.markerTree}
+                options={combinedMarkerOptions}
+                value={selectedMarker}
+                setSelectedValue={setSelectedMarker}
+                expandedFilters={expandedFilters}
+                setExpandedFilters={setExpanedFilters}
+                isMinimized={isMinimized}
+                collapseLevel={1}
+                icon={<IoMdPeople />}
+                searchText={markerSearchText}
+                setSearchText={setMarkerSearchText}
+            />
             <SelectorItem
                 name="programs"
                 className={styles.programTree}
@@ -334,20 +341,6 @@ function ProgramSelector(props: Props) {
                 icon={<FaShapes />}
                 searchText={sectorSearchText}
                 setSearchText={setSectorSearchText}
-            />
-            <SelectorItem
-                name="markers"
-                className={styles.markerTree}
-                options={combinedMarkerOptions}
-                value={selectedMarker}
-                setSelectedValue={setSelectedMarker}
-                expandedFilters={expandedFilters}
-                setExpandedFilters={setExpanedFilters}
-                isMinimized={isMinimized}
-                collapseLevel={1}
-                icon={<IoMdPeople />}
-                searchText={markerSearchText}
-                setSearchText={setMarkerSearchText}
             />
         </div>
     );

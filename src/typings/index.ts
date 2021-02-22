@@ -8,8 +8,14 @@ export interface BaseEntity {
 export interface DomainContextProps {
     regionLevel: RegionLevelOption;
     setRegionLevel: (v: RegionLevelOption) => void;
+    markers: string[];
+    setMarkers: (markers: string[] | ((p: string[]) => string[])) => void;
     programs: number[];
     setPrograms: (programs: number[] | ((p: number[]) => number[])) => void;
+    partners: string[];
+    setPartners: (partners: string[] | ((p: string[]) => string[])) => void;
+    sectors: string[];
+    setSectors: (sectors: string[] | ((p: string[]) => string[])) => void;
 }
 
 export interface MultiResponse<T> {

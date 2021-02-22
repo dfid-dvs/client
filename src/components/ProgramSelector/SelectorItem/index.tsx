@@ -31,7 +31,7 @@ interface SelectorItemProps<T extends string | number> {
     className?: string;
     options: TreeItem<T>[] | undefined;
     value: T[] | undefined;
-    setSelectedValue: React.Dispatch<React.SetStateAction<T[]>>;
+    setSelectedValue: (keys: T[]) => void;
     collapseLevel?: number;
     expandedFilters: ExpanedFilter[];
     setExpandedFilters: React.Dispatch<React.SetStateAction<ExpanedFilter[]>>;
@@ -55,7 +55,6 @@ export default function SelectorItem<T extends string | number>(props: SelectorI
         searchText,
         setSearchText,
     } = props;
-
     const isFilterExpanded = useMemo(
         () => (
             !!expandedFilters.find(e => e === name)
