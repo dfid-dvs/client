@@ -1,5 +1,4 @@
 import React, { useState, useCallback } from 'react';
-import { isNotDefined } from '@togglecorp/fujs';
 
 import TextInput from '#components/TextInput';
 import Button from '#components/Button';

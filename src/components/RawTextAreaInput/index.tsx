@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import styles from './styles.css';
