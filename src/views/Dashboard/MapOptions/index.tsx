@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import MultiSelectInput from '#components/MultiSelectInput';
 import SelectInput from '#components/SelectInput';
-import SegmentInput from '#components/SegmentInput';
+import ToggleButton from '#components/ToggleButton';
 
 import styles from './styles.css';
 import { FiveWOption } from '../types';
@@ -18,16 +18,6 @@ const layerLabelSelector = (d: Layer) => d.name;
 const indicatorKeySelector = (indicator: Indicator) => indicator.id;
 const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
 
-type MapType = 'Choropleth' | 'Bubble';
-
-const MapTypeOptionList: MapType[] = [
-    'Choropleth',
-    'Bubble',
-];
-
-const mapTypeOptionListKeySelector = (d: MapType) => d;
-const mapTypeOptionListLabelSelector = (d: MapType) => d;
-
 interface MapOptionsProps {
     className?: string;
     fiveWOptions: FiveWOption[];
@@ -38,8 +28,8 @@ interface MapOptionsProps {
     setSelectedIndicator: React.Dispatch<React.SetStateAction<number | undefined>>;
     validSelectedIndicator: number | undefined;
     selectedIndicatorDetails: Indicator | undefined;
-    mapType: MapType;
-    setMapType: React.Dispatch<React.SetStateAction<MapType>>;
+    mapStyleInverted: boolean;
+    setMapStyleInverted: React.Dispatch<React.SetStateAction<boolean>>;
     mapLayerListPending: boolean;
     vectorLayers: VectorLayer[] | undefined;
     setSelectedVectorLayers: React.Dispatch<React.SetStateAction<number[] | undefined>>;
@@ -60,8 +50,8 @@ export default function MapOptions(props: MapOptionsProps) {
         setSelectedIndicator,
         validSelectedIndicator,
         selectedIndicatorDetails,
-        mapType,
-        setMapType,
+        mapStyleInverted,
+        setMapStyleInverted,
         mapLayerListPending,
         vectorLayers,
         setSelectedVectorLayers,
@@ -71,12 +61,6 @@ export default function MapOptions(props: MapOptionsProps) {
         selectedRasterLayer,
     } = props;
 
-    const onSetMapType = useCallback(
-        (m: MapType) => {
-            setMapType(m);
-        },
-        [setMapType],
-    );
     return (
         <div className={_cs(styles.mapSelectorContainer, className)}>
             <SelectInput
@@ -105,13 +89,11 @@ export default function MapOptions(props: MapOptionsProps) {
                     { selectedIndicatorDetails.abstract}
                 </div>
             )}
-            <SegmentInput
-                className={styles.segmentInputItem}
-                options={MapTypeOptionList}
-                optionKeySelector={mapTypeOptionListKeySelector}
-                optionLabelSelector={mapTypeOptionListLabelSelector}
-                value={mapType}
-                onChange={onSetMapType}
+            <ToggleButton
+                label="Toggle Choropleth/Bubble"
+                className={styles.inputItem}
+                value={mapStyleInverted}
+                onChange={setMapStyleInverted}
             />
             <div className={styles.separator} />
             <MultiSelectInput

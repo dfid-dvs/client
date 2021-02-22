@@ -110,8 +110,6 @@ const legendKeySelector = (option: LegendItem) => option.radius;
 const legendValueSelector = (option: LegendItem) => option.value;
 const legendRadiusSelector = (option: LegendItem) => option.radius;
 
-type MapType = 'Choropleth' | 'Bubble';
-
 interface Props {
     className?: string;
 }
@@ -134,9 +132,9 @@ const Dashboard = (props: Props) => {
         setFiveWOption,
     ] = useState<string | undefined>('allocatedBudget');
     const [
-        mapType,
-        setMapType,
-    ] = useState<MapType>('Choropleth');
+        mapStyleInverted,
+        setMapStyleInverted,
+    ] = useState(false);
     const [
         selectedRasterLayer,
         setSelectedRasterLayer,
@@ -269,8 +267,8 @@ const Dashboard = (props: Props) => {
         const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
 
         const title = [fiveWTitle, selectedIndicatorDetails?.fullTitle].filter(isDefined).join(' & ');
-        const mapStyleBubbled = mapType === 'Bubble';
-        if (mapStyleBubbled) {
+
+        if (mapStyleInverted) {
             return {
                 choroplethMapState: indicatorMapState,
                 choroplethPending: indicatorMapStatePending,
@@ -307,7 +305,7 @@ const Dashboard = (props: Props) => {
             titleForPrintBar: title,
         };
     }, [
-        mapType,
+        mapStyleInverted,
         indicatorMapState,
         fiveWMapState,
         indicatorMapStatePending,
@@ -478,6 +476,7 @@ const Dashboard = (props: Props) => {
                 >
                     Map Options
                 </Button>
+
                 {mapFilterShown && (
                     <MapOptions
                         fiveWOptions={fiveWOptions}
@@ -488,8 +487,8 @@ const Dashboard = (props: Props) => {
                         setSelectedIndicator={setSelectedIndicator}
                         validSelectedIndicator={validSelectedIndicator}
                         selectedIndicatorDetails={selectedIndicatorDetails}
-                        mapType={mapType}
-                        setMapType={setMapType}
+                        mapStyleInverted={mapStyleInverted}
+                        setMapStyleInverted={setMapStyleInverted}
                         mapLayerListPending={mapLayerListPending}
                         vectorLayers={vectorLayers}
                         setSelectedVectorLayers={setSelectedVectorLayers}
