@@ -69,6 +69,7 @@ interface NumeralProps {
     separatorShown?: boolean;
     prefix?: string;
     placeholder?: string;
+    suffix?: string;
 }
 function Numeral({
     value,
@@ -78,6 +79,7 @@ function Numeral({
     separatorShown = true,
     prefix = '',
     placeholder = '',
+    suffix = '',
 }: NumeralProps) {
     const className = _cs(classNameFromProps, styles.numeral);
 
@@ -101,7 +103,7 @@ function Numeral({
 
     return (
         <div className={className}>
-            {`${prefix}${output}`}
+            {`${prefix}${output}${suffix}`}
         </div>
     );
 }

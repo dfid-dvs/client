@@ -56,7 +56,6 @@ export default function AboutPage() {
         summaryPending,
         summary,
     ] = useRequest<Summary>(summaryUrl, 'fivew-summary');
-
     return (
         <div className={styles.container}>
             <div className={styles.firstSection}>

@@ -13,18 +13,30 @@
     .data-line {
         display: flex;
         align-items: center;
-        .value {
-            padding: 0 var(--spacing-extra-small);
+
+        .value-row {
+            display: flex;
             width: 40%;
-            color: var(--color-text);
-            font-size: var(--font-size-large);
-            font-weight: var(--font-weight-bold);
+            .value {
+                padding: 0 var(--spacing-extra-small);
+                color: var(--color-text);
+                font-size: var(--font-size-large);
+                font-weight: var(--font-weight-bold);
+            }
         }
     
         .line {
-            background-color: var(--color-shadow);
+            display: flex;
             width: 60%;
             height: var(--spacing-small);
+
+            .value-line {
+                background-color: var(--color-danger);
+            }
+
+            .rem-line {
+                background-color: var(--color-shadow);
+            }
         }
     }
 }

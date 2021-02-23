@@ -38,14 +38,18 @@ function Summary(props: SummaryProps) {
         program_id: programs,
     });
 
-    const summaryUrl = summaryParams
-        ? `${apiEndPoint}/core/summary/?${summaryParams}`
-        : `${apiEndPoint}/core/summary/`;
-
+    const summaryUrl = `${apiEndPoint}/core/summary/`;
     const [
         summaryPending,
         summary,
     ] = useRequest<SummaryInfo>(summaryUrl, 'fivew-summary');
+
+    const summaryUrlWithParams = summaryParams ? `${apiEndPoint}/core/summary/?${summaryParams}` : undefined;
+    const [
+        paramedSummaryPending,
+        paramedSummary,
+    ] = useRequest<SummaryInfo>(summaryUrlWithParams, 'fivew-summary');
+
     return (
         <div className={className}>
             <div
@@ -57,7 +61,7 @@ function Summary(props: SummaryProps) {
                 {actions}
             </div>
             <div className={styles.summaryContainer}>
-                {summaryPending && (
+                {summaryPending && paramedSummaryPending && (
                     <Backdrop>
                         <LoadingAnimation />
                     </Backdrop>
@@ -65,27 +69,32 @@ function Summary(props: SummaryProps) {
                 <SummaryItem
                     className={styles.summaryItem}
                     label="Allocated Budget (£)"
-                    value={summary?.allocatedBudget}
+                    value={paramedSummary?.allocatedBudget}
+                    total={summary?.allocatedBudget}
                 />
                 <SummaryItem
                     className={styles.summaryItem}
                     label="Programs"
-                    value={summary?.program}
+                    value={paramedSummary?.program}
+                    total={summary?.program}
                 />
                 <SummaryItem
                     className={styles.summaryItem}
                     label="Partners"
-                    value={summary?.partner}
+                    value={paramedSummary?.partner}
+                    total={summary?.partner}
                 />
                 <SummaryItem
                     className={styles.summaryItem}
                     label="Components"
-                    value={summary?.component}
+                    value={paramedSummary?.component}
+                    total={summary?.component}
                 />
                 <SummaryItem
                     className={styles.summaryItem}
                     label="Sectors"
-                    value={summary?.sector}
+                    value={paramedSummary?.sector}
+                    total={summary?.sector}
                 />
             </div>
         </div>
