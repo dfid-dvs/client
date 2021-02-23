@@ -37,6 +37,7 @@ export interface TreeProps<T, K extends OptionKey> {
     defaultCollapseLevel: number;
 
     sync?: boolean;
+    enabledOptions?: number[] | string[];
     // labelRightComponent?: React.ReactNode;
     // labelRightComponentClassName?: string;
 }
@@ -65,6 +66,7 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
         defaultCollapseLevel,
 
         sync = false,
+        enabledOptions,
     } = props;
 
     const className = _cs(
@@ -148,7 +150,7 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
 
                 onChange={onChange}
                 visibleOptions={visibleOptions}
-
+                enabledOptions={enabledOptions}
                 sync={sync}
             />
             {showHintAndError && (

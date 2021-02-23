@@ -1,7 +1,7 @@
-import React, { useMemo, useContext, useEffect, useState } from 'react';
+import React, { useMemo, useContext, useState } from 'react';
 import { IoIosDocument, IoMdPeople } from 'react-icons/io';
 import { FaRegBuilding, FaShapes } from 'react-icons/fa';
-import { _cs } from '@togglecorp/fujs';
+import { isDefined, _cs, unique } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -94,7 +94,7 @@ function ProgramSelector(props: Props) {
     const [
         expandedFilters,
         setExpanedFilters,
-    ] = useState<ExpanedFilter[]>(['programs']);
+    ] = useState<ExpanedFilter[]>(['markers']);
 
     const programListGetUrl = `${apiEndPoint}/core/program/`;
     const [
@@ -276,12 +276,110 @@ function ProgramSelector(props: Props) {
         [programListResponse?.results, programSearchText],
     );
 
+    const enabledProgramOptionIdList: number[] | undefined = useMemo(
+        () => {
+            const programList = programListResponse?.results;
+            if (!programList) {
+                return undefined;
+            }
+            const markerCategory: string[] = [];
+            const markerValue: string[] = [];
+
+            const selectedMarkerList = [...selectedMarker];
+            selectedMarkerList.forEach((val) => {
+                if (val.includes('submarker-')) {
+                    const id = val.replace('submarker-', '');
+                    markerCategory.push(id);
+                } else if (val.includes('marker-')) {
+                    const id = val.replace('marker-', '');
+                    markerValue.push(id);
+                }
+            });
+
+            const programIdByCategory = programList.map(
+                (program) => {
+                    const category = program.markerCategory;
+                    const cat = category.find(c => markerCategory.includes(String(c.id)));
+                    if (!cat) {
+                        return undefined;
+                    }
+                    return program.id;
+                },
+            ).filter(isDefined);
+
+            const programIdByValue = programList.map(
+                (program) => {
+                    const value = program.markerValue;
+                    const val = value.find(c => markerValue.includes(String(c.id)));
+                    if (!val) {
+                        return undefined;
+                    }
+                    return program.id;
+                },
+            ).filter(isDefined);
+
+            const combinedProgramIds = unique([...programIdByCategory, ...programIdByValue]);
+
+            if (combinedProgramIds.length <= 0) {
+                return undefined;
+            }
+            return combinedProgramIds;
+        },
+        [programListResponse?.results, selectedMarker],
+    );
+
+    const enabledPartnerOptionsKeysList: string[] | undefined = useMemo(
+        () => {
+            const programList = programListResponse?.results;
+            if (!programList) {
+                return undefined;
+            }
+            // eslint-disable-next-line max-len
+            const partnerIds = programList.filter(program => enabledProgramOptionIdList?.includes(program.id))
+                .map(item => item.partner)
+                .flat()
+                .map(item => String(item.id));
+
+            if (partnerIds.length <= 0) {
+                return undefined;
+            }
+            return partnerIds;
+        },
+        [programListResponse?.results, enabledProgramOptionIdList],
+    );
+
+    const enabledSectorOptionKeysList: string[] | undefined = useMemo(
+        () => {
+            const programList = programListResponse?.results;
+            if (!programList) {
+                return undefined;
+            }
+            // NOTE: Assuming sector / subsector in a program is Basic Entity { id, name }
+            // eslint-disable-next-line max-len
+            const sectorKeys = programList.filter(program => enabledProgramOptionIdList?.includes(program.id))
+                .map(item => item.sector)
+                .flat()
+                .map(item => `sector-${item.id}`);
+
+            // eslint-disable-next-line max-len
+            const subSectorKeys = programList.filter(program => enabledProgramOptionIdList?.includes(program.id))
+                .map(item => item.subSector)
+                .flat()
+                .map(item => `subsector-${item.id}`);
+
+            const combinedSectorKeys = unique([...sectorKeys, ...subSectorKeys]);
+            if (combinedSectorKeys.length <= 0) {
+                return undefined;
+            }
+            return combinedSectorKeys;
+        },
+        [programListResponse?.results, enabledProgramOptionIdList],
+    );
+
     // eslint-disable-next-line max-len
     const loading = programListPending || partnerListPending || markerListPending || subMarkerListPending || sectorListPending || subSectorListPending;
 
-    // TODO 1: Disable programs based on marker selected
-    // TODO 2: Disable partners and sectors based on programs selected
-    // TODO 3: Show componets of programs
+    // TODO: Show componets of programs
     return (
         <div className={_cs(className, styles.programSelector)}>
             {loading && (
@@ -315,6 +413,7 @@ function ProgramSelector(props: Props) {
                 icon={<IoIosDocument />}
                 searchText={programSearchText}
                 setSearchText={setProgramSearchText}
+                enabledIds={enabledProgramOptionIdList}
             />
             <SelectorItem
                 name="partners"
@@ -328,6 +427,7 @@ function ProgramSelector(props: Props) {
                 icon={<FaRegBuilding />}
                 searchText={partnerSearchText}
                 setSearchText={setPartnerSearchText}
+                enabledIds={enabledPartnerOptionsKeysList}
             />
             <SelectorItem
                 name="sectors"
@@ -341,6 +441,7 @@ function ProgramSelector(props: Props) {
                 icon={<FaShapes />}
                 searchText={sectorSearchText}
                 setSearchText={setSectorSearchText}
+                enabledIds={enabledSectorOptionKeysList}
             />
         </div>
     );

@@ -17,7 +17,7 @@ interface TreeNodeListProps<T, K extends OptionKey> {
     value: K[];
 
     visibleOptions: T[];
-
+    enabledOptions?: number[] | string[];
     disabled: boolean;
     readOnly: boolean;
 
@@ -42,6 +42,7 @@ function TreeNodeList<T, K extends OptionKey>(props: TreeNodeListProps<T, K>) {
         onChange,
 
         // childOptions,
+        enabledOptions,
         visibleOptions,
 
         level,
@@ -87,6 +88,7 @@ function TreeNodeList<T, K extends OptionKey>(props: TreeNodeListProps<T, K>) {
                 data={visibleOptions}
                 renderer={TreeNode}
                 rendererParams={rendererParams}
+                enabledOptions={enabledOptions}
             />
         </div>
     );

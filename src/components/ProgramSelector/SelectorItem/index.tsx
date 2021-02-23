@@ -30,7 +30,7 @@ interface SelectorItemProps<T extends string | number> {
     name: ExpanedFilter;
     className?: string;
     options: TreeItem<T>[] | undefined;
-    value: T[] | undefined;
+    value: T[];
     setSelectedValue: (keys: T[]) => void;
     collapseLevel?: number;
     expandedFilters: ExpanedFilter[];
@@ -39,6 +39,7 @@ interface SelectorItemProps<T extends string | number> {
     icon?: JSX.Element;
     searchText: string;
     setSearchText: React.Dispatch<React.SetStateAction<string>>;
+    enabledIds?: number[] | string[];
 }
 export default function SelectorItem<T extends string | number>(props: SelectorItemProps<T>) {
     const {
@@ -54,7 +55,9 @@ export default function SelectorItem<T extends string | number>(props: SelectorI
         icon,
         searchText,
         setSearchText,
+        enabledIds,
     } = props;
+
     const isFilterExpanded = useMemo(
         () => (
             !!expandedFilters.find(e => e === name)
@@ -125,6 +128,7 @@ export default function SelectorItem<T extends string | number>(props: SelectorI
                     defaultCollapseLevel={collapseLevel}
                     labelClassName={styles.label}
                     showClearButton={false}
+                    enabledOptions={enabledIds}
                 />
             )}
         </div>

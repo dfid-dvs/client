@@ -29,8 +29,12 @@ interface NoGroupOptions {
     grouped?: false;
 }
 
+interface DisabledProps {
+    enabledOptions?: number[] | string[];
+}
+
 export type ListProps<D, P, K extends OptionKey, GP, GK extends OptionKey> = (
-    BaseProps<D, P, K> & (GroupOptions<D, P, K, GP, GK> | NoGroupOptions)
+    BaseProps<D, P, K> & (GroupOptions<D, P, K, GP, GK> | NoGroupOptions) & DisabledProps
 );
 
 export type GroupedListProps<D, P, K extends OptionKey, GP, GK extends OptionKey> = (
@@ -39,7 +43,7 @@ export type GroupedListProps<D, P, K extends OptionKey, GP, GK extends OptionKey
 
 function hasGroup<D, P, K extends OptionKey, GP, GK extends OptionKey>(
     props: ListProps<D, P, K, GP, GK>,
-): props is (BaseProps<D, P, K> & GroupOptions<D, P, K, GP, GK>) {
+): props is (BaseProps<D, P, K> & GroupOptions<D, P, K, GP, GK> & DisabledProps) {
     return !!(props as BaseProps<D, P, K> & GroupOptions<D, P, K, GP, GK>).grouped;
 }
 
@@ -118,6 +122,7 @@ function List<D, P, K extends OptionKey, GP, GK extends OptionKey>(
         renderer: Renderer,
         rendererClassName,
         rendererParams,
+        enabledOptions,
     } = props;
 
     if (isNotDefined(data)) {
@@ -126,8 +131,17 @@ function List<D, P, K extends OptionKey, GP, GK extends OptionKey>(
 
     const renderListItem = (datum: D, i: number) => {
         const key = keySelector(datum, i);
-        const extraProps = rendererParams(key, datum, i, data);
-
+        let extraProps;
+        if (!enabledOptions) {
+            extraProps = { ...rendererParams(key, datum, i, data) };
+        } else {
+            // FIXME: Argument of type 'K' is not assignable to parameter of type 'never'.
+            const isEnabled = enabledOptions.includes(key);
+            extraProps = {
+                ...rendererParams(key, datum, i, data),
+                disabled: !isEnabled,
+            };
+        }
         return (
             <Renderer
                 key={key}

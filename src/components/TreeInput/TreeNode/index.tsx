@@ -10,10 +10,10 @@ import { OptionKey } from '../../types';
 
 import Button from '#components/Button';
 import CheckboxButton from '#components/CheckboxButton';
-import { ExtendedRelation } from '../utils';
 
-import TreeNodeList from '../TreeNodeList';
 import styles from './styles.css';
+import { ExtendedRelation } from '../utils';
+import TreeNodeList from '../TreeNodeList';
 
 interface TreeNodeProps<T, K extends OptionKey> {
     className?: string;
