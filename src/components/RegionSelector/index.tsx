@@ -1,5 +1,4 @@
 import React, { useMemo, useCallback } from 'react';
-import { IoMdClose } from 'react-icons/io';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -10,7 +9,6 @@ import {
 
 import MultiSelectInput from '#components/MultiSelectInput';
 import SegmentInput from '#components/SegmentInput';
-import Button from '#components/Button';
 
 import styles from './styles.css';
 

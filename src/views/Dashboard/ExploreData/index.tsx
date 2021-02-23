@@ -1,5 +1,4 @@
 import React from 'react';
-import { _cs } from '@togglecorp/fujs';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 import DropdownMenu from '#components/DropdownMenu';

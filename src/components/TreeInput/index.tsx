@@ -3,14 +3,14 @@ import React, {
     useMemo,
 } from 'react';
 import { IoMdClose } from 'react-icons/io';
-import { _cs, isNotDefined, Obj } from '@togglecorp/fujs';
+import { _cs, isNotDefined } from '@togglecorp/fujs';
 
 import { OptionKey } from '../types';
 
 import Button from '#components/Button';
 import HintAndError from '#components/HintAndError';
 import Label from '#components/Label';
-import { generateExtendedRelations, ExtendedRelation } from './utils';
+import { generateExtendedRelations } from './utils';
 import TreeNodeList from './TreeNodeList';
 import styles from './styles.css';
 

@@ -49,11 +49,11 @@ function Multiplexer(props: Props) {
         administrator,
     } = props;
 
-    const [regionLevel, setRegionLevel] = React.useState<RegionLevelOption>('province');
-    const [markers, setMarkers] = React.useState<string[]>([]);
-    const [programs, setPrograms] = React.useState<number[]>([]);
-    const [partners, setPartners] = React.useState<string[]>([]);
-    const [sectors, setSectors] = React.useState<string[]>([]);
+    const [regionLevel, setRegionLevel] = useState<RegionLevelOption>('province');
+    const [markers, setMarkers] = useState<string[]>([]);
+    const [programs, setPrograms] = useState<number[]>([]);
+    const [partners, setPartners] = useState<string[]>([]);
+    const [sectors, setSectors] = useState<string[]>([]);
 
     const domainContextProvider: DomainContextProps = {
         regionLevel,

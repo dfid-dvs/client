@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { _cs } from '@togglecorp/fujs';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
