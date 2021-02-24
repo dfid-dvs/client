@@ -1,7 +1,7 @@
-import React, { useMemo, useContext, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { IoIosDocument, IoMdPeople } from 'react-icons/io';
 import { FaRegBuilding, FaShapes } from 'react-icons/fa';
-import { isDefined, _cs, unique } from '@togglecorp/fujs';
+import { _cs, isDefined, intersection, unique } from '@togglecorp/fujs';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -9,12 +9,12 @@ import {
     MultiResponse,
     Program,
     Partner,
-    DomainContextProps,
+    // DomainContextProps,
 } from '#types';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
-import DomainContext from '#components/DomainContext';
+// import DomainContext from '#components/DomainContext';
 import SelectorItem from './SelectorItem';
 
 import styles from './styles.css';
@@ -80,6 +80,19 @@ function ProgramSelector(props: Props) {
         isMinimized,
     } = props;
 
+    const [selectedMarker, setSelectedMarker] = useState<string[]>([]);
+    const [selectedProgram, setSelectedPrograms] = useState<string[]>([]);
+    const [selectedPartner, setSelectedPartner] = useState<string[]>([]);
+    const [selectedSector, setSelectedSector] = useState<string[]>([]);
+
+    console.log(
+        selectedMarker,
+        selectedProgram,
+        selectedPartner,
+        selectedSector,
+    );
+
+    /*
     const {
         markers: selectedMarker,
         setMarkers: setSelectedMarker,
@@ -90,22 +103,12 @@ function ProgramSelector(props: Props) {
         sectors: selectedSector,
         setSectors: setSelectedSector,
     } = useContext<DomainContextProps>(DomainContext);
-
-    const optionsSelected = useMemo(
-        // eslint-disable-next-line max-len
-        () => [...selectedMarker, ...selectedProgram, ...selectedPartner, ...selectedSector].length > 0,
-        [
-            selectedMarker,
-            selectedProgram,
-            selectedPartner,
-            selectedSector,
-        ],
-    );
+     */
 
     const [
         expandedFilters,
         setExpanedFilters,
-    ] = useState<ExpanedFilter[]>(['markers']);
+    ] = useState<ExpanedFilter[]>(['markers', 'programs', 'partners', 'sectors']);
 
     const programListGetUrl = `${apiEndPoint}/core/program/`;
     const [
@@ -163,23 +166,106 @@ function ProgramSelector(props: Props) {
         setMarkerSearchText,
     ] = useState('');
 
+    const rawPartnerOptions = partnerListResponse?.results;
+    const rawSectorOptions = sectorListResponse?.results;
+    const rawSubSectorOptions = subSectorListResponse?.results;
+    const rawMarkerOptions = markerListResponse?.results;
+    const rawSubMarkerOptions = subMarkerListResponse?.results;
+    const rawProgramOptions = programListResponse?.results;
+
+    const selectedSectorOriginal = unique(
+        selectedSector.filter(item => item.startsWith('sector')).map(item => Number(item.split('-')[1])),
+    );
+    const selectedSubSectorOriginal = unique(
+        selectedSector.filter(item => item.startsWith('subsector')).map(item => Number(item.split('-')[1])),
+    );
+    const selectedMarkerOriginal = unique(
+        selectedMarker.filter(item => item.startsWith('marker')).map(item => Number(item.split('-')[1])),
+    );
+    const selectedSubMarkerOriginal = unique(
+        selectedMarker.filter(item => item.startsWith('submarker')).map(item => Number(item.split('-')[1])),
+    );
+    const selectedPartnerOriginal = selectedPartner.map(Number);
+
+    const selectedProgramOriginal = unique(
+        selectedProgram.filter(item => item.startsWith('program')).map(item => Number(item.split('-')[1])),
+    );
+
+    const applicableProgramOptions = rawProgramOptions?.filter((item) => {
+        if (selectedSectorOriginal.length > 0) {
+            const common = intersection(
+                new Set(item.sector.map(sec => sec.id)),
+                new Set(selectedSectorOriginal),
+            );
+            if (common.size !== selectedSectorOriginal.length) {
+                return false;
+            }
+        }
+        if (selectedSubSectorOriginal.length > 0) {
+            const common = intersection(
+                new Set(item.subSector.map(sec => sec.id)),
+                new Set(selectedSubSectorOriginal),
+            );
+            if (common.size !== selectedSubSectorOriginal.length) {
+                return false;
+            }
+        }
+        if (selectedMarkerOriginal.length > 0) {
+            const common = intersection(
+                new Set(item.markerCategory.map(sec => sec.id)),
+                new Set(selectedMarkerOriginal),
+            );
+            if (common.size !== selectedMarkerOriginal.length) {
+                return false;
+            }
+        }
+        if (selectedSubMarkerOriginal.length > 0) {
+            const common = intersection(
+                new Set(item.markerValue.map(sec => sec.id)),
+                new Set(selectedSubMarkerOriginal),
+            );
+            if (common.size !== selectedSubMarkerOriginal.length) {
+                return false;
+            }
+        }
+        if (selectedPartnerOriginal.length > 0) {
+            const common = intersection(
+                new Set(item.partner.map(sec => sec.id)),
+                new Set(selectedPartnerOriginal),
+            );
+            if (common.size !== selectedPartnerOriginal.length) {
+                return false;
+            }
+        }
+        return true;
+    });
+
+    const appliedProgramOptions = applicableProgramOptions?.filter((item) => {
+        if (selectedProgramOriginal.length > 0) {
+            const selections = new Set(selectedProgramOriginal);
+            return selections.has(item.id);
+        }
+        // TODO: when component is selected, treat it as program is selected.
+        return true;
+    });
+
     const partnerOptions: TreeItem[] | undefined = useMemo(
         () => {
-            const partnerList = programListResponse?.results
-                .map(item => item.partner)
-                .flat()
-                .map(item => item?.id);
-            const partnerSet = new Set(partnerList);
+            const partnerSet = new Set(
+                appliedProgramOptions
+                    ?.map(item => item.partner)
+                    .flat()
+                    .map(item => item?.id),
+            );
 
-            const mappedPartnerList = partnerListResponse?.results
-                .map(({ id, name }) => ({
+            const mappedPartnerList = rawPartnerOptions
+                ?.map(({ id, name }) => ({
                     key: String(id),
                     parentKey: undefined,
                     parentId: undefined,
                     name,
                     id,
                 }))
-                // Just remove partners which are not active in any program
                 .filter(item => partnerSet.has(item.id));
 
             if (!partnerSearchText) {
@@ -189,19 +275,27 @@ function ProgramSelector(props: Props) {
             const searchText = partnerSearchText.toLowerCase();
             return mappedPartnerList?.filter(item => item.name.toLowerCase().includes(searchText));
         },
-        [partnerListResponse?.results, programListResponse?.results, partnerSearchText],
+        [rawPartnerOptions, appliedProgramOptions, partnerSearchText],
     );
 
     const sectorOptions: TreeItem[] | undefined = useMemo(
         () => {
-            const mappedSectorList = sectorListResponse?.results
-                .map(({ id, name }) => ({
+            const sectorSet = new Set(
+                appliedProgramOptions
+                    ?.map(item => item.sector)
+                    .flat()
+                    .map(item => item?.id),
+            );
+
+            const mappedSectorList = rawSectorOptions
+                ?.map(({ id, name }) => ({
                     key: `sector-${id}`,
                     parentKey: undefined,
                     parentId: undefined,
                     name,
                     id,
-                }));
+                }))
+                .filter(item => sectorSet.has(item.id));
 
             if (!sectorSearchText) {
                 return mappedSectorList;
@@ -210,11 +304,18 @@ function ProgramSelector(props: Props) {
             const searchText = sectorSearchText.toLowerCase();
             return mappedSectorList?.filter(item => item.name.toLowerCase().includes(searchText));
         },
-        [sectorListResponse?.results, sectorSearchText],
+        [rawSectorOptions, sectorSearchText, appliedProgramOptions],
     );
     const subSectorOptions: TreeItem[] | undefined = useMemo(
-        () => (
-            subSectorListResponse?.results.map(
+        () => {
+            const subSectorSet = new Set(
+                appliedProgramOptions
+                    ?.map(item => item.subSector)
+                    .flat()
+                    .map(item => item?.id),
+            );
+
+            return rawSubSectorOptions?.map(
                 ({ id, sectorId, name }) => ({
                     key: `subsector-${id}`,
                     parentKey: `sector-${sectorId}`,
@@ -222,9 +323,9 @@ function ProgramSelector(props: Props) {
                     name,
                     id,
                 }),
-            )
-        ),
-        [subSectorListResponse?.results],
+            ).filter(item => subSectorSet.has(item.id));
+        },
+        [rawSubSectorOptions, appliedProgramOptions],
     );
     const combinedSectorOptions = useMemo(
         () => join(sectorOptions, subSectorOptions),
@@ -233,14 +334,21 @@ function ProgramSelector(props: Props) {
 
     const markerOptions: TreeItem[] | undefined = useMemo(
         () => {
-            const mappedMarkerList = markerListResponse?.results
-                .map(({ id, name }) => ({
+            const markerSet = new Set(
+                appliedProgramOptions
+                    ?.map(item => item.markerCategory)
+                    .flat()
+                    .map(item => item?.id),
+            );
+            const mappedMarkerList = rawMarkerOptions
+                ?.map(({ id, name }) => ({
                     key: `marker-${id}`,
                     parentKey: undefined,
                     parentId: undefined,
                     name,
                     id,
-                }));
+                }))
+                .filter(item => markerSet.has(item.id));
 
             if (!markerSearchText) {
                 return mappedMarkerList;
@@ -248,33 +356,41 @@ function ProgramSelector(props: Props) {
             const searchText = markerSearchText.toLowerCase();
             return mappedMarkerList?.filter(item => item.name.toLowerCase().includes(searchText));
         },
-        [markerListResponse?.results, markerSearchText],
+        [rawMarkerOptions, markerSearchText, appliedProgramOptions],
     );
     const subMarkerOptions: TreeItem[] | undefined = useMemo(
-        () => (
-            subMarkerListResponse?.results
-                .map(({ id, markerCategoryId, value }) => ({
+        () => {
+            const subMarkerSet = new Set(
+                appliedProgramOptions
+                    ?.map(item => item.markerValue)
+                    .flat()
+                    .map(item => item?.id),
+            );
+            return rawSubMarkerOptions
+                ?.map(({ id, markerCategoryId, value }) => ({
                     key: `submarker-${id}`,
                     parentKey: `marker-${markerCategoryId}`,
                     parentId: markerCategoryId,
                     name: value,
                     id,
                 }))
-        ),
-        [subMarkerListResponse?.results],
+                .filter(item => subMarkerSet.has(item.id));
+        },
+        [rawSubMarkerOptions, appliedProgramOptions],
     );
     const combinedMarkerOptions = useMemo(
         () => join(markerOptions, subMarkerOptions),
         [markerOptions, subMarkerOptions],
     );
 
-    const programOptions: TreeItem<number>[] | undefined = useMemo(
+    const programOptions: TreeItem<string>[] | undefined = useMemo(
         () => {
-            const programList = programListResponse?.results.map(p => ({
-                ...p,
-                key: p.id,
+            const programList = applicableProgramOptions?.map(p => ({
+                key: `program-${p.id}`,
                 parentKey: undefined,
                 parentId: undefined,
+                name: p.name,
+                id: p.id,
             }));
 
             if (!programSearchText) {
@@ -284,143 +400,41 @@ function ProgramSelector(props: Props) {
             const searchText = programSearchText.toLowerCase();
             return programList?.filter(item => item.name.toLowerCase().includes(searchText));
         },
-        [programListResponse?.results, programSearchText],
+        [applicableProgramOptions, programSearchText],
     );
-
-    const enabledProgramOptionIdList: number[] | undefined = useMemo(
+    const subProgramOptions: TreeItem[] | undefined = useMemo(
         () => {
-            const programList = programListResponse?.results;
-            if (!programList) {
-                return undefined;
-            }
-            const markerCategory: string[] = [];
-            const markerValue: string[] = [];
-
-            const selectedMarkerList = [...selectedMarker];
-            selectedMarkerList.forEach((val) => {
-                if (val.includes('submarker-')) {
-                    const id = val.replace('submarker-', '');
-                    markerCategory.push(id);
-                } else if (val.includes('marker-')) {
-                    const id = val.replace('marker-', '');
-                    markerValue.push(id);
-                }
-            });
-
-            const programIdByCategory = programList.map(
-                (program) => {
-                    const category = program.markerCategory;
-                    const cat = category.find(c => markerCategory.includes(String(c.id)));
-                    if (!cat) {
-                        return undefined;
-                    }
-                    return program.id;
-                },
-            ).filter(isDefined);
-
-            const programIdByValue = programList.map(
-                (program) => {
-                    const value = program.markerValue;
-                    const val = value.find(c => markerValue.includes(String(c.id)));
-                    if (!val) {
-                        return undefined;
-                    }
-                    return program.id;
-                },
-            ).filter(isDefined);
-
-            const combinedProgramIds = unique([...programIdByCategory, ...programIdByValue]);
-
-            if (combinedProgramIds.length <= 0) {
-                return undefined;
-            }
-            return combinedProgramIds;
+            const programList = applicableProgramOptions?.map(p => (
+                p.component.map((item => ({
+                    key: `subprogram-${item.id}`,
+                    parentKey: `program-${p.id}`,
+                    parentId: p.id,
+                    name: item.name,
+                    id: item.id,
+                })))
+            )).flat().filter(isDefined);
+            return programList;
         },
-        [programListResponse?.results, selectedMarker],
+        [applicableProgramOptions],
+    );
+    const combinedProgramOptions = useMemo(
+        () => join(programOptions, subProgramOptions),
+        [programOptions, subProgramOptions],
     );
 
-    const enabledPartnerOptionsKeysList: string[] | undefined = useMemo(
-        () => {
-            const programList = programListResponse?.results;
-            if (!programList) {
-                return undefined;
-            }
-
-            let programOptionsList: number[];
-            if (enabledProgramOptionIdList && selectedProgram.length <= 0) {
-                programOptionsList = enabledProgramOptionIdList;
-            } else if (selectedProgram.length > 0) {
-                programOptionsList = selectedProgram;
-            }
-
-            // eslint-disable-next-line max-len
-            const partnerIds = programList.filter(program => programOptionsList?.includes(program.id))
-                .map(item => item.partner)
-                .flat()
-                .map(item => String(item.id));
-
-            if (partnerIds.length <= 0) {
-                if (optionsSelected) {
-                    return [];
-                }
-                return undefined;
-            }
-            return partnerIds;
-        },
-        [
-            programListResponse?.results,
-            enabledProgramOptionIdList,
-            selectedProgram,
-            optionsSelected,
-        ],
-    );
-
-    const enabledSectorOptionKeysList: string[] | undefined = useMemo(
-        () => {
-            const programList = programListResponse?.results;
-            if (!programList) {
-                return undefined;
-            }
-
-            let programOptionsList: number[];
-            if (enabledProgramOptionIdList && selectedProgram.length <= 0) {
-                programOptionsList = enabledProgramOptionIdList;
-            } else if (selectedProgram.length > 0) {
-                programOptionsList = selectedProgram;
-            }
-            // eslint-disable-next-line max-len
-            const sectorKeys = programList.filter(program => programOptionsList?.includes(program.id))
-                .map(item => item.sector)
-                .flat()
-                .map(item => `sector-${item.id}`);
-
-            // eslint-disable-next-line max-len
-            const subSectorKeys = programList.filter(program => programOptionsList?.includes(program.id))
-                .map(item => item.subSector)
-                .flat()
-                .map(item => `subsector-${item.id}`);
-
-            const combinedSectorKeys = unique([...sectorKeys, ...subSectorKeys]);
-            if (combinedSectorKeys.length <= 0) {
-                if (optionsSelected) {
-                    return [];
-                }
-                return undefined;
-            }
-            return combinedSectorKeys;
-        },
-        [
-            programListResponse?.results,
-            enabledProgramOptionIdList,
-            selectedProgram,
-            optionsSelected,
-        ],
-    );
 
     // eslint-disable-next-line max-len
-    const loading = programListPending || partnerListPending || markerListPending || subMarkerListPending || sectorListPending || subSectorListPending;
+    const loading = (
+        programListPending
+        || partnerListPending
+        || markerListPending
+        || subMarkerListPending
+        || sectorListPending
+        || subSectorListPending
+    );
 
-    // TODO: Show componets of programs
+    // TODO: disable instead of hide
+
     return (
         <div className={_cs(className, styles.programSelector)}>
             {loading && (
@@ -437,7 +451,7 @@ function ProgramSelector(props: Props) {
                 expandedFilters={expandedFilters}
                 setExpandedFilters={setExpanedFilters}
                 isMinimized={isMinimized}
-                collapseLevel={1}
+                // collapseLevel={1}
                 icon={<IoMdPeople />}
                 searchText={markerSearchText}
                 setSearchText={setMarkerSearchText}
@@ -445,7 +459,7 @@ function ProgramSelector(props: Props) {
             <SelectorItem
                 name="programs"
                 className={styles.programTree}
-                options={programOptions}
+                options={combinedProgramOptions}
                 value={selectedProgram}
                 setSelectedValue={setSelectedPrograms}
                 expandedFilters={expandedFilters}
@@ -454,7 +468,6 @@ function ProgramSelector(props: Props) {
                 icon={<IoIosDocument />}
                 searchText={programSearchText}
                 setSearchText={setProgramSearchText}
-                enabledIds={enabledProgramOptionIdList}
             />
             <SelectorItem
                 name="partners"
@@ -468,7 +481,6 @@ function ProgramSelector(props: Props) {
                 icon={<FaRegBuilding />}
                 searchText={partnerSearchText}
                 setSearchText={setPartnerSearchText}
-                enabledIds={enabledPartnerOptionsKeysList}
             />
             <SelectorItem
                 name="sectors"
@@ -482,7 +494,6 @@ function ProgramSelector(props: Props) {
                 icon={<FaShapes />}
                 searchText={sectorSearchText}
                 setSearchText={setSectorSearchText}
-                enabledIds={enabledSectorOptionKeysList}
             />
         </div>
     );
