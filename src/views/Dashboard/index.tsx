@@ -608,6 +608,9 @@ const Dashboard = (props: Props) => {
                         styles.regionDetails,
                         isFilterMinimized && styles.filterMinimized,
                     )}
+                    regionLevel={regionLevel}
+                    handleRegionLevelChange={setRegionLevel}
+                    programs={programs}
                 />
             )}
             {hash === 'programs' && (

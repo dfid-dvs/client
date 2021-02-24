@@ -227,7 +227,7 @@
 
     .region-details {
         left: var(--width-config-container);
-        background: var(--color-background-light);
+        background: var(--color-white-smoke);
         width: calc(100% - var(--width-config-container));
 
         &.filter-minimized {

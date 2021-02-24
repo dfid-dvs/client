@@ -2,10 +2,8 @@ import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import SegmentInput from '#components/SegmentInput';
-import DomainContext from '#components/DomainContext';
 import PopupPage from '#components/PopupPage';
-
-import { Indicator } from '#types';
+import { Indicator, RegionLevelOption } from '#types';
 
 import Table from './Table';
 import Charts from './Charts';
@@ -28,6 +26,9 @@ interface Props {
     className?: string;
     indicatorList: Indicator[] | undefined;
     indicatorListPending: boolean | undefined;
+    regionLevel: RegionLevelOption;
+    handleRegionLevelChange: (v: RegionLevelOption) => void;
+    programs: number[];
 }
 
 const optionKeySelector = (item: TabOption) => item.key;
@@ -38,17 +39,13 @@ function RegionDetails(props: Props) {
         className,
         indicatorList,
         indicatorListPending,
+        regionLevel,
+        handleRegionLevelChange,
+        programs,
     } = props;
 
-    const {
-        regionLevel: regionLevelFromContext,
-        setRegionLevel: handleRegionLevelChange,
-        programs,
-    } = useContext(DomainContext);
 
-    const [regionLevel, setRegionLevel] = useState(regionLevelFromContext);
     const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('charts');
-    const [region, setRegion] = useState<number | undefined>(undefined);
 
     const [
         selectedRegions,
@@ -91,7 +88,7 @@ function RegionDetails(props: Props) {
                     programs={programs}
 
                     regionLevel={regionLevel}
-                    onRegionLevelChange={setRegionLevel}
+                    onRegionLevelChange={handleRegionLevelChange}
 
                     indicators={selectedIndicators}
                     onIndicatorsChange={setSelectedIndicators}
@@ -104,7 +101,7 @@ function RegionDetails(props: Props) {
                 <Charts
                     programs={programs}
                     regionLevel={regionLevel}
-                    onRegionLevelChange={setRegionLevel}
+                    onRegionLevelChange={handleRegionLevelChange}
 
                     indicatorList={indicatorList}
                     indicatorListPending={indicatorListPending}

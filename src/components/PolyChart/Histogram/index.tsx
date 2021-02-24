@@ -9,7 +9,7 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
-import { IoMdTrash } from 'react-icons/io';
+import { IoMdClose } from 'react-icons/io';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
@@ -109,7 +109,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                             transparent
                             variant="danger"
                         >
-                            <IoMdTrash />
+                            <IoMdClose className={styles.deletIcon} />
                         </Button>
                     </div>
                 )}

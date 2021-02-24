@@ -5,7 +5,6 @@ import { IoMdAddCircleOutline } from 'react-icons/io';
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
-import RegionSelector from '#components/RegionSelector';
 import PolyChart from '#components/PolyChart';
 import ChartModal from '#components/ChartModal';
 
@@ -348,10 +347,10 @@ function Charts(props: Props) {
                 <Button
                     onClick={handleModalShow}
                     className={styles.addChartButton}
+                    icons={<IoMdAddCircleOutline className={styles.icon} />}
                 >
-                    <IoMdAddCircleOutline className={styles.icon} />
                     <div className={styles.text}>
-                        Add chart
+                        Add Chart
                     </div>
                 </Button>
             </div>
@@ -368,6 +367,7 @@ function Charts(props: Props) {
                         data={extendedFiveWList}
                         settings={item}
                         onDelete={handleChartDelete}
+                        className={styles.polyChart}
                     />
                 ))}
             </div>

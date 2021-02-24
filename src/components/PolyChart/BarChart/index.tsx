@@ -10,7 +10,7 @@ import {
     TooltipFormatter,
     ResponsiveContainer,
 } from 'recharts';
-import { IoMdTrash } from 'react-icons/io';
+import { IoMdClose } from 'react-icons/io';
 import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
 
@@ -53,6 +53,7 @@ interface BarChartUnitProps<T> {
     data: T[] | undefined;
     className?: string;
     chartClassName?: string;
+    headerClassName?: string;
     hideActions?: boolean;
     onDelete: (name: string | undefined) => void;
 }
@@ -68,6 +69,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     const {
         className,
         chartClassName,
+        headerClassName,
         settings,
         data,
         onDelete,
@@ -88,6 +90,9 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
 
     const Xcomp = layout === 'vertical' ? YAxis : XAxis;
     const Ycomp = layout === 'vertical' ? XAxis : YAxis;
+
+    const isVertical = layout === 'vertical';
+    const isHorizontal = layout === 'horizontal';
 
     const finalData = useMemo(
         () => {
@@ -119,7 +124,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
 
     return (
         <div className={_cs(styles.chartContainer, className)}>
-            <header className={styles.header}>
+            <header className={_cs(styles.header, headerClassName)}>
                 <h3 className={styles.heading}>
                     {title}
                 </h3>
@@ -132,7 +137,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                             transparent
                             variant="danger"
                         >
-                            <IoMdTrash />
+                            <IoMdClose className={styles.deleteIcon} />
                         </Button>
                         <SegmentInput
                             options={orientations}
@@ -154,7 +159,11 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                         margin={chartMargin}
                         barGap={0}
                     >
-                        <CartesianGrid strokeDasharray="3 3" />
+                        <CartesianGrid
+                            strokeDasharray="0"
+                            horizontal={isHorizontal}
+                            vertical={isVertical}
+                        />
                         <Xcomp
                             dataKey={keySelector}
                             type="category"
@@ -183,6 +192,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                 dataKey={bar.valueSelector}
                                 fill={bar.color}
                                 stackId={bar.stackId}
+                                barSize={22}
                             />
                         ))}
                     </BarChart>
