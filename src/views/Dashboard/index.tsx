@@ -18,7 +18,7 @@ import PrintButton from '#components/PrintButton';
 import PrintDetailsBar from '#components/PrintDetailsBar';
 import RasterLegend from '#components/RasterLegend';
 import VectorLegend from '#components/VectorLegend';
-import RegionSelector from '#components/RegionSelector';
+import SingleRegionSelect from '#components/SingleRegionSelect';
 
 import useRequest from '#hooks/useRequest';
 import useHash from '#hooks/useHash';
@@ -155,6 +155,11 @@ const Dashboard = (props: Props) => {
         printMode,
         setPrintMode,
     ] = useState(false);
+
+    const [
+        region,
+        setRegion,
+    ] = useState<number | undefined>(undefined);
 
     // Show/hide filters
     const [isFilterMinimized, , , toggleFilterMinimized] = useBasicToggle();
@@ -406,6 +411,13 @@ const Dashboard = (props: Props) => {
         [setClickedRegionProperties],
     );
 
+    const handleRegionChange = useCallback(
+        (newRegionId) => {
+            setRegion(newRegionId);
+        },
+        [setRegion],
+    );
+
     useEffect(() => {
         handleTooltipClose();
     }, [hash, handleTooltipClose]);
@@ -442,6 +454,7 @@ const Dashboard = (props: Props) => {
                     vectorLayers={selectedVectorLayersDetail}
                     onClick={handleMapRegionClick}
                     printMode={printMode}
+                    selectedRegionId={region}
                     // hideTooltipOnHover
                 />
             </div>
@@ -459,11 +472,13 @@ const Dashboard = (props: Props) => {
                     Filters
                 </Button>
                 {regionFilterShown && (
-                    <RegionSelector
+                    <SingleRegionSelect
                         className={styles.regionSelectorContainer}
                         onRegionLevelChange={setRegionLevel}
                         regionLevel={regionLevel}
-                        searchHidden
+                        region={region}
+                        onRegionChange={handleRegionChange}
+                        disabled={printMode}
                     />
                 )}
             </div>

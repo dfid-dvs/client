@@ -55,6 +55,7 @@
         flex-direction: column;
 
         .region-selector-container {
+            flex-direction: column;
             margin-top: var(--spacing-medium);
             box-shadow: 2px 1px 6px 4px rgba(0, 0, 0, .1);
             background: var(--color-foreground);

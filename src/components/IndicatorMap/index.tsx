@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
+
+import { apiEndPoint } from '#utils/constants';
+import useRequest from '#hooks/useRequest';
 
 import Map from '#remap';
 import MapBounds from '#remap/MapBounds';
@@ -8,7 +11,10 @@ import MapSource from '#remap/MapSource';
 import MapLayer from '#remap/MapSource/MapLayer';
 import MapState from '#remap/MapSource/MapState';
 
-import { VectorLayer, RasterLayer, MapStateItem } from '#types';
+import { MultiResponse, VectorLayer, RasterLayer, MapStateItem } from '#types';
+
+import Backdrop from '#components/Backdrop';
+import LoadingAnimation from '#components/LoadingAnimation';
 
 import theme, { noneLayout, visibleLayout } from './mapTheme';
 import RasterMapLayer from './RasterMapLayer';
@@ -21,10 +27,46 @@ const defaultCenter: mapboxgl.LngLatLike = [
     84.1240, 28.3949,
 ];
 
-const defaultBounds: [number, number, number, number] = [
+type Bound = [number, number, number, number];
+
+const defaultBounds: Bound = [
     80.05858661752784, 26.347836996368667,
     88.20166918432409, 30.44702867091792,
 ];
+
+export interface Province {
+    id: number;
+    name: string;
+    code: string;
+    boundary: string;
+    bbox: string;
+}
+
+export interface District {
+    id: number;
+    provinceId: number;
+    provinceName: string;
+    name: string;
+    code: string;
+    nCode: number;
+    bbox: string;
+}
+
+export interface Municipality {
+    id: number;
+    name: string;
+    provinceId: number;
+    districtId: number;
+    hlcitCode: string;
+    gnTypeNp: string;
+    code: string;
+    population: number;
+    bbox: string;
+    provinceName: string;
+    districtName: string;
+}
+
+type Region = Province | District | Municipality;
 
 const leftSpacedPadding = {
     top: 20,
@@ -62,6 +104,7 @@ interface Props {
         lngLat: mapboxgl.LngLat,
         point: mapboxgl.Point,
     ) => boolean | undefined;
+    selectedRegionId?: number;
 }
 
 function IndicatorMap(props: Props) {
@@ -80,6 +123,7 @@ function IndicatorMap(props: Props) {
         printMode,
         // hideTooltipOnHover,
         onClick,
+        selectedRegionId,
     } = props;
 
     const isProvinceVisible = regionLevel === 'province';
@@ -100,6 +144,32 @@ function IndicatorMap(props: Props) {
         selectedSourceForBubble = 'palikacentroidgeo';
     }
 
+    // FIXME: filter by code instead of id - after backend is updated
+    const regionGetRequest = selectedRegionId ? `${apiEndPoint}/core/${regionLevel}/?id=${selectedRegionId}` : undefined;
+    const regionSchema = regionLevel;
+    const [
+        regionListPending,
+        regionListResponse,
+    ] = useRequest<MultiResponse<Region>>(regionGetRequest, regionSchema);
+
+    const boundBox: Bound | undefined = useMemo(() => {
+        const res = regionListResponse?.results;
+        if (!res || res.length <= 0) {
+            return undefined;
+        }
+        const { bbox } = res[0];
+        if (!bbox) {
+            return undefined;
+        }
+        const numberedBbox = bbox.split(',').map(b => Number(b));
+        if (numberedBbox.length === 4) {
+            return numberedBbox as Bound;
+        }
+        return undefined;
+    }, [regionListResponse?.results]);
+
+    // eslint-disable-next-line no-unneeded-ternary
+    const bounds = boundBox ? boundBox : defaultBounds;
     return (
         <Map
             mapStyle="mapbox://styles/togglecorp/ck9jjmob30vio1it71wja5zhi"
@@ -109,9 +179,14 @@ function IndicatorMap(props: Props) {
             navControlShown={!printMode}
             navControlPosition="bottom-right"
         >
+            {regionListPending && (
+                <Backdrop>
+                    <LoadingAnimation />
+                </Backdrop>
+            )}
             <MapContainer className={_cs(styles.mapContainer, className)} />
             <MapBounds
-                bounds={defaultBounds}
+                bounds={bounds}
                 padding={printMode ? defaultPadding : leftSpacedPadding}
             />
             <MapSource
