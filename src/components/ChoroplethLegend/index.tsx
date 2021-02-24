@@ -88,9 +88,9 @@ function ChoroplethLegend(
                 </Backdrop>
             )}
             {title && (
-                <h5 className={styles.heading}>
+                <div className={styles.heading}>
                     {unit ? `${title} (${unit})` : title}
-                </h5>
+                </div>
             )}
             {colors.length > 0 && (
                 <div className={styles.choroplethLegend}>

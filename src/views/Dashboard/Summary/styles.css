@@ -1,0 +1,19 @@
+.title-container {
+    display: flex;
+
+    .title {
+        flex-grow: 1;
+        font-size: var(--font-size-extra-large);
+        font-weight: var(--font-weight-bold);
+    }
+}
+
+.summary-container {
+    background: #ffffff;
+    padding: var(--spacing-small);
+
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+    }
+}

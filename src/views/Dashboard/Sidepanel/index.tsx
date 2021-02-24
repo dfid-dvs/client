@@ -11,7 +11,6 @@ import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
 import DomainContext from '#components/DomainContext';
-import LastUpdated from '#components/LastUpdated';
 
 import useRequest from '#hooks/useRequest';
 
@@ -20,7 +19,6 @@ import { apiEndPoint } from '#utils/constants';
 import { MultiResponse } from '#types';
 
 import SummaryOutput from './SummaryOutput';
-import ExternalLink from './ExternalLink';
 
 import styles from './styles.css';
 
@@ -77,14 +75,9 @@ function Sidepanel(props: Props) {
         printMode,
     } = props;
 
-    const { covidMode, programs } = useContext(DomainContext);
+    const { programs } = useContext(DomainContext);
 
     const [isHidden, setIsHidden] = React.useState(false);
-
-    const [
-        statusPending,
-        status,
-    ] = useRequest<Status>(covidMode ? 'https://nepalcorona.info/api/v1/data/nepal' : undefined, 'corona-data');
 
     const summaryParams = p({
         // eslint-disable-next-line @typescript-eslint/camelcase
@@ -125,58 +118,6 @@ function Sidepanel(props: Props) {
                     transparent
                 />
                 <div className={styles.summary}>
-                    {covidMode && (
-                        <div className={styles.covidSummary}>
-                            {statusPending && (
-                                <Backdrop>
-                                    <LoadingAnimation />
-                                </Backdrop>
-                            )}
-                            <header className={styles.header}>
-                                <h2 className={styles.heading}>
-                                    COVID-19 Summary
-                                </h2>
-                                <LastUpdated date={status?.updated_at} />
-                            </header>
-                            <div className={styles.content}>
-                                <SummaryOutput
-                                    className={styles.summaryOutput}
-                                    label="Tests performed"
-                                    value={status?.tested_total}
-                                />
-                                <SummaryOutput
-                                    className={styles.summaryOutput}
-                                    label="Tested positive"
-                                    value={status?.tested_positive}
-                                />
-                                <SummaryOutput
-                                    className={styles.summaryOutput}
-                                    label="Tested negative"
-                                    value={status?.tested_negative}
-                                />
-                                <SummaryOutput
-                                    className={styles.summaryOutput}
-                                    label="In isolation"
-                                    value={status?.in_isolation}
-                                />
-                                <SummaryOutput
-                                    className={styles.summaryOutput}
-                                    label="Deaths"
-                                    value={status?.deaths}
-                                />
-                            </div>
-                            <div className={styles.footer}>
-                                <ExternalLink
-                                    link={status?.source}
-                                    label="Source"
-                                />
-                                <ExternalLink
-                                    link={status?.latest_sit_report?.url}
-                                    label="Latest situation report"
-                                />
-                            </div>
-                        </div>
-                    )}
                     <div className={styles.regionSummary}>
                         <header className={styles.header}>
                             <h2 className={styles.heading}>

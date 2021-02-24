@@ -7,17 +7,13 @@
     color: var(--color-text-label);
 
     &:last-child {
-        border-top-right-radius: var(--radius-input);
-        border-bottom-right-radius: var(--radius-input);
+        border-top-right-radius: calc(4 * var(--radius-input));
+        border-bottom-right-radius: calc(4 * var(--radius-input));
     }
 
     &:first-child {
-        border-top-left-radius: var(--radius-input);
-        border-bottom-left-radius: var(--radius-input);
-    }
-
-    &:not(:last-child) {
-        border-right: 1px solid var(--color-separator-light);
+        border-top-left-radius: calc(4 * var(--radius-input));
+        border-bottom-left-radius: calc(4 * var(--radius-input));
     }
 
     &.disabled {
@@ -26,7 +22,8 @@
     }
 
     &.active {
-        background-color: var(--color-input-background);
+        border-radius: calc(4 * var(--radius-input));
+        background-color: var(--color-light-pink);
         font-weight: var(--font-weight-bold);
     }
 

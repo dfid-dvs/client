@@ -21,4 +21,14 @@
             color: var(--color-accent);
         }
     }
+
+    &.disabled {
+        .icon {
+            color: var(--color-text-disabled);
+        }
+
+        .label {
+            color: var(--color-text-disabled);
+        }
+    }
 }

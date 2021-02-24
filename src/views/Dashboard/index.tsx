@@ -4,30 +4,21 @@ import {
     isDefined,
 } from '@togglecorp/fujs';
 import {
-    IoIosClose,
-    IoIosInformationCircleOutline,
     IoIosArrowForward,
     IoIosArrowBack,
 } from 'react-icons/io';
-
-import MapTooltip from '#remap/MapTooltip';
+import { MdFilterList } from 'react-icons/md';
 
 import BubbleLegend, { BubbleLegendType } from '#components/BubbleLegend';
-import SegmentInput from '#components/SegmentInput';
 import Button from '#components/Button';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import DomainContext from '#components/DomainContext';
 import IndicatorMap from '#components/IndicatorMap';
-import { SubNavbar } from '#components/Navbar';
 import PrintButton from '#components/PrintButton';
 import PrintDetailsBar from '#components/PrintDetailsBar';
-import ProgramSelector from '#components/ProgramSelector';
 import RasterLegend from '#components/RasterLegend';
 import VectorLegend from '#components/VectorLegend';
 import RegionSelector from '#components/RegionSelector';
-import SelectInput from '#components/SelectInput';
-import MultiSelectInput from '#components/MultiSelectInput';
-import ToggleButton from '#components/ToggleButton';
 
 import useRequest from '#hooks/useRequest';
 import useHash from '#hooks/useHash';
@@ -53,37 +44,23 @@ import {
     colorDomain,
     apiEndPoint,
 } from '#utils/constants';
-
-import TravelTimeLayer, {
-    DesignatedHospital,
-    TravelTimeDetails,
-} from './TravelTimeLayer';
-import {
-    fourHourColor,
-    eightHourColor,
-    twelveHourColor,
-    fourHourUncoveredColor,
-    eightHourUncoveredColor,
-    twelveHourUncoveredColor,
-} from './TravelTimeLayer/mapTheme';
+import useBasicToggle from '#hooks/useBasicToggle';
 
 import Tooltip from './Tooltip';
-import Sidepanel from './Sidepanel';
 
 import useMapStateForFiveW from './useMapStateForFiveW';
 import useMapStateForIndicator from './useMapStateForIndicator';
+import FiltersPanel from './FiltersPanel';
+import Summary from './Summary';
 
 import {
-    FiveWOptionKey,
     FiveWOption,
     isFiveWOptionKey,
-    HospitalType,
-    Season,
-    TravelTimeType,
-    CovidFields,
 } from './types';
 
 import styles from './styles.css';
+import ExploreData from './ExploreData';
+import MapOptions from './MapOptions';
 
 interface Region {
     name: string;
@@ -94,99 +71,44 @@ interface ClickedRegion {
     lngLat: mapboxgl.LngLatLike;
 }
 
-const onClickTooltipOptions: mapboxgl.PopupOptions = {
-    closeOnClick: true,
-    closeButton: false,
-    // offset: 8,
-    maxWidth: '480px',
-};
-
-const catchmentLegend = {
-    [fourHourColor]: 4,
-    [eightHourColor]: 8,
-    [twelveHourColor]: 12,
-};
-const uncoveredLegend = {
-    [twelveHourUncoveredColor]: '> 12',
-    [eightHourUncoveredColor]: '> 8',
-    [fourHourUncoveredColor]: '> 4',
-};
-
-const staticFiveWOptions: FiveWOption[] = [
+const fiveWOptions: FiveWOption[] = [
     {
         key: 'allocatedBudget',
         label: 'Allocated Budget',
         unit: '£',
-        category: 'General',
     },
     {
         key: 'programCount',
         label: 'Programs',
         datatype: 'integer',
-        category: 'General',
         unit: 'Count',
     },
     {
         key: 'partnerCount',
         label: 'Partners',
         datatype: 'integer',
-        category: 'General',
         unit: 'Count',
     },
     {
         key: 'componentCount',
         label: 'Components',
         datatype: 'integer',
-        category: 'General',
         unit: 'Count',
     },
     {
         key: 'sectorCount',
         label: 'Sectors',
         datatype: 'integer',
-        category: 'General',
         unit: 'Count',
     },
 ];
 
-const hospitalTypeOptions: HospitalType[] = [
-    { key: 'deshosp', label: 'Level Hospitals' },
-    { key: 'allcovidhfs', label: 'All Covid Clinics' },
-];
-
-const seasonOptions: Season[] = [
-    { key: 'dry', label: 'Dry' },
-    { key: 'msn', label: 'Monsoon' },
-];
-
-const travelTimeTypeOptions: TravelTimeType[] = [
-    { key: 'catchment', label: 'Catchment' },
-    { key: 'uncovered', label: 'Uncovered' },
-];
-
 const fiveWKeySelector = (option: FiveWOption) => option.key;
 const fiveWLabelSelector = (option: FiveWOption) => option.label;
-const fiveWGroupKeySelector = (indicator: FiveWOption) => indicator.category;
 
 const legendKeySelector = (option: LegendItem) => option.radius;
 const legendValueSelector = (option: LegendItem) => option.value;
 const legendRadiusSelector = (option: LegendItem) => option.radius;
-
-const indicatorKeySelector = (indicator: Indicator) => indicator.id;
-const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
-const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
-
-const layerKeySelector = (d: Layer) => d.id;
-const layerLabelSelector = (d: Layer) => d.name;
-
-const hospitalTypeKeySelector = (hospitalType: HospitalType) => hospitalType.key;
-const hospitalTypeLabelSelector = (hospitalType: HospitalType) => hospitalType.label;
-
-const seasonKeySelector = (season: Season) => season.key;
-const seasonLabelSelector = (season: Season) => season.label;
-
-const travelTimeTypeKeySelector = (travelTimeType: TravelTimeType) => travelTimeType.key;
-const travelTimeTypeLabelSelector = (travelTimeType: TravelTimeType) => travelTimeType.label;
 
 interface Props {
     className?: string;
@@ -197,8 +119,6 @@ const Dashboard = (props: Props) => {
     const {
         regionLevel,
         setRegionLevel,
-        covidMode,
-        setCovidMode,
         programs,
     } = useContext(DomainContext);
 
@@ -212,10 +132,6 @@ const Dashboard = (props: Props) => {
         setFiveWOption,
     ] = useState<string | undefined>('allocatedBudget');
     const [
-        selectedFiveWSubOption,
-        setFiveWSubOption,
-    ] = useState<string | undefined>();
-    const [
         mapStyleInverted,
         setMapStyleInverted,
     ] = useState(false);
@@ -227,81 +143,23 @@ const Dashboard = (props: Props) => {
         selectedVectorLayers,
         setSelectedVectorLayers,
     ] = useState<number[] | undefined>([]);
-    // Filter health
-    const [
-        showHealthResource,
-        setShowHealthResource,
-    ] = useState<boolean>(true);
-    const [
-        selectedHospitalType,
-        setHospitalType,
-    ] = useState<HospitalType['key']>('deshosp');
-    const [
-        selectedHospitals,
-        setSelectedHospitals,
-    ] = useState<string[]>([]);
-    const [
-        selectedSeason,
-        setSeason,
-    ] = useState<Season['key']>('dry');
-    const [
-        showHealthTravelTime,
-        setShowHealthTravelTime,
-    ] = useState<boolean>(false);
-    const [
-        selectedTravelTimeType,
-        setTravelTimeType,
-    ] = useState<TravelTimeType['key']>('catchment');
+
     // tooltip
     const [
         clickedRegionProperties,
         setClickedRegionProperties,
     ] = useState<ClickedRegion | undefined>();
-    // info visibility
-    const [
-        ttInfoVisibility,
-        setTtInfoVisbility,
-    ] = useState(false);
+
     // print
     const [
         printMode,
         setPrintMode,
     ] = useState(false);
+
     // Show/hide filters
-    const [
-        isFilterHidden,
-        setFilterHidden,
-    ] = React.useState(false);
-
-    const handleToggleFilterVisibilityButtonClick = React.useCallback(() => {
-        setFilterHidden(prevValue => !prevValue);
-    }, [setFilterHidden]);
-
-    const covidFields = covidMode ? `${apiEndPoint}/core/covid-fields/` : undefined;
-    const [
-        covidFieldsPending,
-        covidFieldsResponse,
-    ] = useRequest<CovidFields>(covidFields, 'covid-fields');
-
-    const fiveWOptions = useMemo(
-        () => {
-            if (!covidFieldsResponse || !covidMode) {
-                return staticFiveWOptions;
-            }
-            const dynamicMapping: FiveWOption[] = covidFieldsResponse.field.map(item => ({
-                key: item.value,
-                label: item.name,
-                datatype: 'integer',
-                unit: 'Program count',
-                category: 'Covid Related',
-            }));
-            return [
-                ...staticFiveWOptions,
-                ...dynamicMapping,
-            ];
-        },
-        [covidMode, covidFieldsResponse],
-    );
+    const [isFilterMinimized, , , toggleFilterMinimized] = useBasicToggle();
+    const [regionFilterShown, , , toggleRegionFilter] = useBasicToggle();
+    const [mapFilterShown, , , toggleMapFilter] = useBasicToggle();
 
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
     const [
@@ -333,7 +191,7 @@ const Dashboard = (props: Props) => {
         [vectorLayers, selectedVectorLayers],
     );
 
-    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?${covidMode ? 'is_covid=true' : 'is_dashboard=true'}`;
+    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_dashboard=true`;
     const [
         indicatorListPending,
         indicatorListResponse,
@@ -370,29 +228,21 @@ const Dashboard = (props: Props) => {
                 return undefined;
             }
 
-            const programCountOption: FiveWOptionKey = 'programCount';
-
             return isFiveWOptionKey(selectedFiveWOption)
                 ? selectedFiveWOption
-                : programCountOption;
+                : 'programCount' as const;
         },
         [selectedFiveWOption],
     );
 
-    const filterValue = selectedFiveWOption && !isFiveWOptionKey(selectedFiveWOption)
-        ? { field: selectedFiveWOption, value: selectedFiveWSubOption }
-        : undefined;
-
     const [
         fiveWMapStatePending,
         fiveWMapState,
-        fiveWStats,
     ] = useMapStateForFiveW(
         regionLevel,
         programs,
         fiveWOptionKey,
         false,
-        filterValue,
     );
 
     const {
@@ -456,7 +306,6 @@ const Dashboard = (props: Props) => {
     }, [
         mapStyleInverted,
         indicatorMapState,
-        fiveWOptions,
         fiveWMapState,
         indicatorMapStatePending,
         fiveWMapStatePending,
@@ -526,59 +375,13 @@ const Dashboard = (props: Props) => {
         [bubbleMapState, bubbleInteger, regionLevel],
     );
 
-    const enableHealthResources = showHealthResource && covidMode;
-
-    const showTravelTimeChoropleth = (
-        enableHealthResources
-        && showHealthTravelTime
-    );
-
     const hash = useHash();
-
-    const dfidData = useMemo(
-        () => {
-            if (!clickedRegionProperties) {
-                return undefined;
-            }
-            const { id } = clickedRegionProperties.feature;
-            const code = String(id);
-            return fiveWStats.find(v => v.code === code);
-        },
-        [fiveWStats, clickedRegionProperties],
-    );
-
-    const indicatorData = useMemo(
-        () => {
-            if (!selectedIndicatorDetails || !clickedRegionProperties) {
-                return undefined;
-            }
-
-            const { id } = clickedRegionProperties.feature;
-
-            const indicatorValue = indicatorMapState.find(v => v.id === id)?.value;
-
-            return {
-                ...selectedIndicatorDetails,
-                value: indicatorValue,
-            };
-        },
-        [indicatorMapState, selectedIndicatorDetails, clickedRegionProperties],
-    );
 
     const handleFiveWOptionChange = useCallback(
         (fiveWOption: string | undefined) => {
-            if (fiveWOption && !isFiveWOptionKey(fiveWOption)) {
-                if (fiveWOption === 'kathmandu_activity') {
-                    setFiveWSubOption(covidFieldsResponse?.kathmanduActivity[0]);
-                } else {
-                    setFiveWSubOption(covidFieldsResponse?.other[0]);
-                }
-            } else {
-                setFiveWSubOption(undefined);
-            }
             setFiveWOption(fiveWOption);
         },
-        [covidFieldsResponse],
+        [],
     );
 
     const handleMapRegionClick = useCallback(
@@ -607,57 +410,12 @@ const Dashboard = (props: Props) => {
         handleTooltipClose();
     }, [hash, handleTooltipClose]);
 
-    const handleTtInfoVisibilityChange = useCallback(
-        () => {
-            setTtInfoVisbility(!ttInfoVisibility);
-        },
-        [setTtInfoVisbility, ttInfoVisibility],
-    );
-
-    const handleHospitalToggle = useCallback(
-        (name: string | undefined) => {
-            if (!name) {
-                return;
-            }
-            setSelectedHospitals((hospitals) => {
-                const hospitalIndex = hospitals.findIndex(hospital => hospital === name);
-                if (hospitalIndex !== -1) {
-                    const newHospitals = [...hospitals];
-                    newHospitals.splice(hospitalIndex, 1);
-                    return newHospitals;
-                }
-                return [...hospitals, name];
-            });
-        },
-        [],
-    );
-
-    const handleHospitalClick = useCallback(
-        (
-            feature: mapboxgl.MapboxGeoJSONFeature,
-        ) => {
-            type SelectedHospital = GeoJSON.Feature<GeoJSON.Point, DesignatedHospital>;
-            const { properties: { name } } = feature as unknown as SelectedHospital;
-            handleHospitalToggle(name);
-            return true;
-        },
-        [handleHospitalToggle],
-    );
-
     // NOTE: clear tooltip on region change
     useEffect(
         () => {
             setClickedRegionProperties(undefined);
         },
         [regionLevel],
-    );
-
-    // NOTE: clear hospitals on hospital type change
-    useEffect(
-        () => {
-            setSelectedHospitals([]);
-        },
-        [selectedHospitalType],
     );
 
     return (
@@ -667,29 +425,11 @@ const Dashboard = (props: Props) => {
             printMode && styles.printMode,
         )}
         >
-            <SubNavbar>
-                <div className={styles.subNavbar}>
-                    <ProgramSelector className={styles.programSelector} />
-                    <div className={styles.actions}>
-                        <ToggleButton
-                            label="Show COVID-19 Data"
-                            className={styles.inputItem}
-                            value={covidMode}
-                            onChange={setCovidMode}
-                        />
-                    </div>
-                </div>
-            </SubNavbar>
             <PrintDetailsBar
                 show={printMode}
                 title={titleForPrintBar}
                 description={selectedIndicatorDetails?.abstract}
             />
-            {/* pending && (
-                <Backdrop className={styles.backdrop}>
-                    <LoadingAnimation />
-                </Backdrop>
-             ) */}
             <div className={styles.mainContent}>
                 <IndicatorMap
                     className={styles.mapContainer}
@@ -703,226 +443,104 @@ const Dashboard = (props: Props) => {
                     onClick={handleMapRegionClick}
                     printMode={printMode}
                     // hideTooltipOnHover
+                />
+            </div>
+            <div
+                className={_cs(
+                    styles.filtersByRegion,
+                    isFilterMinimized && styles.filterMinimized,
+                )}
+            >
+                <Button
+                    className={styles.button}
+                    icons={<MdFilterList />}
+                    onClick={toggleRegionFilter}
                 >
-                    {clickedRegionProperties && (
-                        <MapTooltip
-                            coordinates={clickedRegionProperties.lngLat}
-                            tooltipOptions={onClickTooltipOptions}
-                            onHide={handleTooltipClose}
-                        >
-                            <Tooltip
-                                feature={clickedRegionProperties.feature}
-                                regionLevel={regionLevel}
-                                programs={programs}
-                            />
-                        </MapTooltip>
+                    Filters
+                </Button>
+                {regionFilterShown && (
+                    <RegionSelector
+                        className={styles.regionSelectorContainer}
+                        onRegionLevelChange={setRegionLevel}
+                        regionLevel={regionLevel}
+                        searchHidden
+                    />
+                )}
+            </div>
+
+            <div className={styles.filtersByMap}>
+                <Button
+                    className={styles.button}
+                    onClick={toggleMapFilter}
+                >
+                    Map Options
+                </Button>
+
+                {mapFilterShown && (
+                    <MapOptions
+                        fiveWOptions={fiveWOptions}
+                        selectedFiveWOption={selectedFiveWOption}
+                        handleFiveWOptionChange={handleFiveWOptionChange}
+                        indicatorListPending={indicatorListPending}
+                        indicatorList={indicatorList}
+                        setSelectedIndicator={setSelectedIndicator}
+                        validSelectedIndicator={validSelectedIndicator}
+                        selectedIndicatorDetails={selectedIndicatorDetails}
+                        mapStyleInverted={mapStyleInverted}
+                        setMapStyleInverted={setMapStyleInverted}
+                        mapLayerListPending={mapLayerListPending}
+                        vectorLayers={vectorLayers}
+                        setSelectedVectorLayers={setSelectedVectorLayers}
+                        selectedVectorLayers={selectedVectorLayers}
+                        rasterLayers={rasterLayers}
+                        setSelectedRasterLayer={setSelectedRasterLayer}
+                        selectedRasterLayer={selectedRasterLayer}
+                    />
+                )}
+            </div>
+
+            <div className={styles.summaryContainer}>
+                <Summary
+                    actions={(
+                        <ExploreData />
                     )}
-                    {enableHealthResources && (
-                        <TravelTimeLayer
-                            key={`${selectedSeason}-${selectedHospitalType}`}
-                            prefix={`${selectedSeason}-${selectedHospitalType}`}
-                            season={selectedSeason}
-                            hospitalType={selectedHospitalType}
-                            onHospitalClick={handleHospitalClick}
-                            selectedHospitals={selectedHospitals}
-                            travelTimeShown={showHealthTravelTime}
-                            travelTimeType={selectedTravelTimeType}
-                        />
-                    )}
-                </IndicatorMap>
-                <Sidepanel
-                    className={styles.sidebar}
-                    printMode={printMode}
+                />
+                {clickedRegionProperties && (
+                    <Tooltip
+                        feature={clickedRegionProperties.feature}
+                        regionLevel={regionLevel}
+                        programs={programs}
+                    />
+                )}
+            </div>
+            <div
+                className={_cs(
+                    styles.mapStyleConfigContainer,
+                    isFilterMinimized && styles.filterMinimized,
+                )}
+            >
+                <Button
+                    className={styles.toggleVisibilityButton}
+                    onClick={toggleFilterMinimized}
+                    icons={isFilterMinimized ? <IoIosArrowForward /> : <IoIosArrowBack />}
+                    transparent
+                />
+                <FiltersPanel
+                    className={styles.filtersPanel}
+                    // FIXME: rename to minimized
+                    isMinimized={isFilterMinimized}
                 />
             </div>
             <PrintButton
-                orientation="landscape"
+                orientation="portrait"
                 className={styles.printModeButton}
                 printMode={printMode}
                 onPrintModeChange={setPrintMode}
             />
             <div
                 className={_cs(
-                    styles.mapStyleConfigContainer,
-                    isFilterHidden && styles.hidden,
-                )}
-            >
-                <Button
-                    className={styles.toggleVisibilityButton}
-                    onClick={handleToggleFilterVisibilityButtonClick}
-                    icons={isFilterHidden ? <IoIosArrowForward /> : <IoIosArrowBack />}
-                    transparent
-                />
-                <div className={styles.filters}>
-                    <RegionSelector
-                        className={styles.regionSelector}
-                        onRegionLevelChange={setRegionLevel}
-                        regionLevel={regionLevel}
-                        searchHidden
-                    />
-                    <div className={styles.separator} />
-                    {covidMode && (
-                        <>
-                            <div>
-                                <ToggleButton
-                                    className={styles.inputItem}
-                                    label="Show health facilities"
-                                    value={showHealthResource}
-                                    onChange={setShowHealthResource}
-                                />
-                                <div className={styles.travelTimeInputContainer}>
-                                    <ToggleButton
-                                        label="Show travel time information"
-                                        disabled={!showHealthResource}
-                                        value={showHealthTravelTime && showHealthResource}
-                                        onChange={setShowHealthTravelTime}
-                                    />
-                                    <Button
-                                        onClick={handleTtInfoVisibilityChange}
-                                        transparent
-                                        icons={(
-                                            <IoIosInformationCircleOutline />
-                                        )}
-                                    />
-                                </div>
-                            </div>
-                            {enableHealthResources && (
-                                <div>
-                                    <SegmentInput
-                                        label="Hospitals"
-                                        className={styles.inputItem}
-                                        options={hospitalTypeOptions}
-                                        onChange={setHospitalType}
-                                        value={selectedHospitalType}
-                                        optionLabelSelector={hospitalTypeLabelSelector}
-                                        optionKeySelector={hospitalTypeKeySelector}
-                                    />
-                                    {selectedHospitals.length > 0 && (
-                                        <div className={styles.hospitals}>
-                                            {selectedHospitals.map(hospital => (
-                                                <Button
-                                                    className={styles.button}
-                                                    key={hospital}
-                                                    name={hospital}
-                                                    onClick={handleHospitalToggle}
-                                                    icons={(
-                                                        <IoIosClose />
-                                                    )}
-                                                >
-                                                    {hospital}
-                                                </Button>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                            {enableHealthResources && showHealthTravelTime && (
-                                <div>
-                                    <SegmentInput
-                                        label="Travel Time Type"
-                                        className={styles.inputItem}
-                                        options={travelTimeTypeOptions}
-                                        onChange={setTravelTimeType}
-                                        value={selectedTravelTimeType}
-                                        optionLabelSelector={travelTimeTypeLabelSelector}
-                                        optionKeySelector={travelTimeTypeKeySelector}
-                                    />
-                                    <SegmentInput
-                                        label="Travel Time Season"
-                                        className={styles.inputItem}
-                                        options={seasonOptions}
-                                        onChange={setSeason}
-                                        value={selectedSeason}
-                                        optionLabelSelector={seasonLabelSelector}
-                                        optionKeySelector={seasonKeySelector}
-                                    />
-                                </div>
-                            )}
-                            {ttInfoVisibility && (
-                                <div className={styles.abstract}>
-                                    <TravelTimeDetails />
-                                </div>
-                            )}
-                            <div className={styles.separator} />
-                        </>
-                    )}
-                    <ToggleButton
-                        label="Toggle Choropleth/Bubble"
-                        className={styles.inputItem}
-                        value={mapStyleInverted}
-                        onChange={setMapStyleInverted}
-                    />
-                    <SelectInput
-                        label="DFID Data"
-                        className={styles.inputItem}
-                        options={fiveWOptions}
-                        onChange={handleFiveWOptionChange}
-                        value={selectedFiveWOption}
-                        optionLabelSelector={fiveWLabelSelector}
-                        groupKeySelector={covidMode ? fiveWGroupKeySelector : undefined}
-                        optionKeySelector={fiveWKeySelector}
-                        pending={covidFieldsPending}
-                    />
-                    {selectedFiveWOption && !isFiveWOptionKey(selectedFiveWOption) && (
-                        <SelectInput
-                            label="DFID Data Options"
-                            value={selectedFiveWSubOption}
-                            onChange={setFiveWSubOption}
-                            className={styles.inputItem}
-                            optionKeySelector={item => item}
-                            optionLabelSelector={item => item}
-                            nonClearable
-                            options={(
-                                selectedFiveWOption === 'kathmandu_activity'
-                                    ? covidFieldsResponse?.kathmanduActivity
-                                    : covidFieldsResponse?.other
-                            )}
-                        />
-                    )}
-                    <SelectInput
-                        label="Indicator"
-                        className={styles.inputItem}
-                        disabled={indicatorListPending}
-                        options={indicatorList}
-                        onChange={setSelectedIndicator}
-                        value={validSelectedIndicator}
-                        optionLabelSelector={indicatorLabelSelector}
-                        optionKeySelector={indicatorKeySelector}
-                        groupKeySelector={indicatorGroupKeySelector}
-                        pending={indicatorListPending}
-                    />
-                    {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
-                        <div className={styles.abstract}>
-                            { selectedIndicatorDetails.abstract }
-                        </div>
-                    )}
-                    <div className={styles.separator} />
-                    <MultiSelectInput
-                        label="Layers"
-                        className={styles.inputItem}
-                        disabled={mapLayerListPending}
-                        options={vectorLayers}
-                        onChange={setSelectedVectorLayers}
-                        value={selectedVectorLayers}
-                        optionKeySelector={layerKeySelector}
-                        optionLabelSelector={layerLabelSelector}
-                    />
-                    <SelectInput
-                        label="Background Layer"
-                        className={styles.inputItem}
-                        disabled={mapLayerListPending}
-                        options={rasterLayers}
-                        onChange={setSelectedRasterLayer}
-                        value={selectedRasterLayer}
-                        optionKeySelector={layerKeySelector}
-                        optionLabelSelector={layerLabelSelector}
-                    />
-                </div>
-            </div>
-            <div
-                className={_cs(
                     styles.legendContainer,
-                    isFilterHidden && styles.hidden,
+                    isFilterMinimized && styles.filterMinimized,
                 )}
             >
                 {choroplethSelected && (
@@ -961,30 +579,6 @@ const Dashboard = (props: Props) => {
                         className={styles.legend}
                         vectorLayers={selectedVectorLayersDetail}
                     />
-                )}
-                {showTravelTimeChoropleth && (
-                    <>
-                        {selectedTravelTimeType === 'catchment' && (
-                            <ChoroplethLegend
-                                title="Catchment"
-                                className={styles.legend}
-                                minValue=""
-                                opacity={0.6}
-                                unit="hours"
-                                legend={catchmentLegend}
-                            />
-                        )}
-                        {selectedTravelTimeType === 'uncovered' && (
-                            <ChoroplethLegend
-                                title="Uncovered"
-                                className={styles.legend}
-                                minValue=""
-                                opacity={0.6}
-                                unit="hours"
-                                legend={uncoveredLegend}
-                            />
-                        )}
-                    </>
                 )}
             </div>
             {hash === 'regions' && (

@@ -6,6 +6,7 @@ import {
     Layer,
     Label,
     Rectangle,
+    TooltipFormatter,
     ResponsiveContainer,
 } from 'recharts';
 
@@ -174,7 +175,7 @@ interface Props<T> {
 function BudgetFlowSankey<T>(props: Props<T>) {
     const {
         data: newData,
-        data,
+        // data,
         colorSelector,
         nameSelector,
     } = props;

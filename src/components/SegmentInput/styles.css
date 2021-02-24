@@ -6,6 +6,6 @@
         display: flex;
         align-self: flex-start;
         border: var(--width-separator-thin) solid var(--color-separator-light);
-        border-radius: var(--radius-input);
+        border-radius: calc(4 * var(--radius-input));
     }
 }

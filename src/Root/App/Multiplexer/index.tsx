@@ -5,11 +5,9 @@ import { _cs } from '@togglecorp/fujs';
 
 import Navbar from '#components/Navbar';
 import DomainContext from '#components/DomainContext';
-import NavbarContext from '#components/NavbarContext';
 import {
     RegionLevelOption,
     DomainContextProps,
-    NavbarContextProps,
 } from '#types';
 
 import routes from './routes';
@@ -51,78 +49,75 @@ function Multiplexer(props: Props) {
         administrator,
     } = props;
 
-    const [regionLevel, setRegionLevel] = React.useState<RegionLevelOption>('province');
-    const [programs, setPrograms] = React.useState<number[]>([]);
-    const [covidMode, setCovidMode] = React.useState(false);
+    const [regionLevel, setRegionLevel] = useState<RegionLevelOption>('province');
+    const [markers, setMarkers] = useState<string[]>([]);
+    const [programs, setPrograms] = useState<number[]>([]);
+    const [partners, setPartners] = useState<string[]>([]);
+    const [sectors, setSectors] = useState<string[]>([]);
 
     const domainContextProvider: DomainContextProps = {
         regionLevel,
         setRegionLevel,
-        covidMode,
-        setCovidMode,
+        markers,
+        setMarkers,
         programs,
         setPrograms,
-    };
-
-    const [parentNode, setParentNode] = useState<HTMLDivElement | null | undefined>();
-
-    const navbarContextProvider: NavbarContextProps = {
-        parentNode,
-        setParentNode,
+        partners,
+        setPartners,
+        sectors,
+        setSectors,
     };
 
     return (
         <div className={_cs(className, styles.multiplexer)}>
-            <NavbarContext.Provider value={navbarContextProvider}>
-                <Navbar
-                    className={styles.navbar}
-                    onLogout={onLogout}
-                    administrator={administrator}
-                />
-                <ErrorBoundary
-                    fallback={(
-                        <div className={styles.page}>
-                            You have encountered an error!
-                        </div>
-                    )}
-                    showDialog
-                >
-                    <DomainContext.Provider value={domainContextProvider}>
-                        <Suspense
-                            fallback={(
-                                <Loading message="Please wait..." />
-                            )}
-                        >
-                            <Switch>
-                                {routes.map((route) => {
-                                    const {
-                                        path,
-                                        name,
-                                        title,
-                                        // hideNavbar,
-                                        load: Loader,
-                                    } = route;
+            <Navbar
+                className={styles.navbar}
+                onLogout={onLogout}
+                administrator={administrator}
+            />
+            <ErrorBoundary
+                fallback={(
+                    <div className={styles.page}>
+                        You have encountered an error!
+                    </div>
+                )}
+                showDialog
+            >
+                <DomainContext.Provider value={domainContextProvider}>
+                    <Suspense
+                        fallback={(
+                            <Loading message="Please wait..." />
+                        )}
+                    >
+                        <Switch>
+                            {routes.map((route) => {
+                                const {
+                                    path,
+                                    name,
+                                    title,
+                                    // hideNavbar,
+                                    load: Loader,
+                                } = route;
 
-                                    return (
-                                        <Route
-                                            exact
-                                            className={styles.route}
-                                            key={name}
-                                            path={path}
-                                            render={() => (
-                                                <>
-                                                    <Title value={title} />
-                                                    <Loader className={styles.view} />
-                                                </>
-                                            )}
-                                        />
-                                    );
-                                })}
-                            </Switch>
-                        </Suspense>
-                    </DomainContext.Provider>
-                </ErrorBoundary>
-            </NavbarContext.Provider>
+                                return (
+                                    <Route
+                                        exact
+                                        className={styles.route}
+                                        key={name}
+                                        path={path}
+                                        render={() => (
+                                            <>
+                                                <Title value={title} />
+                                                <Loader className={styles.view} />
+                                            </>
+                                        )}
+                                    />
+                                );
+                            })}
+                        </Switch>
+                    </Suspense>
+                </DomainContext.Provider>
+            </ErrorBoundary>
         </div>
     );
 }

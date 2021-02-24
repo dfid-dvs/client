@@ -8,15 +8,14 @@ export interface BaseEntity {
 export interface DomainContextProps {
     regionLevel: RegionLevelOption;
     setRegionLevel: (v: RegionLevelOption) => void;
-    covidMode: boolean;
-    setCovidMode: (m: boolean) => void;
+    markers: string[];
+    setMarkers: (markers: string[] | ((p: string[]) => string[])) => void;
     programs: number[];
     setPrograms: (programs: number[] | ((p: number[]) => number[])) => void;
-}
-
-export interface NavbarContextProps {
-    parentNode: HTMLDivElement | null | undefined;
-    setParentNode: (node: HTMLDivElement | null | undefined) => void;
+    partners: string[];
+    setPartners: (partners: string[] | ((p: string[]) => string[])) => void;
+    sectors: string[];
+    setSectors: (sectors: string[] | ((p: string[]) => string[])) => void;
 }
 
 export interface MultiResponse<T> {

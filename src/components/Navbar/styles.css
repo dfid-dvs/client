@@ -1,28 +1,26 @@
 .navbar {
     display: flex;
-    align-items: flex-start;
-    background-color: var(--color-primary);
-    padding: calc(var(--spacing-large) - var(--spacing-small)) calc(var(--spacing-large) - var(--spacing-medium));
+    align-items: center;
+    background-color: var(--color-backdrop-light);
+    padding: 0 calc(var(--spacing-large) - var(--spacing-medium));
     color: var(--color-text-on-primary);
 
     .app-brand {
         flex-shrink: 0;
-        padding: var(--spacing-small) var(--spacing-medium);
-        font-size: var(--font-size-large);
 
         .logo {
-            height: 68px;
+            margin-left: var(--spacing-large);
+            height: 60px;
         }
     }
 
     .actions {
         flex-grow: 1;
-
         .nav-links {
             display: flex;
             align-items: flex-end;
             flex-grow: 1;
-            justify-content: flex-start;
+            justify-content: flex-end;
             padding: var(--spacing-small) calc(var(--spacing-large) - var(--spacing-small));
             font-size: var(--font-size-small);
 
@@ -30,13 +28,13 @@
                 display: block;
                 outline: none;
                 padding: var(--spacing-small) var(--spacing-medium);
-                text-transform: uppercase;
                 text-decoration: none;
-                color: var(--color-text-light-on-primary-light);
+                color: var(--color-text);
+                font-size: var(--font-size-large);
                 font-weight: var(--font-weight-bold);
 
                 &.active {
-                    color: var(--color-accent);
+                    color: var(--color-text);
                 }
             }
         }

@@ -1,12 +1,3 @@
-export interface CovidFields {
-    // These are fields
-    field: { name: string; value: string }[];
-
-    // These are options
-    kathmanduActivity: string[];
-    other: string[];
-}
-
 export interface OriginalFiveW {
     id: number;
     name: string;
@@ -51,20 +42,4 @@ export interface FiveWOption {
     label: string;
     datatype?: 'integer' | 'float';
     unit?: string;
-    category: 'Covid Related' | 'General';
-}
-
-export interface HospitalType {
-    key: 'deshosp' | 'allcovidhfs';
-    label: string;
-}
-
-export interface Season {
-    key: 'msn' | 'dry';
-    label: string;
-}
-
-export interface TravelTimeType {
-    key: 'catchment' | 'uncovered';
-    label: string;
 }

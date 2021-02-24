@@ -20,17 +20,11 @@ function useMapStateForFiveW(
     programs: number[],
     selectedFiveWOption?: FiveWOptionKey,
     preserveResponse = false,
-    filter?: { field?: string; value?: string },
 ): [boolean, MapStateItem[], FiveW[]] {
-    let params: UrlParams = {
+    const params: UrlParams = {
         // eslint-disable-next-line @typescript-eslint/camelcase
         program_id: programs,
     };
-    if (filter && filter.field && filter.value) {
-        params = {
-            ...filter,
-        };
-    }
     const regionUrlParams = p(params);
     const regionFiveWGetUrl = regionUrlParams
         ? `${apiEndPoint}/core/fivew-${regionLevel}/?${regionUrlParams}`

@@ -1,5 +1,8 @@
 .program-selector {
     display: flex;
+    flex: 1;
+    flex-direction: column;
+    box-shadow: 10px 0px 6px #eaebec;
     /* FIXME: don't use hard-coded color values */
     background-color: rgba(255, 255, 255, .1);
 
@@ -24,14 +27,13 @@
             font-weight: var(--font-weight-bold);
         }
     }
-}
 
-/*
-.program-select-dropdown,
-.sectors-dropdown,
-.partners-dropdown,
-.markers-dropdown {
-    z-index: 111;
+    .program-tree,
+    .partner-tree,
+    .sector-tree,
+    .marker-tree {
+        height: 150px;
+        overflow-y: auto;
+    }
 }
-*/
 

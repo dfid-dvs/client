@@ -6,13 +6,21 @@ const domainContext = React.createContext<DomainContextProps>({
     setRegionLevel: (region) => {
         console.warn('Trying to set region', region);
     },
-    covidMode: false,
-    setCovidMode: (mode) => {
-        console.warn('Trying to set covid mode', mode);
+    markers: [],
+    setMarkers: (markers) => {
+        console.warn('Trying to set programs', markers);
     },
     programs: [],
     setPrograms: (programs) => {
         console.warn('Trying to set programs', programs);
+    },
+    partners: [],
+    setPartners: (partners) => {
+        console.warn('Trying to set programs', partners);
+    },
+    sectors: [],
+    setSectors: (sectors) => {
+        console.warn('Trying to set programs', sectors);
     },
 });
 

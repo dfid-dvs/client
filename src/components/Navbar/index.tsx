@@ -1,27 +1,12 @@
-import React, { useEffect, useRef, useContext } from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { _cs } from '@togglecorp/fujs';
 import { RiAdminLine } from 'react-icons/ri';
 
-import NavbarContext from '#components/NavbarContext';
 import Button from '#components/Button';
-import { NavbarContextProps } from '#types';
 
-import dfidLogo from '#resources/DfID-logo.svg';
+import dfidLogo from '#resources/dfid-crown.png';
 import styles from './styles.css';
-
-
-interface ChildProps {
-    children: React.ReactNode;
-}
-export const SubNavbar = ({ children }: ChildProps) => {
-    const { parentNode } = useContext<NavbarContextProps>(NavbarContext);
-    if (!parentNode) {
-        return null;
-    }
-    return ReactDOM.createPortal(children, parentNode);
-};
 
 interface Props {
     className?: string;
@@ -35,17 +20,6 @@ const Navbar = (props: Props) => {
         onLogout,
         administrator,
     } = props;
-
-    const filterRef = useRef<HTMLDivElement>(null);
-
-    const { setParentNode } = useContext<NavbarContextProps>(NavbarContext);
-
-    useEffect(
-        () => {
-            setParentNode(filterRef.current);
-        },
-        [setParentNode],
-    );
 
     const link = process.env.REACT_APP_SERVER_URL || 'https://dvsnaxa.naxa.com.np/';
 
@@ -85,10 +59,6 @@ const Navbar = (props: Props) => {
                         About
                     </NavLink>
                 </div>
-                <div
-                    className={styles.filters}
-                    ref={filterRef}
-                />
             </div>
             {administrator && (
                 <a

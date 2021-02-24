@@ -3,29 +3,31 @@
     min-height: 100px;
 
     .heading {
-        margin-bottom: 0;
+        margin-bottom: var(--spacing-medium);
+        text-transform: uppercase;
+        color: var(--color-text-pastel-blue);
+        font-size: var(--font-size-large-medium);
     }
 
     .choropleth-legend {
         display: flex;
         position: relative;
-        flex-direction: column;
+        flex-direction: flex;
 
         .legend-element {
-            display: flex;
             flex-grow: 1;
 
             .color {
                 flex-shrink: 0;
-                width: var(--font-size-medium);
-                height: var(--font-size-large);
+                width: 60px;
+                height: var(--spacing-large-medium);
             }
 
             .value {
                 align-self: flex-end;
                 flex-shrink: 0;
                 margin-bottom: calc(-1 * var(--font-size-medium) / 2);
-                padding-left: var(--spacing-small);
+                text-align: center;
                 color: var(--color-text-label);
 
                 .numeral {

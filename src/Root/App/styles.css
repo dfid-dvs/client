@@ -137,6 +137,7 @@ text-placeholder: #7a8898
 
     --color-text-label: #576374;
     --color-text-disabled: #b8c2cd;
+    --color-text-red: #e63548;
 
     /* COLOR LINK */
     --color-link: #3182bd;
@@ -145,6 +146,9 @@ text-placeholder: #7a8898
     --color-separator: #b8c2cd;
 
     --color-separator-light: rgba(160, 180, 190, 0.3);
+
+    /* OTHER COLORS */
+    --color-light-pink: #ffc0cbaa;
 }
 
 body {

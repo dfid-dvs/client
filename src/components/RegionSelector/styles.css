@@ -1,3 +1,23 @@
-.region-level-selection {
+.row {
     display: flex;
+    align-items: flex-start;
+
+    .close-button {
+        flex-shrink: 0;
+        font-size: var(--font-size-large);
+    }
+
+    .region-level-selection {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        margin-bottom: var(--spacing-large-medium);
+    }
+}
+
+.label-class-name {
+    margin-right: var(--spacing-large-medium);
+    text-transform: uppercase;
+    color: var(--color-link);
+    font-size: var(--font-size-medium);
 }

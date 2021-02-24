@@ -28,6 +28,7 @@ const CheckboxButton = React.forwardRef<HTMLButtonElement, Props>(
             onChange,
             indeterminate,
             labelClassName,
+            disabled,
         } = props;
 
         const handleClick = React.useCallback(() => {
@@ -44,8 +45,10 @@ const CheckboxButton = React.forwardRef<HTMLButtonElement, Props>(
                     styles.checkbox,
                     value && styles.checked,
                     indeterminate && styles.indeterminate,
+                    disabled && styles.disabled,
                 )}
                 onClick={handleClick}
+                disabled={disabled}
             >
                 <div className={styles.icon}>
                     {value && (
