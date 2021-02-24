@@ -91,6 +91,17 @@ function ProgramSelector(props: Props) {
         setSectors: setSelectedSector,
     } = useContext<DomainContextProps>(DomainContext);
 
+    const optionsSelected = useMemo(
+        // eslint-disable-next-line max-len
+        () => [...selectedMarker, ...selectedProgram, ...selectedPartner, ...selectedSector].length > 0,
+        [
+            selectedMarker,
+            selectedProgram,
+            selectedPartner,
+            selectedSector,
+        ],
+    );
+
     const [
         expandedFilters,
         setExpanedFilters,
@@ -334,18 +345,34 @@ function ProgramSelector(props: Props) {
             if (!programList) {
                 return undefined;
             }
+
+            let programOptionsList: number[];
+            if (enabledProgramOptionIdList && selectedProgram.length <= 0) {
+                programOptionsList = enabledProgramOptionIdList;
+            } else if (selectedProgram.length > 0) {
+                programOptionsList = selectedProgram;
+            }
+
             // eslint-disable-next-line max-len
-            const partnerIds = programList.filter(program => enabledProgramOptionIdList?.includes(program.id))
+            const partnerIds = programList.filter(program => programOptionsList?.includes(program.id))
                 .map(item => item.partner)
                 .flat()
                 .map(item => String(item.id));
 
             if (partnerIds.length <= 0) {
+                if (optionsSelected) {
+                    return [];
+                }
                 return undefined;
             }
             return partnerIds;
         },
-        [programListResponse?.results, enabledProgramOptionIdList],
+        [
+            programListResponse?.results,
+            enabledProgramOptionIdList,
+            selectedProgram,
+            optionsSelected,
+        ],
     );
 
     const enabledSectorOptionKeysList: string[] | undefined = useMemo(
@@ -354,26 +381,40 @@ function ProgramSelector(props: Props) {
             if (!programList) {
                 return undefined;
             }
-            // NOTE: Assuming sector / subsector in a program is Basic Entity { id, name }
+
+            let programOptionsList: number[];
+            if (enabledProgramOptionIdList && selectedProgram.length <= 0) {
+                programOptionsList = enabledProgramOptionIdList;
+            } else if (selectedProgram.length > 0) {
+                programOptionsList = selectedProgram;
+            }
             // eslint-disable-next-line max-len
-            const sectorKeys = programList.filter(program => enabledProgramOptionIdList?.includes(program.id))
+            const sectorKeys = programList.filter(program => programOptionsList?.includes(program.id))
                 .map(item => item.sector)
                 .flat()
                 .map(item => `sector-${item.id}`);
 
             // eslint-disable-next-line max-len
-            const subSectorKeys = programList.filter(program => enabledProgramOptionIdList?.includes(program.id))
+            const subSectorKeys = programList.filter(program => programOptionsList?.includes(program.id))
                 .map(item => item.subSector)
                 .flat()
                 .map(item => `subsector-${item.id}`);
 
             const combinedSectorKeys = unique([...sectorKeys, ...subSectorKeys]);
             if (combinedSectorKeys.length <= 0) {
+                if (optionsSelected) {
+                    return [];
+                }
                 return undefined;
             }
             return combinedSectorKeys;
         },
-        [programListResponse?.results, enabledProgramOptionIdList],
+        [
+            programListResponse?.results,
+            enabledProgramOptionIdList,
+            selectedProgram,
+            optionsSelected,
+        ],
     );
 
     // eslint-disable-next-line max-len
