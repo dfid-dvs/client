@@ -1,13 +1,13 @@
-.right-container {
+.action-container {
     display: flex;
     align-items: center;
+    justify-content: flex-end;
 
     .link {
         margin: var(--spacing-small);
-        border: var(--width-separator-thin) solid var(--color-separator-light);
-        border-radius: var(--radius-input);
-        background-color: var(--color-button-background);
-        padding: var(--spacing-small) var(--spacing-medium);
+        border: var(--width-separator-thin) solid var(--color-button-background);
+        background-color: var(--color-foreground);
+        padding: var(--spacing-extra-small) var(--spacing-medium);
         text-decoration: none;
         color: var(--color-text);
         font-weight: var(--font-weight-bold);
@@ -19,6 +19,17 @@
 
     .tab-actions {
         flex-shrink: 0;
+        margin: 2px;
         padding: 0 var(--spacing-medium);
+        width: 60%;
     }
+}
+
+.header {
+    justify-content: center;
+    margin: 2px;
+}
+
+.actions-class-name {
+    width: 70%
 }

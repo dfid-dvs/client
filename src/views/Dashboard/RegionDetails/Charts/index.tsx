@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { isDefined, unique, listToMap, isFalsyString } from '@togglecorp/fujs';
+import { IoMdAddCircleOutline } from 'react-icons/io';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
@@ -344,15 +345,14 @@ function Charts(props: Props) {
     return (
         <>
             <div className={styles.tableActions}>
-                <RegionSelector
-                    onRegionLevelChange={onRegionLevelChange}
-                    regionLevel={regionLevel}
-                    searchHidden
-                />
                 <Button
                     onClick={handleModalShow}
+                    className={styles.addChartButton}
                 >
-                    Add chart
+                    <IoMdAddCircleOutline className={styles.icon} />
+                    <div className={styles.text}>
+                        Add chart
+                    </div>
                 </Button>
             </div>
             <div className={styles.charts}>

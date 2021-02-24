@@ -40,10 +40,15 @@ function RegionDetails(props: Props) {
         indicatorListPending,
     } = props;
 
-    const { regionLevel: regionLevelFromContext, programs } = useContext(DomainContext);
+    const {
+        regionLevel: regionLevelFromContext,
+        setRegionLevel: handleRegionLevelChange,
+        programs,
+    } = useContext(DomainContext);
 
     const [regionLevel, setRegionLevel] = useState(regionLevelFromContext);
     const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('charts');
+    const [region, setRegion] = useState<number | undefined>(undefined);
 
     const [
         selectedRegions,
@@ -55,18 +60,12 @@ function RegionDetails(props: Props) {
     return (
         <PopupPage
             className={className}
-            title="Regions"
-            parentLink="/dashboard/"
+            parentLink="/"
             parentName="dashboard"
+            hideArrow
+            actionsClassName={styles.actionsClassName}
             actions={(
-                <div className={styles.rightContainer}>
-                    <Link
-                        className={styles.link}
-                        to="/infographics/"
-                        exact
-                    >
-                        Create Custom Infographic
-                    </Link>
+                <div className={styles.actionContainer}>
                     <div className={styles.tabActions}>
                         <SegmentInput
                             options={tabOptions}
@@ -76,8 +75,16 @@ function RegionDetails(props: Props) {
                             onChange={setSelectedTab}
                         />
                     </div>
+                    <Link
+                        className={styles.link}
+                        to="/infographics/"
+                        exact
+                    >
+                        Region Profile
+                    </Link>
                 </div>
             )}
+            headerClassName={styles.header}
         >
             {selectedTab === 'table' && (
                 <Table

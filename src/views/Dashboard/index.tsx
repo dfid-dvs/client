@@ -430,6 +430,8 @@ const Dashboard = (props: Props) => {
         [regionLevel],
     );
 
+    const dataExplored = hash === 'regions' || hash === 'program';
+
     return (
         <div className={_cs(
             styles.dashboard,
@@ -517,7 +519,9 @@ const Dashboard = (props: Props) => {
             <div className={styles.summaryContainer}>
                 <Summary
                     actions={(
-                        <ExploreData />
+                        <ExploreData
+                            dataExplored={dataExplored}
+                        />
                     )}
                 />
                 {clickedRegionProperties && (
@@ -600,6 +604,10 @@ const Dashboard = (props: Props) => {
                 <RegionDetails
                     indicatorListPending={indicatorListPending}
                     indicatorList={indicatorList}
+                    className={_cs(
+                        styles.regionDetails,
+                        isFilterMinimized && styles.filterMinimized,
+                    )}
                 />
             )}
             {hash === 'programs' && (

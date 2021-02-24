@@ -1,8 +1,27 @@
 .table-actions {
     display: flex;
     align-items: flex-end;
-    flex-shrink: 0;
+    justify-content: flex-end;
     padding: var(--spacing-large) var(--spacing-medium);
+
+    .add-chart-button {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        border: var(--width-separator-medium) solid var(--color-text-red);
+        border-radius: 0;
+        background: transparent;
+
+        .icon {
+            color: var(--color-text-red);
+            font-size: var(--font-size-large);
+        }
+        
+        .text {
+            color: var(--color-text-red);
+            font-size: var(--font-size-medium);
+        }
+    }
 
     >* {
         &:not(:last-child) {
