@@ -238,7 +238,6 @@ const Dashboard = (props: Props) => {
     const [
         fiveWMapStatePending,
         fiveWMapState,
-        fiveWStats,
     ] = useMapStateForFiveW(
         regionLevel,
         programs,

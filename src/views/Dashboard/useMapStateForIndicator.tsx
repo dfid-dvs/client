@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { isDefined } from '@togglecorp/fujs';
 import {
     MultiResponse,
