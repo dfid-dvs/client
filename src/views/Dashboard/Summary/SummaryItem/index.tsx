@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
-import { _cs } from '@togglecorp/fujs';
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { isDefined, _cs } from '@togglecorp/fujs';
 
 import Numeral from '#components/Numeral';
 
@@ -33,7 +32,7 @@ function SummaryItem({
             </div>
             <div className={styles.dataLine}>
                 <div className={styles.valueRow}>
-                    { value && (
+                    { isDefined(value) && (
                         <>
                             <Numeral
                                 className={styles.value}
