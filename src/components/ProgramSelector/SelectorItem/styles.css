@@ -28,10 +28,38 @@
         }
     
         .name {
+            width: 70%;
             text-transform: uppercase;
             letter-spacing: calc(2 * var(--spacing-super-small));
             font-size: var(--font-size-medium);
             font-weight: bold;
+        }
+
+        .right-section {
+            display: flex;
+            align-items: center;
+            width: 20%;
+
+            .value-count {
+                border-radius: calc(3 * var(--radius-button));
+                background: var(--color-light-pink);
+                padding: var(--spacing-super-small);
+                width: 50%;
+                height: 24px;
+                text-align: center;
+                color: var(--color-text-red);
+                font-size: var(--font-size-large-medium);
+                font-weight: var(--font-weight-bold);
+            }
+
+            .clear-value {
+                width: 60%;
+                font-size: var(--font-size-large);
+                font-weight: var(--font-weight-bold);
+                &:hover {
+                    cursor: pointer;
+                }
+            }
         }
     }
 

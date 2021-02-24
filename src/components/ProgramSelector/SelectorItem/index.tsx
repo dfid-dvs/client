@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { IoIosSearch, IoMdArrowDropdown, IoMdArrowDropup } from 'react-icons/io';
+import { IoIosSearch, IoMdArrowDropdown, IoMdArrowDropup, IoMdClose } from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
 
 import TreeInput from '#components/TreeInput';
@@ -74,6 +74,12 @@ export default function SelectorItem<T extends string | number>(props: SelectorI
         setExpandedFilters(filters);
     }, [setExpandedFilters, expandedFilters, name]);
 
+    const onResetFilter = useCallback(() => {
+        setSelectedValue([]);
+    }, [setSelectedValue]);
+
+    const selectedValueCount = value.length;
+
     if (isMinimized) {
         return (
             <div className={styles.selectorItem}>
@@ -106,6 +112,17 @@ export default function SelectorItem<T extends string | number>(props: SelectorI
                 <div className={styles.name}>
                     {name}
                 </div>
+                {selectedValueCount > 0 && (
+                    <div className={styles.rightSection}>
+                        <div className={styles.valueCount}>
+                            {selectedValueCount}
+                        </div>
+                        <IoMdClose
+                            onClick={onResetFilter}
+                            className={styles.clearValue}
+                        />
+                    </div>
+                )}
             </div>
             {isFilterExpanded && (
                 <TextInput
