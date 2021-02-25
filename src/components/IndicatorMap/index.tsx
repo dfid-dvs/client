@@ -144,7 +144,6 @@ function IndicatorMap(props: Props) {
         selectedSourceForBubble = 'palikacentroidgeo';
     }
 
-    // FIXME: filter by code instead of id - after backend is updated
     const regionGetRequest = selectedRegionId ? `${apiEndPoint}/core/${regionLevel}/?id=${selectedRegionId}` : undefined;
     const regionSchema = regionLevel;
     const [

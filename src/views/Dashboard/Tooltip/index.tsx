@@ -85,18 +85,16 @@ interface PopupData {
 }
 
 interface Props {
-    feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
+    region: Region;
     regionLevel: RegionLevelOption;
     programs: number[];
 }
 
 const Tooltip = (props: Props) => {
     const {
-        feature: {
-            properties: {
-                id,
-                name,
-            },
+        region: {
+            id,
+            name,
         },
         regionLevel,
         programs,
