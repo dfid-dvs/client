@@ -66,6 +66,7 @@ import {
 import styles from './styles.css';
 import ExploreData from './ExploreData';
 import MapOptions from './MapOptions';
+import splitCombinedSelectors from './splitCombinedSelectors';
 
 interface Region {
     id: number;
@@ -127,7 +128,10 @@ const Dashboard = (props: Props) => {
     const {
         regionLevel,
         setRegionLevel,
+        markers,
         programs,
+        partners,
+        sectors,
     } = useContext(DomainContext);
 
     // Filter
@@ -249,12 +253,25 @@ const Dashboard = (props: Props) => {
         [selectedFiveWOption],
     );
 
+    const [markerIdList, submarkerIdList] = splitCombinedSelectors(markers, 'submarker');
+    // FIXME: Update programs to String[]
+    const [programIdList, componentIdList] = splitCombinedSelectors(programs, 'subprogram');
+    const [partnerIdList, subpartnerIdList] = splitCombinedSelectors(partners, 'subpartner');
+    const [sectorIdList, subsectorIdList] = splitCombinedSelectors(sectors, 'subsector');
+
     const [
         fiveWMapStatePending,
         fiveWMapState,
     ] = useMapStateForFiveW(
         regionLevel,
-        programs,
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        subpartnerIdList,
+        sectorIdList,
+        subsectorIdList,
         fiveWOptionKey,
         false,
     );

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useContext } from 'react';
 import { IoIosDocument, IoMdPeople } from 'react-icons/io';
 import { FaRegBuilding, FaShapes } from 'react-icons/fa';
 import { _cs, isDefined, intersection, unique } from '@togglecorp/fujs';
@@ -9,12 +9,12 @@ import {
     MultiResponse,
     Program,
     Partner,
-    // DomainContextProps,
+    DomainContextProps,
 } from '#types';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
-// import DomainContext from '#components/DomainContext';
+import DomainContext from '#components/DomainContext';
 import SelectorItem from './SelectorItem';
 
 import styles from './styles.css';
@@ -79,13 +79,6 @@ function ProgramSelector(props: Props) {
         className,
         isMinimized,
     } = props;
-
-    const [selectedMarker, setSelectedMarker] = useState<string[]>([]);
-    const [selectedProgram, setSelectedPrograms] = useState<string[]>([]);
-    const [selectedPartner, setSelectedPartner] = useState<string[]>([]);
-    const [selectedSector, setSelectedSector] = useState<string[]>([]);
-
-    /*
     const {
         markers: selectedMarker,
         setMarkers: setSelectedMarker,
@@ -96,7 +89,6 @@ function ProgramSelector(props: Props) {
         sectors: selectedSector,
         setSectors: setSelectedSector,
     } = useContext<DomainContextProps>(DomainContext);
-     */
 
     const [
         expandedFilters,
