@@ -30,12 +30,14 @@ interface SummaryInfo {
 interface SummaryProps {
     className?: string;
     actions?: React.ReactNode;
+    dataExplored?: boolean;
 }
 
 function Summary(props: SummaryProps) {
     const {
         className,
         actions,
+        dataExplored,
     } = props;
 
     const {
@@ -77,13 +79,25 @@ function Summary(props: SummaryProps) {
 
     return (
         <div className={_cs(styles.summary, className)}>
-            <div className={styles.titleContainer}>
-                <div className={styles.title}>
+            <div
+                className={styles.titleContainer}
+            >
+                <div
+                    className={_cs(
+                        styles.title,
+                        dataExplored && styles.hideTitle,
+                    )}
+                >
                     Summary
                 </div>
                 {actions}
             </div>
-            <div className={styles.summaryContainer}>
+            <div
+                className={_cs(
+                    styles.summaryContainer,
+                    dataExplored && styles.hideContainer,
+                )}
+            >
                 {summaryPending && (
                     <Backdrop>
                         <LoadingAnimation />

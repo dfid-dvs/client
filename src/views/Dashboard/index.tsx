@@ -479,11 +479,12 @@ const Dashboard = (props: Props) => {
     const dataExplored = hash === 'regions' || hash === 'program';
 
     return (
-        <div className={_cs(
-            styles.dashboard,
-            className,
-            printMode && styles.printMode,
-        )}
+        <div
+            className={_cs(
+                styles.dashboard,
+                className,
+                printMode && styles.printMode,
+            )}
         >
             <PrintDetailsBar
                 show={printMode}
