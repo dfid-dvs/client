@@ -394,6 +394,8 @@ function RegionTable(props: Props) {
                         <IoMdDownload className={styles.icon} />
                     )}
                     disabled={!sortedFiveW || !orderedColumns}
+                    transparent
+                    className={styles.downloadButton}
                 >
                     <div className={styles.text}>
                         Download as csv

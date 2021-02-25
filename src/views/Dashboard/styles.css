@@ -71,6 +71,10 @@
         &.filter-minimized {
             left: calc(3 * var(--spacing-medium) + var(--width-collapsed-config-container));
         }
+
+        &.filter-button-hidden {
+            display: none;
+        }
     }
 
     .summary-container {

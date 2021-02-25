@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import SegmentInput from '#components/SegmentInput';
@@ -29,6 +29,9 @@ interface Props {
     regionLevel: RegionLevelOption;
     handleRegionLevelChange: (v: RegionLevelOption) => void;
     programs: number[];
+    onHideFilterButton?: () => void;
+    onShowFilterButton?: () => void;
+    filterButtonHidden?: boolean;
 }
 
 const optionKeySelector = (item: TabOption) => item.key;
@@ -42,10 +45,23 @@ function RegionDetails(props: Props) {
         regionLevel,
         handleRegionLevelChange,
         programs,
+        onHideFilterButton,
+        onShowFilterButton,
+        filterButtonHidden,
     } = props;
 
 
     const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('charts');
+
+    const onSelectTab = useCallback((tabKey: TabOptionKeys) => {
+        setSelectedTab(tabKey);
+        if (onHideFilterButton && tabKey === 'sankey') {
+            onHideFilterButton();
+        }
+        if (filterButtonHidden && onShowFilterButton && tabKey !== 'sankey') {
+            onShowFilterButton();
+        }
+    }, [setSelectedTab, onHideFilterButton, filterButtonHidden]);
 
     const [
         selectedRegions,
@@ -69,7 +85,7 @@ function RegionDetails(props: Props) {
                             optionKeySelector={optionKeySelector}
                             optionLabelSelector={optionLabelSelector}
                             value={selectedTab}
-                            onChange={setSelectedTab}
+                            onChange={onSelectTab}
                         />
                     </div>
                     <Link

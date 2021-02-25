@@ -348,6 +348,7 @@ function Charts(props: Props) {
                     onClick={handleModalShow}
                     className={styles.addChartButton}
                     icons={<IoMdAddCircleOutline className={styles.icon} />}
+                    transparent
                 >
                     <div className={styles.text}>
                         Add Chart

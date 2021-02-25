@@ -165,6 +165,7 @@ const Dashboard = (props: Props) => {
     const [isFilterMinimized, , , toggleFilterMinimized] = useBasicToggle();
     const [regionFilterShown, , , toggleRegionFilter] = useBasicToggle();
     const [mapFilterShown, , , toggleMapFilter] = useBasicToggle();
+    const [filterButtonHidden, hideFilterButton, showFilterButton] = useBasicToggle();
 
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
     const [
@@ -464,6 +465,7 @@ const Dashboard = (props: Props) => {
                 className={_cs(
                     styles.filtersByRegion,
                     isFilterMinimized && styles.filterMinimized,
+                    filterButtonHidden && styles.filterButtonHidden,
                 )}
             >
                 <Button
@@ -611,6 +613,9 @@ const Dashboard = (props: Props) => {
                     regionLevel={regionLevel}
                     handleRegionLevelChange={setRegionLevel}
                     programs={programs}
+                    onHideFilterButton={hideFilterButton}
+                    onShowFilterButton={showFilterButton}
+                    filterButtonHidden={filterButtonHidden}
                 />
             )}
             {hash === 'programs' && (
