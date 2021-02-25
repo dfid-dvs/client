@@ -46,6 +46,8 @@
     }
 
     .user-actions {
+        display: flex;
+        align-items: center;
         border-left: var(--width-separator-thin) solid var(--color-separator-light);
         padding: calc(var(--spacing-extra-large) - var(--spacing-medium));
 

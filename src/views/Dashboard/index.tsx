@@ -7,7 +7,8 @@ import {
     IoIosArrowForward,
     IoIosArrowBack,
 } from 'react-icons/io';
-import { MdFilterList } from 'react-icons/md';
+import { Link } from 'react-router-dom';
+import { MdChevronRight, MdFilterList } from 'react-icons/md';
 
 import BubbleLegend, { BubbleLegendType } from '#components/BubbleLegend';
 import Button from '#components/Button';
@@ -545,24 +546,47 @@ const Dashboard = (props: Props) => {
                 )}
             </div>
 
-            <div className={styles.summaryContainer}>
-                <Summary
-                    actions={(
-                        <ExploreData
-                            dataExplored={dataExplored}
+            {!dataExplored ? (
+                <div className={styles.summaryContainer}>
+                    <Summary
+                        actions={(
+                            <ExploreData
+                                dataExplored={dataExplored}
+                            />
+                        )}
+                    />
+                    {region && (
+                        <Tooltip
+                            region={region}
+                            className={styles.clickedRegionDetail}
+                            feature={clickedRegionProperties?.feature}
+                            regionLevel={regionLevel}
+                            programs={programs}
                         />
                     )}
-                />
-                {region && (
-                    <Tooltip
-                        region={region}
-                        className={styles.clickedRegionDetail}
-                        feature={clickedRegionProperties.feature}
-                        regionLevel={regionLevel}
-                        programs={programs}
-                    />
-                )}
-            </div>
+                </div>
+            ) : (
+                <div
+                    className={_cs(
+                        className,
+                        styles.dataExplored,
+                    )}
+                >
+                    <Link
+                        className={styles.link}
+                        to="/"
+                        replace
+                    >
+                        <div className={styles.title}>
+                            Explore Maps
+                            <MdChevronRight
+                                fontSize={22}
+                                fontWeight="bold"
+                            />
+                        </div>
+                    </Link>
+                </div>
+            )}
             <div
                 className={_cs(
                     styles.mapStyleConfigContainer,

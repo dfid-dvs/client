@@ -95,6 +95,28 @@
         }
     }
 
+    .data-explored {
+        position: absolute;
+        top: var(--spacing-large);
+        right: var(--spacing-large);
+        z-index: 999;
+        font-weight: var(--font-weight-bold);
+
+        .link {
+            text-decoration: none;
+            color: var(--color-highlight);
+
+            .title {
+                display: flex;
+                align-items: center;
+            }
+
+            &:hover {
+                background-color: var(--color-separator-light);
+            }
+        }
+    }
+
     .filters-by-map {
         display: flex;
         position: absolute;

@@ -1,15 +1,3 @@
-.data-explored {
-    z-index: 999;
-
-    .link {
-        text-decoration: none;
-
-        &:hover {
-            background-color: var(--color-separator-light);
-        }
-    }
-}
-
 .title {
     display: flex;
     align-items: center;
