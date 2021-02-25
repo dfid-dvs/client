@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { _cs } from '@togglecorp/fujs';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
@@ -51,10 +52,8 @@ function Summary(props: SummaryProps) {
     ] = useRequest<SummaryInfo>(summaryUrlWithParams, 'fivew-summary');
 
     return (
-        <div className={className}>
-            <div
-                className={styles.titleContainer}
-            >
+        <div className={_cs(styles.summary, className)}>
+            <div className={styles.titleContainer}>
                 <div className={styles.title}>
                     Summary
                 </div>

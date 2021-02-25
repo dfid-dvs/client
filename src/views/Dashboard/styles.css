@@ -50,10 +50,10 @@
     .filters-by-region {
         display: flex;
         position: absolute;
-        top: calc(1.5 * var(--spacing-medium));
-        left: calc(3 * var(--spacing-medium) + var(--width-config-container));
+        top: var(--spacing-medium);
+        left: calc(var(--spacing-large) + var(--width-config-container));
         flex-direction: column;
-        z-index: 999;
+        z-index: 1;
 
         .region-selector-container {
             flex-direction: column;
@@ -77,20 +77,29 @@
         }
     }
 
+    --width-summary-container: 320px;
+
     .summary-container {
         display: flex;
         position: absolute;
-        top: calc(1.5 * var(--spacing-medium));
-        right: calc(2 * var(--spacing-extra-large));
+        top: 0;
+        right: var(--spacing-large);
         flex-direction: column;
-        width: var(--width-config-container);
+        z-index: 1;
+        width: var(--width-summary-container);
+        height: calc(100% - var(--spacing-large));
+
+        .clicked-region-detail {
+            margin-top: var(--spacing-medium);
+            box-shadow: 0 2px 5px -3px rgba(0, 0, 0, .3);
+        }
     }
 
     .filters-by-map {
         display: flex;
         position: absolute;
-        top: calc(1.5 * var(--spacing-medium));
-        right: calc(8 * var(--spacing-medium) + var(--width-config-container));
+        top: var(--spacing-medium);
+        right: calc(2 * var(--spacing-large) + var(--width-summary-container));
         align-items: flex-end;
         flex-direction: column;
 

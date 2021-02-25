@@ -556,6 +556,8 @@ const Dashboard = (props: Props) => {
                 {region && (
                     <Tooltip
                         region={region}
+                        className={styles.clickedRegionDetail}
+                        feature={clickedRegionProperties.feature}
                         regionLevel={regionLevel}
                         programs={programs}
                     />

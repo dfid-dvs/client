@@ -38,26 +38,30 @@ function SummaryItem({
                                 className={styles.value}
                                 value={value}
                                 normalize
-                                suffix=" / "
                             />
+                            <div className={styles.separator}>
+                                /
+                            </div>
                         </>
                     )}
                     <Numeral
-                        className={styles.value}
+                        className={styles.total}
                         value={total}
                         normalize
                     />
                 </div>
-                <div className={styles.line}>
-                    <div
-                        className={styles.valueLine}
-                        style={{ width: `${valueWidth}%` }}
-                    />
-                    <div
-                        className={styles.remLine}
-                        style={{ width: `${remWidth}%` }}
-                    />
-                </div>
+                { isDefined(value) && (
+                    <div className={styles.line}>
+                        <div
+                            className={styles.valueLine}
+                            style={{ width: `${valueWidth}%` }}
+                        />
+                        <div
+                            className={styles.remLine}
+                            style={{ width: `${remWidth}%` }}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

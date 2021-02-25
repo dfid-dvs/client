@@ -86,7 +86,8 @@ text-placeholder: #7a8898
 
     /* COLOR PALETTE */
     --color-primary: #05367d;
-    --color-accent: #289f8c;
+    --color-accent: #224f86;
+    --color-accent-light: #5684c3;
     --color-danger: firebrick;
     --color-success: forestgreen;
     --color-warning: tomato;
@@ -156,6 +157,9 @@ text-placeholder: #7a8898
     /* OTHER COLORS */
     --color-light-pink: #ffc0cb;
     --color-white-smoke: #f5f5f5;
+
+    --color-highlight: #e04656;
+    --color-highlight-light: #ff8698;
 }
 
 body {

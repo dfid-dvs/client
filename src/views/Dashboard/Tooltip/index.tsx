@@ -88,6 +88,7 @@ interface Props {
     region: Region;
     regionLevel: RegionLevelOption;
     programs: number[];
+    className?: string;
 }
 
 const Tooltip = (props: Props) => {
@@ -98,6 +99,7 @@ const Tooltip = (props: Props) => {
         },
         regionLevel,
         programs,
+        className,
     } = props;
 
     const popupDataUrl = useMemo(() => {
@@ -118,16 +120,23 @@ const Tooltip = (props: Props) => {
     const details = popupDataResponse;
 
     return (
-        <div className={styles.tooltip}>
+        <div className={_cs(className, styles.tooltip)}>
             <div className={styles.header}>
                 <h2 className={styles.heading}>
                     { name }
                 </h2>
                 {isDefined(details) && (
                     <TextOutput
-                        noPadding
+                        className={styles.totalBudget}
                         label="Total Budget (£)"
-                        value={(<Numeral value={details.totalBudget} />)}
+                        value={(
+                            <Numeral
+                                value={details.totalBudget}
+                                className={styles.value}
+                            />
+                        )}
+                        multiline
+                        labelClassName={styles.label}
                     />
                 )}
             </div>
@@ -144,72 +153,115 @@ const Tooltip = (props: Props) => {
                     >
                         <div className={styles.programHeader}>
                             <h3 className={styles.programTitle}>
-                                {`${pIndex + 1}. ${program.program}`}
+                                <div className={styles.number}>
+                                    { pIndex + 1 }
+                                </div>
+                                <div className={styles.text}>
+                                    { program.program }
+                                </div>
                             </h3>
-                            <TextOutput
-                                noPadding
-                                label="Total Budget (£)"
-                                value={(<Numeral value={program.programBudget} />)}
-                            />
+                            <div className={styles.bottomRow}>
+                                <div className={styles.dummy} />
+                                <div className={styles.budgetWrapper}>
+                                    <TextOutput
+                                        className={styles.totalBudget}
+                                        label="Total Budget (£)"
+                                        labelClassName={styles.label}
+                                        value={(
+                                            <Numeral
+                                                value={program.programBudget}
+                                                className={styles.value}
+                                            />
+                                        )}
+                                    />
+                                </div>
+                            </div>
                         </div>
                         <div className={styles.components}>
                             {program?.components?.length > 0 && (
-                                <div className={styles.componentsHeader}>
+                                <h4 className={styles.componentsHeader}>
                                     Components
-                                </div>
+                                </h4>
                             )}
                             {program?.components?.map((component, cIndex) => (
                                 <div
                                     className={styles.component}
                                     key={component.id}
                                 >
-                                    <h4 className={styles.componentTitle}>
-                                        {`${pIndex + 1}.${cIndex + 1}. ${component.name}`}
-                                    </h4>
+                                    <h5 className={styles.componentHeading}>
+                                        <div className={styles.number}>
+                                            {`${pIndex + 1}.${cIndex + 1}`}
+                                        </div>
+                                        <div className="text">
+                                            {component.name}
+                                        </div>
+                                    </h5>
                                     <div className={styles.componentDetails}>
-                                        <TextOutput
-                                            noPadding
-                                            label="Total Budget (£)"
-                                            value={(
-                                                <Numeral value={component.componentBudget} />
-                                            )}
-                                        />
-                                        <h5 className={styles.sectorTitle}>
-                                            Sectors
-                                        </h5>
-                                        <ul className={styles.sectorList}>
-                                            {(unique(
-                                                component?.sectors,
-                                                d => d.sector,
-                                            )?.map(sector => (
-                                                <li
-                                                    key={id}
-                                                    className={styles.sectorItem}
-                                                >
-                                                    <Badge title={sector.sector} />
-                                                </li>
-                                            )))}
-                                        </ul>
-                                        <h5 className={styles.partnerTitle}>
-                                            Partners
-                                        </h5>
-                                        <ul className={styles.partnerList}>
-                                            {(component?.partners?.map(partner => (
-                                                <li
-                                                    key={id}
-                                                    className={styles.partnerItem}
-                                                >
-                                                    <Badge
-                                                        title={partner.name}
-                                                        value={(
-                                                            <Numeral
-                                                                value={partner.partnerBudget}
-                                                            />
-                                                        )}
+                                        <div className={styles.dummy} />
+                                        <div className={styles.secondCell}>
+                                            <TextOutput
+                                                className={styles.totalBudget}
+                                                label="Total Budget (£)"
+                                                labelClassName={styles.label}
+                                                value={(
+                                                    <Numeral
+                                                        className={styles.value}
+                                                        value={component.componentBudget}
                                                     />
-                                                </li>
-                                            )))}
-                                        </ul>
+                                                )}
+                                            />
+                                            { component?.sectors.length > 0 && (
+                                                <>
+                                                    <h6 className={styles.sectorTitle}>
+                                                        Sectors
+                                                    </h6>
+                                                    <div className={styles.sectorList}>
+                                                        {(unique(
+                                                            component?.sectors,
+                                                            d => d.sector,
+                                                        )?.map(sector => (
+                                                            <div
+                                                                key={id}
+                                                                className={styles.sectorItem}
+                                                            >
+                                                                <Badge title={sector.sector} />
+                                                            </div>
+                                                        )))}
+                                                    </div>
+                                                </>
+                                            )}
+                                            { component?.partners.length > 0 && (
+                                                <>
+                                                    <h6 className={styles.partnerTitle}>
+                                                        Partners
+                                                    </h6>
+                                                    <div className={styles.partnerList}>
+                                                        {(component?.partners?.map(partner => (
+                                                            <div
+                                                                key={id}
+                                                                className={styles.partnerItem}
+                                                            >
+                                                                <Badge
+                                                                    title={partner.name}
+                                                                    value={(
+                                                                        <Numeral
+                                                                            className={
+                                                                                styles
+                                                                                    .numeralValue
+                                                                            }
+                                                                            value={
+                                                                                partner
+                                                                                    .partnerBudget
+                                                                            }
+                                                                        />
+                                                                    )}
+                                                                />
+                                                            </div>
+                                                        )))}
+                                                    </div>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             ))}
