@@ -372,13 +372,12 @@ function RegionTable(props: Props) {
     return (
         <>
             <div className={styles.tableActions}>
-                <RegionSelector
+                {/* <RegionSelector
                     onRegionLevelChange={onRegionLevelChange}
                     regionLevel={regionLevel}
                     searchHidden
-                />
+                /> */}
                 <MultiSelectInput
-                    label="Indicators"
                     placeholder={`Select from ${indicatorList?.length || 0} indicators`}
                     options={indicatorList}
                     onChange={onIndicatorsChange}
@@ -392,11 +391,13 @@ function RegionTable(props: Props) {
                 <Button
                     onClick={handleDownload}
                     icons={(
-                        <IoMdDownload />
+                        <IoMdDownload className={styles.icon} />
                     )}
                     disabled={!sortedFiveW || !orderedColumns}
                 >
-                    Download as csv
+                    <div className={styles.text}>
+                        Download as csv
+                    </div>
                 </Button>
             </div>
             <div className={styles.tableContainer}>
