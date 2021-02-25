@@ -30,14 +30,35 @@ interface IndicatorValue {
 
 function useExtendedFiveW(
     regionLevel: RegionLevelOption | undefined,
-    programs: number[],
+    markerIdList: number[] | undefined,
+    submarkerIdList: number[] | undefined,
+    programIdList: number[] | undefined,
+    componentIdList: number[] | undefined,
+    partnerIdList: number[] | undefined,
+    subpartnerIdList: number[] | undefined,
+    sectorIdList: number[] | undefined,
+    subsectorIdList: number[] | undefined,
     indicators: number[],
     preserveResponse = true,
     extraUrlParams: UrlParams = {},
 ): [boolean, ExtendedFiveW[]] {
     const regionUrlParams = p({
         // eslint-disable-next-line @typescript-eslint/camelcase
-        program_id: programs,
+        marker_id: markerIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        submarker_id: submarkerIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        program_id: programIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        component_id: componentIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        partner_id: partnerIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        subpartner_id: subpartnerIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        sector_id: sectorIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        subsector_id: subsectorIdList,
         ...extraUrlParams,
     });
     const regionFiveWGetUrl = regionUrlParams

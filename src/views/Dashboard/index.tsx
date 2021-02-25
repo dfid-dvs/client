@@ -683,11 +683,18 @@ const Dashboard = (props: Props) => {
                         isFilterMinimized && styles.filterMinimized,
                     )}
                     regionLevel={regionLevel}
-                    handleRegionLevelChange={setRegionLevel}
-                    programs={programs}
                     onHideFilterButton={hideFilterButton}
                     onShowFilterButton={showFilterButton}
                     filterButtonHidden={filterButtonHidden}
+
+                    markerIdList={markerIdList}
+                    submarkerIdList={submarkerIdList}
+                    programIdList={programIdList}
+                    componentIdList={componentIdList}
+                    partnerIdList={partnerIdList}
+                    subpartnerIdList={subpartnerIdList}
+                    sectorIdList={sectorIdList}
+                    subsectorIdList={subsectorIdList}
                 />
             )}
             {hash === 'programs' && (

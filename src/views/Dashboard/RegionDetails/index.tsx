@@ -27,11 +27,18 @@ interface Props {
     indicatorList: Indicator[] | undefined;
     indicatorListPending: boolean | undefined;
     regionLevel: RegionLevelOption;
-    handleRegionLevelChange: (v: RegionLevelOption) => void;
-    programs: number[];
     onHideFilterButton?: () => void;
     onShowFilterButton?: () => void;
     filterButtonHidden?: boolean;
+
+    markerIdList?: number[];
+    submarkerIdList?: number[];
+    programIdList?: number[];
+    componentIdList?: number[];
+    partnerIdList?: number[];
+    subpartnerIdList?: number[];
+    sectorIdList?: number[];
+    subsectorIdList?: number[];
 }
 
 const optionKeySelector = (item: TabOption) => item.key;
@@ -43,11 +50,18 @@ function RegionDetails(props: Props) {
         indicatorList,
         indicatorListPending,
         regionLevel,
-        handleRegionLevelChange,
-        programs,
         onHideFilterButton,
         onShowFilterButton,
         filterButtonHidden,
+
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        subpartnerIdList,
+        sectorIdList,
+        subsectorIdList,
     } = props;
 
 
@@ -101,31 +115,44 @@ function RegionDetails(props: Props) {
         >
             {selectedTab === 'table' && (
                 <Table
-                    programs={programs}
-
                     regionLevel={regionLevel}
-                    onRegionLevelChange={handleRegionLevelChange}
 
                     indicators={selectedIndicators}
                     onIndicatorsChange={setSelectedIndicators}
 
                     indicatorList={indicatorList}
                     indicatorListPending={indicatorListPending}
+
+                    markerIdList={markerIdList}
+                    submarkerIdList={submarkerIdList}
+                    programIdList={programIdList}
+                    componentIdList={componentIdList}
+                    partnerIdList={partnerIdList}
+                    subpartnerIdList={subpartnerIdList}
+                    sectorIdList={sectorIdList}
+                    subsectorIdList={subsectorIdList}
                 />
             )}
             {selectedTab === 'charts' && (
                 <Charts
-                    programs={programs}
                     regionLevel={regionLevel}
-                    onRegionLevelChange={handleRegionLevelChange}
 
                     indicatorList={indicatorList}
                     indicatorListPending={indicatorListPending}
+
+                    markerIdList={markerIdList}
+                    submarkerIdList={submarkerIdList}
+                    programIdList={programIdList}
+                    componentIdList={componentIdList}
+                    partnerIdList={partnerIdList}
+                    subpartnerIdList={subpartnerIdList}
+                    sectorIdList={sectorIdList}
+                    subsectorIdList={subsectorIdList}
                 />
             )}
             {selectedTab === 'sankey' && (
                 <Sankey
-                    programs={programs}
+                    programIdList={programIdList}
                     regions={selectedRegions}
                     onRegionsChange={setSelectedRegions}
                 />
