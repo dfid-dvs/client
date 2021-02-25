@@ -13,6 +13,7 @@ export interface Props {
     error?: string;
     iconContainerClassName?: string;
     actionContainerClassName?: string;
+    labelClassName?: string;
     children?: React.ReactNode;
 
     label?: React.ReactNode;
@@ -29,6 +30,7 @@ function Input(props: Props) {
         inputContainerClassName,
         iconContainerClassName,
         actionContainerClassName,
+        labelClassName,
         disabled,
         error,
         children,
@@ -41,7 +43,7 @@ function Input(props: Props) {
         >
             {label && (
                 <Label
-                    className={styles.label}
+                    className={_cs(styles.label, labelClassName)}
                     disabled={disabled}
                     error={!!error}
                 >

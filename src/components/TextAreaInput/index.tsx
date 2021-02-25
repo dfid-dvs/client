@@ -1,17 +1,17 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import RawInput, { Props as RawInputProps } from '../RawInput';
+import RawTextAreaInput, { Props as RawTextAreaInputProps } from '../RawTextAreaInput';
 import Input, { Props as InputProps } from '../Input';
 import styles from './styles.css';
 
-export interface Props<T> extends Omit<RawInputProps<T>, 'label' | 'elementRef'>, Omit<InputProps, 'children'> {
+export interface Props<T> extends Omit<RawTextAreaInputProps<T>, 'label' | 'elementRef'>, Omit<InputProps, 'children'> {
     inputClassName?: string;
-    inputRef?: React.RefObject<HTMLInputElement>;
+    textAreaInputRef?: React.RefObject<HTMLTextAreaElement>;
     labelClassName?: string;
 }
 
-function TextInput<T>(props: Props<T>) {
+function TextAreaInput<T>(props: Props<T>) {
     const {
         elementRef,
         className,
@@ -24,14 +24,14 @@ function TextInput<T>(props: Props<T>) {
         disabled,
         error,
         inputClassName,
-        inputRef,
+        textAreaInputRef,
         labelClassName,
         ...otherProps
     } = props;
 
     return (
         <Input
-            className={_cs(styles.textInput, className)}
+            className={_cs(styles.textAreaInput, className)}
             elementRef={elementRef}
             label={label}
             icons={icons}
@@ -44,15 +44,15 @@ function TextInput<T>(props: Props<T>) {
             disabled={disabled}
             error={error}
         >
-            <RawInput
+            <RawTextAreaInput
                 type="text"
                 {...otherProps}
                 disabled={disabled}
-                elementRef={inputRef}
+                elementRef={textAreaInputRef}
                 className={_cs(styles.input, inputClassName)}
             />
         </Input>
     );
 }
 
-export default TextInput;
+export default TextAreaInput;

@@ -39,8 +39,6 @@
 
     /*
     &:focus-within {
-        border-bottom-color: var(--color-accent);
-
         .label {
             color: var(--color-accent);
         }

@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useCallback, useEffect } from 'react';
 import { GrCheckmark } from 'react-icons/gr';
 // import { IoIosSearch } from 'react-icons/io';
-import { IoMdClose } from 'react-icons/io';
+import { IoMdArrowDropdown, IoMdArrowDropup, IoMdClose } from 'react-icons/io';
 import {
     _cs,
     caseInsensitiveSubmatch,
@@ -87,6 +87,8 @@ interface Props<T, K> {
     className?: string;
     dropdownContainerClassName?: string;
     label?: string;
+    labelClassName?: string;
+    inputClassName?: string;
     options: T[] | undefined;
     optionLabelSelector: (d: T) => string;
     optionKeySelector: (d: T) => K;
@@ -100,6 +102,7 @@ interface Props<T, K> {
     groupKeySelector?: (d: T) => string;
     nonClearable?: boolean;
     autoFocus?: boolean;
+    showDropDownIcon?: boolean;
 }
 
 function SelectInput<T, K extends string | number>(props: Props<T, K>) {
@@ -116,8 +119,11 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         placeholder = 'Select an option',
         groupKeySelector,
         label,
+        labelClassName,
         nonClearable,
         autoFocus,
+        inputClassName,
+        showDropDownIcon,
     } = props;
 
     const inputContainerRef = React.useRef<HTMLDivElement>(null);
@@ -205,6 +211,13 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         [],
     );
 
+    const handleDropdownIconToggle = React.useCallback(
+        () => {
+            setShowDropdown(prevState => !prevState);
+        },
+        [setShowDropdown],
+    );
+
     const handleInputValueChange = React.useCallback(
         (newInputValue: string) => {
             setSearchValue(newInputValue);
@@ -259,6 +272,8 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
             <TextInput
                 label={label}
                 className={styles.textInput}
+                labelClassName={labelClassName}
+                inputClassName={inputClassName}
                 elementRef={inputContainerRef}
                 inputRef={inputElementRef}
                 onClick={handleInputClick}
@@ -282,6 +297,16 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 icons={(
                                     <IoMdClose />
                                 )}
+                            />
+                        )}
+                        {showDropDownIcon && showDropdown && (
+                            <IoMdArrowDropup
+                                onClick={handleDropdownIconToggle}
+                            />
+                        )}
+                        {showDropDownIcon && !showDropdown && (
+                            <IoMdArrowDropdown
+                                onClick={handleDropdownIconToggle}
                             />
                         )}
                     </>
