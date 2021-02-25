@@ -566,18 +566,23 @@ const Dashboard = (props: Props) => {
                 <div className={styles.summaryContainer}>
                     <Summary
                         actions={(
-                            <ExploreData
-                                dataExplored={dataExplored}
-                            />
+                            <ExploreData dataExplored={dataExplored} />
                         )}
                     />
                     {region && (
                         <Tooltip
                             region={region}
                             className={styles.clickedRegionDetail}
-                            feature={clickedRegionProperties?.feature}
                             regionLevel={regionLevel}
-                            programs={programs}
+
+                            markerIdList={markerIdList}
+                            submarkerIdList={submarkerIdList}
+                            programIdList={programIdList}
+                            componentIdList={componentIdList}
+                            partnerIdList={partnerIdList}
+                            subpartnerIdList={subpartnerIdList}
+                            sectorIdList={sectorIdList}
+                            subsectorIdList={subsectorIdList}
                         />
                     )}
                 </div>
@@ -621,7 +626,6 @@ const Dashboard = (props: Props) => {
                     isMinimized={isFilterMinimized}
                 />
             </div>
-
             <div className={styles.printButtonContainer}>
                 <PrintButton
                     orientation="portrait"
