@@ -105,7 +105,6 @@ function RegionSelector(props: Props) {
         ),
         [regionLevel],
     );
-
     const handleSelectedRegionChange = useCallback((selectedRegionId?: number) => {
         if (setSelectedRegion) {
             const selectedRegionObj = regionListResponse?.results

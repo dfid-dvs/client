@@ -38,6 +38,10 @@ import {
     Indicator,
     isRasterLayer,
     isVectorLayer,
+    Province,
+    District,
+    Municipality,
+    RegionLevelOption,
 } from '#types';
 
 import {
@@ -63,6 +67,7 @@ import ExploreData from './ExploreData';
 import MapOptions from './MapOptions';
 
 interface Region {
+    id: number;
     name: string;
 }
 
@@ -70,6 +75,8 @@ interface ClickedRegion {
     feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
     lngLat: mapboxgl.LngLatLike;
 }
+
+type AdminLevel = Province | District | Municipality | undefined;
 
 const fiveWOptions: FiveWOption[] = [
     {
@@ -159,7 +166,7 @@ const Dashboard = (props: Props) => {
     const [
         region,
         setRegion,
-    ] = useState<number | undefined>(undefined);
+    ] = useState<Region>();
 
     // Show/hide filters
     const [isFilterMinimized, , , toggleFilterMinimized] = useBasicToggle();
@@ -399,10 +406,12 @@ const Dashboard = (props: Props) => {
                 feature: feature as unknown as GeoJSON.Feature<GeoJSON.Polygon, Region>,
                 lngLat,
             });
+            const regionProperties = feature.properties as Region;
+            setRegion(regionProperties);
 
             return true;
         },
-        [setClickedRegionProperties],
+        [setClickedRegionProperties, setRegion],
     );
 
     const handleTooltipClose = useCallback(
@@ -413,10 +422,28 @@ const Dashboard = (props: Props) => {
     );
 
     const handleRegionChange = useCallback(
-        (newRegionId) => {
-            setRegion(newRegionId);
+        (newRegionId: number | undefined, adminLevel: AdminLevel) => {
+            if (!newRegionId) {
+                return;
+            }
+            if (!adminLevel) {
+                return;
+            }
+            const reg: Region = {
+                id: Number(adminLevel.code),
+                name: adminLevel.name,
+            };
+            setRegion(reg);
         },
         [setRegion],
+    );
+
+    const handleRegionLevelChange = useCallback(
+        (regionLvl: RegionLevelOption) => {
+            setRegionLevel(regionLvl);
+            setRegion(undefined);
+        },
+        [setRegion, setRegionLevel],
     );
 
     useEffect(() => {
@@ -457,7 +484,7 @@ const Dashboard = (props: Props) => {
                     vectorLayers={selectedVectorLayersDetail}
                     onClick={handleMapRegionClick}
                     printMode={printMode}
-                    selectedRegionId={region}
+                    selectedRegionId={region?.id}
                     // hideTooltipOnHover
                 />
             </div>
@@ -478,9 +505,9 @@ const Dashboard = (props: Props) => {
                 {regionFilterShown && (
                     <SingleRegionSelect
                         className={styles.regionSelectorContainer}
-                        onRegionLevelChange={setRegionLevel}
+                        onRegionLevelChange={handleRegionLevelChange}
                         regionLevel={regionLevel}
-                        region={region}
+                        region={region?.id}
                         onRegionChange={handleRegionChange}
                         disabled={printMode}
                     />
@@ -526,9 +553,9 @@ const Dashboard = (props: Props) => {
                         />
                     )}
                 />
-                {clickedRegionProperties && (
+                {region && (
                     <Tooltip
-                        feature={clickedRegionProperties.feature}
+                        region={region}
                         regionLevel={regionLevel}
                         programs={programs}
                     />

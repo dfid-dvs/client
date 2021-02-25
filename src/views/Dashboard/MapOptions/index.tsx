@@ -17,6 +17,7 @@ const layerLabelSelector = (d: Layer) => d.name;
 
 const indicatorKeySelector = (indicator: Indicator) => indicator.id;
 const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
+const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 
 interface MapOptionsProps {
     className?: string;
@@ -81,7 +82,7 @@ export default function MapOptions(props: MapOptionsProps) {
                 value={validSelectedIndicator}
                 optionLabelSelector={indicatorLabelSelector}
                 optionKeySelector={indicatorKeySelector}
-                // groupKeySelector={indicatorGroupKeySelector}
+                groupKeySelector={indicatorGroupKeySelector}
                 pending={indicatorListPending}
             />
             {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
