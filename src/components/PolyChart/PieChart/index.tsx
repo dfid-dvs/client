@@ -9,7 +9,7 @@ import {
 } from 'recharts';
 import { MdPieChart, MdDonutLarge } from 'react-icons/md';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
-import { IoMdTrash } from 'react-icons/io';
+import { IoMdClose } from 'react-icons/io';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
@@ -213,7 +213,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                             transparent
                             variant="danger"
                         >
-                            <IoMdTrash />
+                            <IoMdClose className={styles.deleteIcon} />
                         </Button>
                         <SegmentInput
                             options={orientations}
@@ -256,7 +256,11 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                                 />
                             ))}
                         </Pie>
-                        <Legend />
+                        <Legend
+                            layout="vertical"
+                            align="right"
+                            verticalAlign="middle"
+                        />
                     </PieChart>
                 </ResponsiveContainer>
             </div>

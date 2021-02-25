@@ -259,7 +259,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                 className: _cs(styles.option, selected && styles.selected),
                 name: String(key),
                 onClick: handleOptionClick,
-                disabled: disabled || selected,
+                disabled,
                 children: optionLabelSelector(datum),
             };
         },

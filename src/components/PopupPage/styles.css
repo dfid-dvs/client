@@ -14,7 +14,6 @@
         display: flex;
         align-items: center;
         flex-shrink: 0;
-        padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
 
         .back-button {
             display: flex;

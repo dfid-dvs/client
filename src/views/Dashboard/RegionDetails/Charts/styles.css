@@ -1,8 +1,27 @@
 .table-actions {
     display: flex;
     align-items: flex-end;
-    flex-shrink: 0;
+    justify-content: flex-end;
+    background: var(--color-white-smoke);
     padding: var(--spacing-large) var(--spacing-medium);
+
+    .add-chart-button {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        border: var(--width-separator-medium) solid var(--color-text-red);
+        border-radius: 0;
+
+        .text {
+            color: var(--color-text-red);
+            font-size: var(--font-size-medium);
+        }
+
+        .icon {
+            color: var(--color-text-red);
+            font-size: var(--font-size-large);
+        }
+    }
 
     >* {
         &:not(:last-child) {
@@ -18,16 +37,26 @@
     flex-grow: 1;
     flex-wrap: wrap;
     justify-content: space-around;
-    border-top: var(--width-separator-thin) solid var(--color-separator-light);
     overflow-y: auto;
+
+    .poly-chart {
+        margin: var(--spacing-medium);
+        background: var(--color-foreground);
+
+        &:hover {
+            margin: calc(var(--spacing-small-medium) + var(--spacing-super-small));
+            box-shadow: 0 0 5px 0 var(--color-shadow);
+        }
+    }
 
     .chart {
         padding: var(--spacing-large) var(--spacing-medium);
-        width: 360px;
-        height: 400px;
+        width: 480px;
+        height: 300px;
     }
 
     .backdrop {
         z-index: 1;
+        background: var(--color-foreground);
     }
 }

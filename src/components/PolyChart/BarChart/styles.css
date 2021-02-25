@@ -44,9 +44,22 @@
             align-items: center;
             flex-shrink: 0;
             padding: var(--spacing-small);
+            
+            .delete-icon {
+                display: none;
+            }
 
             >:not(:first-child) {
                 margin-left: var(--spacing-small);
+            }
+        }
+    }
+    &:hover {
+        .header {
+            .delete-icon {
+                display: inline;
+                color: var(--color-text);
+                font-size: var(--font-size-large-medium);
             }
         }
     }

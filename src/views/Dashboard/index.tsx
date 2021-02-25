@@ -165,6 +165,7 @@ const Dashboard = (props: Props) => {
     const [isFilterMinimized, , , toggleFilterMinimized] = useBasicToggle();
     const [regionFilterShown, , , toggleRegionFilter] = useBasicToggle();
     const [mapFilterShown, , , toggleMapFilter] = useBasicToggle();
+    const [filterButtonHidden, hideFilterButton, showFilterButton] = useBasicToggle();
 
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
     const [
@@ -430,6 +431,8 @@ const Dashboard = (props: Props) => {
         [regionLevel],
     );
 
+    const dataExplored = hash === 'regions' || hash === 'program';
+
     return (
         <div className={_cs(
             styles.dashboard,
@@ -462,6 +465,7 @@ const Dashboard = (props: Props) => {
                 className={_cs(
                     styles.filtersByRegion,
                     isFilterMinimized && styles.filterMinimized,
+                    filterButtonHidden && styles.filterButtonHidden,
                 )}
             >
                 <Button
@@ -517,7 +521,9 @@ const Dashboard = (props: Props) => {
             <div className={styles.summaryContainer}>
                 <Summary
                     actions={(
-                        <ExploreData />
+                        <ExploreData
+                            dataExplored={dataExplored}
+                        />
                     )}
                 />
                 {clickedRegionProperties && (
@@ -600,6 +606,16 @@ const Dashboard = (props: Props) => {
                 <RegionDetails
                     indicatorListPending={indicatorListPending}
                     indicatorList={indicatorList}
+                    className={_cs(
+                        styles.regionDetails,
+                        isFilterMinimized && styles.filterMinimized,
+                    )}
+                    regionLevel={regionLevel}
+                    handleRegionLevelChange={setRegionLevel}
+                    programs={programs}
+                    onHideFilterButton={hideFilterButton}
+                    onShowFilterButton={showFilterButton}
+                    filterButtonHidden={filterButtonHidden}
                 />
             )}
             {hash === 'programs' && (

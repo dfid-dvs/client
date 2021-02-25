@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { isDefined, unique, listToMap, isFalsyString } from '@togglecorp/fujs';
+import { IoMdAddCircleOutline } from 'react-icons/io';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
-import RegionSelector from '#components/RegionSelector';
 import PolyChart from '#components/PolyChart';
 import ChartModal from '#components/ChartModal';
 
@@ -344,15 +344,15 @@ function Charts(props: Props) {
     return (
         <>
             <div className={styles.tableActions}>
-                <RegionSelector
-                    onRegionLevelChange={onRegionLevelChange}
-                    regionLevel={regionLevel}
-                    searchHidden
-                />
                 <Button
                     onClick={handleModalShow}
+                    className={styles.addChartButton}
+                    icons={<IoMdAddCircleOutline className={styles.icon} />}
+                    transparent
                 >
-                    Add chart
+                    <div className={styles.text}>
+                        Add Chart
+                    </div>
                 </Button>
             </div>
             <div className={styles.charts}>
@@ -368,6 +368,7 @@ function Charts(props: Props) {
                         data={extendedFiveWList}
                         settings={item}
                         onDelete={handleChartDelete}
+                        className={styles.polyChart}
                     />
                 ))}
             </div>

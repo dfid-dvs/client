@@ -1,11 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import SegmentInput from '#components/SegmentInput';
-import DomainContext from '#components/DomainContext';
 import PopupPage from '#components/PopupPage';
-
-import { Indicator } from '#types';
+import { Indicator, RegionLevelOption } from '#types';
 
 import Table from './Table';
 import Charts from './Charts';
@@ -28,6 +26,12 @@ interface Props {
     className?: string;
     indicatorList: Indicator[] | undefined;
     indicatorListPending: boolean | undefined;
+    regionLevel: RegionLevelOption;
+    handleRegionLevelChange: (v: RegionLevelOption) => void;
+    programs: number[];
+    onHideFilterButton?: () => void;
+    onShowFilterButton?: () => void;
+    filterButtonHidden?: boolean;
 }
 
 const optionKeySelector = (item: TabOption) => item.key;
@@ -38,12 +42,26 @@ function RegionDetails(props: Props) {
         className,
         indicatorList,
         indicatorListPending,
+        regionLevel,
+        handleRegionLevelChange,
+        programs,
+        onHideFilterButton,
+        onShowFilterButton,
+        filterButtonHidden,
     } = props;
 
-    const { regionLevel: regionLevelFromContext, programs } = useContext(DomainContext);
 
-    const [regionLevel, setRegionLevel] = useState(regionLevelFromContext);
     const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('charts');
+
+    const onSelectTab = useCallback((tabKey: TabOptionKeys) => {
+        setSelectedTab(tabKey);
+        if (onHideFilterButton && tabKey === 'sankey') {
+            onHideFilterButton();
+        }
+        if (filterButtonHidden && onShowFilterButton && tabKey !== 'sankey') {
+            onShowFilterButton();
+        }
+    }, [setSelectedTab, onHideFilterButton, filterButtonHidden]);
 
     const [
         selectedRegions,
@@ -55,36 +73,38 @@ function RegionDetails(props: Props) {
     return (
         <PopupPage
             className={className}
-            title="Regions"
-            parentLink="/dashboard/"
+            parentLink="/"
             parentName="dashboard"
+            hideArrow
+            actionsClassName={styles.actionsClassName}
             actions={(
-                <div className={styles.rightContainer}>
-                    <Link
-                        className={styles.link}
-                        to="/infographics/"
-                        exact
-                    >
-                        Create Custom Infographic
-                    </Link>
+                <div className={styles.actionContainer}>
                     <div className={styles.tabActions}>
                         <SegmentInput
                             options={tabOptions}
                             optionKeySelector={optionKeySelector}
                             optionLabelSelector={optionLabelSelector}
                             value={selectedTab}
-                            onChange={setSelectedTab}
+                            onChange={onSelectTab}
                         />
                     </div>
+                    <Link
+                        className={styles.link}
+                        to="/infographics/"
+                        exact
+                    >
+                        Region Profile
+                    </Link>
                 </div>
             )}
+            headerClassName={styles.header}
         >
             {selectedTab === 'table' && (
                 <Table
                     programs={programs}
 
                     regionLevel={regionLevel}
-                    onRegionLevelChange={setRegionLevel}
+                    onRegionLevelChange={handleRegionLevelChange}
 
                     indicators={selectedIndicators}
                     onIndicatorsChange={setSelectedIndicators}
@@ -97,7 +117,7 @@ function RegionDetails(props: Props) {
                 <Charts
                     programs={programs}
                     regionLevel={regionLevel}
-                    onRegionLevelChange={setRegionLevel}
+                    onRegionLevelChange={handleRegionLevelChange}
 
                     indicatorList={indicatorList}
                     indicatorListPending={indicatorListPending}
