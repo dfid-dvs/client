@@ -162,10 +162,11 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
         </div>
     );
 }
+
 TreeInput.defaultProps = {
     disabled: false,
     readOnly: false,
-    showHintAndError: true,
+    showHintAndError: false,
     showLabel: true,
     showClearButton: true,
     value: [],

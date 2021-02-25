@@ -167,6 +167,7 @@
 
     --width-max-legend-container: 512px;
     --height-max-legend-container: 420px;
+
     .legend-container {
         display: flex;
         position: absolute;

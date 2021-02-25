@@ -10,37 +10,47 @@
 
         .logo {
             margin-left: var(--spacing-large);
-            height: 60px;
+            height: 77px;
         }
     }
 
     .actions {
         flex-grow: 1;
+
         .nav-links {
             display: flex;
             align-items: flex-end;
             flex-grow: 1;
             justify-content: flex-end;
-            padding: var(--spacing-small) calc(var(--spacing-large) - var(--spacing-small));
+            padding: 0 calc(var(--spacing-extra-large) - var(--spacing-large));
             font-size: var(--font-size-small);
 
             .link {
                 display: block;
                 outline: none;
-                padding: var(--spacing-small) var(--spacing-medium);
+                padding: var(--spacing-small) var(--spacing-large);
                 text-decoration: none;
                 color: var(--color-text);
                 font-size: var(--font-size-large);
                 font-weight: var(--font-weight-bold);
 
                 &.active {
-                    color: var(--color-text);
+                    color: var(--color-primary);
                 }
             }
         }
 
         .filters {
             display: flex;
+        }
+    }
+
+    .user-actions {
+        border-left: var(--width-separator-thin) solid var(--color-separator-light);
+        padding: calc(var(--spacing-extra-large) - var(--spacing-medium));
+
+        >* {
+            margin: 0 var(--spacing-medium);
         }
     }
 

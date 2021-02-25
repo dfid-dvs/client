@@ -95,8 +95,14 @@ text-placeholder: #7a8898
     --color-foreground: #fff;
     --color-foreground-dark: #f3f5f7;
 
-    --color-background: #f0f3f7;
-    --color-background-light: #e5eaf0;
+    --color-background: #f0f3f3;
+    --color-background-light: #e5eaea;
+
+
+    --color-grey-shade-1: #f9f9f9;
+    --color-grey-shade-2: #f2f2f2;
+    --color-grey-shade-3: #ededed;
+    --color-grey-shade-4: #e6e6e6;
 
     --color-background-accent-hint: #18cc9c55;
 
@@ -106,7 +112,7 @@ text-placeholder: #7a8898
     --color-backdrop-dark: rgba(0, 0, 0, .5);
 
     /* COLOR INPUT */
-    --color-input-background: #eff0f7;
+    --color-input-background: #f0f0f0;
     --color-input-background-errored: #f1e1e3;
     --color-input-background-disabled: #e4e9ef;
     --color-input-actions: #6d798a;
@@ -148,7 +154,7 @@ text-placeholder: #7a8898
     --color-separator-light: rgba(160, 180, 190, 0.3);
 
     /* OTHER COLORS */
-    --color-light-pink: #ffc0cbaa;
+    --color-light-pink: #ffc0cb;
 }
 
 body {

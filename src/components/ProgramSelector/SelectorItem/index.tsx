@@ -82,18 +82,16 @@ export default function SelectorItem<T extends string | number>(props: SelectorI
 
     if (isMinimized) {
         return (
-            <div className={styles.selectorItem}>
-                <div className={_cs(styles.heading, styles.centered)}>
-                    <div className={styles.minimizedIcon}>
-                        {icon}
-                    </div>
+            <div className={_cs(className, styles.selectorItem)}>
+                <div className={styles.minimizedIcon}>
+                    {icon}
                 </div>
             </div>
         );
     }
 
     return (
-        <div className={styles.selectorItem}>
+        <div className={_cs(className, styles.selectorItem)}>
             <div className={styles.heading}>
                 {isFilterExpanded ? (
                     <IoMdArrowDropup
@@ -125,28 +123,28 @@ export default function SelectorItem<T extends string | number>(props: SelectorI
                 )}
             </div>
             {isFilterExpanded && (
-                <TextInput
-                    placeholder="Search"
-                    value={searchText}
-                    onChange={setSearchText}
-                    autoFocus
-                    icons={<IoIosSearch className={styles.searchIcon} />}
-                />
-            )}
-            {isFilterExpanded && (
-                <TreeInput
-                    className={_cs(className, styles.treeInput)}
-                    keySelector={treeKeySelector}
-                    parentKeySelector={treeParentSelector}
-                    labelSelector={treeLabelSelector}
-                    options={options}
-                    value={value}
-                    onChange={setSelectedValue}
-                    defaultCollapseLevel={collapseLevel}
-                    labelClassName={styles.label}
-                    showClearButton={false}
-                    enabledOptions={enabledIds}
-                />
+                <div className={styles.content}>
+                    <TextInput
+                        className={styles.searchInput}
+                        placeholder="Search"
+                        value={searchText}
+                        onChange={setSearchText}
+                        autoFocus
+                        icons={<IoIosSearch className={styles.searchIcon} />}
+                    />
+                    <TreeInput
+                        className={styles.treeInput}
+                        keySelector={treeKeySelector}
+                        parentKeySelector={treeParentSelector}
+                        labelSelector={treeLabelSelector}
+                        options={options}
+                        value={value}
+                        onChange={setSelectedValue}
+                        defaultCollapseLevel={collapseLevel}
+                        showClearButton={false}
+                        enabledOptions={enabledIds}
+                    />
+                </div>
             )}
         </div>
     );

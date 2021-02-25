@@ -60,22 +60,24 @@ const Navbar = (props: Props) => {
                     </NavLink>
                 </div>
             </div>
-            {administrator && (
-                <a
-                    className={styles.adminConsoleLink}
-                    href={link}
-                    rel="noreferrer noopener"
-                    target="_blank"
+            <div className={styles.userActions}>
+                {administrator && (
+                    <a
+                        className={styles.adminConsoleLink}
+                        href={link}
+                        rel="noreferrer noopener"
+                        target="_blank"
+                    >
+                        <RiAdminLine className={styles.adminIcon} />
+                        Admin Panel
+                    </a>
+                )}
+                <Button
+                    onClick={onLogout}
                 >
-                    <RiAdminLine className={styles.adminIcon} />
-                    Admin Panel
-                </a>
-            )}
-            <Button
-                onClick={onLogout}
-            >
-                Logout
-            </Button>
+                    Logout
+                </Button>
+            </div>
         </nav>
     );
 };

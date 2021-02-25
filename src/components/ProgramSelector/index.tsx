@@ -85,13 +85,6 @@ function ProgramSelector(props: Props) {
     const [selectedPartner, setSelectedPartner] = useState<string[]>([]);
     const [selectedSector, setSelectedSector] = useState<string[]>([]);
 
-    console.log(
-        selectedMarker,
-        selectedProgram,
-        selectedPartner,
-        selectedSector,
-    );
-
     /*
     const {
         markers: selectedMarker,
@@ -444,7 +437,7 @@ function ProgramSelector(props: Props) {
             )}
             <SelectorItem
                 name="markers"
-                className={styles.markerTree}
+                className={styles.marker}
                 options={combinedMarkerOptions}
                 value={selectedMarker}
                 setSelectedValue={setSelectedMarker}
@@ -458,7 +451,7 @@ function ProgramSelector(props: Props) {
             />
             <SelectorItem
                 name="programs"
-                className={styles.programTree}
+                className={styles.program}
                 options={combinedProgramOptions}
                 value={selectedProgram}
                 setSelectedValue={setSelectedPrograms}
@@ -471,7 +464,7 @@ function ProgramSelector(props: Props) {
             />
             <SelectorItem
                 name="partners"
-                className={styles.partnerTree}
+                className={styles.partner}
                 options={partnerOptions}
                 value={selectedPartner}
                 setSelectedValue={setSelectedPartner}
@@ -484,7 +477,7 @@ function ProgramSelector(props: Props) {
             />
             <SelectorItem
                 name="sectors"
-                className={styles.sectorTree}
+                className={styles.sector}
                 options={combinedSectorOptions}
                 value={selectedSector}
                 setSelectedValue={setSelectedSector}

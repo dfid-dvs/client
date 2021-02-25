@@ -5,6 +5,7 @@
     border-left: var(--width-separator-thin) solid var(--color-separator);
     background-color: var(--color-foreground);
 
+
     &.hidden {
         margin-right: calc(-1 * var(--width-sidepanel));
     }

@@ -1,38 +1,44 @@
 .selector-item {
-    border-bottom: var(--spacing-super-small) #e8e8e8 solid;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+
+    .minimized-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--spacing-extra-large) var(--spacing-large);
+        color: var(--color-primary);
+        font-size: var(--font-size-extra-large);
+    }
 
     .heading {
         display: flex;
         align-items: center;
-        background: #fafafa;
-        padding: calc(2 * var(--spacing-medium));
+        flex-shrink: 0;
+        background-color: var(--color-grey-shade-1);
+        padding: var(--spacing-medium) var(--spacing-medium);
     
         .collapse-icon {
-            width: 10%;
-            font-size: var(--font-size-medium);
-
-            &:hover {
-                cursor: pointer;
-            }
+            margin: var(--spacing-small);
+            cursor: pointer;
+            font-size: var(--font-size-large);
         }
     
         .icon {
-            width: 12%;
+            display: flex;
+            align-items: center;
+            margin: var(--spacing-small);
             color: var(--color-primary);
             font-size: var(--font-size-large);
         }
 
-        .minimized-icon {
-            color: var(--color-primary);
-            font-size: var(--font-size-large);
-        }
-    
         .name {
-            width: 70%;
+            padding: var(--spacing-small);
             text-transform: uppercase;
-            letter-spacing: calc(2 * var(--spacing-super-small));
-            font-size: var(--font-size-medium);
-            font-weight: bold;
+            letter-spacing: 0.14rem;
+            font-size: var(--font-size-large);
+            font-weight: var(--font-weight-bold);
         }
 
         .right-section {
@@ -63,17 +69,32 @@
         }
     }
 
-    .search-icon {
-        margin-left: var(--spacing-extra-large);
-        font-size: var(--font-size-large);
+    .content {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        background-color: var(--color-grey-shade-4);
+        overflow: auto;
+
+        .search-input {
+            flex-shrink: 0;
+            padding: 0 calc(var(--spacing-large) - var(--spacing-medium));
+
+            .search-icon {
+                display: flex;
+                align-items: center;
+                font-size: var(--font-size-large);
+            }
+        }
+
+        .tree-input {
+            flex-grow: 1;
+            overflow: auto;
+        }
     }
 
     .centered {
         justify-content: center;
-    }
-    
-    .tree-input {
-        background-color: var(--color-light-gray-bg);
     }
 }
 
