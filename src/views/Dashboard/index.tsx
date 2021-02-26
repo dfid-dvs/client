@@ -66,6 +66,7 @@ import {
 import styles from './styles.css';
 import ExploreData from './ExploreData';
 import MapOptions from './MapOptions';
+import splitCombinedSelectors from './splitCombinedSelectors';
 
 interface Region {
     id: number;
@@ -127,7 +128,10 @@ const Dashboard = (props: Props) => {
     const {
         regionLevel,
         setRegionLevel,
+        markers,
         programs,
+        partners,
+        sectors,
     } = useContext(DomainContext);
 
     // Filter
@@ -249,12 +253,25 @@ const Dashboard = (props: Props) => {
         [selectedFiveWOption],
     );
 
+    const [markerIdList, submarkerIdList] = splitCombinedSelectors(markers, 'submarker');
+    // FIXME: Update programs to String[]
+    const [programIdList, componentIdList] = splitCombinedSelectors(programs, 'subprogram');
+    const [partnerIdList, subpartnerIdList] = splitCombinedSelectors(partners, 'subpartner');
+    const [sectorIdList, subsectorIdList] = splitCombinedSelectors(sectors, 'subsector');
+
     const [
         fiveWMapStatePending,
         fiveWMapState,
     ] = useMapStateForFiveW(
         regionLevel,
-        programs,
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        subpartnerIdList,
+        sectorIdList,
+        subsectorIdList,
         fiveWOptionKey,
         false,
     );
@@ -462,11 +479,12 @@ const Dashboard = (props: Props) => {
     const dataExplored = hash === 'regions' || hash === 'program';
 
     return (
-        <div className={_cs(
-            styles.dashboard,
-            className,
-            printMode && styles.printMode,
-        )}
+        <div
+            className={_cs(
+                styles.dashboard,
+                className,
+                printMode && styles.printMode,
+            )}
         >
             <PrintDetailsBar
                 show={printMode}
@@ -549,18 +567,23 @@ const Dashboard = (props: Props) => {
                 <div className={styles.summaryContainer}>
                     <Summary
                         actions={(
-                            <ExploreData
-                                dataExplored={dataExplored}
-                            />
+                            <ExploreData dataExplored={dataExplored} />
                         )}
                     />
                     {region && (
                         <Tooltip
                             region={region}
                             className={styles.clickedRegionDetail}
-                            feature={clickedRegionProperties?.feature}
                             regionLevel={regionLevel}
-                            programs={programs}
+
+                            markerIdList={markerIdList}
+                            submarkerIdList={submarkerIdList}
+                            programIdList={programIdList}
+                            componentIdList={componentIdList}
+                            partnerIdList={partnerIdList}
+                            subpartnerIdList={subpartnerIdList}
+                            sectorIdList={sectorIdList}
+                            subsectorIdList={subsectorIdList}
                         />
                     )}
                 </div>
@@ -604,7 +627,6 @@ const Dashboard = (props: Props) => {
                     isMinimized={isFilterMinimized}
                 />
             </div>
-
             <div className={styles.printButtonContainer}>
                 <PrintButton
                     orientation="portrait"
@@ -666,11 +688,18 @@ const Dashboard = (props: Props) => {
                         isFilterMinimized && styles.filterMinimized,
                     )}
                     regionLevel={regionLevel}
-                    handleRegionLevelChange={setRegionLevel}
-                    programs={programs}
                     onHideFilterButton={hideFilterButton}
                     onShowFilterButton={showFilterButton}
                     filterButtonHidden={filterButtonHidden}
+
+                    markerIdList={markerIdList}
+                    submarkerIdList={submarkerIdList}
+                    programIdList={programIdList}
+                    componentIdList={componentIdList}
+                    partnerIdList={partnerIdList}
+                    subpartnerIdList={subpartnerIdList}
+                    sectorIdList={sectorIdList}
+                    subsectorIdList={subsectorIdList}
                 />
             )}
             {hash === 'programs' && (

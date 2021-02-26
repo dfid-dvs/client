@@ -63,22 +63,35 @@ const indicatorKeySelector = (indicator: Indicator) => indicator.id;
 const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 
 interface Props {
-    programs: number[];
-
     indicators: number[];
     onIndicatorsChange: (value: number[] | ((v: number[]) => number[])) => void;
 
     regionLevel: RegionLevelOption;
-    onRegionLevelChange: (v: RegionLevelOption) => void;
 
     indicatorList: Indicator[] | undefined;
     indicatorListPending: boolean | undefined;
+
+    markerIdList?: number[];
+    submarkerIdList?: number[];
+    programIdList?: number[];
+    componentIdList?: number[];
+    partnerIdList?: number[];
+    subpartnerIdList?: number[];
+    sectorIdList?: number[];
+    subsectorIdList?: number[];
 }
 function RegionTable(props: Props) {
     const {
-        programs,
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        subpartnerIdList,
+        sectorIdList,
+        subsectorIdList,
+
         regionLevel,
-        onRegionLevelChange,
         indicators,
         onIndicatorsChange,
 
@@ -102,7 +115,14 @@ function RegionTable(props: Props) {
 
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
         regionLevel,
-        programs,
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        subpartnerIdList,
+        sectorIdList,
+        subsectorIdList,
         validSelectedIndicators,
     );
 
@@ -372,11 +392,6 @@ function RegionTable(props: Props) {
     return (
         <>
             <div className={styles.tableActions}>
-                {/* <RegionSelector
-                    onRegionLevelChange={onRegionLevelChange}
-                    regionLevel={regionLevel}
-                    searchHidden
-                /> */}
                 <MultiSelectInput
                     placeholder={`Select from ${indicatorList?.length || 0} indicators`}
                     options={indicatorList}

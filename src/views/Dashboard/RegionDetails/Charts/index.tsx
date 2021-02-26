@@ -236,22 +236,35 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 ];
 
 interface Props {
-    programs: number[];
-
     regionLevel: RegionLevelOption;
-    onRegionLevelChange: (v: RegionLevelOption) => void;
 
     indicatorList: Indicator[] | undefined;
     indicatorListPending: boolean | undefined;
+
+    markerIdList?: number[];
+    submarkerIdList?: number[];
+    programIdList?: number[];
+    componentIdList?: number[];
+    partnerIdList?: number[];
+    subpartnerIdList?: number[];
+    sectorIdList?: number[];
+    subsectorIdList?: number[];
 }
 
 function Charts(props: Props) {
     const {
-        programs,
         regionLevel,
-        onRegionLevelChange,
         indicatorList,
         indicatorListPending,
+
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        subpartnerIdList,
+        sectorIdList,
+        subsectorIdList,
     } = props;
 
     const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>(
@@ -337,7 +350,14 @@ function Charts(props: Props) {
 
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
         regionLevel,
-        programs,
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        subpartnerIdList,
+        sectorIdList,
+        subsectorIdList,
         validSelectedIndicators,
     );
 

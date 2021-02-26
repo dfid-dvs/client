@@ -20,7 +20,7 @@ function SummaryItem({
         if (!value || !total) {
             return 0;
         }
-        return value / total * 100;
+        return Math.floor(value / total * 100);
     }, [value, total]);
 
     const remWidth = 100 - valueWidth;

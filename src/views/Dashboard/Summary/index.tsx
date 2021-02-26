@@ -12,6 +12,7 @@ import { apiEndPoint } from '#utils/constants';
 
 import styles from './styles.css';
 import SummaryItem from './SummaryItem';
+import splitCombinedSelectors from '../splitCombinedSelectors';
 
 interface SummaryInfo {
     allocatedBudget: number;
@@ -19,48 +20,85 @@ interface SummaryInfo {
     partner: number;
     component: number;
     sector: number;
+    totalAllocatedBudget: number;
+    totalProgram: number;
+    totalPartner: number;
+    totalComponent: number;
+    totalSector: number;
 }
 
 interface SummaryProps {
     className?: string;
     actions?: React.ReactNode;
+    dataExplored?: boolean;
 }
 
 function Summary(props: SummaryProps) {
     const {
         className,
         actions,
+        dataExplored,
     } = props;
 
-    const { programs } = useContext(DomainContext);
+    const {
+        programs,
+        markers,
+        partners,
+        sectors,
+    } = useContext(DomainContext);
+
+    const [markerIdList, submarkerIdList] = splitCombinedSelectors(markers, 'submarker');
+    const [programIdList, componentIdList] = splitCombinedSelectors(programs, 'subprogram');
+    const [partnerIdList, subpartnerIdList] = splitCombinedSelectors(partners, 'subpartner');
+    const [sectorIdList, subsectorIdList] = splitCombinedSelectors(sectors, 'subsector');
 
     const summaryParams = p({
         // eslint-disable-next-line @typescript-eslint/camelcase
-        program_id: programs,
+        marker_id: markerIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        submarker_id: submarkerIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        program_id: programIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        component_id: componentIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        partner_id: partnerIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        subpartner_id: subpartnerIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        sector_id: sectorIdList,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        subsector_id: subsectorIdList,
     });
 
-    const summaryUrl = `${apiEndPoint}/core/summary/`;
+    const summaryUrl = summaryParams ? `${apiEndPoint}/core/summary/?${summaryParams}` : `${apiEndPoint}/core/summary/`;
     const [
         summaryPending,
         summary,
     ] = useRequest<SummaryInfo>(summaryUrl, 'fivew-summary');
 
-    const summaryUrlWithParams = summaryParams ? `${apiEndPoint}/core/summary/?${summaryParams}` : undefined;
-    const [
-        paramedSummaryPending,
-        paramedSummary,
-    ] = useRequest<SummaryInfo>(summaryUrlWithParams, 'fivew-summary');
-
     return (
         <div className={_cs(styles.summary, className)}>
-            <div className={styles.titleContainer}>
-                <div className={styles.title}>
+            <div
+                className={styles.titleContainer}
+            >
+                <div
+                    className={_cs(
+                        styles.title,
+                        dataExplored && styles.hideTitle,
+                    )}
+                >
                     Summary
                 </div>
                 {actions}
             </div>
-            <div className={styles.summaryContainer}>
-                {summaryPending && paramedSummaryPending && (
+            <div
+                className={_cs(
+                    styles.summaryContainer,
+                    dataExplored && styles.hideContainer,
+                )}
+            >
+                {summaryPending && (
                     <Backdrop>
                         <LoadingAnimation />
                     </Backdrop>
@@ -68,32 +106,32 @@ function Summary(props: SummaryProps) {
                 <SummaryItem
                     className={styles.summaryItem}
                     label="Allocated Budget (£)"
-                    value={paramedSummary?.allocatedBudget}
-                    total={summary?.allocatedBudget}
+                    value={summary?.allocatedBudget}
+                    total={summary?.totalAllocatedBudget}
                 />
                 <SummaryItem
                     className={styles.summaryItem}
                     label="Programs"
-                    value={paramedSummary?.program}
-                    total={summary?.program}
+                    value={summary?.program}
+                    total={summary?.totalProgram}
                 />
                 <SummaryItem
                     className={styles.summaryItem}
                     label="Partners"
-                    value={paramedSummary?.partner}
-                    total={summary?.partner}
+                    value={summary?.partner}
+                    total={summary?.totalPartner}
                 />
                 <SummaryItem
                     className={styles.summaryItem}
                     label="Components"
-                    value={paramedSummary?.component}
-                    total={summary?.component}
+                    value={summary?.component}
+                    total={summary?.totalComponent}
                 />
                 <SummaryItem
                     className={styles.summaryItem}
                     label="Sectors"
-                    value={paramedSummary?.sector}
-                    total={summary?.sector}
+                    value={summary?.sector}
+                    total={summary?.totalSector}
                 />
             </div>
         </div>

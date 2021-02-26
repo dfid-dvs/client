@@ -87,8 +87,16 @@ interface PopupData {
 interface Props {
     region: Region;
     regionLevel: RegionLevelOption;
-    programs: number[];
     className?: string;
+
+    markerIdList?: number[];
+    submarkerIdList?: number[];
+    programIdList?: number[];
+    componentIdList?: number[];
+    partnerIdList?: number[];
+    subpartnerIdList?: number[];
+    sectorIdList?: number[];
+    subsectorIdList?: number[];
 }
 
 const Tooltip = (props: Props) => {
@@ -98,19 +106,57 @@ const Tooltip = (props: Props) => {
             name,
         },
         regionLevel,
-        programs,
         className,
+
+
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        subpartnerIdList,
+        sectorIdList,
+        subsectorIdList,
     } = props;
 
-    const popupDataUrl = useMemo(() => {
-        const urlParams = {
-            field: `${regionLevel}_id__code`,
-            value: id,
-            programs,
-        };
+    const popupDataUrl = useMemo(
+        () => {
+            const urlParams = {
+                field: `${regionLevel}_id__code`,
+                value: id,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                marker_id: markerIdList,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                submarker_id: submarkerIdList,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                program_id: programIdList,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                component_id: componentIdList,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                partner_id: partnerIdList,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                subpartner_id: subpartnerIdList,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                sector_id: sectorIdList,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                subsector_id: subsectorIdList,
+            };
 
-        return `${apiEndPoint}/core/popup/?${p(urlParams)}`;
-    }, [regionLevel, programs, id]);
+            return `${apiEndPoint}/core/popup/?${p(urlParams)}`;
+        },
+        [
+            regionLevel,
+            id,
+            markerIdList,
+            submarkerIdList,
+            programIdList,
+            componentIdList,
+            partnerIdList,
+            subpartnerIdList,
+            sectorIdList,
+            subsectorIdList,
+        ],
+    );
 
     const [
         popupDataPending,
@@ -268,6 +314,11 @@ const Tooltip = (props: Props) => {
                         </div>
                     </div>
                 ))}
+                {details?.programs && details?.programs?.length <= 0 && (
+                    <h3 className={styles.noDetail}>
+                        No detail to show
+                    </h3>
+                )}
             </div>
         </div>
     );

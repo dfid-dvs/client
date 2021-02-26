@@ -199,6 +199,11 @@
                 }
             }
         }
+
+        .no-detail {
+            padding: var(--spacing-medium);
+            text-align: center;
+        }
     }
 }
 

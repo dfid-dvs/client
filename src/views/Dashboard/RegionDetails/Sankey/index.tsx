@@ -21,20 +21,21 @@ const sankeyColorSelector = (item: { depth: number }) => tableauColors[item.dept
 const sankeyNameSelector = (item: { name: string }) => item.name;
 
 interface Props {
-    programs: number[];
     regions: number[];
     onRegionsChange: (value: number[]) => void;
+
+    programIdList?: number[];
 }
 
 function RegionSankey(props: Props) {
     const {
-        programs,
         regions,
         onRegionsChange,
+        programIdList,
     } = props;
 
     const params = p({
-        program: programs,
+        program: programIdList,
         province: regions,
         threshold: 0.8,
     });
