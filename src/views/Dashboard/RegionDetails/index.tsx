@@ -1,4 +1,5 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { _cs } from '@togglecorp/fujs';
 import { Link } from 'react-router-dom';
 
 import SegmentInput from '#components/SegmentInput';
@@ -86,11 +87,10 @@ function RegionDetails(props: Props) {
 
     return (
         <PopupPage
-            className={className}
+            className={_cs(styles.regionDetails, className)}
             parentLink="/"
             parentName="dashboard"
             hideArrow
-            actionsClassName={styles.actionsClassName}
             actions={(
                 <div className={styles.actionContainer}>
                     <div className={styles.tabActions}>
@@ -103,9 +103,8 @@ function RegionDetails(props: Props) {
                         />
                     </div>
                     <Link
-                        className={styles.link}
+                        className={styles.regionProfileLink}
                         to="/infographics/"
-                        exact
                     >
                         Region Profile
                     </Link>

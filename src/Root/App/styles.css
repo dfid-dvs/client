@@ -8,6 +8,10 @@
         transition-duration: 50ms;
         transition-property: transform;
     }
+
+    .mapboxgl-canvas {
+        outline: none;
+    }
 }
 
 .no-spinners {

@@ -43,16 +43,16 @@
     }
 
     --width-config-container: 340px;
-    --width-collapsed-config-container: 70px;
+    --width-collapsed-config-container: 84px;
     --width-summary-container: 320px;
 
     .filters-by-region {
         display: flex;
         position: absolute;
-        top: var(--spacing-medium);
+        top: calc(var(--spacing-medium) + var(--spacing-extra-small));
         left: calc(var(--spacing-large) + var(--width-config-container));
         flex-direction: column;
-        z-index: 1;
+        z-index: 10;
 
         .region-selector-container {
             flex-direction: column;

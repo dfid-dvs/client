@@ -3,13 +3,38 @@
     flex-direction: column;
     overflow: auto;
 
-    .minimized-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: var(--spacing-extra-large) var(--spacing-large);
-        color: var(--color-primary);
-        font-size: var(--font-size-extra-large);
+    &.minimized {
+        position: relative;
+        padding: calc(var(--spacing-large) - var(--spacing-small)) calc(var(--spacing-medium) - var(--spacing-small));
+
+        .minimized-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-small);
+            color: var(--color-primary);
+            font-size: var(--font-size-extra-large);
+        }
+
+        .minimized-name {
+            padding: var(--spacing-small);
+            text-align: center;
+            text-transform: uppercase;
+            font-size: var(--font-size-extra-small);
+        }
+
+        .minimized-value-count {
+            position: absolute;
+            top: var(--spacing-medium);
+            right: var(--spacing-medium);
+            border-radius: 50%;
+            background-color: var(--color-highlight-light);
+            padding: var(--spacing-super-small) var(--spacing-small);
+            text-align: center;
+            color: var(--color-highlight);
+            font-size: var(--font-size-small);
+            font-weight: var(--font-weight-bold);
+        }
     }
 
     .heading {
@@ -48,12 +73,12 @@
 
             .value-count {
                 border-radius: calc(3 * var(--radius-button));
-                background: var(--color-light-pink);
+                background-color: var(--color-highlight-light);
                 padding: var(--spacing-super-small);
                 width: 50%;
                 height: 24px;
                 text-align: center;
-                color: var(--color-text-red);
+                color: var(--color-highlight);
                 font-size: var(--font-size-large-medium);
                 font-weight: var(--font-weight-bold);
             }

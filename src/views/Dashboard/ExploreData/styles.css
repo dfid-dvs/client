@@ -1,4 +1,5 @@
 .explore-data-button {
+    cursor: pointer;
     padding: 0;
 }
 
@@ -30,6 +31,12 @@
             &:hover {
                 background-color: var(--color-separator-light);
             }
+
+            &.disabled {
+                pointer-events: none;
+                opacity: 0.3;
+            }
         }
     }
 }
+

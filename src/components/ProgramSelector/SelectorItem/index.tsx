@@ -82,10 +82,18 @@ export default function SelectorItem<T extends string | number>(props: SelectorI
 
     if (isMinimized) {
         return (
-            <div className={_cs(className, styles.selectorItem)}>
+            <div className={_cs(className, styles.selectorItem, styles.minimized)}>
                 <div className={styles.minimizedIcon}>
                     {icon}
                 </div>
+                <div className={styles.minimizedName}>
+                    {name}
+                </div>
+                {selectedValueCount > 0 && (
+                    <div className={styles.minimizedValueCount}>
+                        {selectedValueCount}
+                    </div>
+                )}
             </div>
         );
     }

@@ -1,13 +1,17 @@
+.region-details {
+    position: relative;
+}
+
 .action-container {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
+    padding: var(--spacing-small);
 
-    .link {
-        margin: var(--spacing-small);
+    .region-profile-link {
         border: var(--width-separator-thin) solid var(--color-button-background);
         background-color: var(--color-foreground);
-        padding: var(--spacing-extra-small) var(--spacing-medium);
+        padding: var(--spacing-extra-small) var(--spacing-large);
         text-decoration: none;
         color: var(--color-text);
         font-weight: var(--font-weight-bold);
@@ -18,18 +22,12 @@
     }
 
     .tab-actions {
+        align-self: center;
         flex-shrink: 0;
-        margin: 2px;
         padding: 0 var(--spacing-medium);
-        width: 60%;
     }
 }
 
 .header {
     justify-content: center;
-    margin: 2px;
-}
-
-.actions-class-name {
-    width: 70%
 }
