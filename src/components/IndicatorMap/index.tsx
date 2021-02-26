@@ -68,13 +68,16 @@ export interface Municipality {
 
 type Region = Province | District | Municipality;
 
+const defaultSpacing = 108;
+const defaultPadding = 32;
+const leftPanelWidth = 320;
+
 const leftSpacedPadding = {
-    top: 20,
-    bottom: 20,
-    right: 20,
-    left: 320 + 20,
+    top: defaultSpacing,
+    bottom: defaultSpacing,
+    right: defaultSpacing,
+    left: leftPanelWidth + defaultSpacing,
 };
-const defaultPadding = 20;
 
 const mapOptions: Omit<mapboxgl.MapboxOptions, 'style' | 'container'> = {
     logoPosition: 'bottom-left',

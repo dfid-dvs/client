@@ -1,6 +1,7 @@
 .checkbox {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    cursor: pointer;
     padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
 
     .icon {

@@ -1,8 +1,8 @@
 .summary-item {
-    padding: calc(var(--spacing-medium) - var(--spacing-small)) calc(var(--spacing-medium) - var(--spacing-small));
+    padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
 
     .label {
-        padding: var(--spacing-small);
+        padding: 0 var(--spacing-small);
         text-transform: uppercase;
         letter-spacing: 0.16em;
         color: var(--color-accent-light);

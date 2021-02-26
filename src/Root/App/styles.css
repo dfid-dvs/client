@@ -105,7 +105,7 @@ text-placeholder: #7a8898
     --color-grey-shade-3: #ededed;
     --color-grey-shade-4: #e6e6e6;
 
-    --color-background-accent-hint: #18cc9c55;
+    --color-background-accent-hint: #c9e3ff;
 
     /* COLOR BACKDROP */
 
@@ -159,7 +159,7 @@ text-placeholder: #7a8898
     --color-white-smoke: #f5f5f5;
 
     --color-highlight: #e04656;
-    --color-highlight-light: #ff8698;
+    --color-highlight-light: #ff869868;
 }
 
 body {
