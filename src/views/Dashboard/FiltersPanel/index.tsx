@@ -10,6 +10,7 @@ export default function FiltersPanel(props: FiltersPanelProps) {
         className,
         isMinimized,
     } = props;
+
     return (
         <ProgramSelector
             className={className}

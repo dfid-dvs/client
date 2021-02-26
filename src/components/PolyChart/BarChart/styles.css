@@ -31,7 +31,7 @@
         display: flex;
         align-items: center;
         flex-shrink: 0;
-        padding: calc(var(--spacing-medium) - var(--spacing-small));
+        padding: calc(var(--spacing-medium) - var(--spacing-small)) calc(var(--spacing-large) - var(--spacing-small));
         overflow-y: auto;
 
         .heading {
@@ -46,7 +46,9 @@
             padding: var(--spacing-small);
             
             .delete-icon {
-                display: none;
+                opacity: 0;
+                color: var(--color-text);
+                font-size: var(--font-size-large-medium);
             }
 
             >:not(:first-child) {
@@ -54,12 +56,11 @@
             }
         }
     }
+
     &:hover {
         .header {
             .delete-icon {
-                display: inline;
-                color: var(--color-text);
-                font-size: var(--font-size-large-medium);
+                opacity: 1;
             }
         }
     }

@@ -23,7 +23,7 @@
 
     &.active {
         border-radius: calc(4 * var(--radius-input));
-        background-color: var(--color-light-pink);
+        background-color: var(--color-highlight-light);
         font-weight: var(--font-weight-bold);
     }
 

@@ -4,6 +4,8 @@
 
     .region-level-selection {
         display: flex;
+        align-items: flex-start;
+        flex-direction: column;
         padding: var(--spacing-small);
     }
 

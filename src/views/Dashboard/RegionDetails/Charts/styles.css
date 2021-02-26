@@ -42,11 +42,6 @@
     .poly-chart {
         margin: var(--spacing-medium);
         background: var(--color-foreground);
-
-        &:hover {
-            margin: calc(var(--spacing-small-medium) + var(--spacing-super-small));
-            box-shadow: 0 0 5px 0 var(--color-shadow);
-        }
     }
 
     .chart {
