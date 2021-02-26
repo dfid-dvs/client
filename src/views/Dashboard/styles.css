@@ -15,7 +15,6 @@
     }
 }
 
-
 .dashboard {
     display: flex;
     position: relative;
@@ -27,7 +26,6 @@
         display: flex;
         position: relative;
         flex-grow: 1;
-        overflow: hidden;
 
         .map-container {
             flex-grow: 1;
@@ -46,6 +44,7 @@
 
     --width-config-container: 340px;
     --width-collapsed-config-container: 70px;
+    --width-summary-container: 320px;
 
     .filters-by-region {
         display: flex;
@@ -77,7 +76,6 @@
         }
     }
 
-    --width-summary-container: 320px;
 
     .summary-container {
         display: flex;
@@ -85,7 +83,6 @@
         top: 0;
         right: var(--spacing-large);
         flex-direction: column;
-        z-index: 1;
         width: var(--width-summary-container);
         height: calc(100% - var(--spacing-large));
 
@@ -204,12 +201,14 @@
 
     --width-max-legend-container: 512px;
     --height-max-legend-container: 420px;
+    --map-control-width: 100px;
+    --map-control-height: 158px;
 
     .legend-container {
         display: flex;
         position: absolute;
         bottom: var(--spacing-medium);
-        left: calc(var(--width-config-container) + var(--spacing-medium));
+        left: calc(var(--width-config-container) + var(--spacing-medium) + var(--map-control-width));
         align-items: flex-end;
         transition: .2s left ease-in-out;
         max-width: var(--width-max-legend-container);
@@ -232,10 +231,11 @@
         }
     }
 
-    .print-mode-button {
+    .print-button-container {
         position: absolute;
-        right: var(--spacing-small-medium);
-        bottom: calc( 8 * var(--spacing-extra-large));
+        bottom: var(--map-control-height);
+        left: var(--width-config-container);
+        padding: var(--spacing-medium);
     }
 
     &.print-mode {
@@ -246,9 +246,11 @@
         width: 297mm!important;
         height: 210mm!important;
 
-        .print-mode-button {
+        .print-button-container {
+            top: unset;
             right: var(--spacing-small-medium);
             bottom: calc( 8 * var(--spacing-extra-large));
+            left: unset;
         }
 
         .map-style-config-container {
@@ -275,5 +277,9 @@
 :global {
     .mapboxgl-popup {
         z-index: 1111!important;
+    }
+
+    .mapboxgl-ctrl-bottom-left {
+        left: var(--width-config-container);
     }
 }

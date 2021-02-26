@@ -486,7 +486,6 @@ const Dashboard = (props: Props) => {
                     onClick={handleMapRegionClick}
                     printMode={printMode}
                     selectedRegionId={region?.id}
-                    // hideTooltipOnHover
                 />
             </div>
             <div
@@ -605,12 +604,15 @@ const Dashboard = (props: Props) => {
                     isMinimized={isFilterMinimized}
                 />
             </div>
-            <PrintButton
-                orientation="portrait"
-                className={styles.printModeButton}
-                printMode={printMode}
-                onPrintModeChange={setPrintMode}
-            />
+
+            <div className={styles.printButtonContainer}>
+                <PrintButton
+                    orientation="portrait"
+                    className={styles.printModeButton}
+                    printMode={printMode}
+                    onPrintModeChange={setPrintMode}
+                />
+            </div>
             <div
                 className={_cs(
                     styles.legendContainer,

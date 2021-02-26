@@ -77,7 +77,7 @@ const leftSpacedPadding = {
 const defaultPadding = 20;
 
 const mapOptions: Omit<mapboxgl.MapboxOptions, 'style' | 'container'> = {
-    logoPosition: 'bottom-right',
+    logoPosition: 'bottom-left',
     minZoom: 5,
     zoom: 3,
     center: defaultCenter,
@@ -174,9 +174,9 @@ function IndicatorMap(props: Props) {
             mapStyle="mapbox://styles/togglecorp/ck9jjmob30vio1it71wja5zhi"
             mapOptions={mapOptions}
             scaleControlShown
-            scaleControlPosition="bottom-right"
+            scaleControlPosition="bottom-left"
             navControlShown={!printMode}
-            navControlPosition="bottom-right"
+            navControlPosition="bottom-left"
         >
             {regionListPending && (
                 <Backdrop>
