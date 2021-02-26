@@ -50,6 +50,12 @@
                 font-size: var(--font-size-large-medium);
             }
 
+            .expand-icon {
+                opacity: 0;
+                color: var(--color-text);
+                font-size: var(--font-size-large);
+            }
+
             >:not(:first-child) {
                 margin-left: var(--spacing-small);
             }

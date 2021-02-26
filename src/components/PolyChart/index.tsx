@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import { ChartSettings, isBarChart, isPieChart, isHistogram } from '#types';
 
@@ -13,6 +13,8 @@ interface Props<T> {
     onDelete: (name: string | undefined) => void;
     chartClassName?: string;
     hideActions?: boolean;
+    onExpand: (name: string | undefined) => void;
+    chartExpanded: string | undefined;
 }
 
 function PolyChart<T extends object>(props: Props<T>) {
@@ -23,7 +25,14 @@ function PolyChart<T extends object>(props: Props<T>) {
         onDelete,
         chartClassName,
         hideActions,
+        onExpand,
+        chartExpanded,
     } = props;
+
+    const expandableIconHidden = useMemo(
+        () => chartExpanded === settings.id,
+        [chartExpanded, settings.id],
+    );
 
     if (isBarChart(settings)) {
         return (
@@ -34,6 +43,8 @@ function PolyChart<T extends object>(props: Props<T>) {
                 settings={settings}
                 className={className}
                 chartClassName={chartClassName}
+                onExpand={onExpand}
+                expandableIconHidden={expandableIconHidden}
             />
         );
     }
@@ -46,6 +57,8 @@ function PolyChart<T extends object>(props: Props<T>) {
                 hideActions={hideActions}
                 className={className}
                 chartClassName={chartClassName}
+                onExpand={onExpand}
+                expandableIconHidden={expandableIconHidden}
             />
         );
     }
@@ -58,6 +71,8 @@ function PolyChart<T extends object>(props: Props<T>) {
                 hideActions={hideActions}
                 className={className}
                 chartClassName={chartClassName}
+                onExpand={onExpand}
+                expandableIconHidden={expandableIconHidden}
             />
         );
     }

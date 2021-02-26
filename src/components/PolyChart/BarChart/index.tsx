@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import { IoMdClose } from 'react-icons/io';
 import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
+import { AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
@@ -56,6 +57,8 @@ interface BarChartUnitProps<T> {
     headerClassName?: string;
     hideActions?: boolean;
     onDelete: (name: string | undefined) => void;
+    onExpand: (name: string | undefined) => void;
+    expandableIconHidden: boolean;
 }
 
 const chartMargin = {
@@ -74,6 +77,8 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         data,
         onDelete,
         hideActions,
+        onExpand,
+        expandableIconHidden,
     } = props;
 
     const {
@@ -139,6 +144,17 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                         >
                             <IoMdClose className={styles.deleteIcon} />
                         </Button>
+                        {!expandableIconHidden && (
+                            <Button
+                                onClick={onExpand}
+                                name={id}
+                                title="Expand chart"
+                                transparent
+                                variant="danger"
+                            >
+                                <AiOutlineExpandAlt className={styles.expandIcon} />
+                            </Button>
+                        )}
                         <SegmentInput
                             options={orientations}
                             optionKeySelector={item => item.key}

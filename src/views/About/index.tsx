@@ -25,7 +25,7 @@ export default function About(props: AboutProps) {
         className,
     } = props;
 
-    const [activeTab, setActiveTab] = useState<'about' | 'faqs' | 'termsandconditions' | 'feedback'>('feedback');
+    const [activeTab, setActiveTab] = useState<'about' | 'faqs' | 'termsandconditions' | 'feedback'>('about');
 
     return (
         <div className={_cs(styles.aboutTabs, className)}>

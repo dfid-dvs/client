@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
 import { IoMdClose } from 'react-icons/io';
-
+import { AiOutlineExpandAlt } from 'react-icons/ai';
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import { HistogramSettings } from '#types';
@@ -33,6 +33,8 @@ interface HistogramUnitProps<T> {
     onDelete: (name: string | undefined) => void;
     chartClassName?: string;
     hideActions?: boolean;
+    onExpand: (name: string | undefined) => void;
+    expandableIconHidden: boolean;
 }
 
 const chartMargin = {
@@ -50,6 +52,8 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         onDelete,
         chartClassName,
         hideActions,
+        onExpand,
+        expandableIconHidden,
     } = props;
 
     const {
@@ -111,6 +115,17 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                         >
                             <IoMdClose className={styles.deletIcon} />
                         </Button>
+                        {!expandableIconHidden && (
+                            <Button
+                                onClick={onExpand}
+                                name={id}
+                                title="Expand chart"
+                                transparent
+                                variant="danger"
+                            >
+                                <AiOutlineExpandAlt className={styles.expandIcon} />
+                            </Button>
+                        )}
                     </div>
                 )}
             </header>
