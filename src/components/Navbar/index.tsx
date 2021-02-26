@@ -5,7 +5,7 @@ import { RiAdminLine } from 'react-icons/ri';
 
 import Button from '#components/Button';
 
-import dfidLogo from '#resources/dfid-crown.png';
+import dfidLogo from '#resources/dfid-off-logo.jpg';
 import styles from './styles.css';
 
 interface Props {
