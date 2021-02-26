@@ -90,6 +90,7 @@ function ChartModal<T>(props: Props<T>) {
                     Add Chart
                 </h2>
             )}
+            headerClassName={styles.header}
         >
             <SegmentInput
                 className={styles.chartTypeInput}
@@ -99,6 +100,7 @@ function ChartModal<T>(props: Props<T>) {
                 value={chartType}
                 optionLabelSelector={chartLabelSelector}
                 optionKeySelector={chartKeySelector}
+                labelClassName={styles.label}
             />
             {chartType === 'bar-chart' && (
                 <BarChartConfig

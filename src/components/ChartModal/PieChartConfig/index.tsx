@@ -85,6 +85,7 @@ function PieChartConfig<T>(props: Props<T>) {
                     value={title}
                     onChange={setTitle}
                     autoFocus
+                    labelClassName={styles.label}
                 />
                 <SelectInput
                     label="Data"
@@ -96,6 +97,7 @@ function PieChartConfig<T>(props: Props<T>) {
                     optionKeySelector={keySelector}
                     groupKeySelector={groupSelector}
                     nonClearable
+                    labelClassName={styles.label}
                 />
             </div>
             <div className={styles.footer}>

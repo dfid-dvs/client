@@ -8,6 +8,7 @@ import styles from './styles.css';
 export interface Props<T> extends Omit<RawInputProps<T>, 'label' | 'elementRef'>, Omit<InputProps, 'children'> {
     inputClassName?: string;
     inputRef?: React.RefObject<HTMLInputElement>;
+    labelClassName?: string;
 }
 
 function Color<T>(props: Props<T>) {
@@ -20,6 +21,7 @@ function Color<T>(props: Props<T>) {
         inputContainerClassName,
         iconContainerClassName,
         actionContainerClassName,
+        labelClassName,
         disabled,
         error,
         inputClassName,
@@ -38,7 +40,7 @@ function Color<T>(props: Props<T>) {
             inputContainerClassName={inputContainerClassName}
             iconContainerClassName={iconContainerClassName}
             actionContainerClassName={actionContainerClassName}
-
+            labelClassName={labelClassName}
             error={error}
         >
             <RawInput
