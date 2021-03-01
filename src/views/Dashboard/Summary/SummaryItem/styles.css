@@ -16,7 +16,7 @@
         .value-row {
             display: flex;
             align-items: center;
-            width: 40%;
+            width: 50%;
 
             .value {
                 padding: 0 var(--spacing-small);
@@ -36,7 +36,7 @@
     
         .line {
             display: flex;
-            width: 60%;
+            width: 50%;
             height: 0.5rem;
 
             .value-line {

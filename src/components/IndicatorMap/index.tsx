@@ -70,13 +70,12 @@ type Region = Province | District | Municipality;
 
 const defaultSpacing = 108;
 const defaultPadding = 32;
-const leftPanelWidth = 320;
 
 const leftSpacedPadding = {
     top: defaultSpacing,
     bottom: defaultSpacing,
     right: defaultSpacing,
-    left: leftPanelWidth + defaultSpacing,
+    left: defaultSpacing,
 };
 
 const mapOptions: Omit<mapboxgl.MapboxOptions, 'style' | 'container'> = {

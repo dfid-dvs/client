@@ -63,10 +63,10 @@ import {
     isFiveWOptionKey,
 } from './types';
 
-import styles from './styles.css';
 import ExploreData from './ExploreData';
 import MapOptions from './MapOptions';
 import splitCombinedSelectors from './splitCombinedSelectors';
+import styles from './styles.css';
 
 interface Region {
     id: number;
@@ -174,7 +174,7 @@ const Dashboard = (props: Props) => {
     ] = useState<Region>();
 
     // Show/hide filters
-    const [isFilterMinimized, , , toggleFilterMinimized] = useBasicToggle();
+    const [sideContentMinimized, , , toggleSideContainerMinimized] = useBasicToggle();
     const [regionFilterShown, , , toggleRegionFilter] = useBasicToggle();
     const [mapFilterShown, , , toggleMapFilter] = useBasicToggle();
     const [filterButtonHidden, hideFilterButton, showFilterButton] = useBasicToggle();
@@ -486,41 +486,32 @@ const Dashboard = (props: Props) => {
                 printMode && styles.printMode,
             )}
         >
-            <PrintDetailsBar
-                show={printMode}
-                title={titleForPrintBar}
-                description={selectedIndicatorDetails?.abstract}
-            />
-            <div className={styles.mainContent}>
-                <IndicatorMap
-                    className={styles.mapContainer}
-                    regionLevel={regionLevel}
-                    choroplethMapState={choroplethMapState}
-                    choroplethMapPaint={mapPaint}
-                    bubbleMapState={bubbleMapState}
-                    bubbleMapPaint={bubblePaint}
-                    rasterLayer={selectedRasterLayerDetail}
-                    vectorLayers={selectedVectorLayersDetail}
-                    onClick={handleMapRegionClick}
-                    printMode={printMode}
-                    selectedRegionId={region?.id}
-                />
-            </div>
-            <div
+            <aside
                 className={_cs(
-                    styles.filtersByRegion,
-                    isFilterMinimized && styles.filterMinimized,
-                    filterButtonHidden && styles.filterButtonHidden,
+                    styles.sideContent,
+                    sideContentMinimized && styles.minimized,
                 )}
             >
-                <Button
-                    className={styles.button}
-                    icons={<MdFilterList />}
-                    onClick={toggleRegionFilter}
+                <div
+                    className={_cs(
+                        styles.mapStyleConfigContainer,
+                        sideContentMinimized && styles.filterMinimized,
+                    )}
                 >
-                    Filters
-                </Button>
-                {regionFilterShown && (
+                    <Button
+                        className={styles.toggleVisibilityButton}
+                        onClick={toggleSideContainerMinimized}
+                        icons={sideContentMinimized ? <IoIosArrowForward /> : <IoIosArrowBack />}
+                        transparent
+                    />
+                    <FiltersPanel
+                        className={styles.filtersPanel}
+                        isMinimized={sideContentMinimized}
+                    />
+                </div>
+            </aside>
+            <main className={styles.mainContent}>
+                <header className={styles.header}>
                     <SingleRegionSelect
                         className={styles.regionSelectorContainer}
                         onRegionLevelChange={handleRegionLevelChange}
@@ -529,182 +520,174 @@ const Dashboard = (props: Props) => {
                         onRegionChange={handleRegionChange}
                         disabled={printMode}
                     />
-                )}
-            </div>
+                </header>
+                <div className={styles.content}>
+                    { dataExplored ? (
+                        <>
+                            <div
+                                className={_cs(
+                                    className,
+                                    styles.dataExplored,
+                                )}
+                            >
+                                <Link
+                                    className={styles.link}
+                                    to="/"
+                                    replace
+                                >
+                                    <div className={styles.title}>
+                                        Explore Maps
+                                        <MdChevronRight
+                                            fontSize={22}
+                                            fontWeight="bold"
+                                        />
+                                    </div>
+                                </Link>
+                            </div>
+                            {hash === 'regions' && (
+                                <RegionDetails
+                                    indicatorListPending={indicatorListPending}
+                                    indicatorList={indicatorList}
+                                    className={_cs(
+                                        styles.regionDetails,
+                                        sideContentMinimized && styles.filterMinimized,
+                                    )}
+                                    regionLevel={regionLevel}
+                                    onHideFilterButton={hideFilterButton}
+                                    onShowFilterButton={showFilterButton}
+                                    filterButtonHidden={filterButtonHidden}
 
-            <div className={styles.filtersByMap}>
-                <Button
-                    className={styles.button}
-                    onClick={toggleMapFilter}
-                >
-                    Map Options
-                </Button>
-
-                {mapFilterShown && (
-                    <MapOptions
-                        fiveWOptions={fiveWOptions}
-                        selectedFiveWOption={selectedFiveWOption}
-                        handleFiveWOptionChange={handleFiveWOptionChange}
-                        indicatorListPending={indicatorListPending}
-                        indicatorList={indicatorList}
-                        setSelectedIndicator={setSelectedIndicator}
-                        validSelectedIndicator={validSelectedIndicator}
-                        selectedIndicatorDetails={selectedIndicatorDetails}
-                        mapStyleInverted={mapStyleInverted}
-                        setMapStyleInverted={setMapStyleInverted}
-                        mapLayerListPending={mapLayerListPending}
-                        vectorLayers={vectorLayers}
-                        setSelectedVectorLayers={setSelectedVectorLayers}
-                        selectedVectorLayers={selectedVectorLayers}
-                        rasterLayers={rasterLayers}
-                        setSelectedRasterLayer={setSelectedRasterLayer}
-                        selectedRasterLayer={selectedRasterLayer}
-                    />
-                )}
-            </div>
-
-            {!dataExplored ? (
-                <div className={styles.summaryContainer}>
-                    <Summary
-                        actions={(
-                            <ExploreData dataExplored={dataExplored} />
-                        )}
-                    />
-                    {region && (
-                        <Tooltip
-                            region={region}
-                            className={styles.clickedRegionDetail}
-                            regionLevel={regionLevel}
-
-                            markerIdList={markerIdList}
-                            submarkerIdList={submarkerIdList}
-                            programIdList={programIdList}
-                            componentIdList={componentIdList}
-                            partnerIdList={partnerIdList}
-                            subpartnerIdList={subpartnerIdList}
-                            sectorIdList={sectorIdList}
-                            subsectorIdList={subsectorIdList}
-                        />
-                    )}
-                </div>
-            ) : (
-                <div
-                    className={_cs(
-                        className,
-                        styles.dataExplored,
-                    )}
-                >
-                    <Link
-                        className={styles.link}
-                        to="/"
-                        replace
-                    >
-                        <div className={styles.title}>
-                            Explore Maps
-                            <MdChevronRight
-                                fontSize={22}
-                                fontWeight="bold"
+                                    markerIdList={markerIdList}
+                                    submarkerIdList={submarkerIdList}
+                                    programIdList={programIdList}
+                                    componentIdList={componentIdList}
+                                    partnerIdList={partnerIdList}
+                                    subpartnerIdList={subpartnerIdList}
+                                    sectorIdList={sectorIdList}
+                                    subsectorIdList={subsectorIdList}
+                                />
+                            )}
+                            {hash === 'programs' && (
+                                <ProgramDetails />
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            <IndicatorMap
+                                className={styles.mapContainer}
+                                regionLevel={regionLevel}
+                                choroplethMapState={choroplethMapState}
+                                choroplethMapPaint={mapPaint}
+                                bubbleMapState={bubbleMapState}
+                                bubbleMapPaint={bubblePaint}
+                                rasterLayer={selectedRasterLayerDetail}
+                                vectorLayers={selectedVectorLayersDetail}
+                                onClick={handleMapRegionClick}
+                                printMode={printMode}
+                                selectedRegionId={region?.id}
                             />
-                        </div>
-                    </Link>
-                </div>
-            )}
-            <div
-                className={_cs(
-                    styles.mapStyleConfigContainer,
-                    isFilterMinimized && styles.filterMinimized,
-                )}
-            >
-                <Button
-                    className={styles.toggleVisibilityButton}
-                    onClick={toggleFilterMinimized}
-                    icons={isFilterMinimized ? <IoIosArrowForward /> : <IoIosArrowBack />}
-                    transparent
-                />
-                <FiltersPanel
-                    className={styles.filtersPanel}
-                    // FIXME: rename to minimized
-                    isMinimized={isFilterMinimized}
-                />
-            </div>
-            <div className={styles.printButtonContainer}>
-                <PrintButton
-                    orientation="portrait"
-                    className={styles.printModeButton}
-                    printMode={printMode}
-                    onPrintModeChange={setPrintMode}
-                />
-            </div>
-            <div
-                className={_cs(
-                    styles.legendContainer,
-                    isFilterMinimized && styles.filterMinimized,
-                )}
-            >
-                {choroplethSelected && (
-                    <ChoroplethLegend
-                        className={styles.legend}
-                        title={choroplethTitle}
-                        minValue={dataMinValue}
-                        legend={mapLegend}
-                        unit={choroplethUnit}
-                        minExceeds={dataMinExceeds}
-                        maxExceeds={dataMaxExceeds}
-                        pending={choroplethPending}
-                    />
-                )}
-                {bubbleSelected && (
-                    <BubbleLegend
-                        className={styles.legend}
-                        title={bubbleTitle}
-                        data={bubbleLegend}
-                        keySelector={legendKeySelector}
-                        valueSelector={legendValueSelector}
-                        radiusSelector={legendRadiusSelector}
-                        legendType={bubbleLegendType}
-                        unit={bubbleUnit}
-                        pending={bubblePending}
-                    />
-                )}
-                {selectedRasterLayerDetail && (
-                    <RasterLegend
-                        className={styles.legend}
-                        rasterLayer={selectedRasterLayerDetail}
-                    />
-                )}
-                {selectedVectorLayersDetail && selectedVectorLayersDetail.length > 0 && (
-                    <VectorLegend
-                        className={styles.legend}
-                        vectorLayers={selectedVectorLayersDetail}
-                    />
-                )}
-            </div>
-            {hash === 'regions' && (
-                <RegionDetails
-                    indicatorListPending={indicatorListPending}
-                    indicatorList={indicatorList}
-                    className={_cs(
-                        styles.regionDetails,
-                        isFilterMinimized && styles.filterMinimized,
-                    )}
-                    regionLevel={regionLevel}
-                    onHideFilterButton={hideFilterButton}
-                    onShowFilterButton={showFilterButton}
-                    filterButtonHidden={filterButtonHidden}
+                            <div className={styles.mapOptionsContainer}>
+                                <Button
+                                    className={styles.button}
+                                    onClick={toggleMapFilter}
+                                >
+                                    Map Options
+                                </Button>
 
-                    markerIdList={markerIdList}
-                    submarkerIdList={submarkerIdList}
-                    programIdList={programIdList}
-                    componentIdList={componentIdList}
-                    partnerIdList={partnerIdList}
-                    subpartnerIdList={subpartnerIdList}
-                    sectorIdList={sectorIdList}
-                    subsectorIdList={subsectorIdList}
-                />
-            )}
-            {hash === 'programs' && (
-                <ProgramDetails />
-            )}
+                                {mapFilterShown && (
+                                    <MapOptions
+                                        fiveWOptions={fiveWOptions}
+                                        selectedFiveWOption={selectedFiveWOption}
+                                        handleFiveWOptionChange={handleFiveWOptionChange}
+                                        indicatorListPending={indicatorListPending}
+                                        indicatorList={indicatorList}
+                                        setSelectedIndicator={setSelectedIndicator}
+                                        validSelectedIndicator={validSelectedIndicator}
+                                        selectedIndicatorDetails={selectedIndicatorDetails}
+                                        mapStyleInverted={mapStyleInverted}
+                                        setMapStyleInverted={setMapStyleInverted}
+                                        mapLayerListPending={mapLayerListPending}
+                                        vectorLayers={vectorLayers}
+                                        setSelectedVectorLayers={setSelectedVectorLayers}
+                                        selectedVectorLayers={selectedVectorLayers}
+                                        rasterLayers={rasterLayers}
+                                        setSelectedRasterLayer={setSelectedRasterLayer}
+                                        selectedRasterLayer={selectedRasterLayer}
+                                    />
+                                )}
+                            </div>
+                            <div className={styles.summaryContainer}>
+                                <Summary
+                                    actions={(
+                                        <ExploreData dataExplored={dataExplored} />
+                                    )}
+                                />
+                                {region && (
+                                    <Tooltip
+                                        region={region}
+                                        className={styles.clickedRegionDetail}
+                                        regionLevel={regionLevel}
+
+                                        markerIdList={markerIdList}
+                                        submarkerIdList={submarkerIdList}
+                                        programIdList={programIdList}
+                                        componentIdList={componentIdList}
+                                        partnerIdList={partnerIdList}
+                                        subpartnerIdList={subpartnerIdList}
+                                        sectorIdList={sectorIdList}
+                                        subsectorIdList={subsectorIdList}
+                                    />
+                                )}
+                            </div>
+                            <div
+                                className={_cs(
+                                    styles.legendContainer,
+                                    sideContentMinimized && styles.filterMinimized,
+                                )}
+                            >
+                                {choroplethSelected && (
+                                    <ChoroplethLegend
+                                        className={styles.legend}
+                                        title={choroplethTitle}
+                                        minValue={dataMinValue}
+                                        legend={mapLegend}
+                                        unit={choroplethUnit}
+                                        minExceeds={dataMinExceeds}
+                                        maxExceeds={dataMaxExceeds}
+                                        pending={choroplethPending}
+                                    />
+                                )}
+                                {bubbleSelected && (
+                                    <BubbleLegend
+                                        className={styles.legend}
+                                        title={bubbleTitle}
+                                        data={bubbleLegend}
+                                        keySelector={legendKeySelector}
+                                        valueSelector={legendValueSelector}
+                                        radiusSelector={legendRadiusSelector}
+                                        legendType={bubbleLegendType}
+                                        unit={bubbleUnit}
+                                        pending={bubblePending}
+                                    />
+                                )}
+                                {selectedRasterLayerDetail && (
+                                    <RasterLegend
+                                        className={styles.legend}
+                                        rasterLayer={selectedRasterLayerDetail}
+                                    />
+                                )}
+                                {selectedVectorLayersDetail
+                                    && selectedVectorLayersDetail.length > 0 && (
+                                    <VectorLegend
+                                        className={styles.legend}
+                                        vectorLayers={selectedVectorLayersDetail}
+                                    />
+                                )}
+                            </div>
+                        </>
+                    )}
+                </div>
+            </main>
         </div>
     );
 };
