@@ -205,7 +205,25 @@ export interface HistogramSettings<T> {
     binCount: number;
 }
 
-export type ChartSettings<T> = BarChartSettings<T> | PieChartSettings<T> | HistogramSettings<T>;
+export interface BiAxialChartSettings<T> {
+    id: string;
+    type: 'bi-axial-chart';
+    title: string;
+    orientation?: 'horizontal' | 'vertical';
+    keySelector: (value: T) => string;
+    bars: {
+        title: string;
+        valueSelector: (value: T) => number | null;
+        color: string;
+        stackId?: string;
+        type?: string;
+    }[];
+
+    dependencies?: number[];
+}
+
+// eslint-disable-next-line max-len
+export type ChartSettings<T> = BarChartSettings<T> | PieChartSettings<T> | HistogramSettings<T> | BiAxialChartSettings<T>;
 
 export function isBarChart<T>(settings: ChartSettings<T>): settings is BarChartSettings<T> {
     return settings.type === 'bar-chart';
@@ -215,6 +233,9 @@ export function isPieChart<T>(settings: ChartSettings<T>): settings is PieChartS
 }
 export function isHistogram<T>(settings: ChartSettings<T>): settings is HistogramSettings<T> {
     return settings.type === 'histogram';
+}
+export function isBiAxialChart<T>(settings: ChartSettings<T>): settings is BiAxialChartSettings<T> {
+    return settings.type === 'bi-axial-chart';
 }
 
 export interface IndicatorValue {

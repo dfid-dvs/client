@@ -11,9 +11,11 @@ import { ChartSettings, NumericOption } from '#types';
 import BarChartConfig from './BarChartConfig';
 import PieChartConfig from './PieChartConfig';
 import HistogramConfig from './HistogramConfig';
+import BiAxialChartConfig from './BiAxialChartConfig';
+
 import styles from './styles.css';
 
-type ChartType = 'bar-chart' | 'pie-chart' | 'histogram';
+type ChartType = 'bar-chart' | 'pie-chart' | 'histogram' | 'bi-axial-chart';
 
 interface ChartTypeOption {
     type: ChartType;
@@ -48,6 +50,16 @@ const chartTypeOptions: ChartTypeOption[] = [
                 <GiHistogram />
                 &nbsp;
                 Histogram
+            </>
+        ),
+    },
+    {
+        type: 'bi-axial-chart',
+        name: (
+            <>
+                <GiHistogram />
+                &nbsp;
+                Bi-Axial Chart
             </>
         ),
     },
@@ -123,6 +135,14 @@ function ChartModal<T>(props: Props<T>) {
                     className={styles.chartConfig}
                     onSave={handleSave}
                     // keySelector={keySelector}
+                    options={options}
+                />
+            )}
+            {chartType === 'bi-axial-chart' && (
+                <BiAxialChartConfig
+                    className={styles.chartConfig}
+                    onSave={handleSave}
+                    keySelector={keySelector}
                     options={options}
                 />
             )}

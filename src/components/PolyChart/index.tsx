@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 
-import { ChartSettings, isBarChart, isPieChart, isHistogram } from '#types';
+import { ChartSettings, isBarChart, isPieChart, isHistogram, isBiAxialChart } from '#types';
 
 import BarChart from './BarChart';
 import PieChart from './PieChart';
 import Histogram from './Histogram';
+import BiAxialChart from './BiAxialChart';
 
 interface Props<T> {
     settings: ChartSettings<T>;
@@ -65,6 +66,21 @@ function PolyChart<T extends object>(props: Props<T>) {
     if (isHistogram(settings)) {
         return (
             <Histogram
+                onDelete={onDelete}
+                data={data}
+                settings={settings}
+                hideActions={hideActions}
+                className={className}
+                chartClassName={chartClassName}
+                onExpand={onExpand}
+                expandableIconHidden={expandableIconHidden}
+            />
+        );
+    }
+
+    if (isBiAxialChart(settings)) {
+        return (
+            <BiAxialChart
                 onDelete={onDelete}
                 data={data}
                 settings={settings}
