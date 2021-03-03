@@ -304,7 +304,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 onClick={handleDropdownIconToggle}
                             />
                         )}
-                        {showDropDownIcon && !showDropdown && (
+                        {showDropDownIcon && !showDropdown && !pending && (
                             <IoMdArrowDropdown
                                 onClick={handleDropdownIconToggle}
                             />

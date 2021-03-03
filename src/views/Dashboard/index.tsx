@@ -71,6 +71,7 @@ import styles from './styles.css';
 interface Region {
     id: number;
     name: string;
+    code: number;
 }
 
 interface ClickedRegion {
@@ -177,7 +178,7 @@ const Dashboard = (props: Props) => {
         region,
         setRegion,
     ] = useState<Region>();
-
+    console.log({ region });
     // Show/hide filters
     const [sideContentMinimized, , , toggleSideContainerMinimized] = useBasicToggle();
     const [regionFilterShown, , , toggleRegionFilter] = useBasicToggle();
@@ -457,6 +458,7 @@ const Dashboard = (props: Props) => {
             const reg: Region = {
                 id: Number(adminLevel.code),
                 name: adminLevel.name,
+                code: adminLevel.id,
             };
 
             setRegion(reg);
@@ -568,7 +570,7 @@ const Dashboard = (props: Props) => {
                                 vectorLayers={selectedVectorLayersDetail}
                                 onClick={handleMapRegionClick}
                                 printMode={printMode}
-                                selectedRegionId={region?.id}
+                                selectedRegionId={region?.code}
                             />
                             <DropdownMenu
                                 label="Map Options"

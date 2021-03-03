@@ -146,6 +146,7 @@ function IndicatorMap(props: Props) {
         selectedSourceForBubble = 'palikacentroidgeo';
     }
 
+    // TODO: filter by code not id
     const regionGetRequest = selectedRegionId ? `${apiEndPoint}/core/${regionLevel}/?id=${selectedRegionId}` : undefined;
     const regionSchema = regionLevel;
     const [

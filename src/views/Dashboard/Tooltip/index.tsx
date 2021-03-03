@@ -262,7 +262,7 @@ const Tooltip = (props: Props) => {
                                                             d => d.sector,
                                                         )?.map(sector => (
                                                             <div
-                                                                key={id}
+                                                                key={sector.id}
                                                                 className={styles.sectorItem}
                                                             >
                                                                 <Badge title={sector.sector} />

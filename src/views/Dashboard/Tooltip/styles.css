@@ -33,6 +33,7 @@
         .heading {
             flex-grow: 1;
             padding: var(--spacing-small);
+            text-transform: uppercase;
         }
 
         .total-budget {
