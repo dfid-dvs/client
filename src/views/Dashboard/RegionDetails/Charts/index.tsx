@@ -247,7 +247,6 @@ interface Props {
     programIdList?: number[];
     componentIdList?: number[];
     partnerIdList?: number[];
-    subpartnerIdList?: number[];
     sectorIdList?: number[];
     subsectorIdList?: number[];
 }
@@ -263,7 +262,6 @@ function Charts(props: Props) {
         programIdList,
         componentIdList,
         partnerIdList,
-        subpartnerIdList,
         sectorIdList,
         subsectorIdList,
     } = props;
@@ -356,7 +354,6 @@ function Charts(props: Props) {
         programIdList,
         componentIdList,
         partnerIdList,
-        subpartnerIdList,
         sectorIdList,
         subsectorIdList,
         validSelectedIndicators,

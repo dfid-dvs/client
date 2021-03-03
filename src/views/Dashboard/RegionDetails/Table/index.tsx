@@ -76,7 +76,6 @@ interface Props {
     programIdList?: number[];
     componentIdList?: number[];
     partnerIdList?: number[];
-    subpartnerIdList?: number[];
     sectorIdList?: number[];
     subsectorIdList?: number[];
 }
@@ -87,7 +86,6 @@ function RegionTable(props: Props) {
         programIdList,
         componentIdList,
         partnerIdList,
-        subpartnerIdList,
         sectorIdList,
         subsectorIdList,
 
@@ -120,7 +118,6 @@ function RegionTable(props: Props) {
         programIdList,
         componentIdList,
         partnerIdList,
-        subpartnerIdList,
         sectorIdList,
         subsectorIdList,
         validSelectedIndicators,

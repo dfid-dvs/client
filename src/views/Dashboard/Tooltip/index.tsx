@@ -94,7 +94,6 @@ interface Props {
     programIdList?: number[];
     componentIdList?: number[];
     partnerIdList?: number[];
-    subpartnerIdList?: number[];
     sectorIdList?: number[];
     subsectorIdList?: number[];
 }
@@ -114,7 +113,6 @@ const Tooltip = (props: Props) => {
         programIdList,
         componentIdList,
         partnerIdList,
-        subpartnerIdList,
         sectorIdList,
         subsectorIdList,
     } = props;
@@ -125,21 +123,19 @@ const Tooltip = (props: Props) => {
                 field: `${regionLevel}_id__code`,
                 value: id,
                 // eslint-disable-next-line @typescript-eslint/camelcase
-                marker_id: markerIdList,
+                marker_category_id: markerIdList,
                 // eslint-disable-next-line @typescript-eslint/camelcase
-                submarker_id: submarkerIdList,
+                marker_value_id: submarkerIdList,
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 program_id: programIdList,
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 component_id: componentIdList,
                 // eslint-disable-next-line @typescript-eslint/camelcase
-                partner_id: partnerIdList,
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                subpartner_id: subpartnerIdList,
+                supplier_id: partnerIdList,
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 sector_id: sectorIdList,
                 // eslint-disable-next-line @typescript-eslint/camelcase
-                subsector_id: subsectorIdList,
+                sub_sector_id: subsectorIdList,
             };
 
             return `${apiEndPoint}/core/popup/?${p(urlParams)}`;
@@ -152,7 +148,6 @@ const Tooltip = (props: Props) => {
             programIdList,
             componentIdList,
             partnerIdList,
-            subpartnerIdList,
             sectorIdList,
             subsectorIdList,
         ],

@@ -35,7 +35,6 @@ function useExtendedFiveW(
     programIdList: number[] | undefined,
     componentIdList: number[] | undefined,
     partnerIdList: number[] | undefined,
-    subpartnerIdList: number[] | undefined,
     sectorIdList: number[] | undefined,
     subsectorIdList: number[] | undefined,
     indicators: number[],
@@ -53,8 +52,6 @@ function useExtendedFiveW(
         component_id: componentIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
         supplier_id: partnerIdList,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        subpartner_id: subpartnerIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
         sector_id: sectorIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase

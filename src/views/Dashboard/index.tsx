@@ -261,7 +261,7 @@ const Dashboard = (props: Props) => {
     const [markerIdList, submarkerIdList] = splitCombinedSelectors(markers, 'submarker');
     // FIXME: Update programs to String[]
     const [programIdList, componentIdList] = splitCombinedSelectors(programs, 'subprogram');
-    const [partnerIdList, subpartnerIdList] = splitCombinedSelectors(partners, 'subpartner');
+    const [partnerIdList] = splitCombinedSelectors(partners, 'subpartner');
     const [sectorIdList, subsectorIdList] = splitCombinedSelectors(sectors, 'subsector');
 
     const [
@@ -274,7 +274,6 @@ const Dashboard = (props: Props) => {
         programIdList,
         componentIdList,
         partnerIdList,
-        subpartnerIdList,
         sectorIdList,
         subsectorIdList,
         fiveWOptionKey,
@@ -548,7 +547,6 @@ const Dashboard = (props: Props) => {
                                     programIdList={programIdList}
                                     componentIdList={componentIdList}
                                     partnerIdList={partnerIdList}
-                                    subpartnerIdList={subpartnerIdList}
                                     sectorIdList={sectorIdList}
                                     subsectorIdList={subsectorIdList}
                                 />
@@ -610,7 +608,6 @@ const Dashboard = (props: Props) => {
                                         programIdList={programIdList}
                                         componentIdList={componentIdList}
                                         partnerIdList={partnerIdList}
-                                        subpartnerIdList={subpartnerIdList}
                                         sectorIdList={sectorIdList}
                                         subsectorIdList={subsectorIdList}
                                     />

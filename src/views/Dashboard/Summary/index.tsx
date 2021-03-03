@@ -37,7 +37,6 @@ interface SummaryProps {
     programIdList?: number[];
     componentIdList?: number[];
     partnerIdList?: number[];
-    subpartnerIdList?: number[];
     sectorIdList?: number[];
     subsectorIdList?: number[];
 }
@@ -53,7 +52,6 @@ function Summary(props: SummaryProps) {
         programIdList,
         componentIdList,
         partnerIdList,
-        subpartnerIdList,
         sectorIdList,
         subsectorIdList,
     } = props;
@@ -69,8 +67,6 @@ function Summary(props: SummaryProps) {
         component_id: componentIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
         supplier_id: partnerIdList,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        subpartner_id: subpartnerIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
         sector_id: sectorIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
