@@ -1,14 +1,24 @@
 .modal {
+    border-radius: 0;
     max-width: 640px;
     height: calc(100vh - 2 * var(--spacing-medium));
     max-height: 700px;
 
+    .header {
+        border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
+        background: var(--color-grey-shade-1);
+        padding: var(--spacing-medium) var(--spacing-extra-large);
+    }
+
     .body {
         display: flex;
         flex-direction: column;
-        padding: var(--spacing-large);
+        padding: var(--spacing-large) var(--spacing-extra-large);
 
         .chart-type-input {
+            display: flex;
+            align-items: flex-start;
+            flex-direction: column;
             flex-shrink: 0;
             margin-bottom: var(--spacing-large);
         }
@@ -16,6 +26,14 @@
         .chart-config {
             flex-grow: 1;
             overflow: auto;
+        }
+
+        .label {
+            padding: var(--spacing-small-medium) var(--spacing-extra-small);
+            text-transform: uppercase;
+            letter-spacing: var(--spacing-super-small);
+            color: var(--color-accent-light);
+            font-size: var(--font-size-small);
         }
     }
 }

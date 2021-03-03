@@ -55,3 +55,22 @@
         background: var(--color-foreground);
     }
 }
+
+.modal-chart {
+    padding: var(--spacing-large);
+    width: 560px;
+    height: 480px;
+
+    .chart {
+        padding: var(--spacing-large);
+        width: 480px;
+        height: 300px;
+    }
+}
+
+.header {
+    margin-left: var(--spacing-large);
+    color: var(--color-text);
+    font-size: var(--font-size-large);
+    font-weight: var(--font-weight-bold);
+}

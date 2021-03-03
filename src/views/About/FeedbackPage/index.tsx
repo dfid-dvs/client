@@ -66,7 +66,7 @@ function FeedbackPage() {
         (e) => {
             e.preventDefault();
             // TODO: connect with API
-            console.log('feedback submitted');
+            console.warn('feedback submitted');
         },
         [],
     );

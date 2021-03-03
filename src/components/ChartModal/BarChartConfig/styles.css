@@ -14,6 +14,22 @@
             border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
             padding: calc(var(--spacing-large) - var(--spacing-small)) 0;
 
+            .type-input {
+                display: flex;
+                align-items: flex-start;
+                flex-direction: column;
+                flex-shrink: 0;
+                margin-bottom: var(--spacing-large);
+            }
+
+            .label {
+                padding: var(--spacing-small-medium) var(--spacing-extra-small);
+                text-transform: uppercase;
+                letter-spacing: var(--spacing-super-small);
+                color: var(--color-accent-light);
+                font-size: var(--font-size-small);
+            }
+
             >* {
                 margin: var(--spacing-small) 0;
             }
@@ -65,10 +81,23 @@
                 .header {
                     flex-grow: 1;
                     padding: var(--spacing-small) 0;
+                    text-transform: uppercase;
+                    letter-spacing: var(--spacing-super-small);
+                    font-size: var(--font-size-medium);
                 }
 
                 .add-button {
                     flex-shrink: 0;
+
+                    .icon {
+                        color: var(--color-text-red);
+                        font-size: var(--font-size-large);
+                    }
+
+                    .text {
+                        color: var(--color-text-red);
+                        font-size: var(--font-size-medium);
+                    }
                 }
             }
 
@@ -84,6 +113,14 @@
 
                     .select {
                         flex-grow: 1;
+                    }
+
+                    .label {
+                        padding: var(--spacing-small-medium) var(--spacing-extra-small);
+                        text-transform: uppercase;
+                        letter-spacing: var(--spacing-super-small);
+                        color: var(--color-accent-light);
+                        font-size: var(--font-size-small);
                     }
 
                     .color-select {

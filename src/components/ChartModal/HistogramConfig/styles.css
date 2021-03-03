@@ -10,6 +10,14 @@
         padding: calc(var(--spacing-large) - var(--spacing-small)) 0;
         overflow: auto;
 
+        .label {
+            padding: var(--spacing-small-medium) var(--spacing-extra-small);
+            text-transform: uppercase;
+            letter-spacing: var(--spacing-super-small);
+            color: var(--color-accent-light);
+            font-size: var(--font-size-small);
+        }
+
         >* {
             margin: var(--spacing-small) 0;
         }

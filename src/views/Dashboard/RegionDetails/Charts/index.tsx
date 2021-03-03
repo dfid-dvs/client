@@ -7,6 +7,7 @@ import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
 import PolyChart from '#components/PolyChart';
 import ChartModal from '#components/ChartModal';
+import Modal from '#components/Modal';
 
 import { tableauColors } from '#utils/constants';
 import {
@@ -361,6 +362,33 @@ function Charts(props: Props) {
         validSelectedIndicators,
     );
 
+    const [expandableChart, setExpandableChart] = useState<string>();
+
+    const handleChartExpand = useCallback(
+        (id: string | undefined) => {
+            setExpandableChart(id);
+        },
+        [setExpandableChart],
+    );
+
+    const handleChartCollapse = useCallback(
+        () => {
+            setExpandableChart(undefined);
+        },
+        [setExpandableChart],
+    );
+
+    const expandableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
+        () => {
+            const chartSetting = chartSettings.find(c => c.id === expandableChart);
+            if (!chartSetting) {
+                return undefined;
+            }
+            return chartSetting;
+        },
+        [chartSettings, expandableChart],
+    );
+
     return (
         <>
             <div className={styles.tableActions}>
@@ -389,6 +417,8 @@ function Charts(props: Props) {
                         settings={item}
                         onDelete={handleChartDelete}
                         className={styles.polyChart}
+                        onExpand={handleChartExpand}
+                        chartExpanded={expandableChart}
                     />
                 ))}
             </div>
@@ -399,6 +429,24 @@ function Charts(props: Props) {
                     options={options}
                     keySelector={keySelector}
                 />
+            )}
+            {expandableChart && expandableChartSettings && (
+                <Modal
+                    onClose={handleChartCollapse}
+                    className={styles.modalChart}
+                    header={expandableChartSettings.title}
+                    headerClassName={styles.header}
+                >
+                    <PolyChart
+                        chartClassName={styles.chart}
+                        data={extendedFiveWList}
+                        settings={expandableChartSettings}
+                        onDelete={handleChartDelete}
+                        className={styles.polyChart}
+                        onExpand={handleChartExpand}
+                        chartExpanded={expandableChart}
+                    />
+                </Modal>
             )}
         </>
     );

@@ -8,6 +8,7 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import { MdPieChart, MdDonutLarge } from 'react-icons/md';
+import { AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
 import { IoMdClose } from 'react-icons/io';
 
@@ -52,6 +53,8 @@ interface PieChartUnitProps<T> {
     chartClassName?: string;
     hideActions?: boolean;
     onDelete: (name: string | undefined) => void;
+    onExpand: (name: string | undefined) => void;
+    expandableIconHidden: boolean;
 }
 
 const chartMargin = {
@@ -153,6 +156,8 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         onDelete,
         chartClassName,
         hideActions,
+        onExpand,
+        expandableIconHidden,
     } = props;
 
     const {
@@ -215,6 +220,17 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                         >
                             <IoMdClose className={styles.deleteIcon} />
                         </Button>
+                        {!expandableIconHidden && (
+                            <Button
+                                onClick={onExpand}
+                                name={id}
+                                title="Expand chart"
+                                transparent
+                                variant="danger"
+                            >
+                                <AiOutlineExpandAlt className={styles.expandIcon} />
+                            </Button>
+                        )}
                         <SegmentInput
                             options={orientations}
                             optionTitleSelector={item => item.tooltip}

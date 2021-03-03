@@ -9,8 +9,7 @@
         flex-shrink: 0;
 
         .logo {
-            margin-left: var(--spacing-large);
-            height: 77px;
+            height: 85px;
         }
     }
 

@@ -51,6 +51,12 @@
                 font-size: var(--font-size-large-medium);
             }
 
+            .expand-icon {
+                opacity: 0;
+                color: var(--color-text);
+                font-size: var(--font-size-large);
+            }
+
             >:not(:first-child) {
                 margin-left: var(--spacing-small);
             }
@@ -60,6 +66,10 @@
     &:hover {
         .header {
             .delete-icon {
+                opacity: 1;
+            }
+
+            .expand-icon {
                 opacity: 1;
             }
         }

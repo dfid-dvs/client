@@ -8,6 +8,7 @@ import styles from './styles.css';
 export interface Props<T> extends Omit<RawInputProps<T>, 'label' | 'elementRef'>, Omit<InputProps, 'children'> {
     inputClassName?: string;
     inputRef?: React.RefObject<HTMLInputElement>;
+    labelClassName?: string;
 }
 
 function NumberInput<T>(props: Props<T>) {
@@ -20,6 +21,7 @@ function NumberInput<T>(props: Props<T>) {
         inputContainerClassName,
         iconContainerClassName,
         actionContainerClassName,
+        labelClassName,
         disabled,
         error,
         inputClassName,
@@ -39,6 +41,7 @@ function NumberInput<T>(props: Props<T>) {
             actionContainerClassName={actionContainerClassName}
 
             error={error}
+            labelClassName={labelClassName}
         >
             <RawInput
                 {...otherProps}

@@ -108,6 +108,7 @@ function HistogramConfig<T>(props: Props<T>) {
                     value={title}
                     onChange={setTitle}
                     autoFocus
+                    labelClassName={styles.label}
                 />
                 <SelectInput
                     label="Data"
@@ -119,17 +120,20 @@ function HistogramConfig<T>(props: Props<T>) {
                     optionKeySelector={keySelector}
                     groupKeySelector={groupSelector}
                     nonClearable
+                    labelClassName={styles.label}
                 />
                 <div className={styles.group}>
                     <NumberInput
                         label="Total bins"
                         value={binCount}
                         onChange={setBinCount}
+                        labelClassName={styles.label}
                     />
                     <ColorInput
                         label="Color"
                         value={color}
                         onChange={setColor}
+                        labelClassName={styles.label}
                     />
                 </div>
             </div>

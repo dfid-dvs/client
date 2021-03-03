@@ -8,5 +8,7 @@
         align-self: flex-start;
         border: var(--width-separator-thin) solid var(--color-separator-light);
         border-radius: calc(4 * var(--radius-input));
+        background: var(--color-grey-shade-3);
+        padding: calc(var(--width-separator-thin) / 2);
     }
 }

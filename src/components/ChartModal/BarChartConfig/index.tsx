@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     randomString,
     isFalsyString,
@@ -8,7 +8,7 @@ import {
     getRandomFromList,
     _cs,
 } from '@togglecorp/fujs';
-import { IoMdTrash, IoMdAdd } from 'react-icons/io';
+import { IoMdAddCircleOutline, IoMdClose } from 'react-icons/io';
 
 import SelectInput from '#components/SelectInput';
 import SegmentInput from '#components/SegmentInput';
@@ -134,12 +134,14 @@ function BarItem<T>(props: BarItemProps<T>) {
                 optionKeySelector={keySelector}
                 groupKeySelector={groupSelector}
                 nonClearable
+                labelClassName={styles.label}
             />
             <ColorInput
                 className={styles.colorSelect}
                 label="Color"
                 onChange={handleColorChange}
                 value={value.color}
+                labelClassName={styles.label}
             />
             <Button
                 className={styles.trashButton}
@@ -149,7 +151,7 @@ function BarItem<T>(props: BarItemProps<T>) {
                 transparent
                 variant="danger"
             >
-                <IoMdTrash />
+                <IoMdClose fontSize={18} />
             </Button>
         </div>
     );
@@ -338,6 +340,7 @@ function BarChartConfig<T>(props: Props<T>) {
                         value={title}
                         onChange={setTitle}
                         autoFocus
+                        labelClassName={styles.label}
                     />
                     <SegmentInput
                         label="Type"
@@ -346,6 +349,8 @@ function BarChartConfig<T>(props: Props<T>) {
                         value={barType}
                         optionLabelSelector={barTypeLabelSelector}
                         optionKeySelector={barTypeKeySelector}
+                        labelClassName={styles.label}
+                        className={styles.typeInput}
                     />
                 </section>
                 <section className={styles.barSection}>
@@ -359,9 +364,11 @@ function BarChartConfig<T>(props: Props<T>) {
                             onClick={handleBarAdd}
                             transparent
                             variant="accent"
-                            icons={<IoMdAdd />}
+                            icons={<IoMdAddCircleOutline className={styles.icon} />}
                         >
-                            Add data
+                            <div className={styles.text}>
+                                Add Data
+                            </div>
                         </Button>
                     </div>
                     <div className={styles.bars}>
