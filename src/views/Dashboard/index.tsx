@@ -178,7 +178,6 @@ const Dashboard = (props: Props) => {
         region,
         setRegion,
     ] = useState<Region>();
-    console.log({ region });
     // Show/hide filters
     const [sideContentMinimized, , , toggleSideContainerMinimized] = useBasicToggle();
     const [regionFilterShown, , , toggleRegionFilter] = useBasicToggle();
