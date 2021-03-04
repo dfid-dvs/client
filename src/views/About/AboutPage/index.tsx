@@ -30,7 +30,7 @@ const contactDetails = [
         value: '+977 1 4411789',
     },
 ];
-const name = 'DFID Nepal';
+const name = 'British Embassy Kathmandu';
 const address = 'British Embassy\nPO Box 106\nKathmandu, Nepal';
 // eslint-disable-next-line max-len
 const firstSectionTitle = 'Find out how the UK will respond to opportunities and challenges, what is being achieved for the UK and who we are working with.';

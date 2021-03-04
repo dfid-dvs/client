@@ -35,5 +35,10 @@
         max-height: 240px;
         overflow-y: auto;
     }
+
+    .clear-button {
+        border-top: var(--width-separator-thin) solid var(--color-separator-light);
+        padding: var(--spacing-medium);
+    }
 }
 

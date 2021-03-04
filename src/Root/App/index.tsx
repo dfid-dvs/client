@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { isNotDefined } from '@togglecorp/fujs';
 
-import dfidLogo from '#resources/dfid-logo.png';
+import britishEmbassyKathmanduLogo from '#resources/dfid-off-logo.jpg';
 import TextInput from '#components/TextInput';
 import Button from '#components/Button';
 
@@ -94,8 +93,8 @@ function App() {
                 <div className={styles.navbar}>
                     <img
                         className={styles.logo}
-                        src={dfidLogo}
-                        alt="DFID"
+                        src={britishEmbassyKathmanduLogo}
+                        alt="British-Embassy-Kathmandu"
                     />
                 </div>
                 <div className={styles.content}>
