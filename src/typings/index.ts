@@ -205,19 +205,26 @@ export interface HistogramSettings<T> {
     binCount: number;
 }
 
+type BiAxialComponent = 'line' | 'bar';
+
+export interface BiAxialData<T> {
+    title: string;
+    valueSelector: (value: T) => number | null;
+    color: string;
+    stackId?: string;
+    type?: BiAxialComponent;
+}
 export interface BiAxialChartSettings<T> {
     id: string;
     type: 'bi-axial-chart';
     title: string;
-    orientation?: 'horizontal' | 'vertical';
     keySelector: (value: T) => string;
-    bars: {
-        title: string;
+    chartData: BiAxialData<T>[];
+    limit?: {
+        count: number;
+        method: 'min' | 'max';
         valueSelector: (value: T) => number | null;
-        color: string;
-        stackId?: string;
-        type?: string;
-    }[];
+    };
 
     dependencies?: number[];
 }

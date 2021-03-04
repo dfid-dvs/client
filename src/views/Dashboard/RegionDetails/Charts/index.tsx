@@ -15,6 +15,7 @@ import {
     RegionLevelOption,
     ChartSettings,
     NumericOption,
+    BiAxialData,
 } from '#types';
 
 import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
@@ -199,31 +200,33 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
     {
         id: '3',
-        type: 'bar-chart',
+        type: 'bi-axial-chart',
         title: 'Health and Finance for top 10 by budget',
         keySelector: item => item.name,
-        bars: [
+        chartData: [
             {
-                title: 'Health Facilities',
+                type: 'bar',
+                title: 'Program count',
                 color: tableauColors[2],
-                valueSelector: item => item.indicators[119] || null,
+                valueSelector: item => item.programCount,
             },
             {
-                title: 'Financial Institutions',
-                color: tableauColors[3],
-                valueSelector: item => item.indicators[118] || null,
+                type: 'line',
+                title: 'Allocated Budget',
+                color: tableauColors[4],
+                valueSelector: item => item.allocatedBudget,
             },
         ],
 
         limit: {
             count: 10,
             method: 'max',
-            valueSelector: item => item.allocatedBudget,
+            valueSelector: item => item.programCount,
         },
-
         // meta
         dependencies: [119, 118],
     },
+    /*
     {
         id: '4',
         type: 'histogram',
