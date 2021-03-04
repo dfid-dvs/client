@@ -16,30 +16,31 @@ import TextInput from '#components/TextInput';
 import ColorInput from '#components/ColorInput';
 import NumberInput from '#components/NumberInput';
 import { tableauColors } from '#utils/constants';
+import SegmentInput from '#components/SegmentInput';
 
-import { BarChartSettings, NumericOption } from '#types';
+import { BiAxialChartSettings, NumericOption } from '#types';
 import styles from '../BarChartConfig/styles.css';
 
-type BarTypeKeys = 'normal' | 'stacked';
+type BiAxialChartDataType = 'line' | 'bar';
 
-interface BarTypeOption {
-    key: BarTypeKeys;
+interface DataTypeOption {
+    key: BiAxialChartDataType;
     title: string;
 }
 
-const barTypeOptions: BarTypeOption[] = [
+const dataTypeOptions: DataTypeOption[] = [
     {
-        key: 'normal',
-        title: 'Normal',
+        key: 'line',
+        title: 'Line',
     },
     {
-        key: 'stacked',
-        title: 'Stacked',
+        key: 'bar',
+        title: 'Bar',
     },
 ];
 
-const barTypeKeySelector = (item: BarTypeOption) => item.key;
-const barTypeLabelSelector = (item: BarTypeOption) => item.title;
+const dataTypeKeySelector = (item: DataTypeOption) => item.key;
+const dataTypeLabelSelector = (item: DataTypeOption) => item.title;
 
 type OrderOptionKey = 'asc' | 'dsc';
 
@@ -56,25 +57,29 @@ const orderOptions: OrderOption[] = [
 const orderKeySelector = (item: OrderOption) => item.key;
 const orderLabelSelector = (item: OrderOption) => item.title;
 
-interface Bar {
+interface BiAxialData {
     id: string;
     optionName?: string;
     color: string;
+    type: BiAxialChartDataType;
 }
 
-interface BarItemProps<T> {
-    value: Bar;
-    onValueChange: (val: (values: Bar[]) => Bar[]) => void;
+interface BiAxialChartItemProps<T> {
+    value: BiAxialData;
+    onValueChange: (val: (values: BiAxialData[]) => BiAxialData[]) => void;
     index: number;
     options: NumericOption<T>[];
+    type: BiAxialChartDataType;
+    onToggleChartType: () => void;
 }
 
-function BarItem<T>(props: BarItemProps<T>) {
+function BiAxialChartItem<T>(props: BiAxialChartItemProps<T>) {
     const {
         index,
         value,
         onValueChange,
         options,
+        onToggleChartType,
     } = props;
 
     // FIXME: memoize
@@ -120,12 +125,12 @@ function BarItem<T>(props: BarItemProps<T>) {
         },
         [onValueChange, index],
     );
-
+    console.log(styles.select);
     return (
         <div className={styles.bar}>
             <SelectInput
                 className={styles.select}
-                label={`Data #${index + 1}`}
+                label={`Data #${index + 1} (${value.type})`}
                 options={options}
                 onChange={handleOptionNameChange}
                 value={value.optionName}
@@ -133,6 +138,17 @@ function BarItem<T>(props: BarItemProps<T>) {
                 optionKeySelector={keySelector}
                 groupKeySelector={groupSelector}
                 nonClearable
+                labelClassName={styles.label}
+                showDropDownIcon
+            />
+            <SegmentInput
+                className={styles.dataTypeSelect}
+                label="Type"
+                options={dataTypeOptions}
+                onChange={onToggleChartType}
+                value={value.type}
+                optionLabelSelector={dataTypeLabelSelector}
+                optionKeySelector={dataTypeKeySelector}
                 labelClassName={styles.label}
             />
             <ColorInput
@@ -142,24 +158,12 @@ function BarItem<T>(props: BarItemProps<T>) {
                 value={value.color}
                 labelClassName={styles.label}
             />
-            <Button
-                className={styles.trashButton}
-                onClick={handleDelete}
-                title="Delete bar"
-                disabled={index <= 0}
-                transparent
-                variant="danger"
-            >
-                <IoMdClose fontSize={18} />
-            </Button>
         </div>
     );
 }
 
 interface Props<T> {
-    onSave: (settings: BarChartSettings<T>) => void;
-    // indicatorList: Indicator[] | undefined;
-    maxRow?: number;
+    onSave: (settings: BiAxialChartSettings<T>) => void;
     className?: string;
     options: NumericOption<T>[];
     keySelector: (item: T) => string;
@@ -168,9 +172,7 @@ interface Props<T> {
 function BiAxialChartConfig<T>(props: Props<T>) {
     const {
         onSave,
-        // indicatorList,
         className,
-        maxRow = 4,
         options,
         keySelector: primaryKeySelector,
     } = props;
@@ -183,49 +185,25 @@ function BiAxialChartConfig<T>(props: Props<T>) {
     const [error, setError] = useState<string | undefined>(undefined);
 
     const [title, setTitle] = useState('');
-    const [barType, setBarType] = useState<BarTypeKeys>('normal');
-    const [bars, setBars] = useState<Bar[]>([
+    const [biAxialData, setBiAxialData] = useState<BiAxialData[]>([
         {
             id: randomString(),
             color: getRandomFromList(tableauColors),
+            type: 'line',
         },
         {
             id: randomString(),
             color: getRandomFromList(tableauColors),
+            type: 'bar',
         },
     ]);
     const [limitValue, setLimitValue] = useState<string>('7');
     const [order, setOrder] = useState<OrderOptionKey | undefined>('asc');
     const [orderField, setOrderField] = useState<string | undefined>();
 
-    // NOTE: there is always at least one bar
     const autoOrderField = isDefined(orderField)
         ? orderField
-        : bars[0].optionName;
-
-    /*
-    const options: NumericOption[] = useMemo(
-        () => {
-            if (!indicatorList) {
-                return numericOptions;
-            }
-            return [
-                ...numericOptions,
-                ...indicatorList.map(indicator => ({
-                    key: `indicator_${indicator.id}`,
-                    title: indicator.fullTitle,
-                    // FIXME: we should have certain thing for this
-                    valueSelector: (item: T) => item.indicators[indicator.id] || 0,
-
-                    category: indicator.category,
-
-                    dependency: indicator.id,
-                })),
-            ];
-        },
-        [indicatorList],
-    );
-    */
+        : biAxialData[0].optionName;
 
     const handleSave = useCallback(
         () => {
@@ -236,7 +214,7 @@ function BiAxialChartConfig<T>(props: Props<T>) {
 
             const chartId = randomString();
 
-            const properBars = bars.map((bar) => {
+            const properBars = biAxialData.map((bar) => {
                 const option = options.find(item => item.key === bar.optionName);
 
                 if (!option) {
@@ -248,12 +226,12 @@ function BiAxialChartConfig<T>(props: Props<T>) {
                     valueSelector: option.valueSelector,
                     color: bar.color,
                     dependency: option.dependency,
-                    stackId: barType === 'stacked' ? chartId : undefined,
+                    type: bar.type,
                 };
             }).filter(isDefined);
 
-            if (properBars.length <= 0) {
-                setError('At least one bar should be set.');
+            if (properBars.length <= 1) {
+                setError('Two bars should be set.');
                 return;
             }
 
@@ -288,9 +266,9 @@ function BiAxialChartConfig<T>(props: Props<T>) {
                 item => item,
             );
 
-            const settings: BarChartSettings<T> = {
+            const settings: BiAxialChartSettings<T> = {
                 id: chartId,
-                type: 'bar-chart',
+                type: 'bi-axial-chart',
                 title,
 
                 keySelector: primaryKeySelector,
@@ -301,7 +279,7 @@ function BiAxialChartConfig<T>(props: Props<T>) {
                     valueSelector: orderOption.valueSelector,
                 },
 
-                bars: properBars,
+                chartData: properBars,
 
                 dependencies,
             };
@@ -309,10 +287,24 @@ function BiAxialChartConfig<T>(props: Props<T>) {
             onSave(settings);
         },
         [
-            onSave, bars, title, options, barType, limitValue,
+            onSave, biAxialData, title, options, limitValue,
             order, autoOrderField, primaryKeySelector,
         ],
     );
+
+    const onToggleChartType = useCallback(() => {
+        const [firstData, secondData] = biAxialData;
+        if (firstData.type === 'bar') {
+            const tmpFD: BiAxialData = { ...firstData, type: 'line' };
+            const tmpSD: BiAxialData = { ...secondData, type: 'bar' };
+            setBiAxialData([tmpFD, tmpSD]);
+        }
+        if (firstData.type === 'line') {
+            const tmpFD: BiAxialData = { ...firstData, type: 'bar' };
+            const tmpSD: BiAxialData = { ...secondData, type: 'line' };
+            setBiAxialData([tmpFD, tmpSD]);
+        }
+    }, [biAxialData, setBiAxialData]);
 
     return (
         <div className={_cs(className, styles.barChartConfig)}>
@@ -333,13 +325,14 @@ function BiAxialChartConfig<T>(props: Props<T>) {
                         </h3>
                     </div>
                     <div className={styles.bars}>
-                        {bars.map((bar, index) => (
-                            <BarItem
+                        {biAxialData.map((bar, index) => (
+                            <BiAxialChartItem
                                 key={bar.id}
                                 index={index}
                                 value={bar}
-                                onValueChange={setBars}
+                                onValueChange={setBiAxialData}
                                 options={options}
+                                onToggleChartType={onToggleChartType}
                             />
                         ))}
                     </div>

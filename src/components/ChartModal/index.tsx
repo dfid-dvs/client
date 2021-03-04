@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { FiBarChart2 } from 'react-icons/fi';
 import { TiChartPie } from 'react-icons/ti';
 import { GiHistogram } from 'react-icons/gi';
+import { FcComboChart } from 'react-icons/fc';
 
 import Modal from '#components/Modal';
 import SegmentInput from '#components/SegmentInput';
@@ -57,7 +58,7 @@ const chartTypeOptions: ChartTypeOption[] = [
         type: 'bi-axial-chart',
         name: (
             <>
-                <GiHistogram />
+                <FcComboChart />
                 &nbsp;
                 Bi-Axial Chart
             </>

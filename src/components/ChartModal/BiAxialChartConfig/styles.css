@@ -115,6 +115,11 @@
                         flex-grow: 1;
                     }
 
+                    .data-type-select {
+                        display: flex;
+                        flex-direction: column;
+                    }
+
                     .label {
                         padding: var(--spacing-small-medium) var(--spacing-extra-small);
                         text-transform: uppercase;

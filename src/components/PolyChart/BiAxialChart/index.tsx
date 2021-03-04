@@ -85,20 +85,13 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
     const {
         title,
         keySelector,
-        bars,
+        chartData,
         // layout,
         limit,
         id,
         orientation,
     } = settings;
 
-    const [layout, setLayout] = useState<'horizontal' | 'vertical'>(orientation || 'vertical');
-
-    const Xcomp = layout === 'vertical' ? YAxis : XAxis;
-    const Ycomp = layout === 'vertical' ? XAxis : YAxis;
-
-    const isVertical = layout === 'vertical';
-    const isHorizontal = layout === 'horizontal';
 
     const finalData = useMemo(
         () => {
@@ -121,14 +114,8 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         ? sum(finalData.map(item => keySelector(item).length)) / finalData.length
         : 0;
 
+    const hasLongTitles = averageLength > 5;
 
-    const acceptableLength = layout === 'horizontal'
-        ? 5
-        : 15;
-
-    const hasLongTitles = averageLength > acceptableLength;
-
-    const a = 1;
     return (
         <div className={_cs(styles.chartContainer, className)}>
             <header className={_cs(styles.header, headerClassName)}>
@@ -157,14 +144,6 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                                 <AiOutlineExpandAlt className={styles.expandIcon} />
                             </Button>
                         )}
-                        <SegmentInput
-                            options={orientations}
-                            optionKeySelector={item => item.key}
-                            optionLabelSelector={item => item.label}
-                            optionTitleSelector={item => item.title}
-                            value={layout}
-                            onChange={setLayout}
-                        />
                     </div>
                 )}
             </header>
@@ -173,29 +152,30 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                     <ComposedChart
                         className={styles.chart}
                         data={finalData}
-                        layout={layout}
+                        layout="horizontal"
                         margin={chartMargin}
                         barGap={0}
                     >
                         <CartesianGrid
                             strokeDasharray="0"
-                            horizontal={isHorizontal}
-                            vertical={isVertical}
+                            vertical={false}
                         />
-                        <Xcomp
+                        <XAxis
                             dataKey={keySelector}
                             type="category"
                             interval={0}
-                            width={layout === 'vertical' ? 86 : undefined}
-                            tickFormatter={hasLongTitles && categoryTickFormatter}
-                            angle={layout === 'horizontal' && -45}
                             textAnchor="end"
+                            tickFormatter={hasLongTitles ? categoryTickFormatter : undefined}
                         />
-                        <Ycomp
+                        <YAxis
                             type="number"
+                            width={36}
                             tickFormatter={valueTickFormatter}
-                            interval={layout === 'vertical' ? 0 : undefined}
-                            width={layout === 'horizontal' ? 36 : undefined}
+                        />
+                        <YAxis
+                            yAxisId="right"
+                            orientation="right"
+                            tickFormatter={valueTickFormatter}
                         />
                         <Tooltip
                             allowEscapeViewBox={{ x: false, y: true }}
@@ -203,22 +183,23 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                             formatter={valueTickFormatter}
                         />
                         <Legend />
-                        {bars.map(bar => (
-                            bar?.type === 'bar' ? (
+                        {chartData.map(data => (
+                            data?.type === 'bar' ? (
                                 <Bar
-                                    key={bar.title}
-                                    name={bar.title}
-                                    dataKey={bar.valueSelector}
-                                    fill={bar.color}
-                                    stackId={bar.stackId}
+                                    key={data.title}
+                                    name={data.title}
+                                    dataKey={data.valueSelector}
+                                    fill={data.color}
+                                    stackId={data.stackId}
                                     barSize={22}
                                 />
                             ) : (
                                 <Line
-                                    key={bar.title}
-                                    name={bar.title}
-                                    dataKey={bar.valueSelector}
-                                    fill={bar.color}
+                                    key={data.title}
+                                    name={data.title}
+                                    dataKey={data.valueSelector}
+                                    fill={data.color}
+                                    yAxisId="right"
                                 />
                             )
                         ))}
