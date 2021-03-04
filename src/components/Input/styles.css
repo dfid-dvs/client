@@ -1,10 +1,11 @@
 .input-container {
-    border-bottom: var(--width-separator-thin) solid transparent;
+    border: var(--width-separator-thin) solid var(--color-separator-light);
+    --padding-internal-h: var(--spacing-small);
 
     .main {
         display: flex;
         background-color: var(--color-input-background);
-        padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-extra-small));
+        padding: var(--spacing-small-medium) calc(var(--spacing-medium) - var(--padding-internal-h));
 
         &.disabled {
             background-color: var(--color-input-background-disabled);
@@ -18,29 +19,26 @@
             display: flex;
             align-items: center;
             flex-shrink: 0;
-            padding: 0 var(--spacing-extra-small);
-
+            padding: 0 var(--padding-internal-h);
             color: var(--color-input-actions);
         }
 
         .input {
             flex-grow: 1;
-            padding: 0 var(--spacing-extra-small);
+            padding: 0 var(--padding-internal-h);
         }
 
         .actions {
             display: flex;
             align-items: center;
             flex-shrink: 0;
-            padding: 0 var(--spacing-extra-small);
+            padding: 0 var(--padding-internal-h);
         }
     }
 
-    /*
     &:focus-within {
         .label {
             color: var(--color-accent);
         }
     }
-    */
 }

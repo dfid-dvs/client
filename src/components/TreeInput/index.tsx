@@ -9,7 +9,7 @@ import { OptionKey } from '../types';
 
 import Button from '#components/Button';
 import HintAndError from '#components/HintAndError';
-import Label from '#components/Label';
+import InputLabel from '#components/InputLabel';
 import { generateExtendedRelations } from './utils';
 import TreeNodeList from './TreeNodeList';
 import styles from './styles.css';
@@ -110,7 +110,7 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
         >
             <div className={styles.labelContainer}>
                 {showLabel && (
-                    <Label
+                    <InputLabel
                         className={_cs(styles.label, labelClassName)}
                         disabled={disabled}
                         error={!!error}
@@ -119,12 +119,11 @@ function TreeInput<T, K extends OptionKey = string>(props: TreeProps<T, K>) {
                         // rightComponentClassName={labelRightComponentClassName}
                     >
                         {label}
-                    </Label>
+                    </InputLabel>
                 )}
                 {showClearButton && (
                     <Button
                         onClick={handleClear}
-                        variant="danger"
                         className={styles.button}
                         transparent
                         title="Clear all"

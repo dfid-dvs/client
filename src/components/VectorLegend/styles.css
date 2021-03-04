@@ -8,22 +8,22 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: var(--spacing-small) 0;
-    height: var(--font-size-medium);
+    padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-extra-small));
     overflow: hidden;
 
     .color {
         flex-shrink: 0;
         opacity: 0.6;
-        margin-right: var(--spacing-small);
-        border-radius: 50%;
-        width: var(--font-size-medium);
-        height: var(--font-size-medium);
+        margin: var(--spacing-extra-small);
+        border-radius: 0.5em;
+        width: .8em;
+        height: .8em;
     }
 
     .value {
         flex-grow: 1;
+        padding: var(--spacing-extra-small);
         text-transform: capitalize;
-        color: var(--color-text-label);
+        color: var(--color-text-label)
     }
 }

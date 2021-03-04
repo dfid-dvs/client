@@ -1,20 +1,11 @@
 .option {
     display: flex;
     align-items: center;
+    border-radius: 50%;
     background-color: transparent;
     cursor: pointer;
-    padding: var(--spacing-extra-small) var(--spacing-medium);
+    padding: var(--spacing-small) var(--spacing-medium);
     color: var(--color-text-label);
-
-    &:last-child {
-        border-top-right-radius: calc(4 * var(--radius-input));
-        border-bottom-right-radius: calc(4 * var(--radius-input));
-    }
-
-    &:first-child {
-        border-top-left-radius: calc(4 * var(--radius-input));
-        border-bottom-left-radius: calc(4 * var(--radius-input));
-    }
 
     &.disabled {
         background-color: var(--color-input-background-disabled);
@@ -25,9 +16,5 @@
         border-radius: calc(4 * var(--radius-input));
         background-color: var(--color-foreground);
         font-weight: var(--font-weight-bold);
-    }
-
-    &:hover {
-        filter: brightness(90%)
     }
 }

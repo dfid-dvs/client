@@ -1,6 +1,6 @@
 .checkbox {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     cursor: pointer;
     padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
 
@@ -17,7 +17,8 @@
         padding: 0 var(--spacing-small);
     }
 
-    &.checked, &.indeterminate {
+    &.checked,
+    &.indeterminate {
         .icon {
             color: var(--color-accent);
         }

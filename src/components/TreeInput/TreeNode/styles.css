@@ -11,6 +11,7 @@
         .expand-button {
             flex-shrink: 0;
             outline: none;
+            cursor: pointer;
             padding: var(--spacing-extra-small);
 
             &:disabled {

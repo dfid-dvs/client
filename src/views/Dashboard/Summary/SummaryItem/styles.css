@@ -3,10 +3,6 @@
 
     .label {
         padding: 0 var(--spacing-small);
-        text-transform: uppercase;
-        letter-spacing: 0.16em;
-        color: var(--color-accent-light);
-        font-size: var(--font-size-medium);
     }
 
     .data-line {

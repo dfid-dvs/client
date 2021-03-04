@@ -47,7 +47,7 @@ function DropdownMenu(props: Props) {
                     styles.dropdownMenu,
                     showDropdown && styles.dropdownShown,
                 )}
-                ref={buttonRef}
+                elementRef={buttonRef}
                 onClick={handleShowDropdown}
                 disabled={disabled}
             >
@@ -56,7 +56,7 @@ function DropdownMenu(props: Props) {
             {showDropdown && (
                 <Portal>
                     <Dropdown
-                        ref={dropdownRef}
+                        elementRef={dropdownRef}
                         className={dropdownContainerClassName}
                         parentRef={buttonRef}
                     >

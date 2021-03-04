@@ -54,27 +54,28 @@ function RegionSankey(props: Props) {
     return (
         <>
             <div className={styles.tableActions}>
-                <div className={styles.info}>
+                <div className={styles.infoBar}>
                     <RegionSelector
+                        className={styles.regionSelector}
                         regionLevel="province"
                         selectionHidden
                         regions={regions}
                         onRegionsChange={onRegionsChange}
                     />
                     {sankeyResponse && isDefined(sankeyResponse.minThreshold) && (
-                        <span className={styles.text}>
-                            <span>
+                        <div className={styles.info}>
+                            <div className={styles.label}>
                                 Only showing budget flow greater than
-                            </span>
+                            </div>
                             <Numeral
                                 className={styles.numeral}
                                 value={sankeyResponse.minThreshold}
                                 prefix="£"
                             />
-                        </span>
+                        </div>
                     )}
                 </div>
-                <span className={styles.legend}>
+                <div className={styles.legend}>
                     <LegendItem
                         title="Province"
                         color={tableauColors[0]}
@@ -87,7 +88,7 @@ function RegionSankey(props: Props) {
                         title="Municipality"
                         color={tableauColors[2]}
                     />
-                </span>
+                </div>
             </div>
             <div className={styles.sankey}>
                 {sankeyPending && (

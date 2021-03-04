@@ -39,7 +39,7 @@ const CheckboxButton = React.forwardRef<HTMLButtonElement, Props>(
 
         return (
             <RawButton
-                ref={ref}
+                elementRef={ref}
                 className={_cs(
                     className,
                     styles.checkbox,

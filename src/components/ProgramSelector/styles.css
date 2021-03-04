@@ -3,6 +3,7 @@
     flex: 1;
     flex-direction: column;
     box-shadow: 2px 0 5px -3px rgba(0, 0, 0, .3);
+    overflow: auto;
 
     .indicator-select-input {
         padding: 0;

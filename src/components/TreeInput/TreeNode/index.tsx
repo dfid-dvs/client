@@ -8,7 +8,7 @@ import { _cs, Obj } from '@togglecorp/fujs';
 
 import { OptionKey } from '../../types';
 
-import Button from '#components/Button';
+import RawButton from '#components/RawButton';
 import CheckboxButton from '#components/CheckboxButton';
 
 import styles from './styles.css';
@@ -164,14 +164,14 @@ export default function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T,
     return (
         <div className={_cs(styles.treeNode, className, collapsed && styles.collapsed)}>
             <div className={styles.left}>
-                <Button
+                <RawButton
                     className={styles.expandButton}
                     disabled={isLeaf}
                     onClick={handleToggleCollapseOption}
                     transparent
                 >
                     <IoMdArrowDropright />
-                </Button>
+                </RawButton>
                 {!collapsed && !isLeaf && (
                     <div
                         className={styles.stem}

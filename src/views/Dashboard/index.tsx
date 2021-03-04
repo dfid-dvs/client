@@ -7,19 +7,19 @@ import {
     IoIosArrowForward,
     IoIosArrowBack,
 } from 'react-icons/io';
-import { Link } from 'react-router-dom';
-import { MdChevronRight, MdFilterList } from 'react-icons/md';
 
 import BubbleLegend, { BubbleLegendType } from '#components/BubbleLegend';
-import Button from '#components/Button';
+import { useButtonStyling } from '#components/Button';
+import RawButton from '#components/RawButton';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import DomainContext from '#components/DomainContext';
 import IndicatorMap from '#components/IndicatorMap';
-import PrintButton from '#components/PrintButton';
-import PrintDetailsBar from '#components/PrintDetailsBar';
 import RasterLegend from '#components/RasterLegend';
 import VectorLegend from '#components/VectorLegend';
 import SingleRegionSelect from '#components/SingleRegionSelect';
+import Label from '#components/Label';
+import Portal from '#components/Portal';
+import DropdownMenu from '#components/DropdownMenu';
 
 import useRequest from '#hooks/useRequest';
 import useHash from '#hooks/useHash';
@@ -63,9 +63,9 @@ import {
     isFiveWOptionKey,
 } from './types';
 
-import ExploreData from './ExploreData';
 import MapOptions from './MapOptions';
 import splitCombinedSelectors from './splitCombinedSelectors';
+
 import styles from './styles.css';
 
 interface Region {
@@ -133,6 +133,11 @@ const Dashboard = (props: Props) => {
         partners,
         sectors,
     } = useContext(DomainContext);
+
+    const mapOptionsButtonProps = useButtonStyling({
+        className: styles.mapOptionsButton,
+        variant: 'outline',
+    });
 
     // Filter
     const [
@@ -442,15 +447,19 @@ const Dashboard = (props: Props) => {
     const handleRegionChange = useCallback(
         (newRegionId: number | undefined, adminLevel: AdminLevel) => {
             if (!newRegionId) {
+                setRegion(undefined);
                 return;
             }
+
             if (!adminLevel) {
                 return;
             }
+
             const reg: Region = {
                 id: Number(adminLevel.code),
                 name: adminLevel.name,
             };
+
             setRegion(reg);
         },
         [setRegion],
@@ -492,28 +501,25 @@ const Dashboard = (props: Props) => {
                     sideContentMinimized && styles.minimized,
                 )}
             >
-                <div
-                    className={_cs(
-                        styles.mapStyleConfigContainer,
-                        sideContentMinimized && styles.filterMinimized,
-                    )}
-                >
-                    <Button
-                        className={styles.toggleVisibilityButton}
+                <Portal>
+                    <RawButton
+                        className={_cs(
+                            styles.toggleVisibilityButton,
+                            sideContentMinimized && styles.sideContentMinimized,
+                        )}
                         onClick={toggleSideContainerMinimized}
-                        icons={sideContentMinimized ? <IoIosArrowForward /> : <IoIosArrowBack />}
-                        transparent
-                    />
-                    <FiltersPanel
-                        className={styles.filtersPanel}
-                        isMinimized={sideContentMinimized}
-                    />
-                </div>
+                    >
+                        {sideContentMinimized ? <IoIosArrowForward /> : <IoIosArrowBack />}
+                    </RawButton>
+                </Portal>
+                <FiltersPanel isMinimized={sideContentMinimized} />
             </aside>
             <main className={styles.mainContent}>
                 <header className={styles.header}>
+                    <Label>
+                        View by
+                    </Label>
                     <SingleRegionSelect
-                        className={styles.regionSelectorContainer}
                         onRegionLevelChange={handleRegionLevelChange}
                         regionLevel={regionLevel}
                         region={region?.id}
@@ -524,26 +530,6 @@ const Dashboard = (props: Props) => {
                 <div className={styles.content}>
                     { dataExplored ? (
                         <>
-                            <div
-                                className={_cs(
-                                    className,
-                                    styles.dataExplored,
-                                )}
-                            >
-                                <Link
-                                    className={styles.link}
-                                    to="/"
-                                    replace
-                                >
-                                    <div className={styles.title}>
-                                        Explore Maps
-                                        <MdChevronRight
-                                            fontSize={22}
-                                            fontWeight="bold"
-                                        />
-                                    </div>
-                                </Link>
-                            </div>
                             {hash === 'regions' && (
                                 <RegionDetails
                                     indicatorListPending={indicatorListPending}
@@ -586,42 +572,33 @@ const Dashboard = (props: Props) => {
                                 printMode={printMode}
                                 selectedRegionId={region?.id}
                             />
-                            <div className={styles.mapOptionsContainer}>
-                                <Button
-                                    className={styles.button}
-                                    onClick={toggleMapFilter}
-                                >
-                                    Map Options
-                                </Button>
-
-                                {mapFilterShown && (
-                                    <MapOptions
-                                        fiveWOptions={fiveWOptions}
-                                        selectedFiveWOption={selectedFiveWOption}
-                                        handleFiveWOptionChange={handleFiveWOptionChange}
-                                        indicatorListPending={indicatorListPending}
-                                        indicatorList={indicatorList}
-                                        setSelectedIndicator={setSelectedIndicator}
-                                        validSelectedIndicator={validSelectedIndicator}
-                                        selectedIndicatorDetails={selectedIndicatorDetails}
-                                        mapStyleInverted={mapStyleInverted}
-                                        setMapStyleInverted={setMapStyleInverted}
-                                        mapLayerListPending={mapLayerListPending}
-                                        vectorLayers={vectorLayers}
-                                        setSelectedVectorLayers={setSelectedVectorLayers}
-                                        selectedVectorLayers={selectedVectorLayers}
-                                        rasterLayers={rasterLayers}
-                                        setSelectedRasterLayer={setSelectedRasterLayer}
-                                        selectedRasterLayer={selectedRasterLayer}
-                                    />
-                                )}
-                            </div>
-                            <div className={styles.summaryContainer}>
-                                <Summary
-                                    actions={(
-                                        <ExploreData dataExplored={dataExplored} />
-                                    )}
+                            <DropdownMenu
+                                label="Map Options"
+                                dropdownContainerClassName={styles.mapOptionsDropdown}
+                                {...mapOptionsButtonProps}
+                            >
+                                <MapOptions
+                                    fiveWOptions={fiveWOptions}
+                                    selectedFiveWOption={selectedFiveWOption}
+                                    handleFiveWOptionChange={handleFiveWOptionChange}
+                                    indicatorListPending={indicatorListPending}
+                                    indicatorList={indicatorList}
+                                    setSelectedIndicator={setSelectedIndicator}
+                                    validSelectedIndicator={validSelectedIndicator}
+                                    selectedIndicatorDetails={selectedIndicatorDetails}
+                                    mapStyleInverted={mapStyleInverted}
+                                    setMapStyleInverted={setMapStyleInverted}
+                                    mapLayerListPending={mapLayerListPending}
+                                    vectorLayers={vectorLayers}
+                                    setSelectedVectorLayers={setSelectedVectorLayers}
+                                    selectedVectorLayers={selectedVectorLayers}
+                                    rasterLayers={rasterLayers}
+                                    setSelectedRasterLayer={setSelectedRasterLayer}
+                                    selectedRasterLayer={selectedRasterLayer}
                                 />
+                            </DropdownMenu>
+                            <div className={styles.summaryContainer}>
+                                <Summary />
                                 {region && (
                                     <Tooltip
                                         region={region}

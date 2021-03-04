@@ -1,17 +1,19 @@
 .region-details {
     position: relative;
+    flex-grow: 1;
+    overflow: auto;
 }
 
 .action-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--spacing-small);
+    padding: 0 calc(var(--spacing-large) - var(--spacing-medium));
 
     .region-profile-link {
         border: var(--width-separator-thin) solid var(--color-button-background);
         background-color: var(--color-foreground);
-        padding: var(--spacing-extra-small) var(--spacing-large);
+        padding: var(--spacing-small) var(--spacing-large);
         text-decoration: none;
         color: var(--color-text);
         font-weight: var(--font-weight-bold);
@@ -24,7 +26,6 @@
     .tab-actions {
         align-self: center;
         flex-shrink: 0;
-        padding: 0 var(--spacing-medium);
     }
 }
 

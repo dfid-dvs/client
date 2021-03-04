@@ -1,11 +1,17 @@
 import React, { useCallback, useMemo } from 'react';
-import { IoIosSearch, IoMdArrowDropdown, IoMdArrowDropup, IoMdClose } from 'react-icons/io';
+import {
+    IoIosSearch,
+    IoMdArrowDropdown,
+    IoMdArrowDropup,
+    IoMdClose,
+} from 'react-icons/io';
 import { _cs } from '@togglecorp/fujs';
 
 import TreeInput from '#components/TreeInput';
+import Subtitle from '#components/Subtitle';
+import TextInput from '#components/TextInput';
 
 import styles from './styles.css';
-import TextInput from '#components/TextInput';
 
 interface TreeItem<T extends string | number> {
     key: T;
@@ -115,9 +121,9 @@ export default function SelectorItem<T extends string | number>(props: SelectorI
                 <div className={styles.icon}>
                     {icon}
                 </div>
-                <div className={styles.name}>
+                <Subtitle className={styles.name}>
                     {name}
-                </div>
+                </Subtitle>
                 {selectedValueCount > 0 && (
                     <div className={styles.rightSection}>
                         <div className={styles.valueCount}>

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { isDefined, _cs } from '@togglecorp/fujs';
 
 import Numeral from '#components/Numeral';
+import Label from '#components/Label';
 
 import styles from './styles.css';
 
@@ -27,9 +28,9 @@ function SummaryItem({
 
     return (
         <div className={_cs(styles.summaryItem, className)}>
-            <div className={styles.label}>
+            <Label className={styles.label}>
                 {label}
-            </div>
+            </Label>
             <div className={styles.dataLine}>
                 <div className={styles.valueRow}>
                     { isDefined(value) && (

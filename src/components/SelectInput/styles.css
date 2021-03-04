@@ -6,6 +6,9 @@
 }
 
 .dropdown-container {
+    padding-right: 0;
+    padding-left: 0;
+
     .message {
         padding: var(--spacing-medium);
         color: var(--color-text-disabled);
@@ -16,7 +19,6 @@
         padding: var(--spacing-medium);
         width: 100%;
         text-align: left;
-
         color: var(--color-primary);
         font-size: var(--font-size-small);
         font-weight: var(--font-weight-bold);
@@ -29,7 +31,8 @@
 
     .option {
         display: block;
-        padding: var(--spacing-small) var(--spacing-medium);
+        cursor: pointer;
+        padding: var(--spacing-small) var(--spacing-large-medium);
         width: 100%;
         text-align: left;
         color: var(--color-text-label);

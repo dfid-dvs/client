@@ -2,23 +2,25 @@
     display: flex;
     align-items: flex-end;
     flex-shrink: 0;
-    margin: var(--spacing-small) var(--spacing-medium);
+    padding: calc(var(--spacing-medium) - var(--spacing-small)) 0;
 
-    .info {
+    .info-bar {
         display: flex;
-        align-items: flex-end;
+        align-items: center;
         flex-grow: 1;
 
-        >* {
-            &:not(:last-child) {
-                margin-right: var(--spacing-medium);
-            }
+        .region-selector {
+            margin: var(--spacing-small) var(--spacing-medium);
         }
 
-        .text {
+        .info {
             display: flex;
-            align-items: baseline;
-            padding: var(--spacing-small);
+            align-items: center;
+            padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
+            
+            .label {
+                padding: 0 var(--spacing-small);
+            }
 
             .numeral {
                 margin: 0 var(--spacing-small);
@@ -28,18 +30,15 @@
 
     .legend {
         display: flex;
+        align-items: center;
         flex-shrink: 0;
-
-        >:not(:first-child) {
-            margin-left: var(--spacing-medium);
-        }
     }
 }
 
 .sankey {
     position: relative;
     flex-grow: 1;
-    margin: var(--spacing-small) var(--spacing-medium);
+    margin: var(--spacing-small) 0;
 
     .backdrop {
         z-index: 1;

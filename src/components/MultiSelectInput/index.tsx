@@ -18,7 +18,7 @@ import List from '#components/List';
 import Button from '#components/Button';
 import Portal from '#components/Portal';
 import TextInput from '#components/TextInput';
-import Label from '#components/Label';
+import InputLabel from '#components/InputLabel';
 import CheckboxButton from '#components/CheckboxButton';
 
 import styles from './styles.css';
@@ -275,7 +275,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
             title={label}
         >
             {!hideLabel && (
-                <Label
+                <InputLabel
                     className={styles.label}
                     disabled={disabled}
                     error={!!error}
@@ -283,7 +283,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                     // rightComponentClassName={labelRightComponentClassName}
                 >
                     {label}
-                </Label>
+                </InputLabel>
             )}
             <TextInput
                 className={styles.textInput}
@@ -339,7 +339,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
             { showDropdown && (
                 <Portal>
                     <Dropdown
-                        ref={dropdownRef}
+                        elementRef={dropdownRef}
                         className={_cs(dropdownContainerClassName, styles.dropdownContainer)}
                         parentRef={inputContainerRef}
                     >

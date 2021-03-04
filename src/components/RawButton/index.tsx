@@ -7,45 +7,44 @@ export interface Props extends Omit<React.HTMLProps<HTMLButtonElement>, 'ref' | 
     className?: string;
     onClick?: (name: string | undefined, e: React.MouseEvent<HTMLButtonElement>) => void;
     type?: 'button' | 'submit' | 'reset';
+    elementRef?: React.Ref<HTMLButtonElement>;
 }
 
+function RawButton(props: Props) {
+    const {
+        className,
+        onClick,
+        elementRef,
+        ...otherProps
+    } = props;
 
-const RawButton = React.forwardRef<HTMLButtonElement, Props>(
-    (props, ref) => {
-        const {
-            className,
-            onClick,
-            ...otherProps
-        } = props;
+    const handleClick = React.useCallback(
+        (e: React.MouseEvent<HTMLButtonElement>) => {
+            const {
+                currentTarget: {
+                    name,
+                },
+            } = e;
 
-        const handleClick = React.useCallback(
-            (e: React.MouseEvent<HTMLButtonElement>) => {
-                const {
-                    currentTarget: {
-                        name,
-                    },
-                } = e;
+            if (onClick) {
+                onClick(
+                    name,
+                    e,
+                );
+            }
+        },
+        [onClick],
+    );
 
-                if (onClick) {
-                    onClick(
-                        name,
-                        e,
-                    );
-                }
-            },
-            [onClick],
-        );
-
-        return (
-            <button
-                ref={ref}
-                type="button"
-                className={_cs(className, styles.rawButton)}
-                onClick={onClick ? handleClick : undefined}
-                {...otherProps}
-            />
-        );
-    },
-);
+    return (
+        <button
+            ref={elementRef}
+            type="button"
+            className={_cs(className, styles.rawButton)}
+            onClick={onClick ? handleClick : undefined}
+            {...otherProps}
+        />
+    );
+}
 
 export default RawButton;

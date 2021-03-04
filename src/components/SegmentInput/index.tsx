@@ -1,7 +1,7 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import Label from '#components/Label';
+import InputLabel from '#components/InputLabel';
 
 import Option from './Option';
 import styles from './styles.css';
@@ -46,13 +46,13 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
     return (
         <div className={_cs(className, styles.segmentInput)}>
             {!hideLabel && (
-                <Label
+                <InputLabel
                     disabled={disabled}
                     error={!!error}
                     className={_cs(styles.className, labelClassName)}
                 >
                     {label}
-                </Label>
+                </InputLabel>
             )}
             <div className={styles.inputContainer}>
                 { options.map((option) => {

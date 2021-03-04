@@ -411,10 +411,9 @@ function RegionTable(props: Props) {
                     disabled={!sortedFiveW || !orderedColumns}
                     transparent
                     className={styles.downloadButton}
+                    variant="secondary-outline"
                 >
-                    <div className={styles.text}>
-                        Download as csv
-                    </div>
+                    Download as csv
                 </Button>
             </div>
             <div className={styles.tableContainer}>

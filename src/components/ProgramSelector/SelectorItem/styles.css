@@ -60,10 +60,6 @@
 
         .name {
             padding: var(--spacing-small);
-            text-transform: uppercase;
-            letter-spacing: 0.14rem;
-            font-size: var(--font-size-large);
-            font-weight: var(--font-weight-bold);
         }
 
         .right-section {
@@ -72,14 +68,14 @@
             width: 20%;
 
             .value-count {
-                border-radius: calc(3 * var(--radius-button));
-                background-color: var(--color-highlight-light);
-                padding: var(--spacing-super-small);
-                width: 50%;
-                height: 24px;
-                text-align: center;
-                color: var(--color-highlight);
-                font-size: var(--font-size-large-medium);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 1em;
+                background-color: var(--color-secondary-light-2);
+                padding: var(--spacing-small) var(--spacing-small);
+                color: var(--color-secondary);
+                font-size: var(--font-size-small);
                 font-weight: var(--font-weight-bold);
             }
 
@@ -87,6 +83,7 @@
                 width: 60%;
                 font-size: var(--font-size-large);
                 font-weight: var(--font-weight-bold);
+
                 &:hover {
                     cursor: pointer;
                 }
@@ -98,11 +95,13 @@
         display: flex;
         flex-direction: column;
         flex-grow: 1;
-        background-color: var(--color-grey-shade-4);
+        background-color: var(--color-grey-shade-3);
         overflow: auto;
 
         .search-input {
             flex-shrink: 0;
+            border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
+            background-color: var(--color-grey-shade-2);
             padding: 0 calc(var(--spacing-large) - var(--spacing-medium));
 
             .search-icon {

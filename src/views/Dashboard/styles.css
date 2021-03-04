@@ -15,23 +15,60 @@
     }
 }
 
+.toggle-visibility-button {
+    display: flex;
+    position: absolute;
+    top: 96px;
+    left: calc(var(--width-dashboard-aside) - var(--spacing-small));
+    align-items: center;
+    justify-content: center;
+    transform: translateX(-50%);
+    transition: .2s left ease-in-out;
+    z-index: 11;
+    border: var(--width-separator-thin) solid var(--color-background-light);
+    border-radius: 1em;
+    background-color: var(--color-foreground);
+    cursor: pointer;
+    padding: var(--spacing-small);
+    color: var(--color-secondary);
+    font-size: var(--font-size-large);
+
+    &.side-content-minimized {
+        left: calc(var(--width-dashboard-aside-minimized) - var(--spacing-small));
+    }
+}
+
+:global {
+    .mapboxgl-popup {
+        z-index: 1111;
+    }
+}
+
+:root {
+    --width-dashboard-aside: 320px;
+    --width-dashboard-aside-minimized: 88px;
+}
+
 .dashboard {
     display: flex;
     position: relative;
     overflow: auto;
 
-    --width-aside: 320px;
-    --width-aside-minimized: 88px;
-
     .side-content {
         position: relative;
         flex-shrink: 0;
         transition: .2s width ease-in-out;
-        width: var(--width-aside);
-        overflow: visible;
+        width: var(--width-dashboard-aside);
+        overflow: auto;
 
         &.minimized {
-            width: var(--width-aside-minimized);
+            width: var(--width-dashboard-aside-minimized);
+        }
+
+        &:hover {
+            .toggle-visibility-button {
+                opacity: 1;
+            }
         }
 
         .map-style-config-container {
@@ -39,25 +76,6 @@
             flex-direction: column;
             background-color: var(--color-background);
 
-            .toggle-visibility-button {
-                position: absolute;
-                top: var(--spacing-medium);
-                right: 0;
-                transform: translateX(50%);
-                opacity: 0;
-                z-index: 1;
-                border: var(--width-separator-thin) solid var(--color-background-light);
-                border-radius: 50%;
-                background-color: var(--color-foreground);
-                color: var(--color-highlight);
-                font-size: var(--font-size-large);
-            }
-
-            &:hover {
-                .toggle-visibility-button {
-                    opacity: 1;
-                }
-            }
         }
     }
 
@@ -71,7 +89,10 @@
         overflow: auto;
 
         .header {
+            display: flex;
+            align-items: center;
             flex-shrink: 0;
+            padding: var(--spacing-small) var(--spacing-medium);
         }
 
         .content {
@@ -94,11 +115,11 @@
         .summary-container {
             display: flex;
             position: absolute;
-            top: 0;
+            top: var(--spacing-medium);
             right: var(--spacing-large);
             flex-direction: column;
             width: var(--width-summary-container);
-            max-height: calc(100% - var(--spacing-large));
+            max-height: calc(100% - var(--spacing-large) - var(--spacing-medium));
 
             .clicked-region-detail {
                 margin-top: var(--spacing-medium);
@@ -128,18 +149,10 @@
             }
         }
 
-        .map-options-container {
-            display: flex;
+        .map-options-button {
             position: absolute;
             top: var(--spacing-medium);
-            right: calc(2 * var(--spacing-large) + var(--width-summary-container));
-            align-items: flex-end;
-            flex-direction: column;
-
-            .button {
-                background: var(--color-foreground);
-                width: calc(12 * var(--spacing-medium));
-            }
+            left: var(--spacing-medium);
         }
 
         --width-max-legend-container: 512px;
@@ -215,8 +228,7 @@
     }
 }
 
-:global {
-    .mapboxgl-popup {
-        z-index: 1111!important;
-    }
+.map-options-dropdown {
+    width: 300px!important;
+    max-width: unset;
 }

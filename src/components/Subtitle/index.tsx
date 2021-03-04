@@ -3,12 +3,12 @@ import { _cs } from '@togglecorp/fujs';
 
 import styles from './styles.css';
 
-export interface LabelProps {
+export interface SubtitleProps {
     className?: string;
     children?: React.ReactNode;
 }
 
-function Label(props: LabelProps) {
+function Subtitle(props: SubtitleProps) {
     const {
         className,
         children,
@@ -18,7 +18,7 @@ function Label(props: LabelProps) {
         <div className={
             _cs(
                 className,
-                styles.label,
+                styles.subtitle,
             )}
         >
             { children }
@@ -26,4 +26,4 @@ function Label(props: LabelProps) {
     );
 }
 
-export default Label;
+export default Subtitle;

@@ -89,6 +89,7 @@ function RawInput<T=string>(props: Props<T>) {
             onBlur={onBlur ? handleBlur : undefined}
             className={_cs(className, styles.rawInput)}
             value={stateValue}
+            autoComplete="off"
             {...otherProps}
         />
     );

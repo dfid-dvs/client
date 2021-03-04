@@ -58,7 +58,7 @@ function Option(props: RawButtonProps & { selected: boolean }) {
 
     return (
         <RawButton
-            ref={ref}
+            elementRef={ref}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             {...otherProps}
@@ -315,7 +315,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
             { showDropdown && (
                 <Portal>
                     <Dropdown
-                        ref={dropdownRef}
+                        elementRef={dropdownRef}
                         className={_cs(dropdownContainerClassName, styles.dropdownContainer)}
                         parentRef={inputContainerRef}
                     >

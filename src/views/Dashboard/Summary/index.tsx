@@ -79,61 +79,41 @@ function Summary(props: SummaryProps) {
 
     return (
         <div className={_cs(styles.summary, className)}>
-            <div
-                className={styles.titleContainer}
-            >
-                <div
-                    className={_cs(
-                        styles.title,
-                        dataExplored && styles.hideTitle,
-                    )}
-                >
-                    Summary
-                </div>
-                {actions}
-            </div>
-            <div
-                className={_cs(
-                    styles.summaryContainer,
-                    dataExplored && styles.hideContainer,
-                )}
-            >
-                {summaryPending && (
-                    <Backdrop>
-                        <LoadingAnimation />
-                    </Backdrop>
-                )}
-                <SummaryItem
-                    className={styles.summaryItem}
-                    label="Allocated Budget (£)"
-                    value={summary?.allocatedBudget}
-                    total={summary?.totalAllocatedBudget}
-                />
-                <SummaryItem
-                    className={styles.summaryItem}
-                    label="Programs"
-                    value={summary?.program}
-                    total={summary?.totalProgram}
-                />
-                <SummaryItem
-                    className={styles.summaryItem}
-                    label="Partners"
-                    value={summary?.partner}
-                    total={summary?.totalPartner}
-                />
-                <SummaryItem
-                    className={styles.summaryItem}
-                    label="Components"
-                    value={summary?.component}
-                    total={summary?.totalComponent}
-                />
-                <SummaryItem
-                    className={styles.summaryItem}
-                    label="Sectors"
-                    value={summary?.sector}
-                    total={summary?.totalSector}
-                />
-            </div>
+            {summaryPending && (
+                <Backdrop>
+                    <LoadingAnimation />
+                </Backdrop>
+            )}
+            <SummaryItem
+                className={styles.summaryItem}
+                label="Allocated Budget (£)"
+                value={summary?.allocatedBudget}
+                total={summary?.totalAllocatedBudget}
+            />
+            <SummaryItem
+                className={styles.summaryItem}
+                label="Programs"
+                value={summary?.program}
+                total={summary?.totalProgram}
+            />
+            <SummaryItem
+                className={styles.summaryItem}
+                label="Partners"
+                value={summary?.partner}
+                total={summary?.totalPartner}
+            />
+            <SummaryItem
+                className={styles.summaryItem}
+                label="Components"
+                value={summary?.component}
+                total={summary?.totalComponent}
+            />
+            <SummaryItem
+                className={styles.summaryItem}
+                label="Sectors"
+                value={summary?.sector}
+                total={summary?.totalSector}
+            />
         </div>
     );
 }

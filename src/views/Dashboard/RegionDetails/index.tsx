@@ -93,20 +93,19 @@ function RegionDetails(props: Props) {
             hideArrow
             actions={(
                 <div className={styles.actionContainer}>
-                    <div className={styles.tabActions}>
-                        <SegmentInput
-                            options={tabOptions}
-                            optionKeySelector={optionKeySelector}
-                            optionLabelSelector={optionLabelSelector}
-                            value={selectedTab}
-                            onChange={onSelectTab}
-                        />
-                    </div>
+                    <div className={styles.dummy} />
+                    <SegmentInput
+                        options={tabOptions}
+                        optionKeySelector={optionKeySelector}
+                        optionLabelSelector={optionLabelSelector}
+                        value={selectedTab}
+                        onChange={onSelectTab}
+                    />
                     <Link
                         className={styles.regionProfileLink}
                         to="/infographics/"
                     >
-                        Region Profile
+                        Create Regional Profile
                     </Link>
                 </div>
             )}

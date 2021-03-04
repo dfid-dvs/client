@@ -6,9 +6,8 @@
     .input-container {
         display: flex;
         align-self: flex-start;
-        border: var(--width-separator-thin) solid var(--color-separator-light);
-        border-radius: calc(4 * var(--radius-input));
+        border: var(--width-separator-thin) solid var(--color-separator);
+        border-radius: 1em;
         background: var(--color-grey-shade-3);
-        padding: calc(var(--width-separator-thin) / 2);
     }
 }

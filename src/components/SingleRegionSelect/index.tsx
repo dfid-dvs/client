@@ -129,7 +129,6 @@ function RegionSelector(props: Props) {
             {!selectionHidden && (
                 <SegmentInput
                     className={styles.regionLevelSelection}
-                    label="Admin Level"
                     options={regionLevelOptionList}
                     optionKeySelector={regionLevelOptionListKeySelector}
                     optionLabelSelector={regionLevelOptionListLabelSelector}
@@ -141,7 +140,7 @@ function RegionSelector(props: Props) {
             {!searchHidden && setSelectedRegion && (
                 <SelectInput
                     pending={regionListPending}
-                    label={regionLevelLabel}
+                    // label={regionLevelLabel}
                     placeholder={`Select ${regionLevelLabel}`}
                     className={styles.regionSelectInput}
                     disabled={regionListPending || disabled}

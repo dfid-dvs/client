@@ -2,7 +2,7 @@
     padding: var(--spacing-small);
 
     &.dropdown-shown {
-        background-color: var(--color-grey-shade-2);
+        background-color: var(--color-secondary-light-2);
     }
 }
 
