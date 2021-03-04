@@ -29,9 +29,6 @@ interface SummaryInfo {
 
 interface SummaryProps {
     className?: string;
-    actions?: React.ReactNode;
-    dataExplored?: boolean;
-
     markerIdList?: number[];
     submarkerIdList?: number[];
     programIdList?: number[];
@@ -44,9 +41,6 @@ interface SummaryProps {
 function Summary(props: SummaryProps) {
     const {
         className,
-        actions,
-        dataExplored,
-
         markerIdList,
         submarkerIdList,
         programIdList,

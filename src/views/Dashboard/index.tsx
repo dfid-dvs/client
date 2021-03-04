@@ -597,7 +597,15 @@ const Dashboard = (props: Props) => {
                                 />
                             </DropdownMenu>
                             <div className={styles.summaryContainer}>
-                                <Summary />
+                                <Summary
+                                    markerIdList={markerIdList}
+                                    submarkerIdList={submarkerIdList}
+                                    programIdList={programIdList}
+                                    componentIdList={componentIdList}
+                                    partnerIdList={partnerIdList}
+                                    sectorIdList={sectorIdList}
+                                    subsectorIdList={subsectorIdList}
+                                />
                                 {region && (
                                     <Tooltip
                                         region={region}
