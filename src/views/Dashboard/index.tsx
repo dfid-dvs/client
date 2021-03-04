@@ -220,9 +220,12 @@ const Dashboard = (props: Props) => {
         indicatorListResponse,
     ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl, 'indicator-list');
 
-    const indicatorList = indicatorListResponse?.results.filter(
-        indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regionLevel,
-    );
+    const indicatorList = useMemo(() => {
+        const regLevel = regionLevel === 'municipality' ? 'palika' : regionLevel;
+        return indicatorListResponse?.results.filter(
+            indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regLevel,
+        );
+    }, [indicatorListResponse?.results, regionLevel]);
 
     const {
         selectedIndicator: validSelectedIndicator,
