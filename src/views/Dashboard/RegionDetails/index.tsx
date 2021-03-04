@@ -37,7 +37,6 @@ interface Props {
     programIdList?: number[];
     componentIdList?: number[];
     partnerIdList?: number[];
-    subpartnerIdList?: number[];
     sectorIdList?: number[];
     subsectorIdList?: number[];
 }
@@ -60,7 +59,6 @@ function RegionDetails(props: Props) {
         programIdList,
         componentIdList,
         partnerIdList,
-        subpartnerIdList,
         sectorIdList,
         subsectorIdList,
     } = props;
@@ -126,7 +124,6 @@ function RegionDetails(props: Props) {
                     programIdList={programIdList}
                     componentIdList={componentIdList}
                     partnerIdList={partnerIdList}
-                    subpartnerIdList={subpartnerIdList}
                     sectorIdList={sectorIdList}
                     subsectorIdList={subsectorIdList}
                 />
@@ -143,7 +140,6 @@ function RegionDetails(props: Props) {
                     programIdList={programIdList}
                     componentIdList={componentIdList}
                     partnerIdList={partnerIdList}
-                    subpartnerIdList={subpartnerIdList}
                     sectorIdList={sectorIdList}
                     subsectorIdList={subsectorIdList}
                 />

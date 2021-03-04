@@ -105,12 +105,12 @@ function RegionSelector(props: Props) {
         ),
         [regionLevel],
     );
-    const handleSelectedRegionChange = useCallback((selectedRegionId?: number) => {
+    const handleSelectedRegionChange = useCallback((selectedRegionCode?: number) => {
         if (setSelectedRegion) {
             const selectedRegionObj = regionListResponse?.results
-                ?.find(r => r.code === String(selectedRegionId));
+                ?.find(r => r.code === String(selectedRegionCode));
 
-            setSelectedRegion(selectedRegionId, selectedRegionObj);
+            setSelectedRegion(selectedRegionCode, selectedRegionObj);
         }
     }, [setSelectedRegion, regionListResponse]);
 

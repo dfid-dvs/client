@@ -29,49 +29,46 @@ interface SummaryInfo {
 
 interface SummaryProps {
     className?: string;
-    actions?: React.ReactNode;
-    dataExplored?: boolean;
+    markerIdList?: number[];
+    submarkerIdList?: number[];
+    programIdList?: number[];
+    componentIdList?: number[];
+    partnerIdList?: number[];
+    sectorIdList?: number[];
+    subsectorIdList?: number[];
 }
 
 function Summary(props: SummaryProps) {
     const {
         className,
-        actions,
-        dataExplored,
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        sectorIdList,
+        subsectorIdList,
     } = props;
-
-    const {
-        programs,
-        markers,
-        partners,
-        sectors,
-    } = useContext(DomainContext);
-
-    const [markerIdList, submarkerIdList] = splitCombinedSelectors(markers, 'submarker');
-    const [programIdList, componentIdList] = splitCombinedSelectors(programs, 'subprogram');
-    const [partnerIdList, subpartnerIdList] = splitCombinedSelectors(partners, 'subpartner');
-    const [sectorIdList, subsectorIdList] = splitCombinedSelectors(sectors, 'subsector');
 
     const summaryParams = p({
         // eslint-disable-next-line @typescript-eslint/camelcase
-        marker_id: markerIdList,
+        marker_category_id: markerIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
-        submarker_id: submarkerIdList,
+        marker_value_id: submarkerIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
         program_id: programIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
         component_id: componentIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
-        partner_id: partnerIdList,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        subpartner_id: subpartnerIdList,
+        supplier_id: partnerIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
         sector_id: sectorIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
-        subsector_id: subsectorIdList,
+        sub_sector_id: subsectorIdList,
     });
 
     const summaryUrl = summaryParams ? `${apiEndPoint}/core/summary/?${summaryParams}` : `${apiEndPoint}/core/summary/`;
+
     const [
         summaryPending,
         summary,

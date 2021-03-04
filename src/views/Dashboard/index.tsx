@@ -71,6 +71,7 @@ import styles from './styles.css';
 interface Region {
     id: number;
     name: string;
+    code: number;
 }
 
 interface ClickedRegion {
@@ -177,7 +178,6 @@ const Dashboard = (props: Props) => {
         region,
         setRegion,
     ] = useState<Region>();
-
     // Show/hide filters
     const [sideContentMinimized, , , toggleSideContainerMinimized] = useBasicToggle();
     const [regionFilterShown, , , toggleRegionFilter] = useBasicToggle();
@@ -261,7 +261,7 @@ const Dashboard = (props: Props) => {
     const [markerIdList, submarkerIdList] = splitCombinedSelectors(markers, 'submarker');
     // FIXME: Update programs to String[]
     const [programIdList, componentIdList] = splitCombinedSelectors(programs, 'subprogram');
-    const [partnerIdList, subpartnerIdList] = splitCombinedSelectors(partners, 'subpartner');
+    const [partnerIdList] = splitCombinedSelectors(partners, 'subpartner');
     const [sectorIdList, subsectorIdList] = splitCombinedSelectors(sectors, 'subsector');
 
     const [
@@ -274,7 +274,6 @@ const Dashboard = (props: Props) => {
         programIdList,
         componentIdList,
         partnerIdList,
-        subpartnerIdList,
         sectorIdList,
         subsectorIdList,
         fiveWOptionKey,
@@ -458,6 +457,7 @@ const Dashboard = (props: Props) => {
             const reg: Region = {
                 id: Number(adminLevel.code),
                 name: adminLevel.name,
+                code: adminLevel.id,
             };
 
             setRegion(reg);
@@ -548,7 +548,6 @@ const Dashboard = (props: Props) => {
                                     programIdList={programIdList}
                                     componentIdList={componentIdList}
                                     partnerIdList={partnerIdList}
-                                    subpartnerIdList={subpartnerIdList}
                                     sectorIdList={sectorIdList}
                                     subsectorIdList={subsectorIdList}
                                 />
@@ -570,7 +569,7 @@ const Dashboard = (props: Props) => {
                                 vectorLayers={selectedVectorLayersDetail}
                                 onClick={handleMapRegionClick}
                                 printMode={printMode}
-                                selectedRegionId={region?.id}
+                                selectedRegionId={region?.code}
                             />
                             <DropdownMenu
                                 label="Map Options"
@@ -598,7 +597,15 @@ const Dashboard = (props: Props) => {
                                 />
                             </DropdownMenu>
                             <div className={styles.summaryContainer}>
-                                <Summary />
+                                <Summary
+                                    markerIdList={markerIdList}
+                                    submarkerIdList={submarkerIdList}
+                                    programIdList={programIdList}
+                                    componentIdList={componentIdList}
+                                    partnerIdList={partnerIdList}
+                                    sectorIdList={sectorIdList}
+                                    subsectorIdList={subsectorIdList}
+                                />
                                 {region && (
                                     <Tooltip
                                         region={region}
@@ -610,7 +617,6 @@ const Dashboard = (props: Props) => {
                                         programIdList={programIdList}
                                         componentIdList={componentIdList}
                                         partnerIdList={partnerIdList}
-                                        subpartnerIdList={subpartnerIdList}
                                         sectorIdList={sectorIdList}
                                         subsectorIdList={subsectorIdList}
                                     />

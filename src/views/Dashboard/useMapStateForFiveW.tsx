@@ -22,7 +22,6 @@ function useMapStateForFiveW(
     programIdList: number[] | undefined,
     componentIdList: number[] | undefined,
     partnerIdList: number[] | undefined,
-    subpartnerIdList: number[] | undefined,
     sectorIdList: number[] | undefined,
     subsectorIdList: number[] | undefined,
     selectedFiveWOption?: FiveWOptionKey,
@@ -30,21 +29,19 @@ function useMapStateForFiveW(
 ): [boolean, MapStateItem[], FiveW[]] {
     const params: UrlParams = {
         // eslint-disable-next-line @typescript-eslint/camelcase
-        marker_id: markerIdList,
+        marker_category_id: markerIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
-        submarker_id: submarkerIdList,
+        marker_value_id: submarkerIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
         program_id: programIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
         component_id: componentIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
-        partner_id: partnerIdList,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        subpartner_id: subpartnerIdList,
+        supplier_id: partnerIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
         sector_id: sectorIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
-        subsector_id: subsectorIdList,
+        sub_sector_id: subsectorIdList,
     };
     const regionUrlParams = p(params);
     const regionFiveWGetUrl = regionUrlParams
