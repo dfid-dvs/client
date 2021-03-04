@@ -11,27 +11,16 @@ import {
     Line,
     ComposedChart,
 } from 'recharts';
-import { IoMdClose } from 'react-icons/io';
-import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
+import { IoIosSwap, IoMdClose } from 'react-icons/io';
 import { AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
-import SegmentInput from '#components/SegmentInput';
-import { BiAxialChartSettings } from '#types';
+import { BiAxialChartSettings, BiAxialData } from '#types';
+import useBasicToggle from '#hooks/useBasicToggle';
 
 import styles from './styles.css';
-
-const orientations: {
-    key: 'horizontal' | 'vertical';
-    label: React.ReactNode;
-    title: string;
-}[] = [
-    { key: 'vertical', label: <RiBarChartHorizontalLine />, title: 'Horizontal' },
-    { key: 'horizontal', label: <RiBarChartLine />, title: 'Vertical' },
-];
-
 
 const categoryTickFormatter = (value: string) => {
     const words = value.trim().split(/\s+/);
@@ -82,16 +71,28 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         expandableIconHidden,
     } = props;
 
+    const [chartTypeToggled, , , onToggleChartType] = useBasicToggle();
+
     const {
         title,
         keySelector,
         chartData,
-        // layout,
         limit,
         id,
-        orientation,
     } = settings;
 
+    const formattedChartData: BiAxialData<T>[] = useMemo(() => {
+        if (chartTypeToggled) {
+            const [firstData, secondData] = chartData;
+            const tmpFirstDataType = firstData.type === 'bar' ? 'line' : 'bar';
+            const tmpSecondDataType = secondData.type === 'line' ? 'bar' : 'line';
+            return [
+                { ...firstData, type: tmpFirstDataType },
+                { ...secondData, type: tmpSecondDataType },
+            ];
+        }
+        return chartData;
+    }, [chartTypeToggled, chartData]);
 
     const finalData = useMemo(
         () => {
@@ -132,6 +133,14 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                             variant="danger"
                         >
                             <IoMdClose className={styles.deleteIcon} />
+                        </Button>
+                        <Button
+                            onClick={onToggleChartType}
+                            name={id}
+                            title="Toggle chart type"
+                            transparent
+                        >
+                            <IoIosSwap className={styles.deleteIcon} />
                         </Button>
                         {!expandableIconHidden && (
                             <Button
@@ -183,22 +192,22 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                             formatter={valueTickFormatter}
                         />
                         <Legend />
-                        {chartData.map(data => (
-                            data?.type === 'bar' ? (
+                        {formattedChartData.map(item => (
+                            item?.type === 'bar' ? (
                                 <Bar
-                                    key={data.title}
-                                    name={data.title}
-                                    dataKey={data.valueSelector}
-                                    fill={data.color}
-                                    stackId={data.stackId}
+                                    key={item.title}
+                                    name={item.title}
+                                    dataKey={item.valueSelector}
+                                    fill={item.color}
+                                    stackId={item.stackId}
                                     barSize={22}
                                 />
                             ) : (
                                 <Line
-                                    key={data.title}
-                                    name={data.title}
-                                    dataKey={data.valueSelector}
-                                    fill={data.color}
+                                    key={item.title}
+                                    name={item.title}
+                                    dataKey={item.valueSelector}
+                                    fill={item.color}
                                     yAxisId="right"
                                 />
                             )
