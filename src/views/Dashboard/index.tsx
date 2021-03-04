@@ -432,7 +432,10 @@ const Dashboard = (props: Props) => {
                 lngLat,
             });
             const regionProperties = feature.properties as Region;
-            setRegion(regionProperties);
+            setRegion({
+                ...regionProperties,
+                code: regionProperties.id,
+            });
 
             return true;
         },
