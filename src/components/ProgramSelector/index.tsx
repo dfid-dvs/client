@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useContext } from 'react';
+import React, { useMemo, useState, useContext, useCallback } from 'react';
 import { IoIosDocument, IoMdPeople } from 'react-icons/io';
 import { FaRegBuilding, FaShapes } from 'react-icons/fa';
 import { _cs, isDefined, intersection, unique } from '@togglecorp/fujs';
@@ -18,6 +18,7 @@ import DomainContext from '#components/DomainContext';
 import SelectorItem from './SelectorItem';
 
 import styles from './styles.css';
+import Button from '#components/Button';
 
 // TODO: move this to utils
 // NOTE: join two array together
@@ -418,6 +419,17 @@ function ProgramSelector(props: Props) {
         || subSectorListPending
     );
 
+    const handleClearFilters = useCallback(() => {
+        setSelectedMarker([]);
+        setSelectedPrograms([]);
+        setSelectedPartner([]);
+        setSelectedSector([]);
+    }, [
+        setSelectedMarker,
+        setSelectedPrograms,
+        setSelectedPartner,
+        setSelectedSector,
+    ]);
     // TODO: disable instead of hide
 
     return (
@@ -480,6 +492,16 @@ function ProgramSelector(props: Props) {
                 searchText={sectorSearchText}
                 setSearchText={setSectorSearchText}
             />
+            <Button
+                className={styles.clearButton}
+                onClick={handleClearFilters}
+                transparent
+                variant="accent"
+            >
+                <div className={styles.text}>
+                    Clear All
+                </div>
+            </Button>
         </div>
     );
 }

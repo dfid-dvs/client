@@ -7,22 +7,26 @@ import SelectInput from '#components/SelectInput';
 
 import styles from './styles.css';
 
-interface SubjectOption {
+interface TypeOption {
     key: string;
     title: string;
 }
-const subjectOptions: SubjectOption[] = [
-    { key: 's-1', title: 'Subject -1' },
-    { key: 's-2', title: 'Subject -2' },
+const typeOptions: TypeOption[] = [
+    { key: 'general-feedback', title: 'General Feedback' },
+    { key: 'data-issue', title: 'Data Issue' },
+    { key: 'functionality-issue', title: 'Functionality Issue' },
+    { key: 'design-issue', title: 'Design Issue' },
+    { key: 'others', title: 'Others' },
 ];
 
-const subjectKeySelector = (item: SubjectOption) => item.key;
-const subjectLabelSelector = (item: SubjectOption) => item.title;
+const typeKeySelector = (item: TypeOption) => item.key;
+const typeLabelSelector = (item: TypeOption) => item.title;
 
 function FeedbackPage() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [subject, setSubject] = useState<SubjectOption['key']>();
+    const [type, setType] = useState<TypeOption['key']>();
+    const [subject, setSubject] = useState('');
     const [feedback, setFeedback] = useState('');
 
     const [error, setError] = useState('');
@@ -46,8 +50,16 @@ function FeedbackPage() {
         [setEmail],
     );
 
-    const handleSubjectChange = useCallback(
+    const handleTypeChange = useCallback(
         (value?: string) => {
+            setError('');
+            setType(value);
+        },
+        [setType],
+    );
+
+    const handleSubjectChange = useCallback(
+        (value: string) => {
             setError('');
             setSubject(value);
         },
@@ -112,17 +124,27 @@ function FeedbackPage() {
                     labelClassName={styles.label}
                 />
                 <SelectInput
-                    label="Subject"
+                    label="Type"
                     placeholder="Choose one"
                     className={styles.selectInput}
-                    options={subjectOptions}
-                    onChange={handleSubjectChange}
-                    value={subject}
-                    optionLabelSelector={subjectLabelSelector}
-                    optionKeySelector={subjectKeySelector}
+                    options={typeOptions}
+                    onChange={handleTypeChange}
+                    value={type}
+                    optionLabelSelector={typeLabelSelector}
+                    optionKeySelector={typeKeySelector}
                     labelClassName={styles.label}
                     inputClassName={styles.input}
                     showDropDownIcon
+                />
+                <TextInput
+                    label="Subject"
+                    placeholder="Subject"
+                    autoFocus
+                    value={subject}
+                    onChange={handleSubjectChange}
+                    className={styles.textInput}
+                    inputClassName={styles.input}
+                    labelClassName={styles.label}
                 />
                 <TextAreaInput
                     label="Your Feedback"

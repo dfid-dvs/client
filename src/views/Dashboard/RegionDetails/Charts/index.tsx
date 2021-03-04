@@ -137,50 +137,48 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
             },
         ],
     },
-    {
-        id: '2',
-        type: 'bar-chart',
-        title: 'Top 10 by population',
-        keySelector: item => item.name,
+    // {
+    //     id: '2',
+    //     type: 'bar-chart',
+    //     title: 'Top 10 by population',
+    //     keySelector: item => item.name,
 
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.indicators[25] || null,
-        },
+    //     limit: {
+    //         count: 10,
+    //         method: 'max',
+    //         valueSelector: item => item.indicators[25] || null,
+    //     },
 
-        bars: [
-            {
-                title: 'Population',
-                color: tableauColors[5],
-                valueSelector: item => item.indicators[25] || null,
-            },
-        ],
-        dependencies: [25],
-    },
-    {
-        id: '3',
-        type: 'bar-chart',
-        title: 'Top 10 by poverty incidence',
-        keySelector: item => item.name,
+    //     bars: [
+    //         {
+    //             title: 'Population',
+    //             color: tableauColors[5],
+    //             valueSelector: item => item.indicators[25] || null,
+    //         },
+    //     ],
+    //     dependencies: [25],
+    // },
+    // {
+    //     id: '3',
+    //     type: 'bar-chart',
+    //     title: 'Top 10 by poverty incidence',
+    //     keySelector: item => item.name,
 
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.indicators[132] || null,
-        },
+    //     limit: {
+    //         count: 10,
+    //         method: 'max',
+    //         valueSelector: item => item.indicators[132] || null,
+    //     },
 
-        bars: [
-            {
-                title: 'Poverty Incidence',
-                color: tableauColors[6],
-                valueSelector: item => item.indicators[132] || null,
-            },
-        ],
-        dependencies: [132],
-    },
-
-    /*
+    //     bars: [
+    //         {
+    //             title: 'Poverty Incidence',
+    //             color: tableauColors[6],
+    //             valueSelector: item => item.indicators[132] || null,
+    //         },
+    //     ],
+    //     dependencies: [132],
+    // },
     {
         id: '2',
         type: 'pie-chart',
@@ -188,6 +186,17 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         keySelector: item => item.name,
         valueSelector: item => item.allocatedBudget,
     },
+    {
+        id: '4',
+        type: 'histogram',
+        title: 'Financial Institutions',
+        color: tableauColors[0],
+        binCount: 10,
+        valueSelector: item => item.allocatedBudget,
+        // dependencies: [118],
+    },
+    /*
+
     {
         id: '3',
         type: 'bar-chart',

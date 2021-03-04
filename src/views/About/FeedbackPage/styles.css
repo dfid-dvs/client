@@ -29,12 +29,14 @@
         .text-input {
             padding: var(--spacing-medium);
             width: 400px;
+            border: none;
         }
 
         .text-area-input {
             padding: var(--spacing-medium);
             width: 400px;
             min-height: 70px;
+            border: none;
         }
 
         .select-input {
@@ -44,6 +46,7 @@
 
         .label {
             margin-bottom: var(--spacing-small);
+            padding-left: 0;
             font-size: var(--font-size-large-medium);
         }
 
@@ -53,10 +56,10 @@
 
         .button {
             margin-top: var(--spacing-large-medium);
-            background: var(--color-accent);
-            padding: var(--spacing-small-medium) var(--spacing-large);
+            background: var(--color-secondary-light-1);
+            padding: var(--spacing-small-medium) var(--spacing-ultra-large);
             width: fit-content;
-            color: var(--color-foreground);
+            color: var(--color-white);
         }
     }
 }
