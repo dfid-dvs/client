@@ -26,13 +26,14 @@ function FeedbackPage() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [type, setType] = useState<TypeOption['key']>();
+    const [subject, setSubject] = useState('');
     const [feedback, setFeedback] = useState('');
 
     const [error, setError] = useState('');
 
     const title = 'Feedback Form';
     const subTitle = 'Welcome! What kind of feedback do you have about this tool?';
-    console.log('error--', error);
+
     const handleNameChange = useCallback(
         (value: string) => {
             setError('');
@@ -55,6 +56,14 @@ function FeedbackPage() {
             setType(value);
         },
         [setType],
+    );
+
+    const handleSubjectChange = useCallback(
+        (value: string) => {
+            setError('');
+            setSubject(value);
+        },
+        [setSubject],
     );
 
     const handleFeedbackChange = useCallback(
@@ -126,6 +135,16 @@ function FeedbackPage() {
                     labelClassName={styles.label}
                     inputClassName={styles.input}
                     showDropDownIcon
+                />
+                <TextInput
+                    label="Subject"
+                    placeholder="Subject"
+                    autoFocus
+                    value={subject}
+                    onChange={handleSubjectChange}
+                    className={styles.textInput}
+                    inputClassName={styles.input}
+                    labelClassName={styles.label}
                 />
                 <TextAreaInput
                     label="Your Feedback"
