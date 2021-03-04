@@ -65,14 +65,14 @@ const Navbar = (props: Props) => {
                             to="/#regions"
                             replace
                         >
-                            By Region
+                            By Regions
                         </Link>
                         <Link
                             className={_cs(styles.link, styles.disabled)}
                             to="/#programs"
                             replace
                         >
-                            By Program
+                            By Programs
                         </Link>
                     </DropdownMenu>
                     {/*
