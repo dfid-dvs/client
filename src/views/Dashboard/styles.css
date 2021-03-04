@@ -172,6 +172,7 @@
 
             .legend {
                 flex-direction: row;
+                flex-shrink: 0;
                 margin-left: var(--spacing-medium);
                 border: var(--width-separator-thin) solid var(--color-separator);
                 background-color: var(--color-foreground);
@@ -229,6 +230,6 @@
 }
 
 .map-options-dropdown {
-    width: 300px!important;
+    width: 340px!important;
     max-width: unset;
 }
