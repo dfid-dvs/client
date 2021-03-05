@@ -8,7 +8,6 @@ import {
     getRandomFromList,
     _cs,
 } from '@togglecorp/fujs';
-import { IoMdClose } from 'react-icons/io';
 
 import SelectInput from '#components/SelectInput';
 import Button from '#components/Button';
@@ -248,9 +247,8 @@ function BiAxialChartConfig<T>(props: Props<T>) {
             }
 
             const nonUniqueDependencies = properBars.map(item => item.dependency);
-            if (orderOption) {
-                nonUniqueDependencies.push(orderOption.dependency);
-            }
+            nonUniqueDependencies.push(orderOption.dependency);
+
             const dependencies = unique(
                 nonUniqueDependencies.filter(isDefined),
                 item => item,

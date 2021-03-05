@@ -15,7 +15,6 @@ import {
     RegionLevelOption,
     ChartSettings,
     NumericOption,
-    BiAxialData,
 } from '#types';
 
 import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';

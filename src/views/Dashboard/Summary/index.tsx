@@ -3,7 +3,6 @@ import { _cs } from '@togglecorp/fujs';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
-import DomainContext from '#components/DomainContext';
 
 import useRequest from '#hooks/useRequest';
 
@@ -12,7 +11,6 @@ import { apiEndPoint } from '#utils/constants';
 
 import styles from './styles.css';
 import SummaryItem from './SummaryItem';
-import splitCombinedSelectors from '../splitCombinedSelectors';
 
 interface SummaryInfo {
     allocatedBudget: number;

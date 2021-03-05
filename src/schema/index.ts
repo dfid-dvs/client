@@ -46,6 +46,11 @@ const userDefinedSchemas: Schema[] = [
             partner: { type: 'uint', required: true },
             component: { type: 'uint', required: true },
             sector: { type: 'uint', required: true },
+            totalAllocatedBudget: { type: 'number', required: true },
+            totalProgram: { type: 'uint', required: true },
+            totalPartner: { type: 'uint', required: true },
+            totalComponent: { type: 'uint', required: true },
+            totalSector: { type: 'uint', required: true },
         },
     },
     {
@@ -355,8 +360,8 @@ const userDefinedSchemas: Schema[] = [
             partner: { type: 'array.string', required: true },
             sector: { type: 'array.string', required: true },
             subSector: { type: 'array.string', required: true },
-            // markerCategory: { type: 'array.string', required: true },
-            // markerValue: { type: 'array.string', required: true },
+            markerCategory: { type: 'array.string', required: true },
+            markerValue: { type: 'array.string', required: true },
         },
     },
     {
