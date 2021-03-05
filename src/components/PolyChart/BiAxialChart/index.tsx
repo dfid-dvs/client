@@ -193,16 +193,16 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                         />
                         <Legend />
                         {formattedChartData.map(item => (
-                            item?.type === 'bar' ? (
-                                <Bar
+                            item?.type === 'bar' ?
+                                item && ( <Bar
                                     key={item.title}
                                     name={item.title}
                                     dataKey={item.valueSelector}
                                     fill={item.color}
                                     stackId={item.stackId}
                                     barSize={22}
-                                />
-                            ) : (
+                                />)
+                            : item && (
                                 <Line
                                     key={item.title}
                                     name={item.title}
