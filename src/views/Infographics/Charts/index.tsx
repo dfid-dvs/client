@@ -198,8 +198,6 @@ interface Props {
     selectedRegion: number | undefined;
 }
 
-const programs: number[] = [];
-
 function InfographicsCharts(props: Props) {
     const {
         className,
@@ -211,7 +209,6 @@ function InfographicsCharts(props: Props) {
 
     const {
         regionLevel,
-        // programs,
     } = useContext(DomainContext);
 
     const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_dashboard=true`;
@@ -291,8 +288,15 @@ function InfographicsCharts(props: Props) {
 
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
         subsequentRegionLevel,
-        // Setting all programs
-        programs,
+        // eslint-disable-next-line max-len
+        // passing markerId ,submarkerId ,programId ,componentId ,partnerId ,sectorId ,subsectorId as undefined
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
         validSelectedIndicators,
         true,
         extraUrlParams,
