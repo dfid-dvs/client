@@ -19,7 +19,7 @@ import { tableauColors } from '#utils/constants';
 import SegmentInput from '#components/SegmentInput';
 
 import { BiAxialChartSettings, NumericOption } from '#types';
-import styles from '../BarChartConfig/styles.css';
+import styles from './styles.css';
 
 type BiAxialChartDataType = 'line' | 'bar';
 
@@ -115,17 +115,6 @@ function BiAxialChartItem<T>(props: BiAxialChartItemProps<T>) {
         [onValueChange, index],
     );
 
-    const handleDelete = useCallback(
-        () => {
-            onValueChange((values) => {
-                const newValues = [...values];
-                newValues.splice(index, 1);
-                return newValues;
-            });
-        },
-        [onValueChange, index],
-    );
-    console.log(styles.select);
     return (
         <div className={styles.bar}>
             <SelectInput
@@ -142,7 +131,7 @@ function BiAxialChartItem<T>(props: BiAxialChartItemProps<T>) {
                 showDropDownIcon
             />
             <SegmentInput
-                className={styles.dataTypeSelect}
+                className={styles.dataType}
                 label="Type"
                 options={dataTypeOptions}
                 onChange={onToggleChartType}
@@ -150,6 +139,7 @@ function BiAxialChartItem<T>(props: BiAxialChartItemProps<T>) {
                 optionLabelSelector={dataTypeLabelSelector}
                 optionKeySelector={dataTypeKeySelector}
                 labelClassName={styles.label}
+                segmentClassName={styles.segmentInput}
             />
             <ColorInput
                 className={styles.colorSelect}
@@ -307,7 +297,7 @@ function BiAxialChartConfig<T>(props: Props<T>) {
     }, [biAxialData, setBiAxialData]);
 
     return (
-        <div className={_cs(className, styles.barChartConfig)}>
+        <div className={_cs(className, styles.biAxialChartConfig)}>
             <div className={styles.content}>
                 <section className={styles.topSection}>
                     <TextInput
@@ -359,6 +349,7 @@ function BiAxialChartConfig<T>(props: Props<T>) {
                             optionLabelSelector={orderLabelSelector}
                             optionKeySelector={orderKeySelector}
                             nonClearable
+                            showDropDownIcon
                         />
                         <span>
                             order by
@@ -372,6 +363,7 @@ function BiAxialChartConfig<T>(props: Props<T>) {
                             optionKeySelector={keySelector}
                             groupKeySelector={groupSelector}
                             nonClearable
+                            showDropDownIcon
                         />
                     </div>
                 </section>

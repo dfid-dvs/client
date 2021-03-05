@@ -405,6 +405,7 @@ function BarChartConfig<T>(props: Props<T>) {
                             optionLabelSelector={orderLabelSelector}
                             optionKeySelector={orderKeySelector}
                             nonClearable
+                            showDropDownIcon
                         />
                         <span>
                             order by
@@ -418,6 +419,7 @@ function BarChartConfig<T>(props: Props<T>) {
                             optionKeySelector={keySelector}
                             groupKeySelector={groupSelector}
                             nonClearable
+                            showDropDownIcon
                         />
                     </div>
                 </section>

@@ -1,4 +1,4 @@
-.bar-chart-config {
+.bi-axial-chart-config {
     display: flex;
     flex-direction: column;
     border-top: var(--width-separator-thin) solid var(--color-separator-light);
@@ -13,14 +13,6 @@
         .top-section {
             border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
             padding: calc(var(--spacing-large) - var(--spacing-small)) 0;
-
-            .type-input {
-                display: flex;
-                align-items: flex-start;
-                flex-direction: column;
-                flex-shrink: 0;
-                margin-bottom: var(--spacing-large);
-            }
 
             .label {
                 padding: var(--spacing-small-medium) var(--spacing-extra-small);
@@ -45,6 +37,7 @@
                 align-items: baseline;
                 flex-shrink: 0;
                 flex-wrap: wrap;
+                justify-content: space-around;
                 padding: var(--spacing-small) 0;
 
                 >:not(:last-child) {
@@ -53,7 +46,7 @@
 
                 .order-input {
                     input {
-                        width: 80px;
+                        width: 90px;
                     }
                 }
                 .limit-input {
@@ -85,20 +78,6 @@
                     letter-spacing: var(--spacing-super-small);
                     font-size: var(--font-size-medium);
                 }
-
-                .add-button {
-                    flex-shrink: 0;
-
-                    .icon {
-                        color: var(--color-text-red);
-                        font-size: var(--font-size-large);
-                    }
-
-                    .text {
-                        color: var(--color-text-red);
-                        font-size: var(--font-size-medium);
-                    }
-                }
             }
 
             .bars {
@@ -115,24 +94,27 @@
                         flex-grow: 1;
                     }
 
-                    .data-type-select {
+                    .data-type {
                         display: flex;
                         flex-direction: column;
+                        border: var(--width-separator-thin) solid var(--color-separator-light);
+                        background-color: var(--color-input-backgro]und);
+                        padding: var(--spacing-super-small);
                     }
 
                     .label {
-                        padding: var(--spacing-small-medium) var(--spacing-extra-small);
                         text-transform: uppercase;
                         letter-spacing: var(--spacing-super-small);
                         color: var(--color-accent-light);
                         font-size: var(--font-size-small);
                     }
 
-                    .color-select {
-                        flex-shrink: 0;
+                    .segment-input {
+                        margin: var(--spacing-small);
+                        height: 28px;
                     }
 
-                    .trash-button {
+                    .color-select {
                         flex-shrink: 0;
                     }
 
