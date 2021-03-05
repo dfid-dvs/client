@@ -83,13 +83,10 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
 
     const formattedChartData: BiAxialData<T>[] = useMemo(() => {
         if (chartTypeToggled) {
-            const [firstData, secondData] = chartData;
-            const tmpFirstDataType = firstData.type === 'bar' ? 'line' : 'bar';
-            const tmpSecondDataType = secondData.type === 'line' ? 'bar' : 'line';
-            return [
-                { ...firstData, type: tmpFirstDataType },
-                { ...secondData, type: tmpSecondDataType },
-            ];
+            return chartData.map(item => ({
+                ...item,
+                type: item.type === 'bar' ? 'line' : 'bar',
+            }));
         }
         return chartData;
     }, [chartTypeToggled, chartData]);
@@ -193,24 +190,27 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                         />
                         <Legend />
                         {formattedChartData.map(item => (
-                            item?.type === 'bar' ?
-                                item && ( <Bar
-                                    key={item.title}
-                                    name={item.title}
-                                    dataKey={item.valueSelector}
-                                    fill={item.color}
-                                    stackId={item.stackId}
-                                    barSize={22}
-                                />)
-                            : item && (
-                                <Line
-                                    key={item.title}
-                                    name={item.title}
-                                    dataKey={item.valueSelector}
-                                    fill={item.color}
-                                    yAxisId="right"
-                                />
-                            )
+                            item?.type === 'bar'
+                                ? item && (
+                                    <Bar
+                                        key={item.title}
+                                        name={item.title}
+                                        dataKey={item.valueSelector}
+                                        fill={item.color}
+                                        stackId={item.stackId}
+                                        barSize={22}
+                                    />
+                                ) : item && (
+                                    <Line
+                                        key={item.title}
+                                        name={item.title}
+                                        dataKey={item.valueSelector}
+                                        fill={item.color}
+                                        yAxisId="right"
+                                        stroke={item.color}
+                                        activeDot={{ r: 8 }}
+                                    />
+                                )
                         ))}
                     </ComposedChart>
                 </ResponsiveContainer>
