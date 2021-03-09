@@ -5,9 +5,6 @@ import {
     isNotDefined,
     sum,
 } from '@togglecorp/fujs';
-
-import LoadingAnimation from '#components/LoadingAnimation';
-import Backdrop from '#components/Backdrop';
 import PrintButton from '#components/PrintButton';
 
 import useRequest from '#hooks/useRequest';
@@ -22,13 +19,14 @@ import { apiEndPoint } from '#utils/constants';
 import { OriginalFiveW } from '#views/Dashboard/types';
 import DomainContext from '#components/DomainContext';
 import SingleRegionSelect, { Province, District, Municipality } from '#components/SingleRegionSelect';
-import Numeral from '#components/Numeral';
 import Button from '#components/Button';
-import dfidLogo from '#resources/dfid-logo.png';
+import uiAidBEKLogo from '#resources/ukaid-bek-logo.jpg';
+import useBasicToggle from '#hooks/useBasicToggle';
 
 import InfographicsMap from './Map';
 import InfographicsCharts from './Charts';
 
+import Indicators from './Indicators';
 import styles from './styles.css';
 
 interface Props {
@@ -70,29 +68,6 @@ const numericDataList: NumericData[] = [
     // { key: 'gdp', label: 'GDP', value: 0 },
     // { key: 'perCapitaIncome', label: 'Per capita income', value: 0 },
 ];
-
-function NumberOutput(p: {
-    label: string;
-    value: number;
-}) {
-    const {
-        label,
-        value,
-    } = p;
-
-    return (
-        <div className={styles.numberOutput}>
-            <Numeral
-                className={styles.value}
-                value={value}
-                normalize
-            />
-            <div className={styles.label}>
-                { label }
-            </div>
-        </div>
-    );
-}
 
 interface FiveW {
     allocatedBudget: number;
@@ -263,6 +238,18 @@ function Infographics(props: Props) {
 
     const dataPending = parentRegionPending || indicatorPending || aggregatedFiveWPending;
 
+    const [
+        indicatorsHidden,
+        setIndicatorsHidden,
+        unsetIndicatorsHidden,
+    ] = useBasicToggle();
+
+    const resetProfileShown = indicatorsHidden;
+
+    const onResetProfile = useCallback(() => {
+        unsetIndicatorsHidden();
+    }, [unsetIndicatorsHidden]);
+
     return (
         <div
             className={_cs(
@@ -284,9 +271,20 @@ function Infographics(props: Props) {
                     className={styles.addChartButton}
                     onClick={handleAddChartModalClick}
                     disabled={printMode || isNotDefined(region)}
+                    variant="secondary-outline"
                 >
                     Add Chart
                 </Button>
+                {resetProfileShown && (
+                    <Button
+                        className={styles.addChartButton}
+                        onClick={onResetProfile}
+                        disabled={printMode}
+                        variant="outline"
+                    >
+                        Reset Profile
+                    </Button>
+                )}
                 <PrintButton
                     className={styles.printModeButton}
                     printMode={printMode}
@@ -300,6 +298,16 @@ function Infographics(props: Props) {
                     <div className={styles.infographicsContent}>
                         <div className={styles.headerRow}>
                             <div className={styles.basicInfo}>
+                                <div className={styles.appBrand}>
+                                    <img
+                                        className={styles.logo}
+                                        src={uiAidBEKLogo}
+                                        alt="DFID"
+                                    />
+                                </div>
+                                <div className={styles.date}>
+                                    {currentDate}
+                                </div>
                                 <div className={styles.regionName}>
                                     { regionData.name }
                                 </div>
@@ -308,32 +316,6 @@ function Infographics(props: Props) {
                                         {parentRegionResponse?.results[0]?.name}
                                     </div>
                                 )}
-                                <div className={styles.date}>
-                                    {currentDate}
-                                </div>
-                            </div>
-                            <div className={styles.appBrand}>
-                                <img
-                                    className={styles.logo}
-                                    src={dfidLogo}
-                                    alt="DFID"
-                                />
-                            </div>
-                        </div>
-                        <div className={styles.firstDetailsRow}>
-                            {dataPending && (
-                                <Backdrop className={styles.backdrop}>
-                                    <LoadingAnimation />
-                                </Backdrop>
-                            )}
-                            <div className={styles.regionDetails}>
-                                { numericDataList.map(d => (
-                                    <NumberOutput
-                                        value={numericData[d.key] || 0}
-                                        label={d.label}
-                                        key={d.key}
-                                    />
-                                ))}
                             </div>
                             <InfographicsMap
                                 className={styles.mapContainer}
@@ -341,6 +323,15 @@ function Infographics(props: Props) {
                                 selectedRegion={region}
                             />
                         </div>
+                        {!indicatorsHidden && (
+                            <Indicators
+                                dataPending={dataPending}
+                                numericDataList={numericDataList}
+                                numericData={numericData}
+                                setIndicatorsHidden={setIndicatorsHidden}
+                                className={styles.indicators}
+                            />
+                        )}
                         {regionLevel !== 'municipality' && (
                             <InfographicsCharts
                                 className={styles.charts}

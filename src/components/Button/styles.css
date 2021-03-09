@@ -41,6 +41,10 @@
         color: var(--active-color);
     }
 
+    &.secondary {
+        color: var(--color-white);
+    }
+
     &.secondary-outline {
         --background-color: transparent; 
         --color: var(--color-secondary);
