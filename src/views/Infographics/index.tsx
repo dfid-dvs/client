@@ -259,6 +259,9 @@ function Infographics(props: Props) {
             )}
         >
             <div className={styles.sidebar}>
+                <div className={styles.heading}>
+                    Region Profile
+                </div>
                 <SingleRegionSelect
                     className={styles.regionSelector}
                     onRegionLevelChange={handleRegionLevelChange}
@@ -266,6 +269,11 @@ function Infographics(props: Props) {
                     region={region}
                     onRegionChange={handleRegionChange}
                     disabled={printMode}
+                    segmentLabel="Choose Region"
+                    segmentLabelClassName={styles.segmentLabel}
+                    segmentInputClassName={styles.segmentInput}
+                    selectInputClassName={styles.selectInput}
+                    showDropDownIcon
                 />
                 <Button
                     className={styles.addChartButton}
@@ -275,16 +283,6 @@ function Infographics(props: Props) {
                 >
                     Add Chart
                 </Button>
-                {resetProfileShown && (
-                    <Button
-                        className={styles.addChartButton}
-                        onClick={onResetProfile}
-                        disabled={printMode}
-                        variant="outline"
-                    >
-                        Reset Profile
-                    </Button>
-                )}
                 <PrintButton
                     className={styles.printModeButton}
                     printMode={printMode}
@@ -292,6 +290,16 @@ function Infographics(props: Props) {
                     disabled={isNotDefined(region)}
                     orientation="portrait"
                 />
+                {resetProfileShown && (
+                    <Button
+                        className={styles.resetProfileButton}
+                        onClick={onResetProfile}
+                        disabled={printMode}
+                        variant="transparent"
+                    >
+                        Reset Profile
+                    </Button>
+                )}
             </div>
             {isDefined(region) ? (
                 <div className={styles.content}>

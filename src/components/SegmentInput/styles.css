@@ -9,5 +9,6 @@
         border: var(--width-separator-thin) solid var(--color-separator);
         border-radius: 1em;
         background: var(--color-grey-shade-3);
+        width: 100%;
     }
 }
