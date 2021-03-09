@@ -111,9 +111,9 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                             name={id}
                             title="Delete chart"
                             transparent
-                            variant="danger"
+                            variant="icon"
                         >
-                            <IoMdClose className={styles.deletIcon} />
+                            <IoMdClose className={styles.deleteIcon} />
                         </Button>
                         {!expandableIconHidden && (
                             <Button
@@ -121,7 +121,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                                 name={id}
                                 title="Expand chart"
                                 transparent
-                                variant="danger"
+                                variant="icon"
                             >
                                 <AiOutlineExpandAlt className={styles.expandIcon} />
                             </Button>

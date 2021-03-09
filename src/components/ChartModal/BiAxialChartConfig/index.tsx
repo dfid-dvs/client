@@ -281,17 +281,11 @@ function BiAxialChartConfig<T>(props: Props<T>) {
     );
 
     const onToggleChartType = useCallback(() => {
-        const [firstData, secondData] = biAxialData;
-        if (firstData.type === 'bar') {
-            const tmpFD: BiAxialData = { ...firstData, type: 'line' };
-            const tmpSD: BiAxialData = { ...secondData, type: 'bar' };
-            setBiAxialData([tmpFD, tmpSD]);
-        }
-        if (firstData.type === 'line') {
-            const tmpFD: BiAxialData = { ...firstData, type: 'bar' };
-            const tmpSD: BiAxialData = { ...secondData, type: 'line' };
-            setBiAxialData([tmpFD, tmpSD]);
-        }
+        const toggledChartData: BiAxialData[] = biAxialData.map(item => ({
+            ...item,
+            type: item.type === 'bar' ? 'line' : 'bar',
+        }));
+        setBiAxialData(toggledChartData);
     }, [biAxialData, setBiAxialData]);
 
     return (

@@ -81,14 +81,14 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         id,
     } = settings;
 
-    const formattedChartData: BiAxialData<T>[] = useMemo(() => {
-        if (chartTypeToggled) {
-            return chartData.map(item => ({
-                ...item,
-                type: item.type === 'bar' ? 'line' : 'bar',
-            }));
-        }
-        return chartData;
+    const formattedChartData: (BiAxialData<T> | undefined)[] = useMemo(() => {
+        const tmpChart: BiAxialData<T>[] = chartTypeToggled ? chartData.map(item => ({
+            ...item,
+            type: item.type === 'bar' ? 'line' : 'bar',
+        })) : chartData;
+        const barChartData = tmpChart.find(t => t.type === 'bar');
+        const lineChartData = tmpChart.find(t => t.type === 'line');
+        return [barChartData, lineChartData];
     }, [chartTypeToggled, chartData]);
 
     const finalData = useMemo(
@@ -108,9 +108,12 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         [data, limit],
     );
 
-    const averageLength: number = finalData
-        ? sum(finalData.map(item => keySelector(item).length)) / finalData.length
-        : 0;
+    const averageLength: number = useMemo(() => {
+        if (finalData) {
+            return sum(finalData.map(item => keySelector(item).length)) / finalData.length;
+        }
+        return 0;
+    }, [finalData, keySelector]);
 
     const hasLongTitles = averageLength > 5;
 
@@ -127,7 +130,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                             name={id}
                             title="Delete chart"
                             transparent
-                            variant="danger"
+                            variant="icon"
                         >
                             <IoMdClose className={styles.deleteIcon} />
                         </Button>
@@ -145,7 +148,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                                 name={id}
                                 title="Expand chart"
                                 transparent
-                                variant="danger"
+                                variant="icon"
                             >
                                 <AiOutlineExpandAlt className={styles.expandIcon} />
                             </Button>

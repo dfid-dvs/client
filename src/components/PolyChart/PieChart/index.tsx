@@ -216,7 +216,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                             name={id}
                             title="Delete chart"
                             transparent
-                            variant="danger"
+                            variant="icon"
                         >
                             <IoMdClose className={styles.deleteIcon} />
                         </Button>
@@ -226,7 +226,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                                 name={id}
                                 title="Expand chart"
                                 transparent
-                                variant="danger"
+                                variant="icon"
                             >
                                 <AiOutlineExpandAlt className={styles.expandIcon} />
                             </Button>
