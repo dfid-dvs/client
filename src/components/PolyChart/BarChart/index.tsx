@@ -140,7 +140,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                             name={id}
                             title="Delete chart"
                             transparent
-                            variant="danger"
+                            variant="icon"
                         >
                             <IoMdClose className={styles.deleteIcon} />
                         </Button>
@@ -150,7 +150,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                 name={id}
                                 title="Expand chart"
                                 transparent
-                                variant="danger"
+                                variant="icon"
                             >
                                 <AiOutlineExpandAlt className={styles.expandIcon} />
                             </Button>
