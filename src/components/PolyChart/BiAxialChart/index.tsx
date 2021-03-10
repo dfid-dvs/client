@@ -147,14 +147,6 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                         >
                             <IoMdClose className={styles.deleteIcon} />
                         </Button>
-                        <Button
-                            onClick={onToggleChartType}
-                            name={id}
-                            title="Toggle chart type"
-                            transparent
-                        >
-                            <IoIosSwap className={styles.deleteIcon} />
-                        </Button>
                         {!expandableIconHidden && (
                             <Button
                                 onClick={onExpand}
@@ -166,6 +158,15 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                                 <AiOutlineExpandAlt className={styles.expandIcon} />
                             </Button>
                         )}
+                        <Button
+                            onClick={onToggleChartType}
+                            name={id}
+                            title="Toggle chart type"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoIosSwap className={styles.toggleIcon} />
+                        </Button>
                     </div>
                 )}
             </header>

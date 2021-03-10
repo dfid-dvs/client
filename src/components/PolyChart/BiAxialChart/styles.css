@@ -57,6 +57,12 @@
                 font-size: var(--font-size-large);
             }
 
+            .toggle-icon {
+                opacity: 1;
+                color: var(--color-text);
+                font-size: var(--font-size-large);
+            }
+
             >:not(:first-child) {
                 margin-left: var(--spacing-small);
             }
