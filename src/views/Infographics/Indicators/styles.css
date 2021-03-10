@@ -21,8 +21,8 @@
 
     .button {
         display: flex;
-        align-items: flex-start;
-        max-height: 30px;
+        width: 36px;
+        height: 36px;
 
         .hide-icon {
             opacity: 0;

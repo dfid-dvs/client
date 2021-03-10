@@ -15,7 +15,6 @@ import {
 } from '#types';
 import { apiEndPoint } from '#utils/constants';
 
-import { OriginalFiveW } from '#views/Dashboard/types';
 import DomainContext from '#components/DomainContext';
 import SingleRegionSelect, { Province, District, Municipality } from '#components/SingleRegionSelect';
 import Button from '#components/Button';
@@ -24,9 +23,10 @@ import useBasicToggle from '#hooks/useBasicToggle';
 
 import InfographicsMap from './Map';
 import InfographicsCharts from './Charts';
-
 import Indicators from './Indicators';
+
 import styles from './styles.css';
+import Sectors from './Sectors';
 
 interface Props {
     className?: string;
@@ -117,48 +117,14 @@ function Infographics(props: Props) {
         [indicatorsResponse?.fivewdata],
     );
 
+    const activeSectors: string[] | undefined = useMemo(
+        () => indicatorsResponse?.activeSectors,
+        [indicatorsResponse?.activeSectors],
+    );
+
     const handleAddChartModalClick = useCallback(() => {
         setAddModalVisibility(true);
     }, [setAddModalVisibility]);
-
-    const [
-        aggregatedFiveWPending,
-        aggregatedFiveWResponse,
-    ] = useRequest<MultiResponse<OriginalFiveW>>(
-        regionFiveWUrl,
-        `fivew-${regionLevel}`,
-        undefined,
-    );
-
-    const regionData = useMemo(() => {
-        const data = {
-            budget: 0,
-            name: 'Region',
-            partners: 0,
-            programs: 0,
-            sectors: 0,
-            subSectors: 0,
-            components: 0,
-        };
-
-        if (!aggregatedFiveWResponse) {
-            return data;
-        }
-
-        const currentRegion = aggregatedFiveWResponse.results.find(d => +d.code === region);
-
-        if (currentRegion) {
-            data.name = currentRegion.name;
-            data.budget = currentRegion.allocatedBudget;
-            data.programs = currentRegion.program.length;
-            data.partners = currentRegion.partner.length;
-            data.sectors = currentRegion.sector.length;
-            data.subSectors = currentRegion.subSector.length;
-            data.components = currentRegion.component.length;
-        }
-
-        return data;
-    }, [aggregatedFiveWResponse, region]);
 
     const handleRegionChange = useCallback((newRegionId, newSelectedRegionData) => {
         setRegion(newRegionId);
@@ -205,7 +171,7 @@ function Infographics(props: Props) {
 
     const currentDate = new Date().toDateString();
 
-    const dataPending = parentRegionPending || indicatorsPending || aggregatedFiveWPending;
+    const dataPending = parentRegionPending || indicatorsPending;
 
     const [
         indicatorsHidden,
@@ -213,11 +179,21 @@ function Infographics(props: Props) {
         unsetIndicatorsHidden,
     ] = useBasicToggle();
 
-    const resetProfileShown = indicatorsHidden;
+    const [
+        sectorsHidden,
+        setSectorsHidden,
+        unsetSectorsHidden,
+    ] = useBasicToggle();
 
-    const onResetProfile = useCallback(() => {
-        unsetIndicatorsHidden();
-    }, [unsetIndicatorsHidden]);
+    const resetProfileShown = indicatorsHidden || sectorsHidden;
+
+    const onResetProfile = useCallback(
+        () => {
+            unsetIndicatorsHidden();
+            unsetSectorsHidden();
+        },
+        [unsetIndicatorsHidden, unsetSectorsHidden],
+    );
 
     return (
         <div
@@ -286,7 +262,7 @@ function Infographics(props: Props) {
                                     {currentDate}
                                 </div>
                                 <div className={styles.regionName}>
-                                    { regionData.name }
+                                    { selectedRegionData?.name }
                                 </div>
                                 {regionLevel !== 'province' && (
                                     <div className={styles.parentRegionDetails}>
@@ -307,6 +283,13 @@ function Infographics(props: Props) {
                                 className={styles.indicators}
                                 indicatorsData={indicatorsData}
                                 fiveWData={fiveWData}
+                            />
+                        )}
+                        {!sectorsHidden && activeSectors && activeSectors.length > 0 && (
+                            <Sectors
+                                className={styles.sectors}
+                                activeSectors={activeSectors}
+                                setSectorsHidden={setSectorsHidden}
                             />
                         )}
                         {regionLevel !== 'municipality' && (

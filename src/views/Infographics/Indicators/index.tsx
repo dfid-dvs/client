@@ -2,12 +2,13 @@ import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { IoMdClose } from 'react-icons/io';
 
-import styles from './styles.css';
-import NumberOutput from '../NumberOutput';
 import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
 import Button from '#components/Button';
 import { IndicatorValue } from '#types';
+
+import styles from './styles.css';
+import NumberOutput from '../NumberOutput';
 
 type fiveWDataKey = 'componentCount' | 'programCount'
 | 'sectorCount' | 'supplierCount' | 'totalBudget';
@@ -42,7 +43,7 @@ export default function Indicators(props: IndicatorProps) {
                 </Backdrop>
             )}
             <div className={styles.regionDetails}>
-                {fiveWData.map(f => (
+                {fiveWData?.map(f => (
                     <NumberOutput
                         value={f.value || 0}
                         label={f.label}

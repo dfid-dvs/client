@@ -124,6 +124,11 @@
                 margin-top: var(--spacing-ultra-large);
                 width: 100%;
             }
+
+            .sectors {
+                margin-top: var(--spacing-ultra-large);
+                width: 100%;
+            }
         }
     }
 
