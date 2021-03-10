@@ -74,6 +74,7 @@ interface Props<T> {
     onClose: () => void;
     options: NumericOption<T>[];
     keySelector: (item: T) => string;
+    editableChartSettings?: ChartSettings<T> | undefined;
 }
 
 function ChartModal<T>(props: Props<T>) {
@@ -82,6 +83,7 @@ function ChartModal<T>(props: Props<T>) {
         onSave,
         options,
         keySelector,
+        editableChartSettings,
     } = props;
 
     const [chartType, setChartType] = useState<ChartType>('bar-chart');
@@ -121,6 +123,7 @@ function ChartModal<T>(props: Props<T>) {
                     onSave={handleSave}
                     keySelector={keySelector}
                     options={options}
+                    editableChartData={editableChartSettings}
                 />
             )}
             {chartType === 'pie-chart' && (

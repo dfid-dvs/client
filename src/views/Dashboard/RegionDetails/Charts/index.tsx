@@ -72,6 +72,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         bars: [
             {
                 title: 'Allocated Budget',
+                key: 'allocatedBudget',
                 color: tableauColors[1],
                 valueSelector: item => item.allocatedBudget,
             },
@@ -91,6 +92,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'programCount',
                 title: 'Program count',
                 color: tableauColors[2],
                 valueSelector: item => item.programCount,
@@ -111,6 +113,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'partnerCount',
                 title: 'Partner count',
                 color: tableauColors[3],
                 valueSelector: item => item.partnerCount,
@@ -131,6 +134,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'sectorCount',
                 title: 'Sector count',
                 color: tableauColors[4],
                 valueSelector: item => item.sectorCount,
@@ -282,6 +286,7 @@ function Charts(props: Props) {
     );
 
     const [showModal, setModalVisibility] = useState(false);
+    const [editableChartId, setEditableChartId] = useState<string>();
 
     const indicatorMapping = useMemo(
         () => listToMap(
@@ -333,16 +338,38 @@ function Charts(props: Props) {
 
     const handleModalClose = useCallback(() => {
         setModalVisibility(false);
-    }, [setModalVisibility]);
+        setEditableChartId(undefined);
+    }, [setModalVisibility, setEditableChartId]);
+
+    const editableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
+        () => {
+            const chartSetting = chartSettings.find(c => c.id === editableChartId);
+            if (!chartSetting) {
+                return undefined;
+            }
+
+            return chartSetting;
+        },
+        [chartSettings, editableChartId],
+    );
 
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedFiveW>) => {
-            setChartSettings(currentChartSettings => [
-                ...currentChartSettings,
-                settings,
-            ]);
+            if (!editableChartId) {
+                setChartSettings(currentChartSettings => [
+                    ...currentChartSettings,
+                    settings,
+                ]);
+            }
+            const tmpChartSettings = [...chartSettings];
+            const chartIndex = tmpChartSettings.findIndex(c => c.id === editableChartId);
+            if (chartIndex <= -1) {
+                return;
+            }
+            tmpChartSettings.splice(chartIndex, 1, settings);
+            setChartSettings(tmpChartSettings);
         },
-        [],
+        [editableChartId],
     );
 
     const handleChartDelete = useCallback(
@@ -377,6 +404,14 @@ function Charts(props: Props) {
             setExpandableChart(id);
         },
         [setExpandableChart],
+    );
+
+    const onSetEditableChartId = useCallback(
+        (id: string | undefined) => {
+            setEditableChartId(id);
+            setModalVisibility(true);
+        },
+        [setEditableChartId, setModalVisibility],
     );
 
     const handleChartCollapse = useCallback(
@@ -427,6 +462,7 @@ function Charts(props: Props) {
                         className={styles.polyChart}
                         onExpand={handleChartExpand}
                         chartExpanded={expandableChart}
+                        onSetEditableChartId={onSetEditableChartId}
                     />
                 ))}
             </div>
@@ -436,6 +472,7 @@ function Charts(props: Props) {
                     onSave={handleChartAdd}
                     options={options}
                     keySelector={keySelector}
+                    editableChartSettings={editableChartSettings}
                 />
             )}
             {expandableChart && expandableChartSettings && (

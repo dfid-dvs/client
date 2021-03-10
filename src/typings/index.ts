@@ -172,6 +172,7 @@ export interface BarChartSettings<T> {
         valueSelector: (value: T) => number | null;
         color: string;
         stackId?: string;
+        key: string;
     }[];
 
     limit?: {

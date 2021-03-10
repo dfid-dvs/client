@@ -16,6 +16,7 @@ interface Props<T> {
     hideActions?: boolean;
     onExpand: (name: string | undefined) => void;
     chartExpanded: string | undefined;
+    onSetEditableChartId?: (name: string | undefined) => void;
 }
 
 function PolyChart<T extends object>(props: Props<T>) {
@@ -28,6 +29,7 @@ function PolyChart<T extends object>(props: Props<T>) {
         hideActions,
         onExpand,
         chartExpanded,
+        onSetEditableChartId,
     } = props;
 
     const expandableIconHidden = useMemo(
@@ -46,6 +48,7 @@ function PolyChart<T extends object>(props: Props<T>) {
                 chartClassName={chartClassName}
                 onExpand={onExpand}
                 expandableIconHidden={expandableIconHidden}
+                onSetEditableChartId={onSetEditableChartId}
             />
         );
     }
