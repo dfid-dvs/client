@@ -18,6 +18,7 @@ interface Props<T> {
     onSave: (settings: PieChartSettings<T>) => void;
     options: NumericOption<T>[];
     keySelector: (item: T) => string;
+    editableChartData: PieChartSettings<T> | undefined;
 }
 
 function PieChartConfig<T>(props: Props<T>) {
@@ -26,12 +27,12 @@ function PieChartConfig<T>(props: Props<T>) {
         onSave,
         options,
         keySelector: primaryKeySelector,
+        editableChartData,
     } = props;
-
     const [error, setError] = useState<string | undefined>(undefined);
 
-    const [title, setTitle] = useState('');
-    const [orderField, setOrderField] = useState<string | undefined>();
+    const [title, setTitle] = useState(editableChartData ? editableChartData.title : '');
+    const [orderField, setOrderField] = useState<string | undefined>(editableChartData ? editableChartData.key : '');
 
     // FIXME: memoize
     const keySelector = (item: NumericOption<T>) => item.key;
@@ -66,6 +67,7 @@ function PieChartConfig<T>(props: Props<T>) {
                 id: chartId,
                 type: 'pie-chart',
                 title,
+                key: orderField,
 
                 keySelector: primaryKeySelector,
                 valueSelector: option.valueSelector,
@@ -109,7 +111,7 @@ function PieChartConfig<T>(props: Props<T>) {
                 <Button
                     className={styles.submitButton}
                     onClick={handleSave}
-                    variant="primary"
+                    variant="secondary"
                 >
                     Save
                 </Button>

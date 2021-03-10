@@ -82,7 +82,6 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         expandableIconHidden,
         onSetEditableChartId,
     } = props;
-
     const {
         title,
         keySelector,

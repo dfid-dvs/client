@@ -86,7 +86,7 @@ function ChartModal<T>(props: Props<T>) {
         editableChartSettings,
     } = props;
 
-    const [chartType, setChartType] = useState<ChartType>('bar-chart');
+    const [chartType, setChartType] = useState<ChartType>(editableChartSettings ? editableChartSettings.type : 'bar-chart');
     const handleSave = useCallback(
         (value: ChartSettings<T>) => {
             onSave(value);
@@ -132,6 +132,7 @@ function ChartModal<T>(props: Props<T>) {
                     onSave={handleSave}
                     keySelector={keySelector}
                     options={options}
+                    editableChartData={editableChartSettings}
                 />
             )}
             {chartType === 'histogram' && (

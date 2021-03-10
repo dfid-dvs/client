@@ -187,6 +187,7 @@ export interface PieChartSettings<T> {
     id: string;
     type: 'pie-chart';
     title: string;
+    key: string;
 
     keySelector: (value: T) => string;
     valueSelector: (value: T) => number;

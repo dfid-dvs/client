@@ -186,6 +186,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '2',
         type: 'pie-chart',
+        key: 'allocatedBudget',
         title: 'Total Budget',
         keySelector: item => item.name,
         valueSelector: item => item.allocatedBudget,
@@ -352,7 +353,6 @@ function Charts(props: Props) {
         },
         [chartSettings, editableChartId],
     );
-
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedFiveW>) => {
             if (!editableChartId) {
