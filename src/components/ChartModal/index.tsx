@@ -150,6 +150,7 @@ function ChartModal<T>(props: Props<T>) {
                     onSave={handleSave}
                     keySelector={keySelector}
                     options={options}
+                    editableChartData={editableChartSettings}
                 />
             )}
         </Modal>

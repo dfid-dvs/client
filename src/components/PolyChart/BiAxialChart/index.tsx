@@ -12,7 +12,7 @@ import {
     ComposedChart,
 } from 'recharts';
 import { IoIosSwap, IoMdClose } from 'react-icons/io';
-import { AiOutlineExpandAlt } from 'react-icons/ai';
+import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
@@ -49,6 +49,7 @@ interface BiAxialChartUnitProps<T> {
     onDelete: (name: string | undefined) => void;
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
+    onSetEditableChartId?: (name: string | undefined) => void;
 }
 
 const chartMargin = {
@@ -69,6 +70,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         hideActions,
         onExpand,
         expandableIconHidden,
+        onSetEditableChartId,
     } = props;
 
     const [chartTypeToggled, , , onToggleChartType] = useBasicToggle();
@@ -125,6 +127,17 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
+                        {onSetEditableChartId && (
+                            <Button
+                                onClick={onSetEditableChartId}
+                                name={id}
+                                title="Edit chart"
+                                transparent
+                                variant="icon"
+                            >
+                                <AiOutlineEdit className={styles.expandIcon} />
+                            </Button>
+                        )}
                         <Button
                             onClick={onDelete}
                             name={id}

@@ -200,8 +200,6 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         valueSelector: item => item.componentCount,
         // dependencies: [118],
     },
-    /*
-
     {
         id: '3',
         type: 'bi-axial-chart',
@@ -211,12 +209,14 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
             {
                 type: 'bar',
                 title: 'Program count',
+                key: 'programCount',
                 color: tableauColors[2],
                 valueSelector: item => item.programCount,
             },
             {
                 type: 'line',
                 title: 'Allocated Budget',
+                key: 'allocatedBudget',
                 color: tableauColors[4],
                 valueSelector: item => item.allocatedBudget,
             },

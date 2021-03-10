@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
     randomString,
     isFalsyString,
@@ -156,6 +156,7 @@ interface Props<T> {
     className?: string;
     options: NumericOption<T>[];
     keySelector: (item: T) => string;
+    editableChartData: BiAxialChartSettings<T> | undefined;
 }
 
 function BiAxialChartConfig<T>(props: Props<T>) {
@@ -164,6 +165,7 @@ function BiAxialChartConfig<T>(props: Props<T>) {
         className,
         options,
         keySelector: primaryKeySelector,
+        editableChartData,
     } = props;
 
     // FIXME: memoize
@@ -173,9 +175,9 @@ function BiAxialChartConfig<T>(props: Props<T>) {
 
     const [error, setError] = useState<string | undefined>(undefined);
 
-    const [title, setTitle] = useState('');
-    const [biAxialData, setBiAxialData] = useState<BiAxialData[]>([
-        {
+    const [title, setTitle] = useState(editableChartData ? editableChartData.title : '');
+    const biAxialChartData: BiAxialData[] = useMemo(() => {
+        const defaultData: BiAxialData[] = [{
             id: randomString(),
             color: getRandomFromList(tableauColors),
             type: 'line',
@@ -184,9 +186,32 @@ function BiAxialChartConfig<T>(props: Props<T>) {
             id: randomString(),
             color: getRandomFromList(tableauColors),
             type: 'bar',
-        },
-    ]);
-    const [limitValue, setLimitValue] = useState<string>('7');
+        }];
+
+        if (editableChartData) {
+            const editableData = editableChartData.chartData;
+            const mappedData = editableData.map((e) => {
+                const opt = options.find(o => o.key === e.key);
+                if (!opt) {
+                    return undefined;
+                }
+                const data: BiAxialData = {
+                    color: e.color,
+                    id: randomString(),
+                    optionName: opt.key,
+                    type: e.type as BiAxialChartDataType,
+                };
+
+                return data;
+            }).filter(isDefined);
+            return mappedData;
+        }
+        return defaultData;
+    }, [editableChartData, options]);
+    const [biAxialData, setBiAxialData] = useState<BiAxialData[]>(biAxialChartData);
+    const [limitValue, setLimitValue] = useState<string>(
+        editableChartData ? String(editableChartData.limit?.count) : '7',
+    );
     const [order, setOrder] = useState<OrderOptionKey | undefined>('asc');
     const [orderField, setOrderField] = useState<string | undefined>();
 
@@ -216,6 +241,7 @@ function BiAxialChartConfig<T>(props: Props<T>) {
                     color: bar.color,
                     dependency: option.dependency,
                     type: bar.type,
+                    key: bar.optionName,
                 };
             }).filter(isDefined);
 

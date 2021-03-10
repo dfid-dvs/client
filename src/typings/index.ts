@@ -213,6 +213,7 @@ type BiAxialComponent = 'line' | 'bar';
 export interface BiAxialData<T> {
     title: string;
     valueSelector: (value: T) => number | null;
+    key: string;
     color: string;
     stackId?: string;
     type?: BiAxialComponent;
