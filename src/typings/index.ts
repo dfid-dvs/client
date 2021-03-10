@@ -253,6 +253,7 @@ export interface IndicatorValue {
     code: string;
     value: number;
     indicatorId: number;
+    indicator: string;
 }
 
 export type Bbox = [number, number, number, number];

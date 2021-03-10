@@ -7,12 +7,13 @@ import NumberOutput from '../NumberOutput';
 import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
 import Button from '#components/Button';
+import { IndicatorValue } from '#types';
 
-type numericDataKey = 'finance' | 'healthPerThousand' | 'population'
-| 'povertyGap' | 'budget' | 'programs' | 'partners' | 'sectors';
+type fiveWDataKey = 'componentCount' | 'programCount'
+| 'sectorCount' | 'supplierCount' | 'totalBudget';
 
-interface NumericData {
-    key: numericDataKey;
+interface FiveWData {
+    key: fiveWDataKey;
     label: string;
     value: number;
 }
@@ -20,30 +21,17 @@ interface NumericData {
 interface IndicatorProps {
     className?: string;
     dataPending: boolean;
-    numericDataList: NumericData[];
-    numericData: {
-        budget: number;
-        name: string;
-        partners: number;
-        programs: number;
-        sectors: number;
-        subSectors: number;
-        components: number;
-        population?: number;
-        povertyGap?: number;
-        finance?: number;
-        health?: number;
-        healthPerThousand?: number;
-    };
+    indicatorsData: IndicatorValue[];
     setIndicatorsHidden: () => void;
+    fiveWData: FiveWData[] | undefined;
 }
 export default function Indicators(props: IndicatorProps) {
     const {
         className,
         dataPending,
-        numericDataList,
-        numericData,
         setIndicatorsHidden,
+        indicatorsData,
+        fiveWData,
     } = props;
 
     return (
@@ -54,11 +42,19 @@ export default function Indicators(props: IndicatorProps) {
                 </Backdrop>
             )}
             <div className={styles.regionDetails}>
-                {numericDataList.map((d: NumericData) => (
+                {fiveWData.map(f => (
                     <NumberOutput
-                        value={numericData[d.key] || 0}
-                        label={d.label}
-                        key={d.key}
+                        value={f.value || 0}
+                        label={f.label}
+                        key={f.key}
+                        className={styles.numberOutput}
+                    />
+                ))}
+                {indicatorsData.map(d => (
+                    <NumberOutput
+                        value={d.value || 0}
+                        label={d.indicator}
+                        key={d.indicatorId}
                         className={styles.numberOutput}
                     />
                 ))}

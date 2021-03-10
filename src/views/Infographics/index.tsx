@@ -1,9 +1,8 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo, useContext } from 'react';
 import {
     _cs,
     isDefined,
     isNotDefined,
-    sum,
 } from '@togglecorp/fujs';
 import PrintButton from '#components/PrintButton';
 
@@ -45,39 +44,35 @@ interface MyMunicipality extends Municipality {
 
 type Region = MyProvince | MyDistrict | MyMunicipality;
 
-type numericDataKey = 'finance' | 'healthPerThousand' | 'population'
-| 'povertyGap' | 'budget' | 'programs' | 'partners' | 'sectors';
+type fiveWDataKey = 'componentCount' | 'programCount'
+| 'sectorCount' | 'supplierCount' | 'totalBudget';
 
-interface NumericData {
-    key: numericDataKey;
+interface FiveWData {
+    key: fiveWDataKey;
     label: string;
     value: number;
 }
 
-const numericDataList: NumericData[] = [
-    { key: 'finance', label: 'Financial institutions', value: 0 },
-    { key: 'healthPerThousand', label: 'Health facilities / 1000 person', value: 0 },
-    { key: 'population', label: 'Population', value: 0 },
-    { key: 'povertyGap', label: 'Poverty gap', value: 0 },
-    { key: 'budget', label: 'Total budget', value: 0 },
-    { key: 'programs', label: 'Programs', value: 0 },
-    { key: 'partners', label: 'Partners (1st tier)', value: 0 },
-    { key: 'sectors', label: 'Sectors', value: 0 },
-    // { key: 'health', label: 'Health facilities', value: 0 },
-    // { key: 'subSectors', label: 'Subsectors', value: 0 },
-    // { key: 'gdp', label: 'GDP', value: 0 },
-    // { key: 'perCapitaIncome', label: 'Per capita income', value: 0 },
+const fiveWDataList: FiveWData[] = [
+    { key: 'componentCount', label: 'Components', value: 0 },
+    { key: 'programCount', label: 'Programs', value: 0 },
+    { key: 'sectorCount', label: 'Sectors', value: 0 },
+    { key: 'supplierCount', label: 'Suppliers', value: 0 },
+    { key: 'totalBudget', label: 'Total Budget', value: 0 },
 ];
 
-interface FiveW {
-    allocatedBudget: number;
-    programId: number;
-    supplierId: number;
-    componentId: number;
+interface FiveWDataResponse {
+    componentCount: number;
+    programCount: number;
+    sectorCount: number;
+    supplierCount: number;
+    totalBudget: number;
 }
 
-function getAccumulatedAttributeValue<T>(list: T[], itemSelector: (el: T) => number) {
-    return sum(list.map(itemSelector));
+interface IndicatorResponse {
+    indicatordata: IndicatorValue[];
+    fivewdata: FiveWDataResponse[];
+    activeSectors: string[];
 }
 
 function Infographics(props: Props) {
@@ -85,63 +80,42 @@ function Infographics(props: Props) {
     const {
         regionLevel,
         setRegionLevel,
-    } = React.useContext(DomainContext);
+    } = useContext(DomainContext);
 
     const [region, setRegion] = useState<number | undefined>(undefined);
     const [printMode, setPrintMode] = useState(false);
     const [
         selectedRegionData,
         setSelectedRegionData,
-    ] = React.useState<Region & { type: RegionLevelOption } | undefined>(undefined);
-
+    ] = useState<Region & { type: RegionLevelOption } | undefined>(undefined);
     const [showAddModal, setAddModalVisibility] = useState(false);
 
     const regionFiveWUrl = `${apiEndPoint}/core/fivew-${regionLevel}/`;
 
-    // FIXME: use prepareUrlParams
-    const indicatorUrl = `${apiEndPoint}/core/${regionLevel}-indicator/?indicator_id=25,54,118,119,145`;
+    const indicatorsUrl = selectedRegionData ? `${apiEndPoint}/core/profile?region=${regionLevel}&${regionLevel}_code=${+selectedRegionData.code}` : undefined;
 
-    const [indicatorPending, indicatorResponse] = useRequest<MultiResponse<IndicatorValue>>(
-        indicatorUrl,
-        'indicator',
-        undefined,
+    const [indicatorsPending, indicatorsResponse] = useRequest<IndicatorResponse>(indicatorsUrl, 'indicators');
+
+    const indicatorsData = useMemo(
+        () => indicatorsResponse?.indicatordata,
+        [indicatorsResponse?.indicatordata],
     );
 
-    const indicatorData = useMemo(() => {
-        if (indicatorResponse) {
-            const indicatorList = indicatorResponse.results.filter(d => +d.code === region);
+    const fiveWData: FiveWData[] | undefined = useMemo(
+        () => {
+            const fiveWResponseData = indicatorsResponse?.fivewdata;
 
-            const estimatedPopulationList = indicatorList.filter(d => d.indicatorId === 25);
-            const povertyGapList = indicatorList.filter(d => d.indicatorId === 54);
-            const financialInstitutionList = indicatorList.filter(d => d.indicatorId === 118);
-            const healthFacilityList = indicatorList.filter(d => d.indicatorId === 119);
-            const healthFacilityPerThousandList = indicatorList
-                .filter(d => d.indicatorId === 145);
-
-            const estimatedPopulation = getAccumulatedAttributeValue(
-                estimatedPopulationList,
-                d => d.value,
-            );
-            const povertyGap = getAccumulatedAttributeValue(povertyGapList, d => d.value);
-            const financialInstitution = getAccumulatedAttributeValue(
-                financialInstitutionList, d => d.value,
-            );
-            const healthFacility = getAccumulatedAttributeValue(healthFacilityList, d => d.value);
-            const healthFacilityPerThousand = getAccumulatedAttributeValue(
-                healthFacilityPerThousandList, d => d.value,
-            );
-
-            return {
-                population: estimatedPopulation,
-                povertyGap,
-                finance: financialInstitution,
-                health: healthFacility,
-                healthPerThousand: healthFacilityPerThousand,
-            };
-        }
-
-        return {};
-    }, [indicatorResponse, region]);
+            if (!fiveWResponseData) {
+                return undefined;
+            }
+            const fwdData = fiveWResponseData[0];
+            return fiveWDataList.map(fwd => ({
+                ...fwd,
+                value: fwdData[fwd.key],
+            }));
+        },
+        [indicatorsResponse?.fivewdata],
+    );
 
     const handleAddChartModalClick = useCallback(() => {
         setAddModalVisibility(true);
@@ -156,7 +130,7 @@ function Infographics(props: Props) {
         undefined,
     );
 
-    const regionData = React.useMemo(() => {
+    const regionData = useMemo(() => {
         const data = {
             budget: 0,
             name: 'Region',
@@ -185,11 +159,6 @@ function Infographics(props: Props) {
 
         return data;
     }, [aggregatedFiveWResponse, region]);
-
-    const numericData = useMemo(() => ({
-        ...indicatorData,
-        ...regionData,
-    }), [indicatorData, regionData]);
 
     const handleRegionChange = useCallback((newRegionId, newSelectedRegionData) => {
         setRegion(newRegionId);
@@ -236,7 +205,7 @@ function Infographics(props: Props) {
 
     const currentDate = new Date().toDateString();
 
-    const dataPending = parentRegionPending || indicatorPending || aggregatedFiveWPending;
+    const dataPending = parentRegionPending || indicatorsPending || aggregatedFiveWPending;
 
     const [
         indicatorsHidden,
@@ -331,13 +300,13 @@ function Infographics(props: Props) {
                                 selectedRegion={region}
                             />
                         </div>
-                        {!indicatorsHidden && (
+                        {!indicatorsHidden && indicatorsData && indicatorsData.length > 0 && (
                             <Indicators
                                 dataPending={dataPending}
-                                numericDataList={numericDataList}
-                                numericData={numericData}
                                 setIndicatorsHidden={setIndicatorsHidden}
                                 className={styles.indicators}
+                                indicatorsData={indicatorsData}
+                                fiveWData={fiveWData}
                             />
                         )}
                         {regionLevel !== 'municipality' && (
