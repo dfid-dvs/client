@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
 import { IoMdClose } from 'react-icons/io';
-import { AiOutlineExpandAlt } from 'react-icons/ai';
+import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import { HistogramSettings } from '#types';
@@ -35,6 +35,7 @@ interface HistogramUnitProps<T> {
     hideActions?: boolean;
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
+    onSetEditableChartId?: (name: string | undefined) => void;
 }
 
 const chartMargin = {
@@ -54,6 +55,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         hideActions,
         onExpand,
         expandableIconHidden,
+        onSetEditableChartId,
     } = props;
 
     const {
@@ -106,6 +108,17 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
+                        {onSetEditableChartId && (
+                            <Button
+                                onClick={onSetEditableChartId}
+                                name={id}
+                                title="Edit chart"
+                                transparent
+                                variant="icon"
+                            >
+                                <AiOutlineEdit className={styles.expandIcon} />
+                            </Button>
+                        )}
                         <Button
                             onClick={onDelete}
                             name={id}

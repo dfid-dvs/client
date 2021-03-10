@@ -141,6 +141,7 @@ function ChartModal<T>(props: Props<T>) {
                     onSave={handleSave}
                     // keySelector={keySelector}
                     options={options}
+                    editableChartData={editableChartSettings}
                 />
             )}
             {chartType === 'bi-axial-chart' && (

@@ -20,7 +20,6 @@ import {
 import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
 import styles from './styles.css';
 
-
 const keySelector = (item: ExtendedFiveW) => item.name;
 
 const staticOptions: NumericOption<ExtendedFiveW>[] = [
@@ -194,10 +193,11 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '4',
         type: 'histogram',
-        title: 'Financial Institutions',
+        key: 'componentCount',
+        title: 'Component Count',
         color: tableauColors[0],
         binCount: 10,
-        valueSelector: item => item.allocatedBudget,
+        valueSelector: item => item.componentCount,
         // dependencies: [118],
     },
     /*

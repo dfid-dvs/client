@@ -200,6 +200,7 @@ export interface PieChartSettings<T> {
 export interface HistogramSettings<T> {
     id: string;
     type: 'histogram';
+    key: string;
     title: string;
     valueSelector: (value: T) => number;
     color: string;

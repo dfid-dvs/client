@@ -78,6 +78,7 @@ function PolyChart<T extends object>(props: Props<T>) {
                 chartClassName={chartClassName}
                 onExpand={onExpand}
                 expandableIconHidden={expandableIconHidden}
+                onSetEditableChartId={onSetEditableChartId}
             />
         );
     }
