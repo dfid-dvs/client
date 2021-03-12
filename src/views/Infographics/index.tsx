@@ -18,6 +18,7 @@ import { apiEndPoint } from '#utils/constants';
 import DomainContext from '#components/DomainContext';
 import SingleRegionSelect, { Province, District, Municipality } from '#components/SingleRegionSelect';
 import Button from '#components/Button';
+import TextAreaInput from '#components/TextAreaInput';
 import uiAidBEKLogo from '#resources/ukaid-bek-logo.jpg';
 import useBasicToggle from '#hooks/useBasicToggle';
 
@@ -195,6 +196,13 @@ function Infographics(props: Props) {
         [unsetIndicatorsHidden, unsetSectorsHidden],
     );
 
+    const [description, setDescription] = useState('');
+    const handleDescriptionChange = useCallback(
+        (value: string) => {
+            setDescription(value);
+        },
+        [setDescription],
+    );
     return (
         <div
             className={_cs(
@@ -285,6 +293,18 @@ function Infographics(props: Props) {
                                 fiveWData={fiveWData}
                             />
                         )}
+                        <div className={styles.description}>
+                            <TextAreaInput
+                                label="Description"
+                                placeholder="Write your description..."
+                                autoFocus
+                                value={description}
+                                onChange={handleDescriptionChange}
+                                className={styles.textInput}
+                                inputClassName={styles.textAreaInput}
+                                labelClassName={styles.label}
+                            />
+                        </div>
                         {!sectorsHidden && activeSectors && activeSectors.length > 0 && (
                             <Sectors
                                 className={styles.sectors}

@@ -129,6 +129,30 @@
                 margin-top: var(--spacing-ultra-large);
                 width: 100%;
             }
+
+            .description {
+                margin-top: var(--spacing-ultra-large);
+
+                .label {
+                    padding: var(--spacing-small-medium) 0;
+                    font-size: var(--font-size-extra-large);
+                    font-weight: var(--font-weight-bold);
+                    letter-spacing: unset;
+                    text-transform: none;
+                    color: var(--color-text);
+                }
+    
+                .text-area-input {
+                    padding: var(--spacing-medium);
+                    width: 400px;
+                    min-height: 100px;
+                    border: none;
+                }
+
+                .text-input {
+                    border: none;
+                }
+            }
         }
     }
 
