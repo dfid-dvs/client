@@ -50,6 +50,7 @@ import {
     apiEndPoint,
 } from '#utils/constants';
 import useBasicToggle from '#hooks/useBasicToggle';
+import Modal from '#components/Modal';
 
 import Tooltip from './Tooltip';
 
@@ -490,6 +491,11 @@ const Dashboard = (props: Props) => {
 
     const dataExplored = hash === 'regions' || hash === 'program';
 
+    const [
+        tooltipExpanded,
+        setTooltipExpanded,
+        unsetExpandableTooltip,
+    ] = useBasicToggle();
     return (
         <div
             className={_cs(
@@ -622,6 +628,9 @@ const Dashboard = (props: Props) => {
                                         partnerIdList={partnerIdList}
                                         sectorIdList={sectorIdList}
                                         subsectorIdList={subsectorIdList}
+
+                                        tooltipExpanded={tooltipExpanded}
+                                        setTooltipExpanded={setTooltipExpanded}
                                     />
                                 )}
                             </div>
@@ -670,6 +679,31 @@ const Dashboard = (props: Props) => {
                                     />
                                 )}
                             </div>
+                            {region && tooltipExpanded && (
+                                <Modal
+                                    onClose={unsetExpandableTooltip}
+                                    className={styles.tooltipModal}
+                                    headerClassName={styles.tooltipModalHeader}
+                                    bodyClassName={styles.tooltipModalBody}
+                                    header="hello"
+                                >
+                                    <Tooltip
+                                        region={region}
+                                        className={styles.clickedRegionDetail}
+                                        regionLevel={regionLevel}
+
+                                        markerIdList={markerIdList}
+                                        submarkerIdList={submarkerIdList}
+                                        programIdList={programIdList}
+                                        componentIdList={componentIdList}
+                                        partnerIdList={partnerIdList}
+                                        sectorIdList={sectorIdList}
+                                        subsectorIdList={subsectorIdList}
+                                        unsetTooltipExpanded={unsetExpandableTooltip}
+                                        tooltipExpanded={tooltipExpanded}
+                                    />
+                                </Modal>
+                            )}
                         </>
                     )}
                 </div>

@@ -233,3 +233,24 @@
     width: 340px!important;
     max-width: unset;
 }
+
+.tooltip-modal {
+    padding: 0;
+    border-radius: 0;
+    
+    .tooltip-modal-header {
+        display: none;
+    }
+
+    .tooltip-modal-body {
+        padding: 0;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+
+        .clicked-region-detail {
+            flex-grow: 1;
+        }
+    }
+}
+
