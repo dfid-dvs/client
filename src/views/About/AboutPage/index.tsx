@@ -6,6 +6,7 @@ import { apiEndPoint } from '#utils/constants';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
+import aboutUsImage from '#resources/about-us.jpg';
 
 import StatItem from './StatItem';
 import styles from './styles.css';
@@ -117,8 +118,8 @@ export default function AboutPage() {
                 </div>
                 <div className={styles.right}>
                     <img
-                        src="http://adranepal.org/wp-content/uploads/2020/02/DSC_0506-980x652.jpg"
-                        alt="Dfid"
+                        src={aboutUsImage}
+                        alt="British Embassy Kathmandu"
                         className={styles.image}
                     />
                 </div>
