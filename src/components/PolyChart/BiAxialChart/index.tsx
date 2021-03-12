@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
     Bar,
     XAxis,
@@ -11,9 +11,11 @@ import {
     Line,
     ComposedChart,
 } from 'recharts';
-import { IoIosSwap, IoMdClose } from 'react-icons/io';
+import { IoIosSwap, IoMdClose, IoMdDownload } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
+import { useRechartToPng } from 'recharts-to-png';
+import FileSaver from 'file-saver';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
@@ -119,6 +121,13 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
 
     const hasLongTitles = averageLength > 5;
 
+    const [png, ref] = useRechartToPng();
+    const handleDownload = useCallback(
+        async () => {
+            FileSaver.saveAs(png, `${title}.png`);
+        },
+        [png, title],
+    );
     return (
         <div className={_cs(styles.chartContainer, className)}>
             <header className={_cs(styles.header, headerClassName)}>
@@ -127,11 +136,20 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
+                        <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
                         {onSetEditableChartId && (
                             <Button
                                 onClick={onSetEditableChartId}
                                 name={id}
-                                title="Edit chart"
+                                title="Edit"
                                 transparent
                                 variant="icon"
                             >
@@ -141,7 +159,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                         <Button
                             onClick={onDelete}
                             name={id}
-                            title="Delete chart"
+                            title="Delete"
                             transparent
                             variant="icon"
                         >
@@ -151,7 +169,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                             <Button
                                 onClick={onExpand}
                                 name={id}
-                                title="Expand chart"
+                                title="Expand"
                                 transparent
                                 variant="icon"
                             >
@@ -178,6 +196,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                         layout="horizontal"
                         margin={chartMargin}
                         barGap={0}
+                        ref={ref}
                     >
                         <CartesianGrid
                             strokeDasharray="0"

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
     BarChart,
     Bar,
@@ -10,10 +10,12 @@ import {
     TooltipFormatter,
     ResponsiveContainer,
 } from 'recharts';
-import { IoMdClose } from 'react-icons/io';
+import { IoMdClose, IoMdDownload } from 'react-icons/io';
 import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
+import { useRechartToPng } from 'recharts-to-png';
+import FileSaver from 'file-saver';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
@@ -128,6 +130,14 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
 
     const hasLongTitles = averageLength > acceptableLength;
 
+    const [png, ref] = useRechartToPng();
+    const handleDownload = useCallback(
+        async () => {
+            FileSaver.saveAs(png, `${title}.png`);
+        },
+        [png, title],
+    );
+
     return (
         <div className={_cs(styles.chartContainer, className)}>
             <header className={_cs(styles.header, headerClassName)}>
@@ -136,11 +146,20 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
+                        <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
                         {onSetEditableChartId && (
                             <Button
                                 onClick={onSetEditableChartId}
                                 name={id}
-                                title="Edit chart"
+                                title="Edit"
                                 transparent
                                 variant="icon"
                             >
@@ -150,7 +169,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                         <Button
                             onClick={onDelete}
                             name={id}
-                            title="Delete chart"
+                            title="Delete"
                             transparent
                             variant="icon"
                         >
@@ -160,7 +179,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                             <Button
                                 onClick={onExpand}
                                 name={id}
-                                title="Expand chart"
+                                title="Expand"
                                 transparent
                                 variant="icon"
                             >
@@ -186,6 +205,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                         layout={layout}
                         margin={chartMargin}
                         barGap={0}
+                        ref={ref}
                     >
                         <CartesianGrid
                             strokeDasharray="0"

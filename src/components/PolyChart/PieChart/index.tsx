@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
     PieChart,
     Pie,
@@ -10,7 +10,9 @@ import {
 import { MdPieChart, MdDonutLarge } from 'react-icons/md';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
-import { IoMdClose } from 'react-icons/io';
+import { IoMdClose, IoMdDownload } from 'react-icons/io';
+import { useRechartToPng } from 'recharts-to-png';
+import FileSaver from 'file-saver';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
@@ -198,12 +200,19 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         [data, valueSelector, keySelector],
     );
 
-
     const [activeIndex, setActiveIndex] = useState(0);
 
     const handlePieEnter = (d: unknown, index: number) => {
         setActiveIndex(index);
     };
+
+    const [png, ref] = useRechartToPng();
+    const handleDownload = useCallback(
+        async () => {
+            FileSaver.saveAs(png, `${title}.png`);
+        },
+        [png, title],
+    );
 
     return (
         <div className={_cs(styles.chartContainer, className)}>
@@ -213,6 +222,15 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
+                        <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
                         {onSetEditableChartId && (
                             <Button
                                 onClick={onSetEditableChartId}
@@ -261,6 +279,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                         className={styles.chart}
                         // data={data}
                         margin={chartMargin}
+                        ref={ref}
                     >
                         <Pie
                             data={finalData}

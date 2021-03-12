@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
     BarChart,
     Bar,
@@ -9,8 +9,11 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
-import { IoMdClose } from 'react-icons/io';
+import { IoMdClose, IoMdDownload } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
+import { useRechartToPng } from 'recharts-to-png';
+import FileSaver from 'file-saver';
+
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import { HistogramSettings } from '#types';
@@ -100,6 +103,15 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         [data, valueSelector, binCount],
     );
 
+    const [png, ref] = useRechartToPng();
+    const handleDownload = useCallback(
+        async () => {
+            FileSaver.saveAs(png, `${title}.png`);
+        },
+        [png, title],
+    );
+
+
     return (
         <div className={_cs(styles.chartContainer, className)}>
             <header className={styles.header}>
@@ -108,11 +120,20 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
+                        <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
                         {onSetEditableChartId && (
                             <Button
                                 onClick={onSetEditableChartId}
                                 name={id}
-                                title="Edit chart"
+                                title="Edit"
                                 transparent
                                 variant="icon"
                             >
@@ -122,7 +143,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                         <Button
                             onClick={onDelete}
                             name={id}
-                            title="Delete chart"
+                            title="Delete"
                             transparent
                             variant="icon"
                         >
@@ -132,7 +153,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                             <Button
                                 onClick={onExpand}
                                 name={id}
-                                title="Expand chart"
+                                title="Expand"
                                 transparent
                                 variant="icon"
                             >
@@ -151,6 +172,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                         data={finalData}
                         margin={chartMargin}
                         barCategoryGap={0}
+                        ref={ref}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis
