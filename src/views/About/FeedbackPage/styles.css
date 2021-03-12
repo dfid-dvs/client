@@ -54,6 +54,25 @@
             height: 32px;
         }
 
+        .error {
+            flex-grow: 1;
+            color: var(--color-danger);
+        }
+
+        .attachment {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 400px;
+            padding: var(--spacing-medium);
+
+            .label {
+                text-transform: uppercase;
+                letter-spacing: 1.5px;
+                color: var(--color-primary-light-2);
+            }
+        }
+
         .button {
             margin-top: var(--spacing-large-medium);
             background: var(--color-secondary-light-1);

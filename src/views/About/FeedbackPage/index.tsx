@@ -1,9 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 
 import TextInput from '#components/TextInput';
 import Button from '#components/Button';
 import TextAreaInput from '#components/TextAreaInput';
 import SelectInput from '#components/SelectInput';
+
+import { apiEndPoint } from '#utils/constants';
 
 import styles from './styles.css';
 
@@ -28,7 +30,7 @@ function FeedbackPage() {
     const [type, setType] = useState<TypeOption['key']>();
     const [subject, setSubject] = useState('');
     const [feedback, setFeedback] = useState('');
-
+    const [selectedAttachment, setSelectedAttachment] = useState<File>();
     const [error, setError] = useState('');
 
     const title = 'Feedback Form';
@@ -74,13 +76,80 @@ function FeedbackPage() {
         [setFeedback],
     );
 
-    const handleSubmit = useCallback(
-        (e) => {
-            e.preventDefault();
-            // TODO: connect with API
-            console.warn('feedback submitted');
+    const disabled = useMemo(
+        () => !name && !email && !type && !subject && !feedback && !selectedAttachment,
+        [
+            name,
+            email,
+            type,
+            subject,
+            feedback,
+            selectedAttachment,
+        ],
+    );
+    const handleFileInput = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            if (!e?.target.files) {
+                return undefined;
+            }
+            const file = e.target.files[0];
+            return setSelectedAttachment(file);
         },
-        [],
+        [setSelectedAttachment],
+    );
+
+    const handleSubmit = useCallback(
+        async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            if (selectedAttachment) {
+                formData.append('attachment', selectedAttachment);
+            }
+            formData.append('name', name);
+            formData.append('email', email);
+            if (type) {
+                formData.append('type', type);
+            }
+            formData.append('subject', subject);
+            formData.append('feedback', feedback);
+            try {
+                const response = await fetch(`${apiEndPoint}/core/feedbackform`, {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (response.status !== 200) {
+                    const jsonResponse = await response.json();
+                    if (jsonResponse.error === 1) {
+                        setError(jsonResponse.message);
+                    }
+                } else {
+                    setName('');
+                    setEmail('');
+                    setType(undefined);
+                    setSubject('');
+                    setFeedback('');
+                    setSelectedAttachment(undefined);
+                    setError('');
+                }
+            } catch (err) {
+                setError(err.message);
+            }
+        },
+        [
+            selectedAttachment,
+            email,
+            feedback,
+            name,
+            subject,
+            type,
+            setName,
+            setEmail,
+            setType,
+            setSubject,
+            setFeedback,
+            setSelectedAttachment,
+            setError,
+        ],
     );
 
     return (
@@ -98,7 +167,7 @@ function FeedbackPage() {
                 onSubmit={handleSubmit}
             >
                 {error && (
-                    <div>
+                    <div className={styles.error}>
                         {error}
                     </div>
                 )}
@@ -146,6 +215,19 @@ function FeedbackPage() {
                     inputClassName={styles.input}
                     labelClassName={styles.label}
                 />
+                <div className={styles.attachment}>
+                    <div
+                        className={styles.label}
+                    >
+                        Add an attachment
+                    </div>
+                    <input
+                        id="attachment"
+                        type="file"
+                        name="attachment"
+                        onChange={handleFileInput}
+                    />
+                </div>
                 <TextAreaInput
                     label="Your Feedback"
                     placeholder="Write us your feedback..."
@@ -158,7 +240,7 @@ function FeedbackPage() {
                 />
                 <Button
                     className={styles.button}
-                    disabled={!!error}
+                    disabled={!!error || disabled}
                     type="submit"
                 >
                     Send
