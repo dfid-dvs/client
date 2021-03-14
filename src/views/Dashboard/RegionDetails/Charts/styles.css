@@ -58,13 +58,13 @@
 
 .modal-chart {
     padding: var(--spacing-large);
-    width: 720px;
-    height: 560px;
+    min-width: 900px;
+    min-height: 700px;
 
     .chart {
         padding: var(--spacing-large);
-        width: 560px;
-        height: 350px;
+        width: 800px;
+        height: 600px;
     }
 }
 

@@ -1,5 +1,6 @@
 .charts {
     position: relative;
+    margin-top: var(--spacing-large);
 
     .backdrop {
         z-index: 1;
@@ -8,13 +9,13 @@
     .chart-container {
         display: inline-block;
         margin: var(--spacing-medium);
-        border-radius: 5px;
         width: calc(50% - 2 * var(--spacing-medium));
         vertical-align: top;
+        border: var(--width-separator-thin) solid var(--color-button-background);
     }
 
     .chart {
-        padding: 0;
+        padding: var(--spacing-medium);
         height: 88mm!important;
 
         :global {
@@ -23,6 +24,25 @@
             }
         }
     }
+}
+
+.modal-chart {
+    padding: var(--spacing-large);
+    min-width: 900px;
+    min-height: 700px;
+
+    .chart {
+        padding: var(--spacing-large);
+        width: 800px;
+        height: 600px;
+    }
+}
+
+.header {
+    margin-left: var(--spacing-large);
+    color: var(--color-text);
+    font-size: var(--font-size-large);
+    font-weight: var(--font-weight-bold);
 }
 
 @media print {

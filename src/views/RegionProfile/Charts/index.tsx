@@ -13,6 +13,7 @@ import PolyChart from '#components/PolyChart';
 import ChartModal from '#components/ChartModal';
 import DomainContext from '#components/DomainContext';
 import useRequest from '#hooks/useRequest';
+import Modal from '#components/Modal';
 
 import {
     MultiResponse,
@@ -80,6 +81,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'allocatedBudget',
                 title: 'Allocated Budget',
                 color: tableauColors[1],
                 valueSelector: item => item.allocatedBudget,
@@ -100,6 +102,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'programCount',
                 title: 'Program count',
                 color: tableauColors[2],
                 valueSelector: item => item.programCount,
@@ -120,6 +123,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'partnerCount',
                 title: 'Partner count',
                 color: tableauColors[3],
                 valueSelector: item => item.partnerCount,
@@ -140,6 +144,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'sectorCount',
                 title: 'Sector count',
                 color: tableauColors[4],
                 valueSelector: item => item.sectorCount,
@@ -160,12 +165,13 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
-                title: 'Population',
+                key: '"indicator_314"',
+                title: 'Agriculture and Forestry',
                 color: tableauColors[5],
-                valueSelector: item => item.indicators[25] || null,
+                valueSelector: item => item.indicators[314] || null,
             },
         ],
-        dependencies: [25],
+        dependencies: [314],
     },
     {
         id: '3',
@@ -181,6 +187,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'indicators_132',
                 title: 'Poverty Incidence',
                 color: tableauColors[6],
                 valueSelector: item => item.indicators[132] || null,
@@ -225,18 +232,43 @@ function InfographicsCharts(props: Props) {
         defaultChartSettings,
     );
 
+    const [editableChartId, setEditableChartId] = useState<string>();
+    const [hoveredChartId, setHoveredChartId] = useState<string>();
+    const onHoverChart = useCallback(
+        (id: string) => {
+            setHoveredChartId(id);
+        },
+        [setHoveredChartId],
+    );
+
+    const onLeaveChart = useCallback(
+        () => {
+            setHoveredChartId(undefined);
+        },
+        [setHoveredChartId],
+    );
+
     const handleModalClose = useCallback(() => {
         onAddModalVisibilityChange(false);
     }, [onAddModalVisibilityChange]);
 
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedFiveW>) => {
-            setChartSettings(currentChartSettings => [
-                ...currentChartSettings,
-                settings,
-            ]);
+            if (!editableChartId) {
+                setChartSettings(currentChartSettings => [
+                    ...currentChartSettings,
+                    settings,
+                ]);
+            }
+            const tmpChartSettings = [...chartSettings];
+            const chartIndex = tmpChartSettings.findIndex(c => c.id === editableChartId);
+            if (chartIndex <= -1) {
+                return;
+            }
+            tmpChartSettings.splice(chartIndex, 1, settings);
+            setChartSettings(tmpChartSettings);
         },
-        [],
+        [editableChartId],
     );
 
     const handleChartDelete = useCallback(
@@ -324,6 +356,53 @@ function InfographicsCharts(props: Props) {
         [indicatorList],
     );
 
+    const editableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
+        () => {
+            const chartSetting = chartSettings.find(c => c.id === editableChartId);
+            if (!chartSetting) {
+                return undefined;
+            }
+
+            return chartSetting;
+        },
+        [chartSettings, editableChartId],
+    );
+
+    const [expandableChart, setExpandableChart] = useState<string>();
+
+    const handleChartExpand = useCallback(
+        (id: string | undefined) => {
+            setExpandableChart(id);
+        },
+        [setExpandableChart],
+    );
+
+    const onSetEditableChartId = useCallback(
+        (id: string | undefined) => {
+            setEditableChartId(id);
+            onAddModalVisibilityChange(true);
+        },
+        [setEditableChartId, onAddModalVisibilityChange],
+    );
+
+    const handleChartCollapse = useCallback(
+        () => {
+            setExpandableChart(undefined);
+        },
+        [setExpandableChart],
+    );
+
+    const expandableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
+        () => {
+            const chartSetting = chartSettings.find(c => c.id === expandableChart);
+            if (!chartSetting) {
+                return undefined;
+            }
+            return chartSetting;
+        },
+        [chartSettings, expandableChart],
+    );
+
     return (
         <div className={_cs(styles.charts, className)}>
             {(indicatorListPending || extendedFiveWPending) && (
@@ -340,6 +419,12 @@ function InfographicsCharts(props: Props) {
                     data={extendedFiveWList}
                     settings={item}
                     onDelete={handleChartDelete}
+                    onExpand={handleChartExpand}
+                    chartExpanded={expandableChart}
+                    onSetEditableChartId={onSetEditableChartId}
+                    hoveredChartId={hoveredChartId}
+                    onHoverChart={onHoverChart}
+                    onLeaveChart={onLeaveChart}
                 />
             ))}
             {showAddModal && (
@@ -348,7 +433,26 @@ function InfographicsCharts(props: Props) {
                     onSave={handleChartAdd}
                     options={options}
                     keySelector={keySelector}
+                    editableChartSettings={editableChartSettings}
                 />
+            )}
+            {expandableChart && expandableChartSettings && (
+                <Modal
+                    onClose={handleChartCollapse}
+                    className={styles.modalChart}
+                    header={expandableChartSettings.title}
+                    headerClassName={styles.header}
+                >
+                    <PolyChart
+                        chartClassName={styles.chart}
+                        data={extendedFiveWList}
+                        settings={expandableChartSettings}
+                        onDelete={handleChartDelete}
+                        className={styles.polyChart}
+                        onExpand={handleChartExpand}
+                        chartExpanded={expandableChart}
+                    />
+                </Modal>
             )}
         </div>
     );
