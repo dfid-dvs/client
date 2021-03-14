@@ -22,8 +22,8 @@ import TextAreaInput from '#components/TextAreaInput';
 import uiAidBEKLogo from '#resources/ukaid-bek-logo.jpg';
 import useBasicToggle from '#hooks/useBasicToggle';
 
-import InfographicsMap from './Map';
-import InfographicsCharts from './Charts';
+import RegionProfileMap from './Map';
+import RegionProfileCharts from './Charts';
 import Indicators from './Indicators';
 
 import styles from './styles.css';
@@ -76,7 +76,7 @@ interface IndicatorResponse {
     activeSectors: string[];
 }
 
-function Infographics(props: Props) {
+function RegionProfile(props: Props) {
     const { className } = props;
     const {
         regionLevel,
@@ -278,7 +278,7 @@ function Infographics(props: Props) {
                                     </div>
                                 )}
                             </div>
-                            <InfographicsMap
+                            <RegionProfileMap
                                 className={styles.mapContainer}
                                 bounds={currentBounds}
                                 selectedRegion={region}
@@ -293,18 +293,20 @@ function Infographics(props: Props) {
                                 fiveWData={fiveWData}
                             />
                         )}
-                        <div className={styles.description}>
-                            <TextAreaInput
-                                label="Description"
-                                placeholder="Write your description..."
-                                autoFocus
-                                value={description}
-                                onChange={handleDescriptionChange}
-                                className={styles.textInput}
-                                inputClassName={styles.textAreaInput}
-                                labelClassName={styles.label}
-                            />
-                        </div>
+                        {!dataPending && (
+                            <div className={styles.description}>
+                                <TextAreaInput
+                                    label="Description"
+                                    placeholder="Write your description..."
+                                    autoFocus
+                                    value={description}
+                                    onChange={handleDescriptionChange}
+                                    className={styles.textInput}
+                                    inputClassName={styles.textAreaInput}
+                                    labelClassName={styles.label}
+                                />
+                            </div>
+                        )}
                         {!sectorsHidden && activeSectors && activeSectors.length > 0 && (
                             <Sectors
                                 className={styles.sectors}
@@ -313,7 +315,7 @@ function Infographics(props: Props) {
                             />
                         )}
                         {regionLevel !== 'municipality' && (
-                            <InfographicsCharts
+                            <RegionProfileCharts
                                 className={styles.charts}
                                 printMode={printMode}
                                 showAddModal={showAddModal}
@@ -331,4 +333,4 @@ function Infographics(props: Props) {
         </div>
     );
 }
-export default Infographics;
+export default RegionProfile;

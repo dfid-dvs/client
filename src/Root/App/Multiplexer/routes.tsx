@@ -43,10 +43,10 @@ const routeSettings: SomeRoute[] = [
         load: lazy(() => import('../../../views/About')),
     },
     {
-        path: '/infographics/',
-        name: 'infographics',
-        title: 'Infographics',
-        load: lazy(() => import('../../../views/Infographics')),
+        path: '/region-profile/',
+        name: 'regionProfile',
+        title: 'Region Profile',
+        load: lazy(() => import('../../../views/RegionProfile')),
     },
     {
         path: '/403/',

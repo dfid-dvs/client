@@ -101,7 +101,7 @@ function RegionDetails(props: Props) {
                     />
                     <Link
                         className={styles.regionProfileLink}
-                        to="/infographics/"
+                        to="/region-profile/"
                     >
                         Create Regional Profile
                     </Link>
