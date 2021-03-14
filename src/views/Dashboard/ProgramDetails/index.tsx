@@ -57,7 +57,7 @@ function ProgramDetails(props: Props) {
                     />
                     <Link
                         className={styles.programProfileLink}
-                        to="/infographics/"
+                        to="/program-profile/"
                     >
                         Create Program Profile
                     </Link>

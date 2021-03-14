@@ -46,6 +46,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
 
         bars: [
             {
+                key: 'totalBudget',
                 title: 'Allocated Budget',
                 color: tableauColors[1],
                 valueSelector: item => item.totalBudget,
@@ -66,6 +67,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
 
         bars: [
             {
+                key: 'componentCount',
                 title: 'Components',
                 color: tableauColors[5],
                 valueSelector: item => item.componentCount,
@@ -78,6 +80,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
         title: 'Budget distribution',
         color: tableauColors[0],
         binCount: 10,
+        key: 'totalBudget',
         valueSelector: item => item.totalBudget,
     },
 ];
@@ -98,7 +101,21 @@ function Charts(props: Props) {
     );
 
     const [showModal, setModalVisibility] = useState(false);
+    const [editableChartId, setEditableChartId] = useState<string>();
+    const [hoveredChartId, setHoveredChartId] = useState<string>();
+    const onHoverChart = useCallback(
+        (id: string) => {
+            setHoveredChartId(id);
+        },
+        [setHoveredChartId],
+    );
 
+    const onLeaveChart = useCallback(
+        () => {
+            setHoveredChartId(undefined);
+        },
+        [setHoveredChartId],
+    );
     const handleModalShow = useCallback(() => {
         setModalVisibility(true);
     }, [setModalVisibility]);
@@ -130,7 +147,6 @@ function Charts(props: Props) {
         [],
     );
 
-
     const [expandableChart, setExpandableChart] = useState<string>();
 
     const handleChartExpand = useCallback(
@@ -147,6 +163,14 @@ function Charts(props: Props) {
         [setExpandableChart],
     );
 
+    const onSetEditableChartId = useCallback(
+        (id: string | undefined) => {
+            setEditableChartId(id);
+            setModalVisibility(true);
+        },
+        [setEditableChartId, setModalVisibility],
+    );
+
     const expandableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
         () => {
             const chartSetting = chartSettings.find(c => c.id === expandableChart);
@@ -158,6 +182,17 @@ function Charts(props: Props) {
         [chartSettings, expandableChart],
     );
 
+    const editableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
+        () => {
+            const chartSetting = chartSettings.find(c => c.id === editableChartId);
+            if (!chartSetting) {
+                return undefined;
+            }
+
+            return chartSetting;
+        },
+        [chartSettings, editableChartId],
+    );
     return (
         <>
             <div className={styles.tableActions}>
@@ -188,6 +223,10 @@ function Charts(props: Props) {
                         className={styles.polyChart}
                         onExpand={handleChartExpand}
                         chartExpanded={expandableChart}
+                        onSetEditableChartId={onSetEditableChartId}
+                        hoveredChartId={hoveredChartId}
+                        onHoverChart={onHoverChart}
+                        onLeaveChart={onLeaveChart}
                     />
                 ))}
             </div>
@@ -197,6 +236,7 @@ function Charts(props: Props) {
                     onSave={handleChartAdd}
                     options={staticOptions}
                     keySelector={keySelector}
+                    editableChartSettings={editableChartSettings}
                 />
             )}
             {expandableChart && expandableChartSettings && (

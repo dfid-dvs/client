@@ -215,6 +215,10 @@ function BarChartConfig<T>(props: Props<T>) {
                     optionName: opt.key,
                 };
             }).filter(isDefined);
+            if (mappedBars.length <= 0) {
+                return defaultBar;
+            }
+
             return mappedBars;
         }
         return defaultBar;

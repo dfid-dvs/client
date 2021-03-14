@@ -207,6 +207,9 @@ function BiAxialChartConfig<T>(props: Props<T>) {
 
                 return data;
             }).filter(isDefined);
+            if (mappedData.length <= 0) {
+                return defaultData;
+            }
             return mappedData;
         }
         return defaultData;
