@@ -191,7 +191,7 @@ function BarChartConfig<T>(props: Props<T>) {
         barType,
         setBarType,
     ] = useState<BarTypeKeys>(
-        editableChartData?.bars.find(f => !!f.stackId) ? 'stacked' : 'normal',
+        editableChartData?.bars?.find(f => !!f.stackId) ? 'stacked' : 'normal',
     );
     const barData: Bar[] = useMemo(() => {
         const defaultBar: Bar[] = [{
@@ -201,6 +201,9 @@ function BarChartConfig<T>(props: Props<T>) {
 
         if (editableChartData) {
             const editableBars = editableChartData.bars;
+            if (!editableBars) {
+                return defaultBar;
+            }
             const mappedBars = editableBars.map((e) => {
                 const opt = options.find(o => o.key === e.key);
                 if (!opt) {
@@ -467,7 +470,7 @@ function BarChartConfig<T>(props: Props<T>) {
                 <Button
                     className={styles.submitButton}
                     onClick={handleSave}
-                    variant="primary"
+                    variant="secondary"
                 >
                     Save
                 </Button>

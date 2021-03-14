@@ -190,6 +190,9 @@ function BiAxialChartConfig<T>(props: Props<T>) {
 
         if (editableChartData) {
             const editableData = editableChartData.chartData;
+            if (!editableData) {
+                return defaultData;
+            }
             const mappedData = editableData.map((e) => {
                 const opt = options.find(o => o.key === e.key);
                 if (!opt) {
@@ -395,7 +398,7 @@ function BiAxialChartConfig<T>(props: Props<T>) {
                 <Button
                     className={styles.submitButton}
                     onClick={handleSave}
-                    variant="primary"
+                    variant="secondary"
                 >
                     Save
                 </Button>
