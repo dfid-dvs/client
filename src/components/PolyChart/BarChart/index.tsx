@@ -62,6 +62,9 @@ interface BarChartUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
+    hoveredChartId?: string;
+    onHoverChart?: (id: string) => void;
+    onLeaveChart?: () => void;
 }
 
 const chartMargin = {
@@ -83,6 +86,9 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
+        hoveredChartId,
+        onHoverChart,
+        onLeaveChart,
     } = props;
     const {
         title,
@@ -93,6 +99,12 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         id,
         orientation,
     } = settings;
+
+    const handleChartHover = useCallback(() => {
+        if (onHoverChart) {
+            onHoverChart(id);
+        }
+    }, [onHoverChart]);
 
     const [layout, setLayout] = useState<'horizontal' | 'vertical'>(orientation || 'vertical');
 
@@ -138,8 +150,22 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         [png, title],
     );
 
+    const barRef = useMemo(
+        () => {
+            if (hoveredChartId === id) {
+                return ref;
+            }
+            return undefined;
+        },
+        [hoveredChartId, id],
+    );
+
     return (
-        <div className={_cs(styles.chartContainer, className)}>
+        <div
+            className={_cs(styles.chartContainer, className)}
+            onMouseEnter={handleChartHover}
+            onMouseLeave={onLeaveChart}
+        >
             <header className={_cs(styles.header, headerClassName)}>
                 <h3 className={styles.heading}>
                     {title}
@@ -205,7 +231,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                         layout={layout}
                         margin={chartMargin}
                         barGap={0}
-                        // ref={ref}
+                        ref={barRef}
                     >
                         <CartesianGrid
                             strokeDasharray="0"

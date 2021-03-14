@@ -17,6 +17,9 @@ interface Props<T> {
     onExpand: (name: string | undefined) => void;
     chartExpanded: string | undefined;
     onSetEditableChartId?: (name: string | undefined) => void;
+    hoveredChartId?: string | undefined;
+    onHoverChart?: (id: string) => void;
+    onLeaveChart?: () => void;
 }
 
 function PolyChart<T extends object>(props: Props<T>) {
@@ -30,6 +33,9 @@ function PolyChart<T extends object>(props: Props<T>) {
         onExpand,
         chartExpanded,
         onSetEditableChartId,
+        hoveredChartId,
+        onHoverChart,
+        onLeaveChart,
     } = props;
 
     const expandableIconHidden = useMemo(
@@ -49,6 +55,9 @@ function PolyChart<T extends object>(props: Props<T>) {
                 onExpand={onExpand}
                 expandableIconHidden={expandableIconHidden}
                 onSetEditableChartId={onSetEditableChartId}
+                hoveredChartId={hoveredChartId}
+                onHoverChart={onHoverChart}
+                onLeaveChart={onLeaveChart}
             />
         );
     }
@@ -64,6 +73,9 @@ function PolyChart<T extends object>(props: Props<T>) {
                 onExpand={onExpand}
                 expandableIconHidden={expandableIconHidden}
                 onSetEditableChartId={onSetEditableChartId}
+                hoveredChartId={hoveredChartId}
+                onHoverChart={onHoverChart}
+                onLeaveChart={onLeaveChart}
             />
         );
     }
@@ -79,6 +91,9 @@ function PolyChart<T extends object>(props: Props<T>) {
                 onExpand={onExpand}
                 expandableIconHidden={expandableIconHidden}
                 onSetEditableChartId={onSetEditableChartId}
+                hoveredChartId={hoveredChartId}
+                onHoverChart={onHoverChart}
+                onLeaveChart={onLeaveChart}
             />
         );
     }
@@ -95,6 +110,9 @@ function PolyChart<T extends object>(props: Props<T>) {
                 onExpand={onExpand}
                 expandableIconHidden={expandableIconHidden}
                 onSetEditableChartId={onSetEditableChartId}
+                hoveredChartId={hoveredChartId}
+                onHoverChart={onHoverChart}
+                onLeaveChart={onLeaveChart}
             />
         );
     }

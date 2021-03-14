@@ -52,6 +52,9 @@ interface BiAxialChartUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
+    hoveredChartId?: string;
+    onHoverChart?: (id: string) => void;
+    onLeaveChart?: () => void;
 }
 
 const chartMargin = {
@@ -73,6 +76,9 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
+        hoveredChartId,
+        onHoverChart,
+        onLeaveChart,
     } = props;
 
     const [chartTypeToggled, , , onToggleChartType] = useBasicToggle();
@@ -128,8 +134,29 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         },
         [png, title],
     );
+
+    const handleChartHover = useCallback(() => {
+        if (onHoverChart) {
+            onHoverChart(id);
+        }
+    }, [onHoverChart]);
+
+    const biAxialRef = useMemo(
+        () => {
+            if (hoveredChartId === id) {
+                return ref;
+            }
+            return undefined;
+        },
+        [hoveredChartId, id],
+    );
+
     return (
-        <div className={_cs(styles.chartContainer, className)}>
+        <div
+            className={_cs(styles.chartContainer, className)}
+            onMouseEnter={handleChartHover}
+            onMouseLeave={onLeaveChart}
+        >
             <header className={_cs(styles.header, headerClassName)}>
                 <h3 className={styles.heading}>
                     {title}
@@ -196,7 +223,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                         layout="horizontal"
                         margin={chartMargin}
                         barGap={0}
-                        // ref={ref}
+                        ref={biAxialRef}
                     >
                         <CartesianGrid
                             strokeDasharray="0"

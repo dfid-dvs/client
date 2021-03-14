@@ -39,6 +39,9 @@ interface HistogramUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
+    hoveredChartId?: string;
+    onHoverChart?: (id: string) => void;
+    onLeaveChart?: () => void;
 }
 
 const chartMargin = {
@@ -59,6 +62,9 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
+        hoveredChartId,
+        onHoverChart,
+        onLeaveChart,
     } = props;
 
     const {
@@ -111,9 +117,28 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         [png, title],
     );
 
+    const histogramRef = useMemo(
+        () => {
+            if (hoveredChartId === id) {
+                return ref;
+            }
+            return undefined;
+        },
+        [hoveredChartId, id],
+    );
+
+    const handleChartHover = useCallback(() => {
+        if (onHoverChart) {
+            onHoverChart(id);
+        }
+    }, [onHoverChart]);
 
     return (
-        <div className={_cs(styles.chartContainer, className)}>
+        <div
+            className={_cs(styles.chartContainer, className)}
+            onMouseEnter={handleChartHover}
+            onMouseLeave={onLeaveChart}
+        >
             <header className={styles.header}>
                 <h3 className={styles.heading}>
                     {title}
@@ -172,7 +197,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                         data={finalData}
                         margin={chartMargin}
                         barCategoryGap={0}
-                        // ref={ref}
+                        ref={histogramRef}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis
