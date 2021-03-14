@@ -1,7 +1,6 @@
 .option {
     display: flex;
     align-items: center;
-    flex: 1;
     border-radius: 50%;
     background-color: transparent;
     cursor: pointer;

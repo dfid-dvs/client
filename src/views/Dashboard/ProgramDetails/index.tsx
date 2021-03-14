@@ -1,4 +1,6 @@
 import React, { useContext, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { _cs } from '@togglecorp/fujs';
 
 import DomainContext from '#components/DomainContext';
 import SegmentInput from '#components/SegmentInput';
@@ -39,12 +41,13 @@ function ProgramDetails(props: Props) {
 
     return (
         <PopupPage
-            className={className}
-            title="Programs"
-            parentLink="/dashboard/"
+            className={_cs(styles.programDetails, className)}
+            parentLink="/"
             parentName="dashboard"
+            hideArrow
             actions={(
-                <div className={styles.tabActions}>
+                <div className={styles.actionContainer}>
+                    <div className={styles.dummy} />
                     <SegmentInput
                         options={tabOptions}
                         optionKeySelector={item => item.key}
@@ -52,8 +55,15 @@ function ProgramDetails(props: Props) {
                         value={selectedTab}
                         onChange={setSelectedTab}
                     />
+                    <Link
+                        className={styles.programProfileLink}
+                        to="/infographics/"
+                    >
+                        Create Program Profile
+                    </Link>
                 </div>
             )}
+            headerClassName={styles.header}
         >
             {selectedTab === 'table' && (
                 <Table programs={programs} />

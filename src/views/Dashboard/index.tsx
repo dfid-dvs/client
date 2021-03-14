@@ -489,7 +489,8 @@ const Dashboard = (props: Props) => {
         [regionLevel],
     );
 
-    const dataExplored = hash === 'regions' || hash === 'program';
+    const dataExplored = hash === 'regions' || hash === 'programs';
+    const regionSelectHidden = hash === 'programs';
 
     const [
         tooltipExpanded,
@@ -524,18 +525,20 @@ const Dashboard = (props: Props) => {
                 <FiltersPanel isMinimized={sideContentMinimized} />
             </aside>
             <main className={styles.mainContent}>
-                <header className={styles.header}>
-                    <Label>
-                        View by
-                    </Label>
-                    <SingleRegionSelect
-                        onRegionLevelChange={handleRegionLevelChange}
-                        regionLevel={regionLevel}
-                        region={region?.id}
-                        onRegionChange={handleRegionChange}
-                        disabled={printMode}
-                    />
-                </header>
+                {!regionSelectHidden && (
+                    <header className={styles.header}>
+                        <Label>
+                            View by
+                        </Label>
+                        <SingleRegionSelect
+                            onRegionLevelChange={handleRegionLevelChange}
+                            regionLevel={regionLevel}
+                            region={region?.id}
+                            onRegionChange={handleRegionChange}
+                            disabled={printMode}
+                        />
+                    </header>
+                )}
                 <div className={styles.content}>
                     { dataExplored ? (
                         <>
@@ -562,7 +565,12 @@ const Dashboard = (props: Props) => {
                                 />
                             )}
                             {hash === 'programs' && (
-                                <ProgramDetails />
+                                <ProgramDetails
+                                    className={_cs(
+                                        styles.regionDetails,
+                                        sideContentMinimized && styles.filterMinimized,
+                                    )}
+                                />
                             )}
                         </>
                     ) : (

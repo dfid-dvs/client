@@ -34,7 +34,7 @@ export default function ExploreData(props: ExploreDataProps) {
                     By Regions
                 </Link>
                 <Link
-                    className={_cs(styles.link, styles.disabled)}
+                    className={styles.link}
                     to="#programs"
                     replace
                 >
