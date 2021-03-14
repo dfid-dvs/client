@@ -172,7 +172,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                         data={finalData}
                         margin={chartMargin}
                         barCategoryGap={0}
-                        ref={ref}
+                        // ref={ref}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis

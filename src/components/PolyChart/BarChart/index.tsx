@@ -205,7 +205,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                         layout={layout}
                         margin={chartMargin}
                         barGap={0}
-                        ref={ref}
+                        // ref={ref}
                     >
                         <CartesianGrid
                             strokeDasharray="0"

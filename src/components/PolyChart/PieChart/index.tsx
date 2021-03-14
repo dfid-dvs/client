@@ -279,7 +279,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                         className={styles.chart}
                         // data={data}
                         margin={chartMargin}
-                        ref={ref}
+                        // ref={ref}
                     >
                         <Pie
                             data={finalData}

@@ -196,7 +196,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                         layout="horizontal"
                         margin={chartMargin}
                         barGap={0}
-                        ref={ref}
+                        // ref={ref}
                     >
                         <CartesianGrid
                             strokeDasharray="0"
