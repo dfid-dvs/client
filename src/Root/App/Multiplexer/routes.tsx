@@ -49,6 +49,12 @@ const routeSettings: SomeRoute[] = [
         load: lazy(() => import('../../../views/RegionProfile')),
     },
     {
+        path: '/program-profile/',
+        name: 'programProfile',
+        title: 'Program Profile',
+        load: lazy(() => import('../../../views/ProgramProfile')),
+    },
+    {
         path: '/403/',
         name: 'fourHundredThree',
         title: '403',
