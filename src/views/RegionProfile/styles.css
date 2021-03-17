@@ -129,7 +129,18 @@
                 margin-top: var(--spacing-ultra-large);
                 width: 100%;
             }
+            .dendogram-container {
+                margin-top: var(--spacing-ultra-large);
 
+                .title {
+                    padding: var(--spacing-small-medium) 0;
+                    font-size: var(--font-size-extra-large);
+                    font-weight: var(--font-weight-bold);
+                    letter-spacing: unset;
+                    text-transform: none;
+                    color: var(--color-text);
+                }
+            }
             .description {
                 margin-top: var(--spacing-ultra-large);
 

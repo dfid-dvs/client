@@ -19,6 +19,8 @@ import DomainContext from '#components/DomainContext';
 import SingleRegionSelect, { Province, District, Municipality } from '#components/SingleRegionSelect';
 import Button from '#components/Button';
 import TextAreaInput from '#components/TextAreaInput';
+import DendogramTree from '#components/DendogramTree';
+
 import uiAidBEKLogo from '#resources/ukaid-bek-logo.jpg';
 import useBasicToggle from '#hooks/useBasicToggle';
 
@@ -70,10 +72,20 @@ interface FiveWDataResponse {
     totalBudget: number;
 }
 
-interface IndicatorResponse {
+interface RegionProfileResponse {
     indicatordata: IndicatorValue[];
     fivewdata: FiveWDataResponse[];
     activeSectors: string[];
+}
+
+interface DendogramResponse {
+    results: {
+        name: string;
+        children: {
+            name: string;
+            children: string[];
+        }[];
+    }[];
 }
 
 function RegionProfile(props: Props) {
@@ -91,20 +103,37 @@ function RegionProfile(props: Props) {
     ] = useState<Region & { type: RegionLevelOption } | undefined>(undefined);
     const [showAddModal, setAddModalVisibility] = useState(false);
 
-    const regionFiveWUrl = `${apiEndPoint}/core/fivew-${regionLevel}/`;
+    const regionProfileUrl = selectedRegionData ? `${apiEndPoint}/core/profile?region=${regionLevel}&${regionLevel}_code=${+selectedRegionData.code}` : undefined;
+    const [regionProfilePending, regionProfileResponse] = useRequest<RegionProfileResponse>(regionProfileUrl, 'region-profile');
+    const dendogramUrl = selectedRegionData ? `https://dvsnaxa.naxa.com.np/api/v1/core/regionaldendrogram?region=${regionLevel}&${regionLevel}_code=${selectedRegionData.code}` : undefined;
 
-    const indicatorsUrl = selectedRegionData ? `${apiEndPoint}/core/profile?region=${regionLevel}&${regionLevel}_code=${+selectedRegionData.code}` : undefined;
-
-    const [indicatorsPending, indicatorsResponse] = useRequest<IndicatorResponse>(indicatorsUrl, 'indicators');
+    const [dendogramUrlPending, dendogramUrlResponse] = useRequest<DendogramResponse>(dendogramUrl, 'region-dendogram');
+    const mappedDendogramData = useMemo(() => {
+        if (!dendogramUrlResponse) {
+            return undefined;
+        }
+        const { results } = dendogramUrlResponse;
+        if (!results) {
+            return undefined;
+        }
+        const mappedRes = results.map((res) => {
+            const childCount = res.children.map(c => c.children).flat().length;
+            return {
+                ...res,
+                countChild: childCount,
+            };
+        });
+        return mappedRes;
+    }, [dendogramUrlResponse]);
 
     const indicatorsData = useMemo(
-        () => indicatorsResponse?.indicatordata,
-        [indicatorsResponse?.indicatordata],
+        () => regionProfileResponse?.indicatordata,
+        [regionProfileResponse?.indicatordata],
     );
 
     const fiveWData: FiveWData[] | undefined = useMemo(
         () => {
-            const fiveWResponseData = indicatorsResponse?.fivewdata;
+            const fiveWResponseData = regionProfileResponse?.fivewdata;
 
             if (!fiveWResponseData) {
                 return undefined;
@@ -115,12 +144,12 @@ function RegionProfile(props: Props) {
                 value: fwdData[fwd.key],
             }));
         },
-        [indicatorsResponse?.fivewdata],
+        [regionProfileResponse?.fivewdata],
     );
 
     const activeSectors: string[] | undefined = useMemo(
-        () => indicatorsResponse?.activeSectors,
-        [indicatorsResponse?.activeSectors],
+        () => regionProfileResponse?.activeSectors,
+        [regionProfileResponse?.activeSectors],
     );
 
     const handleAddChartModalClick = useCallback(() => {
@@ -172,7 +201,7 @@ function RegionProfile(props: Props) {
 
     const currentDate = new Date().toDateString();
 
-    const dataPending = parentRegionPending || indicatorsPending;
+    const dataPending = parentRegionPending || regionProfilePending || dendogramUrlPending;
 
     const [
         indicatorsHidden,
@@ -313,6 +342,21 @@ function RegionProfile(props: Props) {
                                 activeSectors={activeSectors}
                                 setSectorsHidden={setSectorsHidden}
                             />
+                        )}
+                        {/* eslint-disable-next-line max-len */}
+                        {!dataPending && mappedDendogramData && mappedDendogramData.length > 0 && (
+                            <div className={styles.dendogramContainer}>
+                                <div className={styles.title}>
+                                    Dendogram of Region
+                                </div>
+                                {mappedDendogramData.map(res => (
+                                    <DendogramTree
+                                        treeData={res}
+                                        key={res.name}
+                                        collapsible
+                                    />
+                                ))}
+                            </div>
                         )}
                         {regionLevel !== 'municipality' && (
                             <RegionProfileCharts

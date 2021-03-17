@@ -1,0 +1,9 @@
+.name-container {
+    background: var(--color-primary);
+    color: var(--color-white);
+    padding: var(--spacing-large);
+    margin: var(--spacing-small-medium);
+    font-size: var(--font-size-large);
+    align-self: 'center';
+    border-radius: calc(4 * var(--radius-modal));
+}

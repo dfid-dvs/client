@@ -29,6 +29,7 @@ import ProgramProfileCharts from './Charts';
 import FederalLevelComponents from './FederalLevelComponents';
 
 import styles from './styles.css';
+import DendogramTree from '#components/DendogramTree';
 
 interface Props {
     className?: string;
@@ -62,6 +63,23 @@ interface ProgramProfileResponse {
     municiaplityCount: number;
     federalLevelComponents: string[];
     activemap: ActiveMap[];
+}
+
+interface PartnersTreeDendogramResponse {
+    results: {
+        name: string;
+        children: string[];
+    }[];
+}
+
+interface RegionsTreeDendogramResponse {
+    results: {
+        name: string;
+        children: {
+            name: string;
+            children: string[];
+        }[];
+    }[];
 }
 
 const programKeySelector = (item: Program) => +item.id;
@@ -101,6 +119,71 @@ function ProgramProfile(props: Props) {
         programProfilePending,
         programProfileResponse,
     ] = useRequest<ProgramProfileResponse>(programProfileUrl, 'program-profile');
+
+    const partnersTreeDendogramUrl = useMemo(
+        () => {
+            if (!selectedProgram) {
+                return undefined;
+            }
+            return `${apiEndPoint}/core/programupperdendrogram?program_id=${selectedProgram}&region=${regionLevel}`;
+        },
+        [selectedProgram, regionLevel],
+    );
+
+    const [
+        partnersTreeDendogramPending,
+        partnersTreeDendogramResponse,
+    ] = useRequest<PartnersTreeDendogramResponse>(partnersTreeDendogramUrl, 'partner-tree-dendogram');
+
+    const partnersTreeData = useMemo(() => {
+        if (!partnersTreeDendogramResponse) {
+            return undefined;
+        }
+        const { results } = partnersTreeDendogramResponse;
+        if (!results) {
+            return undefined;
+        }
+        const mappedRes = results.map((res) => {
+            const childCount = res.children.length;
+            return {
+                ...res,
+                countChild: childCount,
+            };
+        });
+        return mappedRes;
+    }, [partnersTreeDendogramResponse]);
+    const regionTreeDendogramUrl = useMemo(
+        () => {
+            if (!selectedProgram) {
+                return undefined;
+            }
+            return `${apiEndPoint}/core/programlowerdendrogram?program_id=${selectedProgram}`;
+        },
+        [selectedProgram],
+    );
+
+    const [
+        regionTreeDendogramPending,
+        regionTreeDendogramResponse,
+    ] = useRequest<RegionsTreeDendogramResponse>(regionTreeDendogramUrl, 'region-tree-dendogram');
+
+    const regionsTreeData = useMemo(() => {
+        if (!regionTreeDendogramResponse) {
+            return undefined;
+        }
+        const { results } = regionTreeDendogramResponse;
+        if (!results) {
+            return undefined;
+        }
+        const mappedRes = results.map((res) => {
+            const childCount = res.children.map(c => c.children).flat().length;
+            return {
+                ...res,
+                countChild: childCount,
+            };
+        });
+        return mappedRes;
+    }, [regionTreeDendogramResponse]);
 
     const mapRegions: number[] | undefined = useMemo(
         () => {
@@ -146,7 +229,8 @@ function ProgramProfile(props: Props) {
 
     const currentDate = new Date().toDateString();
 
-    const dataPending = programProfilePending;
+    // eslint-disable-next-line max-len
+    const dataPending = programProfilePending || partnersTreeDendogramPending || regionTreeDendogramPending;
 
     const [
         indicatorsHidden,
@@ -329,6 +413,20 @@ function ProgramProfile(props: Props) {
                                 />
                             </div>
                         )}
+                        {!dataPending && partnersTreeData && partnersTreeData.length > 0 && (
+                            <div className={styles.dendogramContainer}>
+                                <div className={styles.title}>
+                                    Component and implementing partners tree
+                                </div>
+                                {partnersTreeData.map(res => (
+                                    <DendogramTree
+                                        treeData={res}
+                                        key={res.name}
+                                        separation={{ siblings: 2, nonSiblings: 2 }}
+                                    />
+                                ))}
+                            </div>
+                        )}
                         {/* eslint-disable-next-line max-len */}
                         {!federLevelHidden && federalLevelComponents && federalLevelComponents.length > 0 && (
                             <FederalLevelComponents
@@ -347,6 +445,20 @@ function ProgramProfile(props: Props) {
                                     bounds={currentBounds}
                                     mapRegions={mapRegions}
                                 />
+                            </div>
+                        )}
+                        {!dataPending && regionsTreeData && regionsTreeData.length > 0 && (
+                            <div className={styles.dendogramContainer}>
+                                <div className={styles.title}>
+                                    Component and regions tree
+                                </div>
+                                {regionsTreeData.map(res => (
+                                    <DendogramTree
+                                        treeData={res}
+                                        key={res.name}
+                                        separation={{ siblings: 3, nonSiblings: 3 }}
+                                    />
+                                ))}
                             </div>
                         )}
                         {regionLevel !== 'municipality' && (
