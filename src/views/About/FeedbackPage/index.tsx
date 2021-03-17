@@ -31,6 +31,7 @@ function FeedbackPage() {
     const [subject, setSubject] = useState('');
     const [feedback, setFeedback] = useState('');
     const [selectedAttachment, setSelectedAttachment] = useState<File>();
+    const [attachmentKey, setAttachmentKey] = useState<string>(new Date().toTimeString());
     const [error, setError] = useState('');
 
     const title = 'Feedback Form';
@@ -97,6 +98,7 @@ function FeedbackPage() {
         },
         [setSelectedAttachment],
     );
+    console.log({ feedback });
 
     const handleSubmit = useCallback(
         async (e) => {
@@ -111,7 +113,7 @@ function FeedbackPage() {
                 formData.append('type', type);
             }
             formData.append('subject', subject);
-            formData.append('feedback', feedback);
+            formData.append('your_feedback', feedback);
             try {
                 const response = await fetch(`${apiEndPoint}/core/feedbackform`, {
                     method: 'POST',
@@ -130,6 +132,7 @@ function FeedbackPage() {
                     setFeedback('');
                     setSelectedAttachment(undefined);
                     setError('');
+                    setAttachmentKey(new Date().toTimeString());
                 }
             } catch (err) {
                 setError(err.message);
@@ -151,6 +154,13 @@ function FeedbackPage() {
             setError,
         ],
     );
+
+    const attachedFileName = useMemo(() => {
+        if (selectedAttachment) {
+            return selectedAttachment.name;
+        }
+        return null;
+    }, [selectedAttachment]);
 
     return (
         <div className={styles.container}>
@@ -226,6 +236,7 @@ function FeedbackPage() {
                         type="file"
                         name="attachment"
                         onChange={handleFileInput}
+                        key={attachmentKey}
                     />
                 </div>
                 <TextAreaInput
