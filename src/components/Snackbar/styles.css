@@ -1,0 +1,35 @@
+
+.notification {
+    display: flex;
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    align-self: center;
+    justify-content: center;
+    border-radius: var(--radius-modal);
+    background: transparent;
+    padding: var(--spacing-small-medium);
+    max-width: 600px;
+
+    .button {
+        border-color: transparent;
+        background: transparent;
+
+        .icon {
+            color: var(--color-white);
+        }
+    }
+
+    .message {
+        align-self: center;
+        color: var(--color-white);
+    }
+}
+
+.success {
+    background-color: var(--color-success);
+}
+
+.error {
+    background-color: var(--color-danger);
+}

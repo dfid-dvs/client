@@ -1,8 +1,8 @@
-import React, { createContext, useState, useCallback } from 'react';
+import React, { createContext, useState, useCallback, useEffect } from 'react';
 
 type Severity = 'error' | 'success' | 'info' | 'warning' | undefined;
 
-interface SnackBarContents {
+export interface SnackBarContents {
     message: string;
     severity: Severity;
 }
@@ -41,6 +41,14 @@ const SnackBarContextProvider = ({ children }: Props) => {
         },
         [setSnackBarContents],
     );
+
+    useEffect(() => {
+        const timeOut = setTimeout(() => {
+            onResetSnackBar();
+        }, 4000);
+        return () => clearTimeout(timeOut);
+    }, [onResetSnackBar]);
+
     return (
         <SnackBarContext.Provider
             value={{

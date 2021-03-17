@@ -1,9 +1,11 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useContext } from 'react';
 
 import TextInput from '#components/TextInput';
 import Button from '#components/Button';
 import TextAreaInput from '#components/TextAreaInput';
 import SelectInput from '#components/SelectInput';
+import { SnackBarContext, SnackBarContents } from '#components/SnackContext';
+import Snackbar from '#components/Snackbar';
 
 import { apiEndPoint } from '#utils/constants';
 
@@ -33,6 +35,10 @@ function FeedbackPage() {
     const [selectedAttachment, setSelectedAttachment] = useState<File>();
     const [attachmentKey, setAttachmentKey] = useState<string>(new Date().toTimeString());
     const [error, setError] = useState('');
+
+    const {
+        setSnackBarContents,
+    } = useContext(SnackBarContext);
 
     const title = 'Feedback Form';
     const subTitle = 'Welcome! What kind of feedback do you have about this tool?';
@@ -98,7 +104,6 @@ function FeedbackPage() {
         },
         [setSelectedAttachment],
     );
-    console.log({ feedback });
 
     const handleSubmit = useCallback(
         async (e) => {
@@ -123,8 +128,18 @@ function FeedbackPage() {
                     const jsonResponse = await response.json();
                     if (jsonResponse.error === 1) {
                         setError(jsonResponse.message);
+                        const snackContent: SnackBarContents = {
+                            message: 'Could not submit feedback',
+                            severity: 'error',
+                        };
+                        setSnackBarContents(snackContent);
                     }
                 } else {
+                    const snackContent: SnackBarContents = {
+                        message: 'Feedback submitted successfully',
+                        severity: 'success',
+                    };
+                    setSnackBarContents(snackContent);
                     setName('');
                     setEmail('');
                     setType(undefined);
@@ -154,13 +169,6 @@ function FeedbackPage() {
             setError,
         ],
     );
-
-    const attachedFileName = useMemo(() => {
-        if (selectedAttachment) {
-            return selectedAttachment.name;
-        }
-        return null;
-    }, [selectedAttachment]);
 
     return (
         <div className={styles.container}>
@@ -257,6 +265,9 @@ function FeedbackPage() {
                     Send
                 </Button>
             </form>
+            <Snackbar
+                className={styles.notify}
+            />
         </div>
     );
 }
