@@ -233,8 +233,23 @@ export interface BiAxialChartSettings<T> {
     dependencies?: number[];
 }
 
+export interface ScatterChartSettings<T> {
+    id: string;
+    type: 'scatter-chart';
+    key: string;
+    title: string;
+    valueSelector: (value: T) => number;
+    keySelector: (value: T) => string;
+    color: string;
+    dependencies?: number[];
+    limit?: {
+        count: number;
+        method: 'min' | 'max';
+    };
+}
+
 // eslint-disable-next-line max-len
-export type ChartSettings<T> = BarChartSettings<T> | PieChartSettings<T> | HistogramSettings<T> | BiAxialChartSettings<T>;
+export type ChartSettings<T> = BarChartSettings<T> | PieChartSettings<T> | HistogramSettings<T> | BiAxialChartSettings<T> | ScatterChartSettings<T>;
 
 export function isBarChart<T>(settings: ChartSettings<T>): settings is BarChartSettings<T> {
     return settings.type === 'bar-chart';
@@ -248,7 +263,9 @@ export function isHistogram<T>(settings: ChartSettings<T>): settings is Histogra
 export function isBiAxialChart<T>(settings: ChartSettings<T>): settings is BiAxialChartSettings<T> {
     return settings.type === 'bi-axial-chart';
 }
-
+export function isScatterChart<T>(settings: ChartSettings<T>): settings is ScatterChartSettings<T> {
+    return settings.type === 'scatter-chart';
+}
 export interface IndicatorValue {
     code: string;
     value: number;

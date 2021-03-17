@@ -230,26 +230,20 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         // meta
         dependencies: [119, 118],
     },
-    /*
-    {
-        id: '4',
-        type: 'histogram',
-        title: 'Financial Institutions distribution',
-        color: tableauColors[0],
-        binCount: 10,
-        valueSelector: item => item.indicators[118] || 0,
-        dependencies: [118],
-    },
     {
         id: '5',
-        type: 'histogram',
-        title: 'Health Facilities distribution',
-        color: tableauColors[3],
-        binCount: 10,
-        valueSelector: item => item.indicators[119] || 0,
-        dependencies: [119],
+        type: 'scatter-chart',
+        key: 'componentCount',
+        title: 'Component Count',
+        color: tableauColors[0],
+        valueSelector: item => item.componentCount,
+        keySelector: item => item.name,
+        // dependencies: [118],
+        limit: {
+            count: 10,
+            method: 'max',
+        },
     },
-     */
 ];
 
 interface Props {

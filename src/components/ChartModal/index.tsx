@@ -2,10 +2,11 @@ import React, { useState, useCallback } from 'react';
 import { FiBarChart2 } from 'react-icons/fi';
 import { TiChartPie } from 'react-icons/ti';
 import { GiHistogram } from 'react-icons/gi';
-import { FcComboChart } from 'react-icons/fc';
+import { FcComboChart, FcScatterPlot } from 'react-icons/fc';
 
 import Modal from '#components/Modal';
 import SegmentInput from '#components/SegmentInput';
+import ScatterChartConfig from './ScatterChartConfig';
 
 import { ChartSettings, NumericOption } from '#types';
 
@@ -16,7 +17,7 @@ import BiAxialChartConfig from './BiAxialChartConfig';
 
 import styles from './styles.css';
 
-type ChartType = 'bar-chart' | 'pie-chart' | 'histogram' | 'bi-axial-chart';
+type ChartType = 'bar-chart' | 'pie-chart' | 'histogram' | 'bi-axial-chart' | 'scatter-chart';
 
 interface ChartTypeOption {
     type: ChartType;
@@ -61,6 +62,16 @@ const chartTypeOptions: ChartTypeOption[] = [
                 <FcComboChart />
                 &nbsp;
                 Bi-Axial Chart
+            </>
+        ),
+    },
+    {
+        type: 'scatter-chart',
+        name: (
+            <>
+                <FcScatterPlot />
+                &nbsp;
+                Scattter Chart
             </>
         ),
     },
@@ -139,13 +150,21 @@ function ChartModal<T>(props: Props<T>) {
                 <HistogramConfig
                     className={styles.chartConfig}
                     onSave={handleSave}
-                    // keySelector={keySelector}
                     options={options}
                     editableChartData={editableChartSettings}
                 />
             )}
             {chartType === 'bi-axial-chart' && (
                 <BiAxialChartConfig
+                    className={styles.chartConfig}
+                    onSave={handleSave}
+                    keySelector={keySelector}
+                    options={options}
+                    editableChartData={editableChartSettings}
+                />
+            )}
+            {chartType === 'scatter-chart' && (
+                <ScatterChartConfig
                     className={styles.chartConfig}
                     onSave={handleSave}
                     keySelector={keySelector}

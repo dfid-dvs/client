@@ -1,11 +1,19 @@
 import React, { useMemo } from 'react';
 
-import { ChartSettings, isBarChart, isPieChart, isHistogram, isBiAxialChart } from '#types';
+import {
+    ChartSettings,
+    isBarChart,
+    isPieChart,
+    isHistogram,
+    isBiAxialChart,
+    isScatterChart,
+} from '#types';
 
 import BarChart from './BarChart';
 import PieChart from './PieChart';
 import Histogram from './Histogram';
 import BiAxialChart from './BiAxialChart';
+import ScatterChart from './ScatterChart';
 
 interface Props<T> {
     settings: ChartSettings<T>;
@@ -101,6 +109,25 @@ function PolyChart<T extends object>(props: Props<T>) {
     if (isBiAxialChart(settings)) {
         return (
             <BiAxialChart
+                onDelete={onDelete}
+                data={data}
+                settings={settings}
+                hideActions={hideActions}
+                className={className}
+                chartClassName={chartClassName}
+                onExpand={onExpand}
+                expandableIconHidden={expandableIconHidden}
+                onSetEditableChartId={onSetEditableChartId}
+                hoveredChartId={hoveredChartId}
+                onHoverChart={onHoverChart}
+                onLeaveChart={onLeaveChart}
+            />
+        );
+    }
+
+    if (isScatterChart(settings)) {
+        return (
+            <ScatterChart
                 onDelete={onDelete}
                 data={data}
                 settings={settings}
