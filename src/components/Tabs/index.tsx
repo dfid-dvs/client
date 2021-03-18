@@ -1,6 +1,6 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
-import Button, { Props as ButtonProps } from '../Button';
+import RawButton, { Props as RawButtonProps } from '../RawButton';
 
 import styles from './styles.css';
 
@@ -16,7 +16,7 @@ const TabContext = React.createContext<TabContextProps>({
     setActiveTab: () => { console.warn('setActiveTab called before it was initialized'); },
 });
 
-export interface TabProps<T extends TabKey> extends Omit<ButtonProps, 'onClick'>{
+export interface TabProps<T extends TabKey> extends Omit<RawButtonProps, 'onClick'>{
     name: T;
 }
 
@@ -35,7 +35,7 @@ export function Tab<T extends TabKey>(props: TabProps<T>) {
     const isActive = name === activeTab;
 
     return (
-        <Button
+        <RawButton
             className={_cs(
                 className,
                 styles.tab,

@@ -1,7 +1,7 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import Label from '../Label';
+import InputLabel from '#components/InputLabel';
 import styles from './styles.css';
 
 export interface Props {
@@ -42,13 +42,13 @@ function Input(props: Props) {
             className={_cs(styles.inputContainer, className)}
         >
             {label && (
-                <Label
+                <InputLabel
                     className={_cs(styles.label, labelClassName)}
                     disabled={disabled}
                     error={!!error}
                 >
                     { label }
-                </Label>
+                </InputLabel>
             )}
             <div
                 className={_cs(styles.main, inputContainerClassName, disabled && styles.disabled)}
@@ -65,11 +65,6 @@ function Input(props: Props) {
                     </div>
                 )}
             </div>
-            {/*
-            <div className={styles.extra}>
-                extra
-            </div>
-            */}
         </div>
     );
 }

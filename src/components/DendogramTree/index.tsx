@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import Tree from 'react-d3-tree';
 import { CustomNodeElementProps, RawNodeDatum } from 'react-d3-tree/lib/types/common';
 import DendogramSVGNodeElement from '#components/DendogramSVGNodeElement';
@@ -30,11 +30,11 @@ interface DendogramTreeInterface {
     treeData: TreeData;
 }
 
-const NODE_WIDTH = 164;
+let NODE_WIDTH = 164;
 const NODE_HEIGHT = 24;
 const NODE_CIRCLE_RADIUS = 4;
 const NODE_GAP_Y = 12;
-const NODE_GAP_X = 96;
+let NODE_GAP_X = 96;
 
 const customPathFunction = (linkDatum: {
     source: {
@@ -60,15 +60,28 @@ const renderCustomNodeElement = (nodeDatum: CustomNodeElementProps) => (
 );
 
 function DendogramTree(props: DendogramTreeInterface) {
+    const { treeData } = props;
+
+    const secondLevelChildrens = treeData?.children?.length || 0;
+    const thirdLevelChildrens = React.useMemo(() => {
+        let n = 0;
+
+        treeData?.children?.forEach((t) => {
+            n += (t.children?.length || 0);
+        });
+
+        return n;
+    }, [treeData]);
+
+    if (thirdLevelChildrens === 0) {
+        NODE_WIDTH = 260;
+        NODE_GAP_X = 120;
+    }
+
     const nodeSize = {
         x: NODE_WIDTH + NODE_GAP_X,
         y: NODE_HEIGHT + NODE_GAP_Y,
     };
-
-    const { treeData } = props;
-
-    const secondLevelChildrens = treeData?.children?.length || 0;
-    const thirdLevelChildrens = treeData?.countChild || 0;
 
     const childCount = secondLevelChildrens + thirdLevelChildrens;
 

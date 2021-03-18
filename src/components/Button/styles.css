@@ -27,26 +27,21 @@
         border: 0;
     }
 
-    &:hover {
-        background-color: var(--hover-background-color);
-        color: var(--hover-color);
-    }
-
     &:focus {
         outline: none;
     }
 
-    &:active {
-        background-color: var(--active-background-color);
-        color: var(--active-color);
-    }
-
     &.secondary {
-        color: var(--color-white);
+        --color: var(--color-white);
+
+        &:active,
+        &:hover {
+            --color: var(--color-white);
+        }
     }
 
     &.secondary-outline {
-        --background-color: transparent; 
+        --background-color: var(--color-white); 
         --color: var(--color-secondary);
 
         &:hover {
@@ -61,9 +56,9 @@
     }
 
     &.outline {
-        --background-color: transparent; 
+        --background-color: var(--color-white); 
         --color: var(--color-text);
-        --border-color: var(--color-separator);
+        --border-color: var(--color-separator-dark);
 
         &:hover {
             --hover-color: var(--color-text);
@@ -76,6 +71,7 @@
         }
     }
 
+    &.icon-only,
     &.transparent {
         --background-color: transparent; 
         --border-color: transparent;
@@ -90,6 +86,20 @@
             --active-color: var(--color-secondary);
             --active-background-color: var(--color-secondary-light-2);
         }
+    }
+
+    &.icon-only {
+        padding: var(--spacing-extra-small) calc(var(--spacing-small) - var(--padding-internal-h));
+    }
+
+    &:hover {
+        --background-color: var(--hover-background-color);
+        --color: var(--hover-color);
+    }
+
+    &:active {
+        --background-color: var(--active-background-color);
+        --color: var(--active-color);
     }
 
     &:disabled {

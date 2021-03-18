@@ -289,6 +289,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                             </Button>
                         )}
                         <SegmentInput
+                            className={styles.segmentInput}
                             options={orientations}
                             optionTitleSelector={item => item.tooltip}
                             optionKeySelector={item => item.key}

@@ -6,7 +6,7 @@
     flex-direction: column;
 
     .first-section {
-        padding: calc(6 * var(--spacing-medium)) var(--spacing-medium) var(--spacing-medium) var(--spacing-medium);
+        padding: 4em var(--spacing-large);
 
         .title {
             margin-bottom: calc(2 * var(--spacing-medium));
@@ -25,33 +25,13 @@
         display: flex;
         align-items: center;
         flex-direction: column;
+        padding: var(--spacing-medium);
+        width: 100%;
+        max-width: 500px;
 
-        .text-input {
-            padding: var(--spacing-medium);
-            width: 400px;
-            border: none;
-        }
-
-        .text-area-input {
-            padding: var(--spacing-medium);
-            width: 400px;
-            min-height: 70px;
-            border: none;
-        }
-
+        .text-input,
         .select-input {
-            padding: var(--spacing-medium);
-            width: 400px;
-        }
-
-        .label {
-            margin-bottom: var(--spacing-small);
-            padding-left: 0;
-            font-size: var(--font-size-large-medium);
-        }
-
-        .input {
-            height: 32px;
+            margin: var(--spacing-medium) 0;
         }
 
         .error {
@@ -60,25 +40,35 @@
         }
 
         .attachment {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            width: 400px;
-            padding: var(--spacing-medium);
+            align-self: stretch;
+            margin: var(--spacing-medium) 0;
 
-            .label {
-                text-transform: uppercase;
-                letter-spacing: 1.5px;
-                color: var(--color-primary-light-2);
+            .input-container {
+                display: flex;
+
+                .select-button {
+                    flex-shrink: 0;
+                }
+
+                .file-input {
+                    flex-grow: 1;
+                    padding: var(--spacing-small) var(--spacing-medium);
+                    font-family: inherit;
+                    font-size: inherit;
+
+                    &::-webkit-file-upload-button {
+                        display: none;
+                    }
+                }
             }
         }
 
-        .button {
-            margin-top: var(--spacing-large-medium);
-            background: var(--color-secondary-light-1);
-            padding: var(--spacing-small-medium) var(--spacing-ultra-large);
-            width: fit-content;
-            color: var(--color-white);
+        .actions {
+            padding: 2em;
+
+            .button {
+                width: fit-content;
+            }
         }
     }
 }

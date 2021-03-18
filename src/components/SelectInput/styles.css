@@ -32,7 +32,7 @@
     .option {
         display: block;
         cursor: pointer;
-        padding: var(--spacing-small) var(--spacing-large-medium);
+        padding: var(--spacing-medium) var(--spacing-large-medium);
         width: 100%;
         text-align: left;
         color: var(--color-text-label);

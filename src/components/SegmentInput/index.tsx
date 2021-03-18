@@ -47,7 +47,7 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
 
     return (
         <div className={_cs(className, styles.segmentInput)}>
-            {!hideLabel && (
+            {!hideLabel && label && (
                 <InputLabel
                     disabled={disabled}
                     error={!!error}

@@ -108,7 +108,7 @@
     padding: var(--spacing-small) 0;
 
     .link {
-        padding: var(--spacing-small) var(--spacing-medium);
+        padding: var(--spacing-medium) var(--spacing-medium);
         text-decoration: none;
         color: var(--color-text);
         font-size: var(--font-size-medium);

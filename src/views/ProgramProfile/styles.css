@@ -1,5 +1,5 @@
 .infographics {
-    --width-infographics-content: 1100px;
+    --width-infographics-content: 210mm;
     --min-height-infographics-content: 297mm;
     display: flex;
     background-color: var(--color-grey-shade-2);

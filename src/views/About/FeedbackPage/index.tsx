@@ -1,10 +1,14 @@
 import React, { useState, useCallback, useMemo, useContext } from 'react';
 
 import TextInput from '#components/TextInput';
-import Button from '#components/Button';
+import InputLabel from '#components/InputLabel';
+import Button, { useButtonStyling } from '#components/Button';
 import TextAreaInput from '#components/TextAreaInput';
 import SelectInput from '#components/SelectInput';
-import { SnackBarContext, SnackBarContents } from '#components/SnackContext';
+import {
+    SnackBarContext,
+    SnackBarContents,
+} from '#components/SnackContext';
 import Snackbar from '#components/Snackbar';
 
 import { apiEndPoint } from '#utils/constants';
@@ -35,10 +39,12 @@ function FeedbackPage() {
     const [selectedAttachment, setSelectedAttachment] = useState<File>();
     const [attachmentKey, setAttachmentKey] = useState<string>(new Date().toTimeString());
     const [error, setError] = useState('');
+    const labelProps = useButtonStyling({
+        children: 'Select a file',
+        className: styles.selectButton,
+    });
 
-    const {
-        setSnackBarContents,
-    } = useContext(SnackBarContext);
+    const { setSnackBarContents } = useContext(SnackBarContext);
 
     const title = 'Feedback Form';
     const subTitle = 'Welcome! What kind of feedback do you have about this tool?';
@@ -192,23 +198,17 @@ function FeedbackPage() {
                 <TextInput
                     label="Name"
                     placeholder="Your name"
-                    autoFocus
                     value={name}
                     onChange={handleNameChange}
                     className={styles.textInput}
-                    inputClassName={styles.input}
-                    labelClassName={styles.label}
                 />
                 <TextInput
                     label="Email"
                     placeholder="Your email address"
                     type="email"
-                    autoFocus
                     value={email}
                     onChange={handleEmailChange}
                     className={styles.textInput}
-                    inputClassName={styles.input}
-                    labelClassName={styles.label}
                 />
                 <SelectInput
                     label="Type"
@@ -219,55 +219,56 @@ function FeedbackPage() {
                     value={type}
                     optionLabelSelector={typeLabelSelector}
                     optionKeySelector={typeKeySelector}
-                    labelClassName={styles.label}
-                    inputClassName={styles.input}
                     showDropDownIcon
                 />
                 <TextInput
                     label="Subject"
                     placeholder="Subject"
-                    autoFocus
                     value={subject}
                     onChange={handleSubjectChange}
                     className={styles.textInput}
-                    inputClassName={styles.input}
                     labelClassName={styles.label}
                 />
                 <div className={styles.attachment}>
-                    <div
-                        className={styles.label}
-                    >
+                    <InputLabel>
                         Add an attachment
+                    </InputLabel>
+                    <div className={styles.inputContainer}>
+                        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                        <label
+                            htmlFor="attachment"
+                            {...labelProps}
+                        />
+                        <input
+                            className={styles.fileInput}
+                            id="attachment"
+                            type="file"
+                            name="attachment"
+                            onChange={handleFileInput}
+                            key={attachmentKey}
+                        />
                     </div>
-                    <input
-                        id="attachment"
-                        type="file"
-                        name="attachment"
-                        onChange={handleFileInput}
-                        key={attachmentKey}
-                    />
                 </div>
                 <TextAreaInput
+                    rows={3}
                     label="Your Feedback"
                     placeholder="Write us your feedback..."
                     autoFocus
                     value={feedback}
                     onChange={handleFeedbackChange}
                     className={styles.textInput}
-                    inputClassName={styles.textAreaInput}
-                    labelClassName={styles.label}
                 />
-                <Button
-                    className={styles.button}
-                    disabled={!!error || disabled}
-                    type="submit"
-                >
-                    Send
-                </Button>
+                <div className={styles.actions}>
+                    <Button
+                        className={styles.button}
+                        disabled={!!error || disabled}
+                        type="submit"
+                    >
+                        Send
+                    </Button>
+                </div>
             </form>
-            <Snackbar
-                className={styles.notify}
-            />
+            <Snackbar className={styles.notify} />
         </div>
     );
 }

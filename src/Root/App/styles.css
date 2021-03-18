@@ -188,9 +188,9 @@
     --color-link: #3182bd;
 
     /* COLOR SEPARATOR */
-    --color-separator: #b8c2cd;
-
-    --color-separator-light: rgba(160, 180, 190, 0.3);
+    --color-separator: var(--color-grey-shade-2);
+    --color-separator-dark: var(--color-grey-shade-4);
+    --color-separator-light: var(--color-grey-shade-1);
 
     /* OTHER COLORS */
     --color-light-pink: #ffc0cb;

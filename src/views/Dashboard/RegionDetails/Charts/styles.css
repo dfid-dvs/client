@@ -37,16 +37,17 @@
     align-items: flex-start;
     flex-grow: 1;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: flex-start;
     overflow-y: auto;
 
     .poly-chart {
         margin: var(--spacing-medium);
         background: var(--color-foreground);
+        width: 480px;
     }
 
     .chart {
-        padding: var(--spacing-large) var(--spacing-medium);
+        padding: var(--spacing-medium);
         width: 480px;
         height: 300px;
     }

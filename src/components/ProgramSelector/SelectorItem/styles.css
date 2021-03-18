@@ -115,6 +115,14 @@
             flex-grow: 1;
             overflow: auto;
         }
+
+        .empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-medium);
+            color: var(--color-grey-shade-5);
+        }
     }
 
     .centered {

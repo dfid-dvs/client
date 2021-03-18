@@ -265,13 +265,10 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
     );
 
     return (
-        <div
-            className={_cs(className, styles.selectInput)}
-            title={label}
-        >
+        <>
             <TextInput
                 label={label}
-                className={styles.textInput}
+                className={_cs(className, styles.textInput)}
                 labelClassName={labelClassName}
                 inputClassName={inputClassName}
                 elementRef={inputContainerRef}
@@ -346,7 +343,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                     </Dropdown>
                 </Portal>
             )}
-        </div>
+        </>
     );
 }
 

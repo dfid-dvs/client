@@ -511,15 +511,16 @@ function ProgramSelector(props: Props) {
                 setSearchText={setMarkerSearchText}
             />
             {!clearButtonHidden && (
-                <Button
-                    className={styles.clearButton}
-                    onClick={handleClearFilters}
-                    transparent
-                    variant="secondary"
-                    icons={<MdRefresh />}
-                >
-                    Clear All
-                </Button>
+                <div className={styles.actions}>
+                    <Button
+                        className={styles.clearButton}
+                        onClick={handleClearFilters}
+                        variant="secondary-outline"
+                        icons={<MdRefresh />}
+                    >
+                        Clear All
+                    </Button>
+                </div>
             )}
         </div>
     );

@@ -1,7 +1,7 @@
 .label {
     padding: var(--spacing-small) var(--spacing-medium);
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: var(--spacing-letter-medium);
     color: var(--color-primary-light-2);
     font-size: var(--font-size-subtitle-2);
 }

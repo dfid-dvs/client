@@ -104,7 +104,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         if (onHoverChart) {
             onHoverChart(id);
         }
-    }, [onHoverChart]);
+    }, [onHoverChart, id]);
 
     const [layout, setLayout] = useState<'horizontal' | 'vertical'>(orientation || 'vertical');
 
@@ -157,7 +157,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
             }
             return undefined;
         },
-        [hoveredChartId, id],
+        [hoveredChartId, id, ref],
     );
 
     return (
@@ -213,6 +213,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                             </Button>
                         )}
                         <SegmentInput
+                            className={styles.segmentInput}
                             options={orientations}
                             optionKeySelector={item => item.key}
                             optionLabelSelector={item => item.label}
@@ -243,8 +244,8 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                             type="category"
                             interval={0}
                             width={layout === 'vertical' ? 86 : undefined}
-                            tickFormatter={hasLongTitles && categoryTickFormatter}
-                            angle={layout === 'horizontal' && -45}
+                            tickFormatter={hasLongTitles ? categoryTickFormatter : undefined}
+                            angle={layout === 'horizontal' ? -45 : undefined}
                             textAnchor="end"
                         />
                         <Ycomp
@@ -254,7 +255,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                             width={layout === 'horizontal' ? 36 : undefined}
                         />
                         <Tooltip
-                            allowEscapeViewBox={{ x: false, y: true }}
+                            allowEscapeViewBox={{ x: false, y: false }}
                             offset={20}
                             formatter={valueTickFormatter}
                         />

@@ -2,30 +2,7 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    box-shadow: 2px 0 5px -3px rgba(0, 0, 0, .3);
     overflow: auto;
-
-    .indicator-select-input {
-        padding: 0;
-        width: 420px;
-        color: var(--color-text);
-    }
-
-    .sector-input,
-    .marker-input,
-    .partner-input {
-        display: flex;
-        align-items: center;
-        padding: 0 var(--spacing-medium);
-
-        &:disabled {
-            opacity: 0.5;
-        }
-
-        &.applied {
-            font-weight: var(--font-weight-bold);
-        }
-    }
 
     .program,
     .partner,
@@ -36,8 +13,9 @@
         overflow-y: auto;
     }
 
-    .clear-button {
+    .actions {
         display: flex;
+        align-items: center;
         justify-content: center;
         border-top: var(--width-separator-thin) solid var(--color-separator-light);
         padding: var(--spacing-medium);
