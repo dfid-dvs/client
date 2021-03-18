@@ -314,8 +314,8 @@ const Dashboard = (props: Props) => {
                 choroplethInteger: selectedIndicatorDetails?.datatype === 'integer',
                 choroplethUnit: selectedIndicatorDetails?.unit,
                 choroplethSelected: isDefined(selectedIndicator),
-
-                bubbleMapState: fiveWMapState,
+                // FIXME: should get data from backend in proper format
+                bubbleMapState: fiveWMapState.map(({ id, value }) => ({ id, value: +value })),
                 bubblePending: fiveWMapStatePending,
                 bubbleTitle: fiveWTitle,
                 bubbleInteger: fiveW?.datatype === 'integer',
@@ -334,7 +334,8 @@ const Dashboard = (props: Props) => {
             choroplethUnit: fiveW?.unit,
 
             bubbleSelected: isDefined(selectedIndicator),
-            bubbleMapState: indicatorMapState,
+            // FIXME: should get data from backend in proper format
+            bubbleMapState: indicatorMapState.map(({ id, value }) => ({ id, value: +value })),
             bubblePending: indicatorMapStatePending,
             bubbleTitle: selectedIndicatorDetails?.fullTitle,
             bubbleInteger: selectedIndicatorDetails?.datatype === 'integer',
@@ -433,7 +434,10 @@ const Dashboard = (props: Props) => {
                 lngLat,
             });
             const regionProperties = feature.properties as Region;
-            setRegion(regionProperties);
+            setRegion({
+                ...regionProperties,
+                code: regionProperties.id,
+            });
 
             return true;
         },

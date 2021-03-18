@@ -147,7 +147,7 @@ function IndicatorMap(props: Props) {
     }
 
     // TODO: filter by code not id
-    const regionGetRequest = selectedRegionId ? `${apiEndPoint}/core/${regionLevel}/?id=${selectedRegionId}` : undefined;
+    const regionGetRequest = selectedRegionId ? `${apiEndPoint}/core/${regionLevel}/?code=${selectedRegionId}` : undefined;
     const regionSchema = regionLevel;
     const [
         regionListPending,
