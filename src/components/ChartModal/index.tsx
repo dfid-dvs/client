@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import { FiBarChart2 } from 'react-icons/fi';
 import { TiChartPie } from 'react-icons/ti';
 import { GiHistogram } from 'react-icons/gi';
@@ -16,6 +16,7 @@ import HistogramConfig from './HistogramConfig';
 import BiAxialChartConfig from './BiAxialChartConfig';
 
 import styles from './styles.css';
+import { SnackBarContents, SnackBarContext } from '#components/SnackContext';
 
 type ChartType = 'bar-chart' | 'pie-chart' | 'histogram' | 'bi-axial-chart' | 'scatter-chart';
 
@@ -98,12 +99,21 @@ function ChartModal<T>(props: Props<T>) {
     } = props;
 
     const [chartType, setChartType] = useState<ChartType>(editableChartSettings ? editableChartSettings.type : 'bar-chart');
+    const {
+        setSnackBarContents,
+    } = useContext(SnackBarContext);
+
     const handleSave = useCallback(
         (value: ChartSettings<T>) => {
             onSave(value);
             onClose();
+            const contents: SnackBarContents = {
+                message: 'Chart added successfully.',
+                severity: 'success',
+            };
+            setSnackBarContents(contents);
         },
-        [onClose, onSave],
+        [onClose, setSnackBarContents, onSave],
     );
 
     return (

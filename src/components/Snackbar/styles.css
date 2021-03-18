@@ -1,0 +1,35 @@
+.notification {
+    display: flex;
+    position: fixed;
+    top: 100px;
+    right: var(--spacing-large);
+    align-items: flex-start;
+    border-radius: .5em;
+    background: transparent;
+    padding: 0 calc(var(--spacing-large) - var(--spacing-medium));
+    width: 480px;
+
+    .button {
+        margin: var(--spacing-medium) 0;
+        border-color: transparent;
+
+        .icon {
+            color: var(--color-white);
+        }
+    }
+
+    .message {
+        align-self: center;
+        flex-grow: 1;
+        padding: var(--spacing-medium);
+        color: var(--color-white);
+    }
+}
+
+.success {
+    background-color: var(--color-success);
+}
+
+.error {
+    background-color: var(--color-danger);
+}
