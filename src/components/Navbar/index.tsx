@@ -6,6 +6,7 @@ import { IoMdArrowDropdown } from 'react-icons/io';
 
 import Button from '#components/Button';
 import DropdownMenu from '#components/DropdownMenu';
+import useBasicToggle from '#hooks/useBasicToggle';
 
 import dfidLogo from '#resources/dfid-off-logo.jpg';
 import styles from './styles.css';
@@ -24,6 +25,10 @@ const Navbar = (props: Props) => {
     } = props;
 
     const link = process.env.REACT_APP_SERVER_URL || 'https://dvsnaxa.naxa.com.np/';
+
+    const [
+        dropdownShown, , , toggleDropdownShown,
+    ] = useBasicToggle();
 
     return (
         <nav
@@ -49,31 +54,45 @@ const Navbar = (props: Props) => {
                     </NavLink>
                     <DropdownMenu
                         className={styles.exploreDataButton}
-                        dropdownContainerClassName={styles.exploreDataContainer}
+                        dropdownContainerClassName={_cs(
+                            styles.exploreDataContainer,
+                            !dropdownShown && styles.hidden,
+                        )}
                         label={(
-                            <>
+                            <div
+                                role="presentation"
+                                className={styles.label}
+                                onClick={toggleDropdownShown}
+                            >
                                 <div className={styles.title}>
                                     Explore Data
                                 </div>
-                                <IoMdArrowDropdown className={styles.icon} />
-                            </>
+                                <IoMdArrowDropdown
+                                    className={styles.icon}
+                                />
+                            </div>
                         )}
                     >
-
-                        <Link
-                            className={styles.link}
-                            to="/#regions"
-                            replace
-                        >
-                            By Regions
-                        </Link>
-                        <Link
-                            className={styles.link}
-                            to="/#programs"
-                            replace
-                        >
-                            By Programs
-                        </Link>
+                        {dropdownShown && (
+                            <Link
+                                className={styles.link}
+                                to="/#regions"
+                                replace
+                                onClick={toggleDropdownShown}
+                            >
+                                By Regions
+                            </Link>
+                        )}
+                        {dropdownShown && (
+                            <Link
+                                className={styles.link}
+                                to="/#programs"
+                                replace
+                                onClick={toggleDropdownShown}
+                            >
+                                By Programs
+                            </Link>
+                        )}
                     </DropdownMenu>
                     {/*
                     <NavLink

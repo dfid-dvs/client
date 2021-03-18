@@ -102,10 +102,17 @@ function RegionProfile(props: Props) {
         setSelectedRegionData,
     ] = useState<Region & { type: RegionLevelOption } | undefined>(undefined);
     const [showAddModal, setAddModalVisibility] = useState(false);
+    const [description, setDescription] = useState('');
 
+    const handleDescriptionChange = useCallback(
+        (value: string) => {
+            setDescription(value);
+        },
+        [setDescription],
+    );
     const regionProfileUrl = selectedRegionData ? `${apiEndPoint}/core/profile?region=${regionLevel}&${regionLevel}_code=${+selectedRegionData.code}` : undefined;
     const [regionProfilePending, regionProfileResponse] = useRequest<RegionProfileResponse>(regionProfileUrl, 'region-profile');
-    const dendogramUrl = selectedRegionData ? `https://dvsnaxa.naxa.com.np/api/v1/core/regionaldendrogram?region=${regionLevel}&${regionLevel}_code=${selectedRegionData.code}` : undefined;
+    const dendogramUrl = selectedRegionData ? `${apiEndPoint}/core/regionaldendrogram?region=${regionLevel}&${regionLevel}_code=${selectedRegionData.code}` : undefined;
 
     const [dendogramUrlPending, dendogramUrlResponse] = useRequest<DendogramResponse>(dendogramUrl, 'region-dendogram');
     const mappedDendogramData = useMemo(() => {
@@ -168,7 +175,8 @@ function RegionProfile(props: Props) {
         setRegion(undefined);
         setSelectedRegionData(undefined);
         setRegionLevel(newRegionLevel);
-    }, [setRegion, setSelectedRegionData, setRegionLevel]);
+        setDescription('');
+    }, [setRegion, setSelectedRegionData, setRegionLevel, setDescription]);
 
     const currentBounds: Bbox | undefined = useMemo(() => {
         const bounds = selectedRegionData
@@ -225,13 +233,6 @@ function RegionProfile(props: Props) {
         [unsetIndicatorsHidden, unsetSectorsHidden],
     );
 
-    const [description, setDescription] = useState('');
-    const handleDescriptionChange = useCallback(
-        (value: string) => {
-            setDescription(value);
-        },
-        [setDescription],
-    );
     return (
         <div
             className={_cs(

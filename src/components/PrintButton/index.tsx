@@ -70,7 +70,7 @@ function PrintButton(props: Props) {
                     onClick={handlePrintPreviewClick}
                     icons={<AiOutlinePrinter />}
                     disabled={disabled}
-                    title="Print"
+                    title="Print Preview"
                     variant="secondary-outline"
                 />
             )}

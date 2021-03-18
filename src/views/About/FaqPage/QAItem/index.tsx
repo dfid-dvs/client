@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { IoIosArrowDropdown, IoIosArrowDropup } from 'react-icons/io';
 
@@ -33,22 +33,36 @@ export default function QAItem(props: QAItemProps) {
         }, [onShowAnswer, qa.id],
     );
 
-    const answerShown = qa.id === qaId;
+    const answerShown = useMemo(() => qa.id === qaId, [qa.id, qaId]);
+
+    const onToggleAnswer = useCallback(
+        () => {
+            if (answerShown) {
+                onHideAnswer();
+            } else {
+                onShowAnswer(qa.id);
+            }
+        },
+        [qa.id, answerShown, onHideAnswer, onShowAnswer],
+    );
+
     return (
         <div className={_cs(styles.qaItem, className)}>
-            <div className={styles.questionSection}>
+            <div
+                className={styles.questionSection}
+                role="presentation"
+                onClick={onToggleAnswer}
+            >
                 <div className={styles.question}>
                     { qa.question }
                 </div>
                 {answerShown ? (
                     <IoIosArrowDropup
                         className={styles.icon}
-                        onClick={onHideAnswer}
                     />
                 ) : (
                     <IoIosArrowDropdown
                         className={styles.icon}
-                        onClick={onViewAnswer}
                     />
                 )}
             </div>

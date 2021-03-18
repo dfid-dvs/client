@@ -250,7 +250,8 @@ function InfographicsCharts(props: Props) {
 
     const handleModalClose = useCallback(() => {
         onAddModalVisibilityChange(false);
-    }, [onAddModalVisibilityChange]);
+        setEditableChartId(undefined);
+    }, [onAddModalVisibilityChange, setEditableChartId]);
 
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedFiveW>) => {

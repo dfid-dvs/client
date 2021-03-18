@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import DropdownMenu from '#components/DropdownMenu';
 
 import styles from './styles.css';
+import useBasicToggle from '#hooks/useBasicToggle';
 
 interface ExploreDataProps {
     className?: string;
@@ -14,6 +15,12 @@ export default function ExploreData(props: ExploreDataProps) {
         className,
     } = props;
 
+    const [
+        dropdownShown,
+        showDropdown,
+        hideDropdown,
+    ] = useBasicToggle();
+
     return (
         <DropdownMenu
             className={_cs(styles.exploreDataButton, className)}
@@ -21,26 +28,32 @@ export default function ExploreData(props: ExploreDataProps) {
             label={(
                 <div className={styles.title}>
                     Explore Data
-                    <IoMdArrowDropdown />
+                    <IoMdArrowDropdown
+                        onClick={showDropdown}
+                    />
                 </div>
             )}
         >
-            <div className={styles.actions}>
-                <Link
-                    className={styles.link}
-                    to="#regions"
-                    replace
-                >
-                    By Regions
-                </Link>
-                <Link
-                    className={styles.link}
-                    to="#programs"
-                    replace
-                >
-                    By Programs
-                </Link>
-            </div>
+            {dropdownShown && (
+                <div className={styles.actions}>
+                    <Link
+                        className={styles.link}
+                        to="#regions"
+                        replace
+                        onClick={hideDropdown}
+                    >
+                        By Regions
+                    </Link>
+                    <Link
+                        className={styles.link}
+                        to="#programs"
+                        replace
+                        onClick={hideDropdown}
+                    >
+                        By Programs
+                    </Link>
+                </div>
+            )}
         </DropdownMenu>
     );
 }
