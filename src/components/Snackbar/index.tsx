@@ -39,10 +39,13 @@ function Snackbar(props: Props) {
                 {snackBarContents.message}
             </div>
             <Button
-                icons={<IoMdClose className={styles.icon} />}
+                transparent
                 className={styles.button}
                 onClick={onResetSnackBar}
-            />
+                variant="icon"
+            >
+                <IoMdClose className={styles.icon} />
+            </Button>
         </div>
     );
 }

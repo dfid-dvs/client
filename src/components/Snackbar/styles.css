@@ -1,19 +1,17 @@
-
 .notification {
     display: flex;
-    position: absolute;
-    right: 20px;
-    bottom: 20px;
-    align-self: center;
-    justify-content: center;
-    border-radius: var(--radius-modal);
+    position: fixed;
+    top: 100px;
+    right: var(--spacing-large);
+    align-items: flex-start;
+    border-radius: .5em;
     background: transparent;
-    padding: var(--spacing-small-medium);
-    max-width: 600px;
+    padding: 0 calc(var(--spacing-large) - var(--spacing-medium));
+    width: 480px;
 
     .button {
+        margin: var(--spacing-medium) 0;
         border-color: transparent;
-        background: transparent;
 
         .icon {
             color: var(--color-white);
@@ -22,6 +20,8 @@
 
     .message {
         align-self: center;
+        flex-grow: 1;
+        padding: var(--spacing-medium);
         color: var(--color-white);
     }
 }
