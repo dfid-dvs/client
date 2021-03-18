@@ -2,18 +2,22 @@ import React, { useState, useCallback } from 'react';
 import { FiBarChart2 } from 'react-icons/fi';
 import { TiChartPie } from 'react-icons/ti';
 import { GiHistogram } from 'react-icons/gi';
+import { FcComboChart, FcScatterPlot } from 'react-icons/fc';
 
 import Modal from '#components/Modal';
 import SegmentInput from '#components/SegmentInput';
+import ScatterChartConfig from './ScatterChartConfig';
 
 import { ChartSettings, NumericOption } from '#types';
 
 import BarChartConfig from './BarChartConfig';
 import PieChartConfig from './PieChartConfig';
 import HistogramConfig from './HistogramConfig';
+import BiAxialChartConfig from './BiAxialChartConfig';
+
 import styles from './styles.css';
 
-type ChartType = 'bar-chart' | 'pie-chart' | 'histogram';
+type ChartType = 'bar-chart' | 'pie-chart' | 'histogram' | 'bi-axial-chart' | 'scatter-chart';
 
 interface ChartTypeOption {
     type: ChartType;
@@ -51,6 +55,26 @@ const chartTypeOptions: ChartTypeOption[] = [
             </>
         ),
     },
+    {
+        type: 'bi-axial-chart',
+        name: (
+            <>
+                <FcComboChart />
+                &nbsp;
+                Bi-Axial Chart
+            </>
+        ),
+    },
+    {
+        type: 'scatter-chart',
+        name: (
+            <>
+                <FcScatterPlot />
+                &nbsp;
+                Scattter Chart
+            </>
+        ),
+    },
 ];
 
 const chartLabelSelector = (item: ChartTypeOption) => item.name;
@@ -61,6 +85,7 @@ interface Props<T> {
     onClose: () => void;
     options: NumericOption<T>[];
     keySelector: (item: T) => string;
+    editableChartSettings?: ChartSettings<T> | undefined;
 }
 
 function ChartModal<T>(props: Props<T>) {
@@ -69,9 +94,10 @@ function ChartModal<T>(props: Props<T>) {
         onSave,
         options,
         keySelector,
+        editableChartSettings,
     } = props;
 
-    const [chartType, setChartType] = useState<ChartType>('bar-chart');
+    const [chartType, setChartType] = useState<ChartType>(editableChartSettings ? editableChartSettings.type : 'bar-chart');
     const handleSave = useCallback(
         (value: ChartSettings<T>) => {
             onSave(value);
@@ -108,6 +134,7 @@ function ChartModal<T>(props: Props<T>) {
                     onSave={handleSave}
                     keySelector={keySelector}
                     options={options}
+                    editableChartData={editableChartSettings}
                 />
             )}
             {chartType === 'pie-chart' && (
@@ -116,14 +143,33 @@ function ChartModal<T>(props: Props<T>) {
                     onSave={handleSave}
                     keySelector={keySelector}
                     options={options}
+                    editableChartData={editableChartSettings}
                 />
             )}
             {chartType === 'histogram' && (
                 <HistogramConfig
                     className={styles.chartConfig}
                     onSave={handleSave}
-                    // keySelector={keySelector}
                     options={options}
+                    editableChartData={editableChartSettings}
+                />
+            )}
+            {chartType === 'bi-axial-chart' && (
+                <BiAxialChartConfig
+                    className={styles.chartConfig}
+                    onSave={handleSave}
+                    keySelector={keySelector}
+                    options={options}
+                    editableChartData={editableChartSettings}
+                />
+            )}
+            {chartType === 'scatter-chart' && (
+                <ScatterChartConfig
+                    className={styles.chartConfig}
+                    onSave={handleSave}
+                    keySelector={keySelector}
+                    options={options}
+                    editableChartData={editableChartSettings}
                 />
             )}
         </Modal>

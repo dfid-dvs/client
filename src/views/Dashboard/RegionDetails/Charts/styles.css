@@ -2,7 +2,8 @@
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
-    background: var(--color-white-smoke);
+    flex-shrink: 0;
+    background: var(--color-grey-shade-2);
     padding: var(--spacing-large) var(--spacing-medium);
 
     .add-chart-button {
@@ -58,13 +59,13 @@
 
 .modal-chart {
     padding: var(--spacing-large);
-    width: 720px;
-    height: 560px;
+    min-width: 900px;
+    min-height: 700px;
 
     .chart {
         padding: var(--spacing-large);
-        width: 560px;
-        height: 350px;
+        width: 800px;
+        height: 600px;
     }
 }
 

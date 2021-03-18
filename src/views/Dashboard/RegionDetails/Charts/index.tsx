@@ -20,7 +20,6 @@ import {
 import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
 import styles from './styles.css';
 
-
 const keySelector = (item: ExtendedFiveW) => item.name;
 
 const staticOptions: NumericOption<ExtendedFiveW>[] = [
@@ -72,6 +71,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         bars: [
             {
                 title: 'Allocated Budget',
+                key: 'allocatedBudget',
                 color: tableauColors[1],
                 valueSelector: item => item.allocatedBudget,
             },
@@ -91,6 +91,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'programCount',
                 title: 'Program count',
                 color: tableauColors[2],
                 valueSelector: item => item.programCount,
@@ -111,6 +112,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'partnerCount',
                 title: 'Partner count',
                 color: tableauColors[3],
                 valueSelector: item => item.partnerCount,
@@ -131,6 +133,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'sectorCount',
                 title: 'Sector count',
                 color: tableauColors[4],
                 valueSelector: item => item.sectorCount,
@@ -182,6 +185,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '2',
         type: 'pie-chart',
+        key: 'allocatedBudget',
         title: 'Total Budget',
         keySelector: item => item.name,
         valueSelector: item => item.allocatedBudget,
@@ -189,60 +193,57 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '4',
         type: 'histogram',
-        title: 'Financial Institutions',
+        key: 'componentCount',
+        title: 'Component Count',
         color: tableauColors[0],
         binCount: 10,
-        valueSelector: item => item.allocatedBudget,
+        valueSelector: item => item.componentCount,
         // dependencies: [118],
     },
-    /*
-
     {
         id: '3',
-        type: 'bar-chart',
+        type: 'bi-axial-chart',
         title: 'Health and Finance for top 10 by budget',
         keySelector: item => item.name,
-        bars: [
+        chartData: [
             {
-                title: 'Health Facilities',
+                type: 'bar',
+                title: 'Program count',
+                key: 'programCount',
                 color: tableauColors[2],
-                valueSelector: item => item.indicators[119] || null,
+                valueSelector: item => item.programCount,
             },
             {
-                title: 'Financial Institutions',
-                color: tableauColors[3],
-                valueSelector: item => item.indicators[118] || null,
+                type: 'line',
+                title: 'Allocated Budget',
+                key: 'allocatedBudget',
+                color: tableauColors[4],
+                valueSelector: item => item.allocatedBudget,
             },
         ],
 
         limit: {
             count: 10,
             method: 'max',
-            valueSelector: item => item.allocatedBudget,
+            valueSelector: item => item.programCount,
         },
-
         // meta
         dependencies: [119, 118],
     },
     {
-        id: '4',
-        type: 'histogram',
-        title: 'Financial Institutions distribution',
-        color: tableauColors[0],
-        binCount: 10,
-        valueSelector: item => item.indicators[118] || 0,
-        dependencies: [118],
-    },
-    {
         id: '5',
-        type: 'histogram',
-        title: 'Health Facilities distribution',
-        color: tableauColors[3],
-        binCount: 10,
-        valueSelector: item => item.indicators[119] || 0,
-        dependencies: [119],
+        type: 'scatter-chart',
+        key: 'componentCount',
+        title: 'Component Count',
+        color: tableauColors[0],
+        valueSelector: item => item.componentCount,
+        keySelector: item => item.name,
+        // dependencies: [118],
+        limit: {
+            count: 10,
+            method: 'max',
+        },
     },
-     */
 ];
 
 interface Props {
@@ -280,7 +281,21 @@ function Charts(props: Props) {
     );
 
     const [showModal, setModalVisibility] = useState(false);
+    const [editableChartId, setEditableChartId] = useState<string>();
+    const [hoveredChartId, setHoveredChartId] = useState<string>();
+    const onHoverChart = useCallback(
+        (id: string) => {
+            setHoveredChartId(id);
+        },
+        [setHoveredChartId],
+    );
 
+    const onLeaveChart = useCallback(
+        () => {
+            setHoveredChartId(undefined);
+        },
+        [setHoveredChartId],
+    );
     const indicatorMapping = useMemo(
         () => listToMap(
             indicatorList,
@@ -331,16 +346,37 @@ function Charts(props: Props) {
 
     const handleModalClose = useCallback(() => {
         setModalVisibility(false);
-    }, [setModalVisibility]);
+        setEditableChartId(undefined);
+    }, [setModalVisibility, setEditableChartId]);
 
+    const editableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
+        () => {
+            const chartSetting = chartSettings.find(c => c.id === editableChartId);
+            if (!chartSetting) {
+                return undefined;
+            }
+
+            return chartSetting;
+        },
+        [chartSettings, editableChartId],
+    );
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedFiveW>) => {
-            setChartSettings(currentChartSettings => [
-                ...currentChartSettings,
-                settings,
-            ]);
+            if (!editableChartId) {
+                setChartSettings(currentChartSettings => [
+                    ...currentChartSettings,
+                    settings,
+                ]);
+            }
+            const tmpChartSettings = [...chartSettings];
+            const chartIndex = tmpChartSettings.findIndex(c => c.id === editableChartId);
+            if (chartIndex <= -1) {
+                return;
+            }
+            tmpChartSettings.splice(chartIndex, 1, settings);
+            setChartSettings(tmpChartSettings);
         },
-        [],
+        [editableChartId],
     );
 
     const handleChartDelete = useCallback(
@@ -375,6 +411,14 @@ function Charts(props: Props) {
             setExpandableChart(id);
         },
         [setExpandableChart],
+    );
+
+    const onSetEditableChartId = useCallback(
+        (id: string | undefined) => {
+            setEditableChartId(id);
+            setModalVisibility(true);
+        },
+        [setEditableChartId, setModalVisibility],
     );
 
     const handleChartCollapse = useCallback(
@@ -425,6 +469,10 @@ function Charts(props: Props) {
                         className={styles.polyChart}
                         onExpand={handleChartExpand}
                         chartExpanded={expandableChart}
+                        onSetEditableChartId={onSetEditableChartId}
+                        hoveredChartId={hoveredChartId}
+                        onHoverChart={onHoverChart}
+                        onLeaveChart={onLeaveChart}
                     />
                 ))}
             </div>
@@ -434,6 +482,7 @@ function Charts(props: Props) {
                     onSave={handleChartAdd}
                     options={options}
                     keySelector={keySelector}
+                    editableChartSettings={editableChartSettings}
                 />
             )}
             {expandableChart && expandableChartSettings && (

@@ -100,8 +100,8 @@ function RegionDetails(props: Props) {
                         onChange={onSelectTab}
                     />
                     <Link
-                        className={_cs(styles.regionProfileLink, styles.disabled)}
-                        to="/infographics/"
+                        className={styles.regionProfileLink}
+                        to="/region-profile/"
                     >
                         Create Regional Profile
                     </Link>

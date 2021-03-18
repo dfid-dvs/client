@@ -32,7 +32,6 @@ function Modal(props: Props) {
 
         onClose,
     } = props;
-
     return (
         <Portal>
             <Backdrop dark>

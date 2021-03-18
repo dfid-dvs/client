@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
     BarChart,
     Bar,
@@ -10,10 +10,12 @@ import {
     TooltipFormatter,
     ResponsiveContainer,
 } from 'recharts';
-import { IoMdClose } from 'react-icons/io';
+import { IoMdClose, IoMdDownload } from 'react-icons/io';
 import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
-import { AiOutlineExpandAlt } from 'react-icons/ai';
+import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
+import { useRechartToPng } from 'recharts-to-png';
+import FileSaver from 'file-saver';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
@@ -59,6 +61,10 @@ interface BarChartUnitProps<T> {
     onDelete: (name: string | undefined) => void;
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
+    onSetEditableChartId?: (name: string | undefined) => void;
+    hoveredChartId?: string;
+    onHoverChart?: (id: string) => void;
+    onLeaveChart?: () => void;
 }
 
 const chartMargin = {
@@ -79,8 +85,11 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         hideActions,
         onExpand,
         expandableIconHidden,
+        onSetEditableChartId,
+        hoveredChartId,
+        onHoverChart,
+        onLeaveChart,
     } = props;
-
     const {
         title,
         keySelector,
@@ -90,6 +99,12 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         id,
         orientation,
     } = settings;
+
+    const handleChartHover = useCallback(() => {
+        if (onHoverChart) {
+            onHoverChart(id);
+        }
+    }, [onHoverChart]);
 
     const [layout, setLayout] = useState<'horizontal' | 'vertical'>(orientation || 'vertical');
 
@@ -127,8 +142,30 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
 
     const hasLongTitles = averageLength > acceptableLength;
 
+    const [png, ref] = useRechartToPng();
+    const handleDownload = useCallback(
+        async () => {
+            FileSaver.saveAs(png, `${title}.png`);
+        },
+        [png, title],
+    );
+
+    const barRef = useMemo(
+        () => {
+            if (hoveredChartId === id) {
+                return ref;
+            }
+            return undefined;
+        },
+        [hoveredChartId, id],
+    );
+
     return (
-        <div className={_cs(styles.chartContainer, className)}>
+        <div
+            className={_cs(styles.chartContainer, className)}
+            onMouseEnter={handleChartHover}
+            onMouseLeave={onLeaveChart}
+        >
             <header className={_cs(styles.header, headerClassName)}>
                 <h3 className={styles.heading}>
                     {title}
@@ -136,11 +173,31 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                 {!hideActions && (
                     <div className={styles.actions}>
                         <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
+                        {onSetEditableChartId && (
+                            <Button
+                                onClick={onSetEditableChartId}
+                                name={id}
+                                title="Edit"
+                                transparent
+                                variant="icon"
+                            >
+                                <AiOutlineEdit className={styles.expandIcon} />
+                            </Button>
+                        )}
+                        <Button
                             onClick={onDelete}
                             name={id}
-                            title="Delete chart"
+                            title="Delete"
                             transparent
-                            variant="danger"
+                            variant="icon"
                         >
                             <IoMdClose className={styles.deleteIcon} />
                         </Button>
@@ -148,9 +205,9 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                             <Button
                                 onClick={onExpand}
                                 name={id}
-                                title="Expand chart"
+                                title="Expand"
                                 transparent
-                                variant="danger"
+                                variant="icon"
                             >
                                 <AiOutlineExpandAlt className={styles.expandIcon} />
                             </Button>
@@ -174,6 +231,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                         layout={layout}
                         margin={chartMargin}
                         barGap={0}
+                        ref={barRef}
                     >
                         <CartesianGrid
                             strokeDasharray="0"

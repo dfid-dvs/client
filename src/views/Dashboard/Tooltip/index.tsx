@@ -4,6 +4,8 @@ import {
     isDefined,
     unique,
 } from '@togglecorp/fujs';
+import { FaExpandAlt } from 'react-icons/fa';
+import { IoMdClose } from 'react-icons/io';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
@@ -96,6 +98,10 @@ interface Props {
     partnerIdList?: number[];
     sectorIdList?: number[];
     subsectorIdList?: number[];
+
+    tooltipExpanded?: boolean;
+    setTooltipExpanded?: () => void;
+    unsetTooltipExpanded?: () => void;
 }
 
 const Tooltip = (props: Props) => {
@@ -115,6 +121,10 @@ const Tooltip = (props: Props) => {
         partnerIdList,
         sectorIdList,
         subsectorIdList,
+
+        tooltipExpanded,
+        setTooltipExpanded,
+        unsetTooltipExpanded,
     } = props;
 
     const popupDataUrl = useMemo(
@@ -178,6 +188,18 @@ const Tooltip = (props: Props) => {
                         )}
                         multiline
                         labelClassName={styles.label}
+                    />
+                )}
+                {!tooltipExpanded && (
+                    <FaExpandAlt
+                        onClick={setTooltipExpanded}
+                        className={styles.icon}
+                    />
+                )}
+                {tooltipExpanded && unsetTooltipExpanded && (
+                    <IoMdClose
+                        onClick={unsetTooltipExpanded}
+                        className={styles.icon}
                     />
                 )}
             </div>

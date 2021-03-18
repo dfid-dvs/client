@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
     randomString,
     isFalsyString,
@@ -149,7 +149,7 @@ function BarItem<T>(props: BarItemProps<T>) {
                 title="Delete bar"
                 disabled={index <= 0}
                 transparent
-                variant="danger"
+                variant="icon"
             >
                 <IoMdClose fontSize={18} />
             </Button>
@@ -164,6 +164,7 @@ interface Props<T> {
     className?: string;
     options: NumericOption<T>[];
     keySelector: (item: T) => string;
+    editableChartData: BarChartSettings<T> | undefined;
 }
 
 function BarChartConfig<T>(props: Props<T>) {
@@ -174,6 +175,7 @@ function BarChartConfig<T>(props: Props<T>) {
         maxRow = 4,
         options,
         keySelector: primaryKeySelector,
+        editableChartData,
     } = props;
 
     // FIXME: memoize
@@ -183,15 +185,53 @@ function BarChartConfig<T>(props: Props<T>) {
 
     const [error, setError] = useState<string | undefined>(undefined);
 
-    const [title, setTitle] = useState('');
-    const [barType, setBarType] = useState<BarTypeKeys>('normal');
-    const [bars, setBars] = useState<Bar[]>([
-        {
+    const [title, setTitle] = useState(editableChartData ? editableChartData.title : '');
+
+    const [
+        barType,
+        setBarType,
+    ] = useState<BarTypeKeys>(
+        editableChartData?.bars?.find(f => !!f.stackId) ? 'stacked' : 'normal',
+    );
+    const barData: Bar[] = useMemo(() => {
+        const defaultBar: Bar[] = [{
             id: randomString(),
             color: getRandomFromList(tableauColors),
-        },
-    ]);
-    const [limitValue, setLimitValue] = useState<string>('7');
+        }];
+
+        if (editableChartData) {
+            const editableBars = editableChartData.bars;
+            if (!editableBars) {
+                return defaultBar;
+            }
+            const mappedBars = editableBars.map((e) => {
+                const opt = options.find(o => o.key === e.key);
+                if (!opt) {
+                    return undefined;
+                }
+                return {
+                    color: e.color,
+                    id: randomString(),
+                    optionName: opt.key,
+                };
+            }).filter(isDefined);
+            if (mappedBars.length <= 0) {
+                return defaultBar;
+            }
+
+            return mappedBars;
+        }
+        return defaultBar;
+    }, [editableChartData, options]);
+
+    const [bars, setBars] = useState<(Bar)[]>(barData);
+
+    const [
+        limitValue,
+        setLimitValue,
+    ] = useState<string>(
+        editableChartData ? String(editableChartData.limit?.count) : '7',
+    );
     const [order, setOrder] = useState<OrderOptionKey | undefined>('asc');
     const [orderField, setOrderField] = useState<string | undefined>();
 
@@ -231,7 +271,7 @@ function BarChartConfig<T>(props: Props<T>) {
                 return;
             }
 
-            const chartId = randomString();
+            const chartId = editableChartData ? editableChartData.id : randomString();
 
             const properBars = bars.map((bar) => {
                 const option = options.find(item => item.key === bar.optionName);
@@ -245,7 +285,8 @@ function BarChartConfig<T>(props: Props<T>) {
                     valueSelector: option.valueSelector,
                     color: bar.color,
                     dependency: option.dependency,
-                    stackId: barType === 'stacked' ? chartId : undefined,
+                    stackId: barType === 'stacked' ? editableChartData?.id : undefined,
+                    key: bar.optionName,
                 };
             }).filter(isDefined);
 
@@ -306,7 +347,7 @@ function BarChartConfig<T>(props: Props<T>) {
             onSave(settings);
         },
         [
-            onSave, bars, title, options, barType, limitValue,
+            editableChartData, onSave, bars, title, options, barType, limitValue,
             order, autoOrderField, primaryKeySelector,
         ],
     );
@@ -363,7 +404,7 @@ function BarChartConfig<T>(props: Props<T>) {
                             disabled={bars.length > maxRow}
                             onClick={handleBarAdd}
                             transparent
-                            variant="accent"
+                            variant="icon"
                             icons={<IoMdAddCircleOutline className={styles.icon} />}
                         >
                             <div className={styles.text}>
@@ -405,6 +446,7 @@ function BarChartConfig<T>(props: Props<T>) {
                             optionLabelSelector={orderLabelSelector}
                             optionKeySelector={orderKeySelector}
                             nonClearable
+                            showDropDownIcon
                         />
                         <span>
                             order by
@@ -418,6 +460,7 @@ function BarChartConfig<T>(props: Props<T>) {
                             optionKeySelector={keySelector}
                             groupKeySelector={groupSelector}
                             nonClearable
+                            showDropDownIcon
                         />
                     </div>
                 </section>
@@ -431,7 +474,7 @@ function BarChartConfig<T>(props: Props<T>) {
                 <Button
                     className={styles.submitButton}
                     onClick={handleSave}
-                    variant="primary"
+                    variant="secondary"
                 >
                     Save
                 </Button>

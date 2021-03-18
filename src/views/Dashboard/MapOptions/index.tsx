@@ -61,7 +61,6 @@ export default function MapOptions(props: MapOptionsProps) {
         setSelectedRasterLayer,
         selectedRasterLayer,
     } = props;
-
     return (
         <div className={_cs(styles.mapSelectorContainer, className)}>
             <SelectInput

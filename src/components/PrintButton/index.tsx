@@ -56,7 +56,7 @@ function PrintButton(props: Props) {
                         className={styles.print}
                         onClick={handlePrintClick}
                         icons={<AiOutlinePrinter />}
-                        variant="primary"
+                        variant="secondary-outline"
                     >
                         Print
                     </Button>
@@ -71,6 +71,7 @@ function PrintButton(props: Props) {
                     icons={<AiOutlinePrinter />}
                     disabled={disabled}
                     title="Print"
+                    variant="secondary-outline"
                 />
             )}
         </div>

@@ -73,6 +73,11 @@ interface Props {
     selectionHidden?: boolean;
     disabled?: boolean;
 
+    segmentLabel?: string;
+    segmentLabelClassName?: string;
+    segmentInputClassName?: string;
+    selectInputClassName?: string;
+    showDropDownIcon?: boolean;
     regionLevel: RegionLevelOption;
     onRegionLevelChange?: (regionLevel: RegionLevelOption) => void;
 
@@ -89,6 +94,11 @@ function RegionSelector(props: Props) {
         regionLevel,
         region: selectedRegion,
         onRegionChange: setSelectedRegion,
+        segmentLabel = '',
+        segmentLabelClassName,
+        segmentInputClassName,
+        selectInputClassName,
+        showDropDownIcon = false,
     } = props;
 
     const regionGetRequest = searchHidden ? undefined : `${apiEndPoint}/core/${regionLevel}/`;
@@ -128,21 +138,22 @@ function RegionSelector(props: Props) {
         <div className={_cs(className, styles.singleRegionSelect)}>
             {!selectionHidden && (
                 <SegmentInput
-                    className={styles.regionLevelSelection}
+                    className={_cs(styles.regionLevelSelection, segmentInputClassName)}
                     options={regionLevelOptionList}
                     optionKeySelector={regionLevelOptionListKeySelector}
                     optionLabelSelector={regionLevelOptionListLabelSelector}
                     value={regionLevel}
                     onChange={setRegionLevelSafely}
                     disabled={disabled}
+                    label={segmentLabel}
+                    labelClassName={segmentLabelClassName}
                 />
             )}
             {!searchHidden && setSelectedRegion && (
                 <SelectInput
                     pending={regionListPending}
-                    // label={regionLevelLabel}
                     placeholder={`Select ${regionLevelLabel}`}
-                    className={styles.regionSelectInput}
+                    className={_cs(styles.regionSelectInput, selectInputClassName)}
                     disabled={regionListPending || disabled}
                     options={regionListResponse?.results}
                     onChange={handleSelectedRegionChange}
@@ -155,6 +166,7 @@ function RegionSelector(props: Props) {
                     }
                     // groupKeySelector={regionGroupSelector}
                     optionKeySelector={regionKeySelector}
+                    showDropDownIcon={showDropDownIcon}
                 />
             )}
         </div>

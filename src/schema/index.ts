@@ -46,6 +46,11 @@ const userDefinedSchemas: Schema[] = [
             partner: { type: 'uint', required: true },
             component: { type: 'uint', required: true },
             sector: { type: 'uint', required: true },
+            totalAllocatedBudget: { type: 'number', required: true },
+            totalProgram: { type: 'uint', required: true },
+            totalPartner: { type: 'uint', required: true },
+            totalComponent: { type: 'uint', required: true },
+            totalSector: { type: 'uint', required: true },
         },
     },
     {
@@ -252,6 +257,8 @@ const userDefinedSchemas: Schema[] = [
                         component: { type: 'array.base-entity', required: true },
 
                         partner: { type: 'array.base-entity', required: true },
+                        startDate: { type: 'string' },
+                        endDate: { type: 'string' },
                     },
                 },
                 required: true,
@@ -355,8 +362,8 @@ const userDefinedSchemas: Schema[] = [
             partner: { type: 'array.string', required: true },
             sector: { type: 'array.string', required: true },
             subSector: { type: 'array.string', required: true },
-            // markerCategory: { type: 'array.string', required: true },
-            // markerValue: { type: 'array.string', required: true },
+            markerCategory: { type: 'array.string', required: true },
+            markerValue: { type: 'array.string', required: true },
         },
     },
     {
@@ -475,6 +482,90 @@ const userDefinedSchemas: Schema[] = [
                     },
                 },
                 required: true,
+            },
+        },
+    },
+    {
+        name: 'program-profile',
+        description: 'Get data of program profile',
+        fields: {
+            programName: { type: 'string', required: true },
+            startDate: { type: 'string', required: true },
+            endDate: { type: 'string', required: true },
+            description: { type: 'string' },
+            totalBudget: { type: 'number', required: true },
+            provinceCount: { type: 'number', required: true },
+            districtCount: { type: 'number', required: true },
+            municiaplityCount: { type: 'number', required: true },
+            federalLevelComponents: { type: 'array.string', required: true },
+            activemap: {
+                arrayType: {
+                    name: 'active-map',
+                    fields: {
+                        code: { type: 'string', required: true },
+                        name: { type: 'string', required: true },
+                    },
+                },
+            },
+        },
+    },
+    {
+        name: 'region-profile',
+        description: 'Get data of region profile',
+        fields: {
+            activeSectors: { type: 'array.string' },
+            fivewdata: {
+                arrayType: {
+                    name: 'fivew-data',
+                    fields: {
+                        componentCount: { type: 'number' },
+                        programCount: { type: 'number' },
+                        sectorCount: { type: 'number' },
+                        supplierCount: { type: 'number' },
+                        totalBudget: { type: 'number' },
+                    },
+                },
+            },
+            indicatordata: {
+                arrayType: {
+                    name: 'indicator-data',
+                    fields: {
+                        code: { type: 'number', required: true },
+                        indicator: { type: 'string', required: true },
+                        indicatorId: { type: 'number', required: true },
+                        totalBudget: { type: 'number', required: true },
+                    },
+                },
+            },
+        },
+    },
+    {
+        name: 'region-dendogram',
+        description: 'Get data of region dendogram',
+        fields: {
+            results: {
+                arrayType: {
+                    name: 'dendogram-data',
+                    fields: {
+                        name: { type: 'string', required: true },
+                        children: {
+                            arrayType: {
+                                name: 'dendogram-children',
+                                fields: {
+                                    name: { type: 'string', required: true },
+                                    children: {
+                                        arrayType: {
+                                            name: 'child',
+                                            fields: {
+                                                name: { type: 'string', required: true },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
     },

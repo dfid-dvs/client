@@ -1,0 +1,39 @@
+.indicators {
+    display: flex;
+    position: relative;
+    background: var(--color-primary-light-4);
+    padding: var(--spacing-medium);
+
+    .backdrop {
+        z-index: 1;
+    }
+
+    .region-details {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 0 var(--spacing-small);
+
+        .number-output {
+            margin: var(--spacing-extra-small);
+            width: calc(100% / 4 - var(--spacing-extra-small) * 2);
+        }
+    }
+
+    .button {
+        display: flex;
+        width: 36px;
+        height: 36px;
+
+        .hide-icon {
+            opacity: 0;
+            color: var(--color-text);
+            font-size: var(--font-size-large-medium);
+        }
+    }
+
+    &:hover {
+        .hide-icon {
+            opacity: 1;
+        }
+    }
+}

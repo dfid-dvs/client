@@ -68,7 +68,7 @@ const Navbar = (props: Props) => {
                             By Regions
                         </Link>
                         <Link
-                            className={_cs(styles.link, styles.disabled)}
+                            className={styles.link}
                             to="/#programs"
                             replace
                         >

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
     PieChart,
     Pie,
@@ -8,9 +8,11 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import { MdPieChart, MdDonutLarge } from 'react-icons/md';
-import { AiOutlineExpandAlt } from 'react-icons/ai';
+import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
-import { IoMdClose } from 'react-icons/io';
+import { IoMdClose, IoMdDownload } from 'react-icons/io';
+import { useRechartToPng } from 'recharts-to-png';
+import FileSaver from 'file-saver';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
@@ -55,6 +57,10 @@ interface PieChartUnitProps<T> {
     onDelete: (name: string | undefined) => void;
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
+    onSetEditableChartId?: (name: string | undefined) => void;
+    hoveredChartId?: string | undefined;
+    onHoverChart?: (id: string) => void;
+    onLeaveChart?: () => void;
 }
 
 const chartMargin = {
@@ -158,6 +164,10 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         hideActions,
         onExpand,
         expandableIconHidden,
+        onSetEditableChartId,
+        hoveredChartId,
+        onHoverChart,
+        onLeaveChart,
     } = props;
 
     const {
@@ -196,15 +206,42 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         [data, valueSelector, keySelector],
     );
 
-
     const [activeIndex, setActiveIndex] = useState(0);
 
     const handlePieEnter = (d: unknown, index: number) => {
         setActiveIndex(index);
     };
 
+    const [png, ref] = useRechartToPng();
+    const handleDownload = useCallback(
+        async () => {
+            FileSaver.saveAs(png, `${title}.png`);
+        },
+        [png, title],
+    );
+
+    const pieRef = useMemo(
+        () => {
+            if (hoveredChartId === id) {
+                return ref;
+            }
+            return undefined;
+        },
+        [hoveredChartId, id],
+    );
+
+    const handleChartHover = useCallback(() => {
+        if (onHoverChart) {
+            onHoverChart(id);
+        }
+    }, [onHoverChart]);
+
     return (
-        <div className={_cs(styles.chartContainer, className)}>
+        <div
+            className={_cs(styles.chartContainer, className)}
+            onMouseEnter={handleChartHover}
+            onMouseLeave={onLeaveChart}
+        >
             <header className={styles.header}>
                 <h3 className={styles.heading}>
                     {title}
@@ -212,11 +249,31 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                 {!hideActions && (
                     <div className={styles.actions}>
                         <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
+                        {onSetEditableChartId && (
+                            <Button
+                                onClick={onSetEditableChartId}
+                                name={id}
+                                title="Edit chart"
+                                transparent
+                                variant="icon"
+                            >
+                                <AiOutlineEdit className={styles.expandIcon} />
+                            </Button>
+                        )}
+                        <Button
                             onClick={onDelete}
                             name={id}
                             title="Delete chart"
                             transparent
-                            variant="danger"
+                            variant="icon"
                         >
                             <IoMdClose className={styles.deleteIcon} />
                         </Button>
@@ -226,7 +283,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                                 name={id}
                                 title="Expand chart"
                                 transparent
-                                variant="danger"
+                                variant="icon"
                             >
                                 <AiOutlineExpandAlt className={styles.expandIcon} />
                             </Button>
@@ -248,6 +305,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                         className={styles.chart}
                         // data={data}
                         margin={chartMargin}
+                        ref={pieRef}
                     >
                         <Pie
                             data={finalData}

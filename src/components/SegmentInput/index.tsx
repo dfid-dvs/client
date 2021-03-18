@@ -22,6 +22,7 @@ interface Props<T, V> {
     hideLabel?: boolean;
     error?: string;
     labelClassName?: string;
+    segmentClassName?: string;
 }
 
 
@@ -41,6 +42,7 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
         disabled,
         error,
         labelClassName,
+        segmentClassName,
     } = props;
 
     return (
@@ -54,7 +56,7 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
                     {label}
                 </InputLabel>
             )}
-            <div className={styles.inputContainer}>
+            <div className={_cs(styles.inputContainer, segmentClassName)}>
                 { options.map((option) => {
                     const key = optionKeySelector(option);
                     const isActive = key === value;

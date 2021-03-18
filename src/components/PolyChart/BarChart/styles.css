@@ -65,12 +65,14 @@
 
     &:hover {
         .header {
-            .delete-icon {
-                opacity: 1;
-            }
-
-            .expand-icon {
-                opacity: 1;
+            .actions {
+                .delete-icon {
+                    opacity: 1;
+                }
+    
+                .expand-icon {
+                    opacity: 1;
+                }
             }
         }
     }

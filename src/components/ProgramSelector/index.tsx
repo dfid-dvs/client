@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useContext, useCallback } from 'react';
-import { IoIosDocument, IoMdPeople } from 'react-icons/io';
-import { FaRegBuilding, FaShapes } from 'react-icons/fa';
 import { _cs, isDefined, intersection, unique } from '@togglecorp/fujs';
+import { MdAssignment, MdBusiness, MdPeople, MdRefresh } from 'react-icons/md';
+import { FaShapes } from 'react-icons/fa';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -419,6 +419,24 @@ function ProgramSelector(props: Props) {
         || subSectorListPending
     );
 
+    const clearButtonHidden = useMemo(
+        () => {
+            const selectedItems = [
+                ...selectedProgram,
+                ...selectedPartner,
+                ...selectedSector,
+                ...selectedMarker,
+            ];
+            return selectedItems.length <= 0;
+        },
+        [
+            selectedProgram,
+            selectedPartner,
+            selectedSector,
+            selectedMarker,
+        ],
+    );
+
     const handleClearFilters = useCallback(() => {
         setSelectedMarker([]);
         setSelectedPrograms([]);
@@ -440,20 +458,6 @@ function ProgramSelector(props: Props) {
                 </Backdrop>
             )}
             <SelectorItem
-                name="markers"
-                className={styles.marker}
-                options={combinedMarkerOptions}
-                value={selectedMarker}
-                setSelectedValue={setSelectedMarker}
-                expandedFilters={expandedFilters}
-                setExpandedFilters={setExpanedFilters}
-                isMinimized={isMinimized}
-                // collapseLevel={1}
-                icon={<IoMdPeople />}
-                searchText={markerSearchText}
-                setSearchText={setMarkerSearchText}
-            />
-            <SelectorItem
                 name="programs"
                 className={styles.program}
                 options={combinedProgramOptions}
@@ -462,7 +466,7 @@ function ProgramSelector(props: Props) {
                 expandedFilters={expandedFilters}
                 setExpandedFilters={setExpanedFilters}
                 isMinimized={isMinimized}
-                icon={<IoIosDocument />}
+                icon={<MdAssignment />}
                 searchText={programSearchText}
                 setSearchText={setProgramSearchText}
             />
@@ -475,7 +479,7 @@ function ProgramSelector(props: Props) {
                 expandedFilters={expandedFilters}
                 setExpandedFilters={setExpanedFilters}
                 isMinimized={isMinimized}
-                icon={<FaRegBuilding />}
+                icon={<MdBusiness />}
                 searchText={partnerSearchText}
                 setSearchText={setPartnerSearchText}
             />
@@ -492,16 +496,31 @@ function ProgramSelector(props: Props) {
                 searchText={sectorSearchText}
                 setSearchText={setSectorSearchText}
             />
-            <Button
-                className={styles.clearButton}
-                onClick={handleClearFilters}
-                transparent
-                variant="accent"
-            >
-                <div className={styles.text}>
+            <SelectorItem
+                name="markers"
+                className={styles.marker}
+                options={combinedMarkerOptions}
+                value={selectedMarker}
+                setSelectedValue={setSelectedMarker}
+                expandedFilters={expandedFilters}
+                setExpandedFilters={setExpanedFilters}
+                isMinimized={isMinimized}
+                // collapseLevel={1}
+                icon={<MdPeople />}
+                searchText={markerSearchText}
+                setSearchText={setMarkerSearchText}
+            />
+            {!clearButtonHidden && (
+                <Button
+                    className={styles.clearButton}
+                    onClick={handleClearFilters}
+                    transparent
+                    variant="secondary"
+                    icons={<MdRefresh />}
+                >
                     Clear All
-                </div>
-            </Button>
+                </Button>
+            )}
         </div>
     );
 }

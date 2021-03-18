@@ -1,11 +1,13 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { isFalsyString } from '@togglecorp/fujs';
+import { IoMdAddCircleOutline } from 'react-icons/io';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
 import PolyChart from '#components/PolyChart';
 import ChartModal from '#components/ChartModal';
+import Modal from '#components/Modal';
 import { tableauColors } from '#utils/constants';
 import {
     ChartSettings,
@@ -44,6 +46,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
 
         bars: [
             {
+                key: 'totalBudget',
                 title: 'Allocated Budget',
                 color: tableauColors[1],
                 valueSelector: item => item.totalBudget,
@@ -64,6 +67,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
 
         bars: [
             {
+                key: 'componentCount',
                 title: 'Components',
                 color: tableauColors[5],
                 valueSelector: item => item.componentCount,
@@ -76,6 +80,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
         title: 'Budget distribution',
         color: tableauColors[0],
         binCount: 10,
+        key: 'totalBudget',
         valueSelector: item => item.totalBudget,
     },
 ];
@@ -96,7 +101,21 @@ function Charts(props: Props) {
     );
 
     const [showModal, setModalVisibility] = useState(false);
+    const [editableChartId, setEditableChartId] = useState<string>();
+    const [hoveredChartId, setHoveredChartId] = useState<string>();
+    const onHoverChart = useCallback(
+        (id: string) => {
+            setHoveredChartId(id);
+        },
+        [setHoveredChartId],
+    );
 
+    const onLeaveChart = useCallback(
+        () => {
+            setHoveredChartId(undefined);
+        },
+        [setHoveredChartId],
+    );
     const handleModalShow = useCallback(() => {
         setModalVisibility(true);
     }, [setModalVisibility]);
@@ -128,13 +147,64 @@ function Charts(props: Props) {
         [],
     );
 
+    const [expandableChart, setExpandableChart] = useState<string>();
+
+    const handleChartExpand = useCallback(
+        (id: string | undefined) => {
+            setExpandableChart(id);
+        },
+        [setExpandableChart],
+    );
+
+    const handleChartCollapse = useCallback(
+        () => {
+            setExpandableChart(undefined);
+        },
+        [setExpandableChart],
+    );
+
+    const onSetEditableChartId = useCallback(
+        (id: string | undefined) => {
+            setEditableChartId(id);
+            setModalVisibility(true);
+        },
+        [setEditableChartId, setModalVisibility],
+    );
+
+    const expandableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
+        () => {
+            const chartSetting = chartSettings.find(c => c.id === expandableChart);
+            if (!chartSetting) {
+                return undefined;
+            }
+            return chartSetting;
+        },
+        [chartSettings, expandableChart],
+    );
+
+    const editableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
+        () => {
+            const chartSetting = chartSettings.find(c => c.id === editableChartId);
+            if (!chartSetting) {
+                return undefined;
+            }
+
+            return chartSetting;
+        },
+        [chartSettings, editableChartId],
+    );
     return (
         <>
             <div className={styles.tableActions}>
                 <Button
                     onClick={handleModalShow}
+                    className={styles.addChartButton}
+                    icons={<IoMdAddCircleOutline className={styles.icon} />}
+                    transparent
                 >
-                    Add chart
+                    <div className={styles.text}>
+                        Add Chart
+                    </div>
                 </Button>
             </div>
             <div className={styles.charts}>
@@ -150,6 +220,13 @@ function Charts(props: Props) {
                         data={extendedPrograms}
                         settings={item}
                         onDelete={handleChartDelete}
+                        className={styles.polyChart}
+                        onExpand={handleChartExpand}
+                        chartExpanded={expandableChart}
+                        onSetEditableChartId={onSetEditableChartId}
+                        hoveredChartId={hoveredChartId}
+                        onHoverChart={onHoverChart}
+                        onLeaveChart={onLeaveChart}
                     />
                 ))}
             </div>
@@ -159,7 +236,26 @@ function Charts(props: Props) {
                     onSave={handleChartAdd}
                     options={staticOptions}
                     keySelector={keySelector}
+                    editableChartSettings={editableChartSettings}
                 />
+            )}
+            {expandableChart && expandableChartSettings && (
+                <Modal
+                    onClose={handleChartCollapse}
+                    className={styles.modalChart}
+                    header={expandableChartSettings.title}
+                    headerClassName={styles.header}
+                >
+                    <PolyChart
+                        chartClassName={styles.chart}
+                        data={extendedPrograms}
+                        settings={expandableChartSettings}
+                        onDelete={handleChartDelete}
+                        className={styles.polyChart}
+                        onExpand={handleChartExpand}
+                        chartExpanded={expandableChart}
+                    />
+                </Modal>
             )}
         </>
     );

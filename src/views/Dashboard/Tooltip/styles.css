@@ -53,6 +53,15 @@
                 font-weight: var(--font-weight-bold);
             }
         }
+
+        .icon {
+            font-size: var(--font-size-medium);
+            margin: var(--spacing-medium) var(--spacing-small);
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
     }
 
     .backdrop {

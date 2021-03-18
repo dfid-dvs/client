@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
     BarChart,
     Bar,
@@ -9,8 +9,11 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
-import { IoMdClose } from 'react-icons/io';
-import { AiOutlineExpandAlt } from 'react-icons/ai';
+import { IoMdClose, IoMdDownload } from 'react-icons/io';
+import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
+import { useRechartToPng } from 'recharts-to-png';
+import FileSaver from 'file-saver';
+
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import { HistogramSettings } from '#types';
@@ -35,6 +38,10 @@ interface HistogramUnitProps<T> {
     hideActions?: boolean;
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
+    onSetEditableChartId?: (name: string | undefined) => void;
+    hoveredChartId?: string;
+    onHoverChart?: (id: string) => void;
+    onLeaveChart?: () => void;
 }
 
 const chartMargin = {
@@ -54,6 +61,10 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         hideActions,
         onExpand,
         expandableIconHidden,
+        onSetEditableChartId,
+        hoveredChartId,
+        onHoverChart,
+        onLeaveChart,
     } = props;
 
     const {
@@ -98,8 +109,36 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         [data, valueSelector, binCount],
     );
 
+    const [png, ref] = useRechartToPng();
+    const handleDownload = useCallback(
+        async () => {
+            FileSaver.saveAs(png, `${title}.png`);
+        },
+        [png, title],
+    );
+
+    const histogramRef = useMemo(
+        () => {
+            if (hoveredChartId === id) {
+                return ref;
+            }
+            return undefined;
+        },
+        [hoveredChartId, id],
+    );
+
+    const handleChartHover = useCallback(() => {
+        if (onHoverChart) {
+            onHoverChart(id);
+        }
+    }, [onHoverChart]);
+
     return (
-        <div className={_cs(styles.chartContainer, className)}>
+        <div
+            className={_cs(styles.chartContainer, className)}
+            onMouseEnter={handleChartHover}
+            onMouseLeave={onLeaveChart}
+        >
             <header className={styles.header}>
                 <h3 className={styles.heading}>
                     {title}
@@ -107,21 +146,41 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                 {!hideActions && (
                     <div className={styles.actions}>
                         <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
+                        {onSetEditableChartId && (
+                            <Button
+                                onClick={onSetEditableChartId}
+                                name={id}
+                                title="Edit"
+                                transparent
+                                variant="icon"
+                            >
+                                <AiOutlineEdit className={styles.expandIcon} />
+                            </Button>
+                        )}
+                        <Button
                             onClick={onDelete}
                             name={id}
-                            title="Delete chart"
+                            title="Delete"
                             transparent
-                            variant="danger"
+                            variant="icon"
                         >
-                            <IoMdClose className={styles.deletIcon} />
+                            <IoMdClose className={styles.deleteIcon} />
                         </Button>
                         {!expandableIconHidden && (
                             <Button
                                 onClick={onExpand}
                                 name={id}
-                                title="Expand chart"
+                                title="Expand"
                                 transparent
-                                variant="danger"
+                                variant="icon"
                             >
                                 <AiOutlineExpandAlt className={styles.expandIcon} />
                             </Button>
@@ -138,6 +197,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                         data={finalData}
                         margin={chartMargin}
                         barCategoryGap={0}
+                        ref={histogramRef}
                     >
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis

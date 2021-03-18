@@ -50,6 +50,7 @@ import {
     apiEndPoint,
 } from '#utils/constants';
 import useBasicToggle from '#hooks/useBasicToggle';
+import Modal from '#components/Modal';
 
 import Tooltip from './Tooltip';
 
@@ -488,8 +489,14 @@ const Dashboard = (props: Props) => {
         [regionLevel],
     );
 
-    const dataExplored = hash === 'regions' || hash === 'program';
+    const dataExplored = hash === 'regions' || hash === 'programs';
+    const regionSelectHidden = hash === 'programs';
 
+    const [
+        tooltipExpanded,
+        setTooltipExpanded,
+        unsetExpandableTooltip,
+    ] = useBasicToggle();
     return (
         <div
             className={_cs(
@@ -518,18 +525,20 @@ const Dashboard = (props: Props) => {
                 <FiltersPanel isMinimized={sideContentMinimized} />
             </aside>
             <main className={styles.mainContent}>
-                <header className={styles.header}>
-                    <Label>
-                        View by
-                    </Label>
-                    <SingleRegionSelect
-                        onRegionLevelChange={handleRegionLevelChange}
-                        regionLevel={regionLevel}
-                        region={region?.id}
-                        onRegionChange={handleRegionChange}
-                        disabled={printMode}
-                    />
-                </header>
+                {!regionSelectHidden && (
+                    <header className={styles.header}>
+                        <Label>
+                            View by
+                        </Label>
+                        <SingleRegionSelect
+                            onRegionLevelChange={handleRegionLevelChange}
+                            regionLevel={regionLevel}
+                            region={region?.id}
+                            onRegionChange={handleRegionChange}
+                            disabled={printMode}
+                        />
+                    </header>
+                )}
                 <div className={styles.content}>
                     { dataExplored ? (
                         <>
@@ -556,7 +565,12 @@ const Dashboard = (props: Props) => {
                                 />
                             )}
                             {hash === 'programs' && (
-                                <ProgramDetails />
+                                <ProgramDetails
+                                    className={_cs(
+                                        styles.regionDetails,
+                                        sideContentMinimized && styles.filterMinimized,
+                                    )}
+                                />
                             )}
                         </>
                     ) : (
@@ -622,6 +636,9 @@ const Dashboard = (props: Props) => {
                                         partnerIdList={partnerIdList}
                                         sectorIdList={sectorIdList}
                                         subsectorIdList={subsectorIdList}
+
+                                        tooltipExpanded={tooltipExpanded}
+                                        setTooltipExpanded={setTooltipExpanded}
                                     />
                                 )}
                             </div>
@@ -670,6 +687,31 @@ const Dashboard = (props: Props) => {
                                     />
                                 )}
                             </div>
+                            {region && tooltipExpanded && (
+                                <Modal
+                                    onClose={unsetExpandableTooltip}
+                                    className={styles.tooltipModal}
+                                    headerClassName={styles.tooltipModalHeader}
+                                    bodyClassName={styles.tooltipModalBody}
+                                    header="hello"
+                                >
+                                    <Tooltip
+                                        region={region}
+                                        className={styles.clickedRegionDetail}
+                                        regionLevel={regionLevel}
+
+                                        markerIdList={markerIdList}
+                                        submarkerIdList={submarkerIdList}
+                                        programIdList={programIdList}
+                                        componentIdList={componentIdList}
+                                        partnerIdList={partnerIdList}
+                                        sectorIdList={sectorIdList}
+                                        subsectorIdList={subsectorIdList}
+                                        unsetTooltipExpanded={unsetExpandableTooltip}
+                                        tooltipExpanded={tooltipExpanded}
+                                    />
+                                </Modal>
+                            )}
                         </>
                     )}
                 </div>

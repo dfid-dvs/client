@@ -45,6 +45,7 @@
                 align-items: baseline;
                 flex-shrink: 0;
                 flex-wrap: wrap;
+                justify-content: space-around;
                 padding: var(--spacing-small) 0;
 
                 >:not(:last-child) {
@@ -53,7 +54,7 @@
 
                 .order-input {
                     input {
-                        width: 80px;
+                        width: 90px;
                     }
                 }
                 .limit-input {

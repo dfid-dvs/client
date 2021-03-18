@@ -1,4 +1,39 @@
-.tab-actions {
-    flex-shrink: 0;
-    margin: var(--spacing-small) var(--spacing-medium);
+.program-details {
+    position: relative;
+    flex-grow: 1;
+    overflow: auto;
+}
+
+.action-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 calc(var(--spacing-large) - var(--spacing-medium));
+
+    .program-profile-link {
+        border: var(--width-separator-thin) solid var(--color-button-background);
+        background-color: var(--color-foreground);
+        padding: var(--spacing-small) var(--spacing-large);
+        text-decoration: none;
+        color: var(--color-text);
+        font-weight: var(--font-weight-bold);
+
+        &:hover {
+            filter: brightness(90%)
+        }
+    }
+
+    .tab-actions {
+        align-self: center;
+        flex-shrink: 0;
+    }
+}
+
+.header {
+    justify-content: center;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.3;
 }

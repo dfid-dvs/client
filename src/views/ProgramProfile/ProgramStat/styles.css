@@ -1,0 +1,20 @@
+.stat-output {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: var(--spacing-medium) calc(var(--spacing-medium) - var(--spacing-extra-small));
+
+    .value {
+        padding: 0 var(--spacing-extra-small);
+        font-size: var(--font-size-extra-large);
+        font-weight: var(--font-weight-bold);
+    }
+
+    .label {
+        padding: 0 var(--spacing-extra-small);
+        text-transform: uppercase;
+        letter-spacing: calc(var(--font-size-small-medium) / 10);
+        color: var(--color-accent-light);
+        font-size: var(--font-size-small-medium);
+    }
+}
