@@ -48,7 +48,7 @@ function Modal(props: Props) {
                         <Button
                             className={styles.closeButton}
                             onClick={onClose}
-                            transparent
+                            variant="transparent"
                             title="Close"
                         >
                             <IoMdClose />

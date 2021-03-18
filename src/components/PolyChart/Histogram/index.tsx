@@ -11,14 +11,18 @@ import {
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
 import { IoMdClose, IoMdDownload } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
-import { useRechartToPng } from 'recharts-to-png';
 import FileSaver from 'file-saver';
+import html2canvas from 'html2canvas';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import { HistogramSettings } from '#types';
 
 import styles from './styles.css';
+
+interface RechartRef {
+    container: HTMLDivElement;
+}
 
 const valueTickFormatter = (value: number | string | undefined) => {
     if (isNotDefined(value)) {
@@ -39,9 +43,6 @@ interface HistogramUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
-    hoveredChartId?: string;
-    onHoverChart?: (id: string) => void;
-    onLeaveChart?: () => void;
 }
 
 const chartMargin = {
@@ -62,10 +63,8 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
-        hoveredChartId,
-        onHoverChart,
-        onLeaveChart,
     } = props;
+    const newRef = React.useRef<BarChart>(null);
 
     const {
         title,
@@ -109,36 +108,18 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         [data, valueSelector, binCount],
     );
 
-    const [png, ref] = useRechartToPng();
     const handleDownload = useCallback(
         async () => {
+            const png = await html2canvas(
+                (newRef?.current as unknown as RechartRef)?.container,
+            ).then(canvas => canvas.toDataURL('image/png', 1.0));
             FileSaver.saveAs(png, `${title}.png`);
         },
-        [png, title],
+        [title],
     );
-
-    const histogramRef = useMemo(
-        () => {
-            if (hoveredChartId === id) {
-                return ref;
-            }
-            return undefined;
-        },
-        [hoveredChartId, id],
-    );
-
-    const handleChartHover = useCallback(() => {
-        if (onHoverChart) {
-            onHoverChart(id);
-        }
-    }, [onHoverChart]);
 
     return (
-        <div
-            className={_cs(styles.chartContainer, className)}
-            onMouseEnter={handleChartHover}
-            onMouseLeave={onLeaveChart}
-        >
+        <div className={_cs(styles.chartContainer, className)}>
             <header className={styles.header}>
                 <h3 className={styles.heading}>
                     {title}
@@ -189,44 +170,44 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                 )}
             </header>
             <div className={_cs(styles.responsiveContainer, chartClassName)}>
-                <ResponsiveContainer>
-                    <BarChart
-                        className={styles.chart}
-                        width={400}
-                        height={300}
-                        data={finalData}
-                        margin={chartMargin}
-                        barCategoryGap={0}
-                        ref={histogramRef}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis
-                            dataKey="key"
-                            type="category"
-                            interval={0}
-                            angle={-45}
-                            textAnchor="end"
-                            height={80}
-                        />
-                        <YAxis
-                            type="number"
-                            label={{
-                                value: 'Frequency',
-                                angle: -90,
-                                position: 'insideLeft',
-                            }}
-                        />
-                        <Tooltip
-                            allowEscapeViewBox={{ x: false, y: true }}
-                            offset={20}
-                        />
-                        <Bar
-                            name="Frequency"
-                            dataKey="value"
-                            fill={color}
-                        />
-                    </BarChart>
-                </ResponsiveContainer>
+                {(finalData?.length || 0) > 0 && (
+                    <ResponsiveContainer>
+                        <BarChart
+                            className={styles.chart}
+                            data={finalData}
+                            margin={chartMargin}
+                            barCategoryGap={0}
+                            ref={newRef}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                                dataKey="key"
+                                type="category"
+                                interval={0}
+                                angle={-45}
+                                textAnchor="end"
+                                height={80}
+                            />
+                            <YAxis
+                                type="number"
+                                label={{
+                                    value: 'Frequency',
+                                    angle: -90,
+                                    position: 'insideLeft',
+                                }}
+                            />
+                            <Tooltip
+                                allowEscapeViewBox={{ x: false, y: false }}
+                                offset={20}
+                            />
+                            <Bar
+                                name="Frequency"
+                                dataKey="value"
+                                fill={color}
+                            />
+                        </BarChart>
+                    </ResponsiveContainer>
+                )}
             </div>
         </div>
     );

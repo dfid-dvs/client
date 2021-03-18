@@ -12,14 +12,18 @@ import {
 import { isNotDefined, isDefined, _cs, compareNumber, sum } from '@togglecorp/fujs';
 import { IoMdClose, IoMdDownload } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
-import { useRechartToPng } from 'recharts-to-png';
 import FileSaver from 'file-saver';
+import html2canvas from 'html2canvas';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import { ScatterChartSettings } from '#types';
 
 import styles from './styles.css';
+
+interface RechartRef {
+    container: HTMLDivElement;
+}
 
 interface ScatterChartUnitProps<T> {
     settings: ScatterChartSettings<T>;
@@ -31,9 +35,6 @@ interface ScatterChartUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
-    hoveredChartId?: string;
-    onHoverChart?: (id: string) => void;
-    onLeaveChart?: () => void;
 }
 
 const chartMargin = {
@@ -71,9 +72,6 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
-        hoveredChartId,
-        onHoverChart,
-        onLeaveChart,
     } = props;
 
     const {
@@ -84,6 +82,9 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
         keySelector,
         valueSelector,
     } = settings;
+
+    const newRef = React.useRef<ScatterChart>(null);
+
     const finalData = useMemo(
         () => {
             if (!limit || !data) {
@@ -98,7 +99,7 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                 ))
                 .slice(0, limit.count);
         },
-        [data, limit],
+        [data, limit, valueSelector],
     );
 
     const averageLength: number = useMemo(() => {
@@ -110,36 +111,18 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
 
     const hasLongTitles = averageLength > 5;
 
-    const [png, ref] = useRechartToPng();
     const handleDownload = useCallback(
         async () => {
+            const png = await html2canvas(
+                (newRef?.current as unknown as RechartRef)?.container,
+            ).then(canvas => canvas.toDataURL('image/png', 1.0));
             FileSaver.saveAs(png, `${title}.png`);
         },
-        [png, title],
+        [title],
     );
-
-    const scatterChartRef = useMemo(
-        () => {
-            if (hoveredChartId === id) {
-                return ref;
-            }
-            return undefined;
-        },
-        [hoveredChartId, id],
-    );
-
-    const handleChartHover = useCallback(() => {
-        if (onHoverChart) {
-            onHoverChart(id);
-        }
-    }, [onHoverChart]);
 
     return (
-        <div
-            className={_cs(styles.chartContainer, className)}
-            onMouseEnter={handleChartHover}
-            onMouseLeave={onLeaveChart}
-        >
+        <div className={_cs(styles.chartContainer, className)}>
             <header className={styles.header}>
                 <h3 className={styles.heading}>
                     {title}
@@ -190,36 +173,36 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                 )}
             </header>
             <div className={_cs(styles.responsiveContainer, chartClassName)}>
-                <ResponsiveContainer>
-                    <ScatterChart
-                        className={styles.chart}
-                        width={400}
-                        height={300}
-                        margin={chartMargin}
-                        ref={scatterChartRef}
-                    >
-                        <CartesianGrid />
-                        <XAxis
-                            dataKey={keySelector}
-                            type="category"
-                            interval={0}
-                            textAnchor="end"
-                            tickFormatter={hasLongTitles ? categoryTickFormatter : undefined}
-                            name="Key"
-                        />
-                        <YAxis
-                            type="number"
-                            dataKey={valueSelector}
-                            name="Value"
-                        />
-                        <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                        <Scatter
-                            name={title}
-                            data={finalData}
-                            fill={color}
-                        />
-                    </ScatterChart>
-                </ResponsiveContainer>
+                {(finalData?.length || 0) > 0 && (
+                    <ResponsiveContainer>
+                        <ScatterChart
+                            className={styles.chart}
+                            margin={chartMargin}
+                            ref={newRef}
+                        >
+                            <CartesianGrid />
+                            <XAxis
+                                dataKey={keySelector}
+                                type="category"
+                                interval={0}
+                                textAnchor="end"
+                                tickFormatter={hasLongTitles ? categoryTickFormatter : undefined}
+                                name="Key"
+                            />
+                            <YAxis
+                                type="number"
+                                dataKey={valueSelector}
+                                name="Value"
+                            />
+                            <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                            <Scatter
+                                name={title}
+                                data={finalData}
+                                fill={color}
+                            />
+                        </ScatterChart>
+                    </ResponsiveContainer>
+                )}
             </div>
         </div>
     );

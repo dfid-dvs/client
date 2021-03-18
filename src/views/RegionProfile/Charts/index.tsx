@@ -233,21 +233,6 @@ function InfographicsCharts(props: Props) {
     );
 
     const [editableChartId, setEditableChartId] = useState<string>();
-    const [hoveredChartId, setHoveredChartId] = useState<string>();
-    const onHoverChart = useCallback(
-        (id: string) => {
-            setHoveredChartId(id);
-        },
-        [setHoveredChartId],
-    );
-
-    const onLeaveChart = useCallback(
-        () => {
-            setHoveredChartId(undefined);
-        },
-        [setHoveredChartId],
-    );
-
     const handleModalClose = useCallback(() => {
         onAddModalVisibilityChange(false);
         setEditableChartId(undefined);
@@ -269,7 +254,7 @@ function InfographicsCharts(props: Props) {
             tmpChartSettings.splice(chartIndex, 1, settings);
             setChartSettings(tmpChartSettings);
         },
-        [editableChartId],
+        [editableChartId, chartSettings],
     );
 
     const handleChartDelete = useCallback(
@@ -423,9 +408,6 @@ function InfographicsCharts(props: Props) {
                     onExpand={handleChartExpand}
                     chartExpanded={expandableChart}
                     onSetEditableChartId={onSetEditableChartId}
-                    hoveredChartId={hoveredChartId}
-                    onHoverChart={onHoverChart}
-                    onLeaveChart={onLeaveChart}
                 />
             ))}
             {showAddModal && (

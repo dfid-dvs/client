@@ -11,8 +11,8 @@ import { MdPieChart, MdDonutLarge } from 'react-icons/md';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
 import { IoMdClose, IoMdDownload } from 'react-icons/io';
-import { useRechartToPng } from 'recharts-to-png';
 import FileSaver from 'file-saver';
+import html2canvas from 'html2canvas';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
@@ -22,6 +22,10 @@ import { tableauColors } from '#utils/constants';
 import { PieChartSettings } from '#types';
 
 import styles from './styles.css';
+
+interface RechartRef {
+    container: HTMLDivElement;
+}
 
 const orientations: {
     key: 'pie' | 'donut';
@@ -58,9 +62,6 @@ interface PieChartUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
-    hoveredChartId?: string | undefined;
-    onHoverChart?: (id: string) => void;
-    onLeaveChart?: () => void;
 }
 
 const chartMargin = {
@@ -165,9 +166,6 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
-        hoveredChartId,
-        onHoverChart,
-        onLeaveChart,
     } = props;
 
     const {
@@ -177,6 +175,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         id,
     } = settings;
 
+    const newRef = React.useRef<PieChart>(null);
     const [type, setType] = useState<'pie' | 'donut'>('donut');
 
     const finalData = useMemo(
@@ -212,36 +211,18 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         setActiveIndex(index);
     };
 
-    const [png, ref] = useRechartToPng();
     const handleDownload = useCallback(
         async () => {
+            const png = await html2canvas(
+                (newRef?.current as unknown as RechartRef)?.container,
+            ).then(canvas => canvas.toDataURL('image/png', 1.0));
             FileSaver.saveAs(png, `${title}.png`);
         },
-        [png, title],
+        [title],
     );
-
-    const pieRef = useMemo(
-        () => {
-            if (hoveredChartId === id) {
-                return ref;
-            }
-            return undefined;
-        },
-        [hoveredChartId, id],
-    );
-
-    const handleChartHover = useCallback(() => {
-        if (onHoverChart) {
-            onHoverChart(id);
-        }
-    }, [onHoverChart]);
 
     return (
-        <div
-            className={_cs(styles.chartContainer, className)}
-            onMouseEnter={handleChartHover}
-            onMouseLeave={onLeaveChart}
-        >
+        <div className={_cs(styles.chartContainer, className)}>
             <header className={styles.header}>
                 <h3 className={styles.heading}>
                     {title}
@@ -301,43 +282,40 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                 )}
             </header>
             <div className={_cs(styles.responsiveContainer, chartClassName)}>
-                <ResponsiveContainer>
-                    <PieChart
-                        className={styles.chart}
-                        // data={data}
-                        margin={chartMargin}
-                        ref={pieRef}
-                    >
-                        <Pie
-                            data={finalData}
-                            innerRadius={type === 'donut' ? '40%' : undefined}
-                            outerRadius="60%"
-                            fill="#8884d8"
-                            isAnimationActive={false}
-                            nameKey="key"
-                            dataKey="value"
-                            onMouseEnter={handlePieEnter}
-                            activeIndex={activeIndex}
-                            activeShape={type === 'donut' ? CenteredActiveShape : ActiveShape}
-                            // cx={200}
-                            // cy={200}
-                            // label={renderCustomizedLabel}
-                            // label={Label}
+                {(finalData?.length || 0) > 0 && (
+                    <ResponsiveContainer>
+                        <PieChart
+                            className={styles.chart}
+                            margin={chartMargin}
+                            ref={newRef}
                         >
-                            {finalData?.map((entry, index) => (
-                                <Cell
-                                    key={`cell-${entry.key}`}
-                                    fill={tableauColors[index % tableauColors.length]}
-                                />
-                            ))}
-                        </Pie>
-                        <Legend
-                            layout="vertical"
-                            align="right"
-                            verticalAlign="middle"
-                        />
-                    </PieChart>
-                </ResponsiveContainer>
+                            <Pie
+                                data={finalData}
+                                innerRadius={type === 'donut' ? '40%' : undefined}
+                                outerRadius="60%"
+                                fill="#8884d8"
+                                isAnimationActive={false}
+                                nameKey="key"
+                                dataKey="value"
+                                onMouseEnter={handlePieEnter}
+                                activeIndex={activeIndex}
+                                activeShape={type === 'donut' ? CenteredActiveShape : ActiveShape}
+                            >
+                                {finalData?.map((entry, index) => (
+                                    <Cell
+                                        key={`cell-${entry.key}`}
+                                        fill={tableauColors[index % tableauColors.length]}
+                                    />
+                                ))}
+                            </Pie>
+                            <Legend
+                                layout="vertical"
+                                align="right"
+                                verticalAlign="middle"
+                            />
+                        </PieChart>
+                    </ResponsiveContainer>
+                )}
             </div>
         </div>
     );

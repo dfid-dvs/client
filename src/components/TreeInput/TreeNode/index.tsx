@@ -168,7 +168,6 @@ export default function TreeNode<T, K extends OptionKey>(props: TreeNodeProps<T,
                     className={styles.expandButton}
                     disabled={isLeaf}
                     onClick={handleToggleCollapseOption}
-                    transparent
                 >
                     <IoMdArrowDropright />
                 </RawButton>

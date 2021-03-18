@@ -24,7 +24,6 @@
     justify-content: center;
     transform: translateX(-50%);
     transition: .2s left ease-in-out;
-    z-index: 11;
     border: var(--width-separator-thin) solid var(--color-background-light);
     border-radius: 1em;
     background-color: var(--color-foreground);

@@ -14,8 +14,8 @@ import { IoMdClose, IoMdDownload } from 'react-icons/io';
 import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
-import { useRechartToPng } from 'recharts-to-png';
 import FileSaver from 'file-saver';
+import html2canvas from 'html2canvas';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
@@ -23,6 +23,10 @@ import SegmentInput from '#components/SegmentInput';
 import { BarChartSettings } from '#types';
 
 import styles from './styles.css';
+
+interface RechartRef {
+    container: HTMLDivElement;
+}
 
 const orientations: {
     key: 'horizontal' | 'vertical';
@@ -62,9 +66,6 @@ interface BarChartUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
-    hoveredChartId?: string;
-    onHoverChart?: (id: string) => void;
-    onLeaveChart?: () => void;
 }
 
 const chartMargin = {
@@ -86,27 +87,18 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
-        hoveredChartId,
-        onHoverChart,
-        onLeaveChart,
     } = props;
     const {
         title,
         keySelector,
         bars,
-        // layout,
         limit,
         id,
         orientation,
     } = settings;
 
-    const handleChartHover = useCallback(() => {
-        if (onHoverChart) {
-            onHoverChart(id);
-        }
-    }, [onHoverChart, id]);
-
     const [layout, setLayout] = useState<'horizontal' | 'vertical'>(orientation || 'vertical');
+    const newRef = React.useRef<BarChart>(null);
 
     const Xcomp = layout === 'vertical' ? YAxis : XAxis;
     const Ycomp = layout === 'vertical' ? XAxis : YAxis;
@@ -142,30 +134,18 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
 
     const hasLongTitles = averageLength > acceptableLength;
 
-    const [png, ref] = useRechartToPng();
     const handleDownload = useCallback(
         async () => {
+            const png = await html2canvas(
+                (newRef?.current as unknown as RechartRef)?.container,
+            ).then(canvas => canvas.toDataURL('image/png', 1.0));
             FileSaver.saveAs(png, `${title}.png`);
         },
-        [png, title],
-    );
-
-    const barRef = useMemo(
-        () => {
-            if (hoveredChartId === id) {
-                return ref;
-            }
-            return undefined;
-        },
-        [hoveredChartId, id, ref],
+        [title],
     );
 
     return (
-        <div
-            className={_cs(styles.chartContainer, className)}
-            onMouseEnter={handleChartHover}
-            onMouseLeave={onLeaveChart}
-        >
+        <div className={_cs(styles.chartContainer, className)}>
             <header className={_cs(styles.header, headerClassName)}>
                 <h3 className={styles.heading}>
                     {title}
@@ -225,53 +205,55 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                 )}
             </header>
             <div className={_cs(styles.responsiveContainer, chartClassName)}>
-                <ResponsiveContainer>
-                    <BarChart
-                        className={styles.chart}
-                        data={finalData}
-                        layout={layout}
-                        margin={chartMargin}
-                        barGap={0}
-                        ref={barRef}
-                    >
-                        <CartesianGrid
-                            strokeDasharray="0"
-                            horizontal={isHorizontal}
-                            vertical={isVertical}
-                        />
-                        <Xcomp
-                            dataKey={keySelector}
-                            type="category"
-                            interval={0}
-                            width={layout === 'vertical' ? 86 : undefined}
-                            tickFormatter={hasLongTitles ? categoryTickFormatter : undefined}
-                            angle={layout === 'horizontal' ? -45 : undefined}
-                            textAnchor="end"
-                        />
-                        <Ycomp
-                            type="number"
-                            tickFormatter={valueTickFormatter}
-                            interval={layout === 'vertical' ? 0 : undefined}
-                            width={layout === 'horizontal' ? 36 : undefined}
-                        />
-                        <Tooltip
-                            allowEscapeViewBox={{ x: false, y: false }}
-                            offset={20}
-                            formatter={valueTickFormatter}
-                        />
-                        <Legend />
-                        {bars.map(bar => (
-                            <Bar
-                                key={bar.title}
-                                name={bar.title}
-                                dataKey={bar.valueSelector}
-                                fill={bar.color}
-                                stackId={bar.stackId}
-                                barSize={22}
+                {(finalData?.length || 0) > 0 && (
+                    <ResponsiveContainer>
+                        <BarChart
+                            className={styles.chart}
+                            data={finalData}
+                            layout={layout}
+                            margin={chartMargin}
+                            barGap={0}
+                            ref={newRef}
+                        >
+                            <CartesianGrid
+                                strokeDasharray="0"
+                                horizontal={isHorizontal}
+                                vertical={isVertical}
                             />
-                        ))}
-                    </BarChart>
-                </ResponsiveContainer>
+                            <Xcomp
+                                dataKey={keySelector}
+                                type="category"
+                                interval={0}
+                                width={layout === 'vertical' ? 86 : undefined}
+                                tickFormatter={hasLongTitles ? categoryTickFormatter : undefined}
+                                angle={layout === 'horizontal' ? -45 : undefined}
+                                textAnchor="end"
+                            />
+                            <Ycomp
+                                type="number"
+                                tickFormatter={valueTickFormatter}
+                                interval={layout === 'vertical' ? 0 : undefined}
+                                width={layout === 'horizontal' ? 36 : undefined}
+                            />
+                            <Tooltip
+                                allowEscapeViewBox={{ x: false, y: false }}
+                                offset={20}
+                                formatter={valueTickFormatter}
+                            />
+                            <Legend />
+                            {bars.map(bar => (
+                                <Bar
+                                    key={bar.title}
+                                    name={bar.title}
+                                    dataKey={bar.valueSelector}
+                                    fill={bar.color}
+                                    stackId={bar.stackId}
+                                    barSize={22}
+                                />
+                            ))}
+                        </BarChart>
+                    </ResponsiveContainer>
+                )}
             </div>
         </div>
     );

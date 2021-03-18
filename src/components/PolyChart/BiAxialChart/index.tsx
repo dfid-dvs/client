@@ -14,8 +14,8 @@ import {
 import { IoIosSwap, IoMdClose, IoMdDownload } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
-import { useRechartToPng } from 'recharts-to-png';
 import FileSaver from 'file-saver';
+import html2canvas from 'html2canvas';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
@@ -23,6 +23,10 @@ import { BiAxialChartSettings, BiAxialData } from '#types';
 import useBasicToggle from '#hooks/useBasicToggle';
 
 import styles from './styles.css';
+
+interface RechartRef {
+    container: HTMLDivElement;
+}
 
 const categoryTickFormatter = (value: string) => {
     const words = value.trim().split(/\s+/);
@@ -52,9 +56,6 @@ interface BiAxialChartUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
-    hoveredChartId?: string;
-    onHoverChart?: (id: string) => void;
-    onLeaveChart?: () => void;
 }
 
 const chartMargin = {
@@ -76,10 +77,9 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
-        hoveredChartId,
-        onHoverChart,
-        onLeaveChart,
     } = props;
+
+    const newRef = React.useRef<ComposedChart>(null);
 
     const [chartTypeToggled, , , onToggleChartType] = useBasicToggle();
 
@@ -127,36 +127,18 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
 
     const hasLongTitles = averageLength > 5;
 
-    const [png, ref] = useRechartToPng();
     const handleDownload = useCallback(
         async () => {
+            const png = await html2canvas(
+                (newRef?.current as unknown as RechartRef)?.container,
+            ).then(canvas => canvas.toDataURL('image/png', 1.0));
             FileSaver.saveAs(png, `${title}.png`);
         },
-        [png, title],
-    );
-
-    const handleChartHover = useCallback(() => {
-        if (onHoverChart) {
-            onHoverChart(id);
-        }
-    }, [onHoverChart]);
-
-    const biAxialRef = useMemo(
-        () => {
-            if (hoveredChartId === id) {
-                return ref;
-            }
-            return undefined;
-        },
-        [hoveredChartId, id],
+        [title],
     );
 
     return (
-        <div
-            className={_cs(styles.chartContainer, className)}
-            onMouseEnter={handleChartHover}
-            onMouseLeave={onLeaveChart}
-        >
+        <div className={_cs(styles.chartContainer, className)}>
             <header className={_cs(styles.header, headerClassName)}>
                 <h3 className={styles.heading}>
                     {title}
@@ -216,67 +198,69 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                 )}
             </header>
             <div className={_cs(styles.responsiveContainer, chartClassName)}>
-                <ResponsiveContainer>
-                    <ComposedChart
-                        className={styles.chart}
-                        data={finalData}
-                        layout="horizontal"
-                        margin={chartMargin}
-                        barGap={0}
-                        ref={biAxialRef}
-                    >
-                        <CartesianGrid
-                            strokeDasharray="0"
-                            vertical={false}
-                        />
-                        <XAxis
-                            dataKey={keySelector}
-                            type="category"
-                            interval={0}
-                            textAnchor="end"
-                            tickFormatter={hasLongTitles ? categoryTickFormatter : undefined}
-                        />
-                        <YAxis
-                            type="number"
-                            width={36}
-                            tickFormatter={valueTickFormatter}
-                        />
-                        <YAxis
-                            yAxisId="right"
-                            orientation="right"
-                            tickFormatter={valueTickFormatter}
-                        />
-                        <Tooltip
-                            allowEscapeViewBox={{ x: false, y: true }}
-                            offset={20}
-                            formatter={valueTickFormatter}
-                        />
-                        <Legend />
-                        {formattedChartData.map(item => (
-                            item?.type === 'bar'
-                                ? item && (
-                                    <Bar
-                                        key={item.title}
-                                        name={item.title}
-                                        dataKey={item.valueSelector}
-                                        fill={item.color}
-                                        stackId={item.stackId}
-                                        barSize={22}
-                                    />
-                                ) : item && (
-                                    <Line
-                                        key={item.title}
-                                        name={item.title}
-                                        dataKey={item.valueSelector}
-                                        fill={item.color}
-                                        yAxisId="right"
-                                        stroke={item.color}
-                                        activeDot={{ r: 8 }}
-                                    />
-                                )
-                        ))}
-                    </ComposedChart>
-                </ResponsiveContainer>
+                {(finalData?.length || 0) > 0 && (
+                    <ResponsiveContainer>
+                        <ComposedChart
+                            className={styles.chart}
+                            data={finalData}
+                            layout="horizontal"
+                            margin={chartMargin}
+                            barGap={0}
+                            ref={newRef}
+                        >
+                            <CartesianGrid
+                                strokeDasharray="0"
+                                vertical={false}
+                            />
+                            <XAxis
+                                dataKey={keySelector}
+                                type="category"
+                                interval={0}
+                                textAnchor="end"
+                                tickFormatter={hasLongTitles ? categoryTickFormatter : undefined}
+                            />
+                            <YAxis
+                                type="number"
+                                width={36}
+                                tickFormatter={valueTickFormatter}
+                            />
+                            <YAxis
+                                yAxisId="right"
+                                orientation="right"
+                                tickFormatter={valueTickFormatter}
+                            />
+                            <Tooltip
+                                allowEscapeViewBox={{ x: false, y: false }}
+                                offset={20}
+                                formatter={valueTickFormatter}
+                            />
+                            <Legend />
+                            {formattedChartData.map(item => (
+                                item?.type === 'bar'
+                                    ? item && (
+                                        <Bar
+                                            key={item.title}
+                                            name={item.title}
+                                            dataKey={item.valueSelector}
+                                            fill={item.color}
+                                            stackId={item.stackId}
+                                            barSize={22}
+                                        />
+                                    ) : item && (
+                                        <Line
+                                            key={item.title}
+                                            name={item.title}
+                                            dataKey={item.valueSelector}
+                                            fill={item.color}
+                                            yAxisId="right"
+                                            stroke={item.color}
+                                            activeDot={{ r: 8 }}
+                                        />
+                                    )
+                            ))}
+                        </ComposedChart>
+                    </ResponsiveContainer>
+                )}
             </div>
         </div>
     );

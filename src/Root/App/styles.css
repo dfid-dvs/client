@@ -12,6 +12,16 @@
     .mapboxgl-canvas {
         outline: none;
     }
+
+    .recharts-tooltip-wrapper {
+        .recharts-default-tooltip {
+            white-space: unset!important;
+
+            p {
+                max-width: 300px;
+            }
+        }
+    }
 }
 
 .no-spinners {

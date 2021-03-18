@@ -2,7 +2,6 @@
     border-radius: 0;
     max-width: 720px;
     height: calc(100vh - 2 * var(--spacing-medium));
-    max-height: 800px;
 
     .header {
         border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
