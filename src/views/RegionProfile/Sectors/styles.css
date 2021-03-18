@@ -40,9 +40,11 @@
         .sector {
             display: flex;
             align-items: center;
-            width: 25%;
+            flex-basis: 0;
+            flex-grow: 1;
 
             .icon {
+                flex-shrink: 0;
                 margin: var(--spacing-small-medium);
                 color: var(--color-secondary-light-1);
                 font-size: var(--font-size-large);

@@ -30,57 +30,65 @@ interface DendogramTreeInterface {
     treeData: TreeData;
 }
 
-const customPathFunction = (linkDatum: any) => {
+const NODE_WIDTH = 164;
+const NODE_HEIGHT = 24;
+const NODE_CIRCLE_RADIUS = 4;
+const NODE_GAP_Y = 12;
+const NODE_GAP_X = 96;
+
+const customPathFunction = (linkDatum: {
+    source: {
+        x: number;
+        y: number;
+    };
+    target: {
+        x: number;
+        y: number;
+    };
+}) => {
     const { source, target } = linkDatum;
-    return `M ${source.y + 325} ${source.x} C ${source.y + 325} ${source.x} ${target.y - 450} ${target.x} ${target.y} ${target.x}`;
+    return `M ${source.y + NODE_WIDTH + NODE_CIRCLE_RADIUS} ${source.x} C ${source.y + NODE_WIDTH + NODE_CIRCLE_RADIUS} ${source.x} ${target.y - NODE_WIDTH / 3} ${target.x} ${target.y - NODE_CIRCLE_RADIUS} ${target.x}`;
 };
 
 const renderCustomNodeElement = (nodeDatum: CustomNodeElementProps) => (
     <DendogramSVGNodeElement
+        nodeWidth={NODE_WIDTH}
+        nodeHeight={NODE_HEIGHT}
+        nodeCircleRadius={NODE_CIRCLE_RADIUS}
         nodeDatum={nodeDatum.nodeDatum}
     />
 );
 
 function DendogramTree(props: DendogramTreeInterface) {
-    const {
-        zoom = 1,
-        collapsible = false,
-        scaleExtent = { min: 0.4, max: 0.4 },
-        nodeSize = { x: 750, y: 35 },
-        separation = { siblings: 3, nonSiblings: 3 },
-        initialDepth = 2,
-        treeData,
-    } = props;
+    const nodeSize = {
+        x: NODE_WIDTH + NODE_GAP_X,
+        y: NODE_HEIGHT + NODE_GAP_Y,
+    };
 
-    const countChild = useMemo(
-        () => {
-            if (treeData.countChild) {
-                return treeData.countChild;
-            }
-            return 1;
-        },
-        [treeData.countChild],
-    );
+    const { treeData } = props;
+
+    const secondLevelChildrens = treeData?.children?.length || 0;
+    const thirdLevelChildrens = treeData?.countChild || 0;
+
+    const childCount = secondLevelChildrens + thirdLevelChildrens;
 
     return (
         <div
             style={{
-                height: countChild * 45,
+                height: childCount * nodeSize.y,
                 pointerEvents: 'none',
                 position: 'relative',
             }}
         >
             <Tree
                 data={treeData}
-                zoom={zoom}
-                collapsible={collapsible}
-                scaleExtent={scaleExtent}
                 nodeSize={nodeSize}
                 pathFunc={customPathFunction}
-                separation={separation}
-                translate={{ x: 100, y: countChild * 21 }}
-                initialDepth={initialDepth}
                 renderCustomNodeElement={renderCustomNodeElement}
+                translate={{
+                    x: 0,
+                    y: (childCount * nodeSize.y) / 2,
+                }}
             />
         </div>
     );

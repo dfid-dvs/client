@@ -7,15 +7,15 @@
     .sidebar {
         flex-shrink: 0;
         margin: 0;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, .3);
         background-color: var(--color-grey-shade-1);
         padding: var(--spacing-large-medium);
-        box-shadow: 0px 0px 15px rgba(0, 0, 0, .3);
 
         width: 400px;
 
         .heading {
-            text-transform: uppercase;
             margin-bottom: var(--spacing-large);
+            text-transform: uppercase;
             letter-spacing: 3px;
             font-size: var(--font-size-subtitle-1);
             font-weight: var(--font-weight-bold);
@@ -35,9 +35,9 @@
 
         .region-selector {
             display: flex;
+            align-items: flex-start;
             flex: 1;
             flex-direction: column;
-            align-items: flex-start;
             margin-top: var(--spacing-large);
             border: none;
             
@@ -133,8 +133,8 @@
 
             .stat-container {
                 display: flex;
-                margin-top: var(--spacing-ultra-large);
                 position: relative;
+                margin-top: var(--spacing-ultra-large);
                 background: var(--color-primary-light-4);
                 padding: var(--spacing-medium);
             
@@ -191,8 +191,8 @@
                 }
 
                 .map-container {
-                    height: 360px;
                     border-radius: 0;
+                    height: 360px;
                 }
             }
 
@@ -201,11 +201,11 @@
 
                 .title {
                     padding: var(--spacing-small-medium) 0;
+                    text-transform: none;
+                    letter-spacing: unset;
+                    color: var(--color-text);
                     font-size: var(--font-size-extra-large);
                     font-weight: var(--font-weight-bold);
-                    letter-spacing: unset;
-                    text-transform: none;
-                    color: var(--color-text);
                 }
             }
 
@@ -214,18 +214,18 @@
 
                 .label {
                     padding: var(--spacing-small-medium) 0;
+                    text-transform: none;
+                    letter-spacing: unset;
+                    color: var(--color-text);
                     font-size: var(--font-size-extra-large);
                     font-weight: var(--font-weight-bold);
-                    letter-spacing: unset;
-                    text-transform: none;
-                    color: var(--color-text);
                 }
     
                 .text-area-input {
+                    border: none;
                     padding: var(--spacing-medium);
                     width: 400px;
                     min-height: 100px;
-                    border: none;
                 }
 
                 .text-input {

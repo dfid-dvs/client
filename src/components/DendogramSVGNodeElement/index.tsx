@@ -5,11 +5,20 @@ import styles from './styles.css';
 interface DendogramInterface {
     nodeDatum: TreeNodeDatum;
     isFirstNode?: boolean;
+    nodeWidth: number;
+    nodeHeight: number;
+    nodeCircleRadius: number;
 }
+
+
 function DendogramSVGNodeElement(props: DendogramInterface) {
     const {
+        nodeWidth,
+        nodeHeight,
+        nodeCircleRadius,
         nodeDatum,
     } = props;
+
     const endNodeHidden: boolean = useMemo(
         () => {
             if (nodeDatum.children) {
@@ -23,23 +32,42 @@ function DendogramSVGNodeElement(props: DendogramInterface) {
     // eslint-disable-next-line no-underscore-dangle
     const nodeDepth = nodeDatum.__rd3t.depth;
 
-    const rectWidth = useMemo(() => {
-        if (nodeDepth === 0) {
-            return -120;
-        }
-        return (nodeDepth - 1) * 50;
-    }, [nodeDepth]);
-
     return (
         <>
-            {nodeDepth > 0 && <circle r={12} x="-140" fill="#ffffff" />}
-            <foreignObject x={rectWidth} y="-45" width="420px" height="240px">
+            {nodeDepth > 0 && (
+                <circle
+                    cx={-nodeCircleRadius}
+                    r={nodeCircleRadius}
+                    fill="#ffffff"
+                />
+            )}
+            <foreignObject
+                width={`${nodeWidth}px`}
+                height={`${nodeHeight}px`}
+                style={{
+                    transform: `translateY(-${nodeHeight / 2}px)`,
+                }}
+            >
                 <div className={styles.nameContainer}>
-                    {nodeDatum.name}
-                    {nodeDepth}
+                    <div
+                        className={styles.name}
+                        style={{
+                            borderRadius: `${nodeHeight / 2}px`,
+                        }}
+                    >
+                        <div className={styles.text}>
+                            {nodeDatum.name}
+                        </div>
+                    </div>
                 </div>
             </foreignObject>
-            {!endNodeHidden && <circle cx="325" x="-25" r={12} fill="#ffffff" />}
+            {!endNodeHidden && (
+                <circle
+                    cx={nodeWidth + nodeCircleRadius}
+                    r={nodeCircleRadius}
+                    fill="#ffffff"
+                />
+            )}
         </>
     );
 }
