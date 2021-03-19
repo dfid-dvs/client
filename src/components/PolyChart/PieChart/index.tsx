@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useRef } from 'react';
 import {
     PieChart,
     Pie,
@@ -11,8 +11,8 @@ import { MdPieChart, MdDonutLarge } from 'react-icons/md';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
 import { IoMdClose, IoMdDownload } from 'react-icons/io';
-import FileSaver from 'file-saver';
-import html2canvas from 'html2canvas';
+
+import handleChartDownload from '#utils/downloadChart';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
@@ -22,10 +22,6 @@ import { tableauColors } from '#utils/constants';
 import { PieChartSettings } from '#types';
 
 import styles from './styles.css';
-
-interface RechartRef {
-    container: HTMLDivElement;
-}
 
 const orientations: {
     key: 'pie' | 'donut';
@@ -175,7 +171,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         id,
     } = settings;
 
-    const newRef = React.useRef<PieChart>(null);
+    const newRef = useRef<HTMLDivElement>(null);
     const [type, setType] = useState<'pie' | 'donut'>('donut');
 
     const finalData = useMemo(
@@ -212,17 +208,18 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
     };
 
     const handleDownload = useCallback(
-        async () => {
-            const png = await html2canvas(
-                (newRef?.current as unknown as RechartRef)?.container,
-            ).then(canvas => canvas.toDataURL('image/png', 1.0));
-            FileSaver.saveAs(png, `${title}.png`);
+        () => {
+            handleChartDownload(newRef, title, styles.actions);
         },
         [title],
     );
 
+
     return (
-        <div className={_cs(styles.chartContainer, className)}>
+        <div
+            className={_cs(styles.chartContainer, className)}
+            ref={newRef}
+        >
             <header className={styles.header}>
                 <h3 className={styles.heading}>
                     {title}
@@ -287,7 +284,6 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                         <PieChart
                             className={styles.chart}
                             margin={chartMargin}
-                            ref={newRef}
                         >
                             <Pie
                                 data={finalData}

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import {
     ScatterChart,
     XAxis,
@@ -9,21 +9,17 @@ import {
     Scatter,
     TickFormatterFunction,
 } from 'recharts';
-import { isNotDefined, isDefined, _cs, compareNumber, sum } from '@togglecorp/fujs';
+import { isNotDefined, _cs, sum } from '@togglecorp/fujs';
 import { IoMdClose, IoMdDownload } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
-import FileSaver from 'file-saver';
-import html2canvas from 'html2canvas';
+
+import handleChartDownload from '#utils/downloadChart';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import { ScatterChartSettings } from '#types';
 
 import styles from './styles.css';
-
-interface RechartRef {
-    container: HTMLDivElement;
-}
 
 interface ScatterChartUnitProps<T> {
     settings: ScatterChartSettings<T>;
@@ -80,7 +76,7 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
         }
         return scatterData;
     }, [scatterData]);
-    const newRef = React.useRef<ScatterChart>(null);
+    const newRef = useRef<HTMLDivElement>(null);
 
     const averageLength: number = useMemo(() => {
         if (finalData) {
@@ -92,11 +88,8 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
     const hasLongTitles = averageLength > 5;
 
     const handleDownload = useCallback(
-        async () => {
-            const png = await html2canvas(
-                (newRef?.current as unknown as RechartRef)?.container,
-            ).then(canvas => canvas.toDataURL('image/png', 1.0));
-            FileSaver.saveAs(png, `${title}.png`);
+        () => {
+            handleChartDownload(newRef, title, styles.actions);
         },
         [title],
     );
@@ -105,7 +98,10 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
         return null;
     }
     return (
-        <div className={_cs(styles.chartContainer, className)}>
+        <div
+            className={_cs(styles.chartContainer, className)}
+            ref={newRef}
+        >
             <header className={styles.header}>
                 <h3 className={styles.heading}>
                     {title}
@@ -161,7 +157,6 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                         <ScatterChart
                             className={styles.chart}
                             margin={chartMargin}
-                            ref={newRef}
                         >
                             <CartesianGrid />
                             <XAxis

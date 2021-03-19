@@ -6,27 +6,22 @@ import {
     CartesianGrid,
     Tooltip,
     Legend,
-    TooltipFormatter,
     ResponsiveContainer,
     Line,
     ComposedChart,
+    TickFormatterFunction,
 } from 'recharts';
 import { IoIosSwap, IoMdClose, IoMdDownload } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
-import FileSaver from 'file-saver';
-import html2canvas from 'html2canvas';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
 import { BiAxialChartSettings, BiAxialData } from '#types';
 import useBasicToggle from '#hooks/useBasicToggle';
+import handleChartDownload from '#utils/downloadChart';
 
 import styles from './styles.css';
-
-interface RechartRef {
-    container: HTMLDivElement;
-}
 
 const categoryTickFormatter = (value: string) => {
     const words = value.trim().split(/\s+/);
@@ -36,7 +31,7 @@ const categoryTickFormatter = (value: string) => {
     return words.map(item => item[0]).join('').toUpperCase();
 };
 
-const valueTickFormatter: TooltipFormatter = (value) => {
+const valueTickFormatter: TickFormatterFunction = (value) => {
     if (isNotDefined(value)) {
         return '';
     }
@@ -79,7 +74,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         onSetEditableChartId,
     } = props;
 
-    const newRef = React.useRef<ComposedChart>(null);
+    const newRef = React.useRef<HTMLDivElement>(null);
 
     const [chartTypeToggled, , , onToggleChartType] = useBasicToggle();
 
@@ -128,17 +123,17 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
     const hasLongTitles = averageLength > 5;
 
     const handleDownload = useCallback(
-        async () => {
-            const png = await html2canvas(
-                (newRef?.current as unknown as RechartRef)?.container,
-            ).then(canvas => canvas.toDataURL('image/png', 1.0));
-            FileSaver.saveAs(png, `${title}.png`);
+        () => {
+            handleChartDownload(newRef, title, styles.actions);
         },
         [title],
     );
 
     return (
-        <div className={_cs(styles.chartContainer, className)}>
+        <div
+            className={_cs(styles.chartContainer, className)}
+            ref={newRef}
+        >
             <header className={_cs(styles.header, headerClassName)}>
                 <h3 className={styles.heading}>
                     {title}
@@ -206,7 +201,6 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                             layout="horizontal"
                             margin={chartMargin}
                             barGap={0}
-                            ref={newRef}
                         >
                             <CartesianGrid
                                 strokeDasharray="0"

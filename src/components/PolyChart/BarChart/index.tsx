@@ -7,26 +7,21 @@ import {
     CartesianGrid,
     Tooltip,
     Legend,
-    TooltipFormatter,
     ResponsiveContainer,
+    TickFormatterFunction,
 } from 'recharts';
 import { IoMdClose, IoMdDownload } from 'react-icons/io';
 import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
-import FileSaver from 'file-saver';
-import html2canvas from 'html2canvas';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
 import { BarChartSettings } from '#types';
+import handleChartDownload from '#utils/downloadChart';
 
 import styles from './styles.css';
-
-interface RechartRef {
-    container: HTMLDivElement;
-}
 
 const orientations: {
     key: 'horizontal' | 'vertical';
@@ -46,7 +41,7 @@ const categoryTickFormatter = (value: string) => {
     return words.map(item => item[0]).join('').toUpperCase();
 };
 
-const valueTickFormatter: TooltipFormatter = (value) => {
+const valueTickFormatter: TickFormatterFunction = (value) => {
     if (isNotDefined(value)) {
         return '';
     }
@@ -135,23 +130,8 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     const hasLongTitles = averageLength > acceptableLength;
 
     const handleDownload = useCallback(
-        async () => {
-            if (newRef?.current) {
-                const actions = newRef.current
-                    .getElementsByClassName(styles.actions)[0] as HTMLDivElement;
-                if (actions) {
-                    actions.style.display = 'none';
-                }
-                const png = await html2canvas(
-                    newRef.current,
-                ).then(canvas => canvas.toDataURL('image/png', 1.0));
-
-                await FileSaver.saveAs(png, `${title}.png`);
-
-                if (actions) {
-                    actions.style.display = 'flex';
-                }
-            }
+        () => {
+            handleChartDownload(newRef, title, styles.actions);
         },
         [title],
     );

@@ -11,18 +11,13 @@ import {
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
 import { IoMdClose, IoMdDownload } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
-import FileSaver from 'file-saver';
-import html2canvas from 'html2canvas';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import { HistogramSettings } from '#types';
 
 import styles from './styles.css';
-
-interface RechartRef {
-    container: HTMLDivElement;
-}
+import handleChartDownload from '#utils/downloadChart';
 
 const valueTickFormatter = (value: number | string | undefined) => {
     if (isNotDefined(value)) {
@@ -64,7 +59,7 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         expandableIconHidden,
         onSetEditableChartId,
     } = props;
-    const newRef = React.useRef<BarChart>(null);
+    const newRef = React.useRef<HTMLDivElement>(null);
 
     const {
         title,
@@ -109,17 +104,17 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
     );
 
     const handleDownload = useCallback(
-        async () => {
-            const png = await html2canvas(
-                (newRef?.current as unknown as RechartRef)?.container,
-            ).then(canvas => canvas.toDataURL('image/png', 1.0));
-            FileSaver.saveAs(png, `${title}.png`);
+        () => {
+            handleChartDownload(newRef, title, styles.actions);
         },
         [title],
     );
 
     return (
-        <div className={_cs(styles.chartContainer, className)}>
+        <div
+            className={_cs(styles.chartContainer, className)}
+            ref={newRef}
+        >
             <header className={styles.header}>
                 <h3 className={styles.heading}>
                     {title}
@@ -177,7 +172,6 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                             data={finalData}
                             margin={chartMargin}
                             barCategoryGap={0}
-                            ref={newRef}
                         >
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis
