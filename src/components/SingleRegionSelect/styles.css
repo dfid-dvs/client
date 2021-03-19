@@ -10,6 +10,6 @@
     }
 
     .region-select-input {
-        padding: var(--spacing-small) var(--spacing-medium);
+        min-width: 300px;
     }
 }

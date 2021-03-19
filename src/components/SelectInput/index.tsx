@@ -291,10 +291,12 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 name="close"
                                 onClick={handleClearClick}
                                 disabled={disabled}
-                                icons={(
-                                    <IoMdClose />
-                                )}
-                            />
+                                variant="icon"
+                                childrenContainerClassName={styles.iconContainer}
+                            >
+                                <IoMdClose className={styles.icon} />
+                            </Button>
+
                         )}
                         {showDropDownIcon && showDropdown && (
                             <IoMdArrowDropup

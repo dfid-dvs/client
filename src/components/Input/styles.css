@@ -4,8 +4,9 @@
 
     .main {
         display: flex;
+        border: var(--width-separator-thin) solid var(--color-separator-dark);
         background-color: var(--color-input-background);
-        padding: var(--spacing-medium) calc(var(--spacing-medium) - var(--padding-internal-h));
+        padding: var(--spacing-small-medium) calc(var(--spacing-medium) - var(--padding-internal-h));
 
         &.disabled {
             background-color: var(--color-input-background-disabled);

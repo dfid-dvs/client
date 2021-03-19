@@ -35,9 +35,12 @@ export interface ButtonProps extends RawButtonProps {
     transparent?: boolean;
     icons?: React.ReactNode;
     actions?: React.ReactNode;
+    iconsContainerClassName?: string;
+    actionsContainerClassName?: string;
+    childrenContainerClassName?: string;
 }
 
-type ButtonFeatureKeys = 'variant' | 'className' | 'transparent' | 'children' | 'icons' | 'actions' | 'disabled' | 'pending';
+type ButtonFeatureKeys = 'variant' | 'className' | 'transparent' | 'children' | 'icons' | 'actions' | 'disabled' | 'pending' | 'iconsContainerClassName' | 'actionsContainerClassName' | 'childrenContainerClassName';
 
 export function useButtonStyling(props: Pick<ButtonProps, ButtonFeatureKeys>) {
     const {
@@ -49,6 +52,9 @@ export function useButtonStyling(props: Pick<ButtonProps, ButtonFeatureKeys>) {
         icons,
         actions,
         pending,
+        iconsContainerClassName,
+        actionsContainerClassName,
+        childrenContainerClassName,
     } = props;
 
     const buttonClassName = _cs(
@@ -66,17 +72,17 @@ export function useButtonStyling(props: Pick<ButtonProps, ButtonFeatureKeys>) {
                 </Backdrop>
             )}
             {icons && (
-                <div className={styles.icons}>
+                <div className={_cs(styles.icons, iconsContainerClassName)}>
                     { icons }
                 </div>
             )}
             {children && (
-                <div className={styles.children}>
+                <div className={_cs(styles.children, childrenContainerClassName)}>
                     { children }
                 </div>
             )}
             {actions && (
-                <div className={styles.actions}>
+                <div className={_cs(styles.actions, actionsContainerClassName)}>
                     { actions }
                 </div>
             )}
@@ -102,6 +108,9 @@ function Button(props: ButtonProps) {
         icons,
         actions,
         elementRef,
+        iconsContainerClassName,
+        actionsContainerClassName,
+        childrenContainerClassName,
         ...otherProps
     } = props;
 
@@ -114,6 +123,9 @@ function Button(props: ButtonProps) {
         icons,
         actions,
         pending,
+        iconsContainerClassName,
+        actionsContainerClassName,
+        childrenContainerClassName,
     });
 
     return (

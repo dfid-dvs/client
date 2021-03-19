@@ -7,7 +7,6 @@ import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
 import MultiSelectInput from '#components/MultiSelectInput';
 import Numeral from '#components/Numeral';
-import RegionSelector from '#components/RegionSelector';
 import Table, { createColumn } from '#components/Table';
 import Cell from '#components/Table/Cell';
 import HeaderCell from '#components/Table/HeaderCell';
@@ -390,6 +389,7 @@ function RegionTable(props: Props) {
         <>
             <div className={styles.tableActions}>
                 <MultiSelectInput
+                    className={styles.indicatorSelect}
                     placeholder={`Select from ${indicatorList?.length || 0} indicators`}
                     options={indicatorList}
                     onChange={onIndicatorsChange}
@@ -397,8 +397,8 @@ function RegionTable(props: Props) {
                     optionLabelSelector={indicatorTitleSelector}
                     optionKeySelector={indicatorKeySelector}
                     groupKeySelector={indicatorGroupKeySelector}
-                    dropdownContainerClassName={styles.dropdown}
                     pending={indicatorListPending}
+                    allSelectable
                 />
                 <Button
                     onClick={handleDownload}

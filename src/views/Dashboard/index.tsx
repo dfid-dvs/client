@@ -20,6 +20,7 @@ import SingleRegionSelect from '#components/SingleRegionSelect';
 import Label from '#components/Label';
 import Portal from '#components/Portal';
 import DropdownMenu from '#components/DropdownMenu';
+import PrintButton from '#components/PrintButton';
 
 import useRequest from '#hooks/useRequest';
 import useHash from '#hooks/useHash';
@@ -181,8 +182,6 @@ const Dashboard = (props: Props) => {
     ] = useState<Region>();
     // Show/hide filters
     const [sideContentMinimized, , , toggleSideContainerMinimized] = useBasicToggle();
-    const [regionFilterShown, , , toggleRegionFilter] = useBasicToggle();
-    const [mapFilterShown, , , toggleMapFilter] = useBasicToggle();
     const [filterButtonHidden, hideFilterButton, showFilterButton] = useBasicToggle();
 
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
@@ -496,6 +495,31 @@ const Dashboard = (props: Props) => {
     const dataExplored = hash === 'regions' || hash === 'programs';
     const regionSelectHidden = hash === 'programs';
 
+    React.useEffect(() => {
+        if (dataExplored) {
+            setPrintMode(false);
+        }
+    }, [dataExplored, setPrintMode]);
+
+    useEffect(() => {
+        const controls = document
+            .getElementsByClassName('mapboxgl-control-container')[0] as HTMLDivElement;
+
+        if (controls) {
+            if (printMode) {
+                controls.style.visibility = 'hidden';
+            } else {
+                controls.style.visibility = 'visible';
+            }
+        }
+
+        return () => {
+            if (controls) {
+                controls.style.visibility = 'visible';
+            }
+        };
+    }, [printMode]);
+
     const [
         tooltipExpanded,
         setTooltipExpanded,
@@ -515,17 +539,19 @@ const Dashboard = (props: Props) => {
                     sideContentMinimized && styles.minimized,
                 )}
             >
-                <Portal>
-                    <RawButton
-                        className={_cs(
-                            styles.toggleVisibilityButton,
-                            sideContentMinimized && styles.sideContentMinimized,
-                        )}
-                        onClick={toggleSideContainerMinimized}
-                    >
-                        {sideContentMinimized ? <IoIosArrowForward /> : <IoIosArrowBack />}
-                    </RawButton>
-                </Portal>
+                {!printMode && (
+                    <Portal>
+                        <RawButton
+                            className={_cs(
+                                styles.toggleVisibilityButton,
+                                sideContentMinimized && styles.sideContentMinimized,
+                            )}
+                            onClick={toggleSideContainerMinimized}
+                        >
+                            {sideContentMinimized ? <IoIosArrowForward /> : <IoIosArrowBack />}
+                        </RawButton>
+                    </Portal>
+                )}
                 <FiltersPanel isMinimized={sideContentMinimized} />
             </aside>
             <main className={styles.mainContent}>
@@ -579,6 +605,12 @@ const Dashboard = (props: Props) => {
                         </>
                     ) : (
                         <>
+                            <PrintButton
+                                orientation="landscape"
+                                className={styles.printButton}
+                                printMode={printMode}
+                                onPrintModeChange={setPrintMode}
+                            />
                             <IndicatorMap
                                 className={styles.mapContainer}
                                 regionLevel={regionLevel}

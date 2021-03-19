@@ -86,11 +86,7 @@ interface Props<T, K> {
     placeholder?: string;
     hideLabel?: boolean;
     error?: string;
-    // labelRightComponent?: React.ReactNode;
-    // labelRightComponentClassName?: string;
-
     groupKeySelector?: (d: T) => string;
-
     allSelectable?: boolean;
 }
 
@@ -107,12 +103,8 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
         pending,
         placeholder = 'Select options',
         groupKeySelector,
-        hideLabel,
         label,
-        error,
         allSelectable,
-        // labelRightComponent,
-        // labelRightComponentClassName,
     } = props;
 
     const inputContainerRef = React.useRef<HTMLDivElement>(null);
@@ -270,23 +262,10 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
     const optionsLength = options ? options.length : 0;
 
     return (
-        <div
-            className={_cs(className, styles.selectInput)}
-            title={label}
-        >
-            {!hideLabel && (
-                <InputLabel
-                    className={styles.label}
-                    disabled={disabled}
-                    error={!!error}
-                    // rightComponent={labelRightComponent}
-                    // rightComponentClassName={labelRightComponentClassName}
-                >
-                    {label}
-                </InputLabel>
-            )}
+        <>
             <TextInput
-                className={styles.textInput}
+                label={label}
+                className={_cs(className, styles.textInput)}
                 elementRef={inputContainerRef}
                 inputRef={inputElementRef}
                 onClick={handleInputClick}
@@ -315,10 +294,11 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 title="Select all"
                                 onClick={handleSelectAll}
                                 disabled={disabled || !options}
-                                icons={(
-                                    <IoMdDoneAll />
-                                )}
-                            />
+                                variant="icon"
+                                childrenContainerClassName={styles.iconContainer}
+                            >
+                                <IoMdDoneAll className={styles.icon} />
+                            </Button>
                         )}
                         {value && value.length > 0 && (
                             <Button
@@ -328,10 +308,11 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 onClick={handleClearClick}
                                 title="Clear all"
                                 disabled={disabled}
-                                icons={(
-                                    <IoMdClose />
-                                )}
-                            />
+                                variant="icon"
+                                childrenContainerClassName={styles.iconContainer}
+                            >
+                                <IoMdClose className={styles.icon} />
+                            </Button>
                         )}
                     </>
                 )}
@@ -370,7 +351,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                     </Dropdown>
                 </Portal>
             )}
-        </div>
+        </>
     );
 }
 

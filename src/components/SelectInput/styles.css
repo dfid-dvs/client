@@ -1,7 +1,16 @@
 .text-input{
     .clear-button {
+        border: none;
         padding: 0;
-        font-size: var(--font-size-medium);
+
+        .icon-container {
+            padding: 0;
+
+            .icon {
+                display: flex;
+                align-items: center;
+            }
+        }
     }
 }
 

@@ -8,6 +8,10 @@
     .download-button {
         margin: var(--spacing-small);
     }
+
+    .indicator-select {
+        width: 300px;
+    }
 }
 
 .table-container {

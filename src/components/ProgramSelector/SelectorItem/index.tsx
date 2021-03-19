@@ -147,6 +147,7 @@ export default function SelectorItem<T extends string | number>(props: SelectorI
                                 onChange={setSearchText}
                                 autoFocus
                                 icons={<IoIosSearch className={styles.searchIcon} />}
+                                inputContainerClassName={styles.inputContainer}
                             />
                             <TreeInput
                                 className={styles.treeInput}

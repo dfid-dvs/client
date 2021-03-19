@@ -126,28 +126,6 @@
             }
         }
 
-        .data-explored {
-            position: absolute;
-            top: var(--spacing-large);
-            right: var(--spacing-large);
-            z-index: 999;
-            font-weight: var(--font-weight-bold);
-
-            .link {
-                text-decoration: none;
-                color: var(--color-highlight);
-
-                .title {
-                    display: flex;
-                    align-items: center;
-                }
-
-                &:hover {
-                    background-color: var(--color-separator-light);
-                }
-            }
-        }
-
         .map-options-button {
             position: absolute;
             top: var(--spacing-medium);
@@ -185,10 +163,11 @@
         }
     }
 
-    .print-button-container {
+    .print-button {
         position: absolute;
         bottom: var(--height-map-control);
         left: var(--width-config-container);
+        z-index: 1;
         padding: var(--spacing-medium);
     }
 
@@ -200,10 +179,13 @@
         width: 297mm!important;
         height: 210mm!important;
 
-        .print-button-container {
-            top: unset;
-            right: var(--spacing-small-medium);
-            bottom: calc( 8 * var(--spacing-extra-large));
+        .header {
+            display: none;
+        }
+
+        .print-button {
+            right: 0;
+            bottom: 0;
             left: unset;
         }
 
@@ -213,6 +195,16 @@
 
         .legend-container {
             left: 0;
+        }
+
+        .map-options-button {
+            display: none;
+        }
+
+        .summary-container {
+            top: var(--spacing-small);
+            right: var(--spacing-small);
+            max-height: calc(100% - 2 * var(--spacing-small));
         }
     }
 
@@ -234,18 +226,18 @@
 }
 
 .tooltip-modal {
-    padding: 0;
     border-radius: 0;
+    padding: 0;
     
     .tooltip-modal-header {
         display: none;
     }
 
     .tooltip-modal-body {
-        padding: 0;
-        overflow: auto;
         display: flex;
         flex-direction: column;
+        padding: 0;
+        overflow: auto;
 
         .clicked-region-detail {
             flex-grow: 1;

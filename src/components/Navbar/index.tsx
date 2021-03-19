@@ -50,7 +50,7 @@ const Navbar = (props: Props) => {
                         activeClassName={styles.active}
                         to="/"
                     >
-                        Dashboard
+                        Overview
                     </NavLink>
                     <DropdownMenu
                         className={styles.exploreDataButton}
