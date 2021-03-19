@@ -98,7 +98,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     } = settings;
 
     const [layout, setLayout] = useState<'horizontal' | 'vertical'>(orientation || 'vertical');
-    const newRef = React.useRef<BarChart>(null);
+    const newRef = React.useRef<HTMLDivElement>(null);
 
     const Xcomp = layout === 'vertical' ? YAxis : XAxis;
     const Ycomp = layout === 'vertical' ? XAxis : YAxis;
@@ -136,16 +136,31 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
 
     const handleDownload = useCallback(
         async () => {
-            const png = await html2canvas(
-                (newRef?.current as unknown as RechartRef)?.container,
-            ).then(canvas => canvas.toDataURL('image/png', 1.0));
-            FileSaver.saveAs(png, `${title}.png`);
+            if (newRef?.current) {
+                const actions = newRef.current
+                    .getElementsByClassName(styles.actions)[0] as HTMLDivElement;
+                if (actions) {
+                    actions.style.display = 'none';
+                }
+                const png = await html2canvas(
+                    newRef.current,
+                ).then(canvas => canvas.toDataURL('image/png', 1.0));
+
+                await FileSaver.saveAs(png, `${title}.png`);
+
+                if (actions) {
+                    actions.style.display = 'flex';
+                }
+            }
         },
         [title],
     );
 
     return (
-        <div className={_cs(styles.chartContainer, className)}>
+        <div
+            ref={newRef}
+            className={_cs(styles.chartContainer, className)}
+        >
             <header className={_cs(styles.header, headerClassName)}>
                 <h3 className={styles.heading}>
                     {title}
@@ -213,7 +228,6 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                             layout={layout}
                             margin={chartMargin}
                             barGap={0}
-                            ref={newRef}
                         >
                             <CartesianGrid
                                 strokeDasharray="0"
