@@ -35,6 +35,16 @@ const chartTypeOptions: ChartTypeOption[] = [
         ),
     },
     {
+        type: 'bi-axial-chart',
+        name: (
+            <>
+                <FcComboChart />
+                &nbsp;
+                Bi-Axial Chart
+            </>
+        ),
+    },
+    {
         type: 'pie-chart',
         name: (
             <>
@@ -51,16 +61,6 @@ const chartTypeOptions: ChartTypeOption[] = [
                 <GiHistogram />
                 &nbsp;
                 Histogram
-            </>
-        ),
-    },
-    {
-        type: 'bi-axial-chart',
-        name: (
-            <>
-                <FcComboChart />
-                &nbsp;
-                Bi-Axial Chart
             </>
         ),
     },

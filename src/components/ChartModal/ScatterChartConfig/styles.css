@@ -1,34 +1,45 @@
 .scatter-chart-config {
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
     border-top: var(--width-separator-thin) solid var(--color-separator-light);
     overflow: auto;
 
     .content {
         flex-grow: 1;
         border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
-        padding: calc(var(--spacing-large) - var(--spacing-small)) 0;
         overflow: auto;
 
-        .label {
-            padding: var(--spacing-small-medium) var(--spacing-extra-small);
-            text-transform: uppercase;
-            letter-spacing: var(--spacing-super-small);
-            color: var(--color-accent-light);
-            font-size: var(--font-size-small);
+        .top-section {
+            border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
+            padding: 0 0 calc(var(--spacing-large) - var(--spacing-small)) 0;
+
+            .label {
+                padding: var(--spacing-small-medium) var(--spacing-extra-small);
+                text-transform: uppercase;
+                letter-spacing: var(--spacing-super-small);
+                color: var(--color-accent-light);
+                font-size: var(--font-size-small);
+            }
+
+            >* {
+                margin: var(--spacing-small) 0;
+            }
         }
 
         >* {
             margin: var(--spacing-small) 0;
         }
 
-        .data-color-group {
+        .data-group {
             display: flex;
+            flex-direction: column;
             align-items: flex-end;
             padding: var(--spacing-small) 0;
 
             .select {
                 flex-grow: 1;
+                padding: var(--spacing-small) 0;
             }
 
             .color-select {

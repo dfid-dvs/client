@@ -233,16 +233,21 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '5',
         type: 'scatter-chart',
-        key: 'componentCount',
-        title: 'Component Count',
-        color: tableauColors[0],
-        valueSelector: item => item.componentCount,
+        title: 'Health and Finance for top 10 by budget',
         keySelector: item => item.name,
-        // dependencies: [118],
-        limit: {
-            count: 10,
-            method: 'max',
-        },
+        data: [
+            {
+                title: 'Program count',
+                key: 'programCount',
+                valueSelector: item => item.programCount,
+            },
+            {
+                title: 'Allocated Budget',
+                key: 'allocatedBudget',
+                valueSelector: item => item.allocatedBudget,
+            },
+        ],
+        color: tableauColors[0],
     },
 ];
 

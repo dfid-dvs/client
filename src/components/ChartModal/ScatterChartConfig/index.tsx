@@ -52,12 +52,17 @@ function ScatterChartConfig<T>(props: Props<T>) {
     const [error, setError] = useState<string | undefined>(undefined);
 
     const [title, setTitle] = useState(editableChartData ? editableChartData.title : '');
-    const [orderField, setOrderField] = useState<string | undefined>(editableChartData ? editableChartData.key : '');
-    const [order, setOrder] = useState<OrderOptionKey | undefined>('asc');
     const [color, setColor] = useState(
         editableChartData ? editableChartData.color : () => getRandomFromList(tableauColors),
     );
-    const [limitValue, setLimitValue] = useState(editableChartData ? editableChartData.limit?.count : '10');
+    const [
+        firstData,
+        setFirstData,
+    ] = useState<string | undefined>(editableChartData?.data[0]?.key);
+    const [
+        secondData,
+        setSecondData,
+    ] = useState<string| undefined>(editableChartData?.data[1]?.key);
 
     const keySelector = (item: NumericOption<T>) => item.key;
     const labelSelector = (item: NumericOption<T>) => item.title;
@@ -72,118 +77,101 @@ function ScatterChartConfig<T>(props: Props<T>) {
 
             const chartId = randomString();
 
-            if (isFalsyString(orderField)) {
-                setError('Data field is required.');
-                return;
-            }
-
-            const option = options.find(item => item.key === orderField);
-            if (!option) {
-                setError('Data field is required.');
-                return;
-            }
+            const firstOption = options.find(item => item.key === firstData);
+            const secondOption = options.find(item => item.key === secondData);
 
             if (isFalsyString(color)) {
                 setError('Color field is required.');
                 return;
             }
 
-            if (isFalsyString(limitValue)) {
-                setError('Limit value on data points is required.');
+            if (isFalsyString(firstOption) || isFalsyString(secondOption)) {
+                setError('Data is required.');
                 return;
             }
 
-            const limit = +limitValue;
-            if (limit <= 0) {
-                setError('Limit value must be greater than zero.');
-                return;
-            }
-
-            const dependencies = option.dependency
-                ? [option.dependency]
+            const dependencies = firstOption?.dependency
+                ? [firstOption.dependency]
                 : undefined;
 
             const settings: ScatterChartSettings<T> = {
                 id: chartId,
                 type: 'scatter-chart',
                 title,
-                key: orderField,
                 keySelector: primaryKeySelector,
-
-                limit: {
-                    count: limit,
-                    method: order === 'asc' ? 'min' : 'max',
-                },
                 color,
-
-                valueSelector: option.valueSelector,
                 dependencies,
+                data: [
+                    {
+                        title: firstOption.title,
+                        valueSelector: firstOption.valueSelector,
+                        key: firstOption.key,
+                    },
+                    {
+                        title: secondOption.title,
+                        valueSelector: secondOption.valueSelector,
+                        key: secondOption.key,
+                    },
+                ],
             };
 
             onSave(settings);
         },
-        [onSave, options, orderField, title, limitValue, color],
+        [onSave, options, title, color, firstData, secondData],
     );
-
     return (
         <div className={_cs(className, styles.scatterChartConfig)}>
             <div className={styles.content}>
-                <TextInput
-                    label="Title"
-                    value={title}
-                    onChange={setTitle}
-                    autoFocus
+                <section className={styles.topSection}>
+                    <TextInput
+                        label="Title"
+                        value={title}
+                        onChange={setTitle}
+                        autoFocus
+                        labelClassName={styles.label}
+                        placeholder="Title"
+                    />
+                </section>
+                <section className={styles.dataSection}>
+                    <div className={styles.barsHeader}>
+                        <h3 className={styles.header}>
+                            Data
+                        </h3>
+                    </div>
+                    <div className={styles.dataGroup}>
+                        <SelectInput
+                            label="Data#1"
+                            className={styles.select}
+                            options={options}
+                            onChange={setFirstData}
+                            value={firstData}
+                            optionLabelSelector={labelSelector}
+                            optionKeySelector={keySelector}
+                            groupKeySelector={groupSelector}
+                            nonClearable
+                            labelClassName={styles.label}
+                        />
+                        <SelectInput
+                            label="Data#2"
+                            className={styles.select}
+                            options={options}
+                            onChange={setSecondData}
+                            value={secondData}
+                            optionLabelSelector={labelSelector}
+                            optionKeySelector={keySelector}
+                            groupKeySelector={groupSelector}
+                            nonClearable
+                            labelClassName={styles.label}
+                        />
+                    </div>
+                </section>
+                <ColorInput
+                    label="Color"
+                    value={color}
+                    onChange={setColor}
                     labelClassName={styles.label}
+                    className={styles.colorSelect}
                 />
-                <div className={styles.dataColorGroup}>
-                    <SelectInput
-                        label="Data"
-                        className={styles.select}
-                        options={options}
-                        onChange={setOrderField}
-                        value={orderField}
-                        optionLabelSelector={labelSelector}
-                        optionKeySelector={keySelector}
-                        groupKeySelector={groupSelector}
-                        nonClearable
-                        labelClassName={styles.label}
-                    />
-                    <ColorInput
-                        label="Color"
-                        value={color}
-                        onChange={setColor}
-                        labelClassName={styles.label}
-                        className={styles.colorSelect}
-                    />
-                </div>
-                <div className={styles.group}>
-                    <span>
-                        Show
-                    </span>
-                    <NumberInput
-                        value={limitValue}
-                        onChange={setLimitValue}
-                        inputContainerClassName={styles.limitInput}
-                        placeholder="N"
-                        className={styles.limitInput}
-                    />
-                    <span>
-                        data points in
-                    </span>
-                    <SelectInput
-                        className={styles.orderInput}
-                        options={orderOptions}
-                        onChange={setOrder}
-                        value={order}
-                        optionLabelSelector={orderLabelSelector}
-                        optionKeySelector={orderKeySelector}
-                        nonClearable
-                        showDropDownIcon
-                    />
-                    <span>
-                        order
-                    </span>
-                </div>
             </div>
             <div className={styles.footer}>
                 <div className={styles.error}>
