@@ -12,10 +12,11 @@
         display: flex;
         flex-wrap: wrap;
         padding: 0 var(--spacing-small);
+        width: 100%;
 
         .number-output {
             margin: var(--spacing-extra-small);
-            width: calc(100% / 4 - var(--spacing-extra-small) * 2);
+            width: calc(100% / 3 - var(--spacing-extra-small) * 2);
         }
     }
 

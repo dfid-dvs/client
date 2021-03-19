@@ -391,7 +391,10 @@ function ProgramProfile(props: Props) {
                                     title="Hide Indicators"
                                     transparent
                                     variant="icon"
-                                    className={styles.button}
+                                    className={_cs(
+                                        styles.button,
+                                        printMode && styles.hidden,
+                                    )}
                                 >
                                     <IoMdClose
                                         className={styles.hideIcon}
@@ -410,6 +413,7 @@ function ProgramProfile(props: Props) {
                                     className={styles.textInput}
                                     inputClassName={styles.textAreaInput}
                                     labelClassName={styles.label}
+                                    disabled={printMode}
                                 />
                             </div>
                         )}
@@ -433,6 +437,9 @@ function ProgramProfile(props: Props) {
                                 className={styles.sectors}
                                 federalLevelComponents={federalLevelComponents}
                                 setFederalLevelComponentsHidden={setFederalLevelComponentsHidden}
+                                buttonClassName={_cs(
+                                    printMode && styles.hidden,
+                                )}
                             />
                         )}
                         {mapRegions && (

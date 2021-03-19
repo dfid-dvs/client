@@ -165,6 +165,7 @@ function ScatterChartConfig<T>(props: Props<T>) {
                         onChange={setLimitValue}
                         inputContainerClassName={styles.limitInput}
                         placeholder="N"
+                        className={styles.limitInput}
                     />
                     <span>
                         data points in

@@ -361,6 +361,7 @@ function BiAxialChartConfig<T>(props: Props<T>) {
                             onChange={setLimitValue}
                             value={limitValue}
                             placeholder="N"
+                            className={styles.limitInput}
                         />
                         <span>
                             data points in

@@ -392,6 +392,7 @@ function BarChartConfig<T>(props: Props<T>) {
                         optionKeySelector={barTypeKeySelector}
                         labelClassName={styles.label}
                         className={styles.typeInput}
+                        segmentClassName={styles.segment}
                     />
                 </section>
                 <section className={styles.barSection}>
@@ -434,6 +435,7 @@ function BarChartConfig<T>(props: Props<T>) {
                             onChange={setLimitValue}
                             value={limitValue}
                             placeholder="N"
+                            className={styles.limitInput}
                         />
                         <span>
                             data points in
