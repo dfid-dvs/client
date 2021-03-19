@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useContext } from 'react';
-import { FiBarChart2 } from 'react-icons/fi';
-import { TiChartPie } from 'react-icons/ti';
 import { GiHistogram } from 'react-icons/gi';
-import { FcComboChart, FcScatterPlot } from 'react-icons/fc';
+import { FcBarChart, FcPieChart, FcComboChart, FcScatterPlot } from 'react-icons/fc';
 
 import Modal from '#components/Modal';
 import SegmentInput from '#components/SegmentInput';
@@ -30,7 +28,7 @@ const chartTypeOptions: ChartTypeOption[] = [
         type: 'bar-chart',
         name: (
             <>
-                <FiBarChart2 />
+                <FcBarChart />
                 &nbsp;
                 Bar Chart
             </>
@@ -40,7 +38,7 @@ const chartTypeOptions: ChartTypeOption[] = [
         type: 'pie-chart',
         name: (
             <>
-                <TiChartPie />
+                <FcPieChart />
                 &nbsp;
                 Pie Chart
             </>

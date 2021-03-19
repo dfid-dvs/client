@@ -7,6 +7,7 @@ import styles from './styles.css';
 
 interface IndicatorProps {
     className?: string;
+    buttonClassName?: string;
     federalLevelComponents: string[];
     setFederalLevelComponentsHidden: () => void;
 }
@@ -14,6 +15,7 @@ interface IndicatorProps {
 export default function FederalLevelComponents(props: IndicatorProps) {
     const {
         className,
+        buttonClassName,
         federalLevelComponents,
         setFederalLevelComponentsHidden,
     } = props;
@@ -29,7 +31,10 @@ export default function FederalLevelComponents(props: IndicatorProps) {
                     title="Hide Federal Level Components"
                     transparent
                     variant="icon"
-                    className={styles.button}
+                    className={_cs(
+                        styles.button,
+                        buttonClassName,
+                    )}
                 >
                     <IoMdClose
                         className={styles.hideIcon}

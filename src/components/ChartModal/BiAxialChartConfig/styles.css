@@ -36,7 +36,6 @@
                 display: flex;
                 align-items: baseline;
                 flex-shrink: 0;
-                flex-wrap: wrap;
                 justify-content: space-around;
                 padding: var(--spacing-small) 0;
 
@@ -45,11 +44,16 @@
                 }
 
                 .order-input {
+                    width: auto;
                     input {
                         width: 90px;
                     }
                 }
+                .field-input {
+                    width: auto;
+                }
                 .limit-input {
+                    width: auto;
                     input {
                         width: 32px;
                     }

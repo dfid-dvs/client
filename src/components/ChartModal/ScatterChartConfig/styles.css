@@ -40,19 +40,21 @@
             align-items: baseline;
             justify-content: space-evenly;
             padding: var(--spacing-small) 0;
-
+            flex-wrap: 0;
             >*:first-child {
                 margin-right: var(--spacing-medium);
             }
 
             .order-input {
+                width: auto;
                 input {
-                    width: 120px;
+                    width: 160px;
                 }
             }
             .limit-input {
+                width: auto;
                 input {
-                    width: 60px;
+                    width: 80px;
                 }
             }
         }

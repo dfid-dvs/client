@@ -8,8 +8,8 @@
 
     .segment-input-item {
         margin: var(--spacing-medium) 0;
+        width: calc(var(--spacing-large) + var(--spacing-medium));
     }
-
     .separator {
         border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
     }
