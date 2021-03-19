@@ -236,16 +236,15 @@ export interface BiAxialChartSettings<T> {
 export interface ScatterChartSettings<T> {
     id: string;
     type: 'scatter-chart';
-    key: string;
     title: string;
-    valueSelector: (value: T) => number;
     keySelector: (value: T) => string;
     color: string;
     dependencies?: number[];
-    limit?: {
-        count: number;
-        method: 'min' | 'max';
-    };
+    data: {
+        title: string;
+        valueSelector: (value: T) => number | null;
+        key: string;
+    }[];
 }
 
 // eslint-disable-next-line max-len

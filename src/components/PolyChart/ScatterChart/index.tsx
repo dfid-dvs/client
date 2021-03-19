@@ -7,7 +7,7 @@ import {
     Tooltip,
     ResponsiveContainer,
     Scatter,
-    TooltipFormatter,
+    TickFormatterFunction,
 } from 'recharts';
 import { isNotDefined, isDefined, _cs, compareNumber, sum } from '@togglecorp/fujs';
 import { IoMdClose, IoMdDownload } from 'react-icons/io';
@@ -44,15 +44,7 @@ const chartMargin = {
     left: 10,
 };
 
-const categoryTickFormatter = (value: string) => {
-    const words = value.trim().split(/\s+/);
-    if (words.length <= 1) {
-        return value.slice(0, 3).toUpperCase();
-    }
-    return words.map(item => item[0]).join('').toUpperCase();
-};
-
-const valueTickFormatter: TooltipFormatter = (value) => {
+const valueTickFormatter: TickFormatterFunction = (value) => {
     if (isNotDefined(value)) {
         return '';
     }
@@ -64,7 +56,7 @@ const valueTickFormatter: TooltipFormatter = (value) => {
 export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<T>) {
     const {
         settings,
-        data,
+        data: finalData,
         className,
         onDelete,
         chartClassName,
@@ -78,29 +70,17 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
         title,
         color,
         id,
-        limit,
+        data: scatterData,
         keySelector,
-        valueSelector,
     } = settings;
 
+    const [firstData, secondData] = useMemo(() => {
+        if (!scatterData) {
+            return [undefined, undefined];
+        }
+        return scatterData;
+    }, [scatterData]);
     const newRef = React.useRef<ScatterChart>(null);
-
-    const finalData = useMemo(
-        () => {
-            if (!limit || !data) {
-                return data;
-            }
-            return data
-                .filter(datum => isDefined(valueSelector(datum)))
-                .sort((foo, bar) => compareNumber(
-                    valueSelector(foo),
-                    valueSelector(bar),
-                    limit.method === 'max' ? -1 : 1,
-                ))
-                .slice(0, limit.count);
-        },
-        [data, limit, valueSelector],
-    );
 
     const averageLength: number = useMemo(() => {
         if (finalData) {
@@ -121,6 +101,9 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
         [title],
     );
 
+    if (!firstData || !secondData) {
+        return null;
+    }
     return (
         <div className={_cs(styles.chartContainer, className)}>
             <header className={styles.header}>
@@ -182,19 +165,24 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                         >
                             <CartesianGrid />
                             <XAxis
-                                dataKey={keySelector}
-                                type="category"
+                                dataKey={firstData.key}
+                                type="number"
                                 interval={0}
                                 textAnchor="end"
-                                tickFormatter={hasLongTitles ? categoryTickFormatter : undefined}
-                                name="Key"
+                                name={firstData.title}
+                                tickFormatter={hasLongTitles ? valueTickFormatter : undefined}
                             />
                             <YAxis
                                 type="number"
-                                dataKey={valueSelector}
-                                name="Value"
+                                dataKey={secondData.key}
+                                name={secondData.title}
+                                tickFormatter={hasLongTitles ? valueTickFormatter : undefined}
                             />
-                            <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+                            <Tooltip
+                                allowEscapeViewBox={{ x: false, y: false }}
+                                offset={20}
+                                formatter={valueTickFormatter}
+                            />
                             <Scatter
                                 name={title}
                                 data={finalData}
