@@ -94,6 +94,13 @@
             padding: var(--spacing-small) var(--spacing-medium);
         }
 
+        .map-and-legends {
+            display: flex;
+            position: relative;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
         .content {
             display: flex;
             position: relative;
@@ -210,7 +217,7 @@
 
     .region-details {
         left: var(--width-config-container);
-        background: var(--color-grey-shade-2);
+        padding: 0;
         width: calc(100% - var(--width-config-container));
 
         &.filter-minimized {

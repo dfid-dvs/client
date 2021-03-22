@@ -3,7 +3,7 @@
     align-items: center;
     flex-shrink: 0;
     justify-content: flex-end;
-    padding: calc(var(--spacing-medium) - var(--spacing-small));
+    padding: var(--spacing-small-medium) 0 0 0;
 
     .download-button {
         margin: var(--spacing-small);

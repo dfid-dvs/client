@@ -555,20 +555,6 @@ const Dashboard = (props: Props) => {
                 <FiltersPanel isMinimized={sideContentMinimized} />
             </aside>
             <main className={styles.mainContent}>
-                {!regionSelectHidden && (
-                    <header className={styles.header}>
-                        <Label>
-                            View by
-                        </Label>
-                        <SingleRegionSelect
-                            onRegionLevelChange={handleRegionLevelChange}
-                            regionLevel={regionLevel}
-                            region={region?.id}
-                            onRegionChange={handleRegionChange}
-                            disabled={printMode}
-                        />
-                    </header>
-                )}
                 <div className={styles.content}>
                     { dataExplored ? (
                         <>
@@ -592,6 +578,8 @@ const Dashboard = (props: Props) => {
                                     partnerIdList={partnerIdList}
                                     sectorIdList={sectorIdList}
                                     subsectorIdList={subsectorIdList}
+
+                                    handleRegionLevelChange={handleRegionLevelChange}
                                 />
                             )}
                             {hash === 'programs' && (
@@ -605,66 +593,59 @@ const Dashboard = (props: Props) => {
                         </>
                     ) : (
                         <>
-                            <PrintButton
-                                orientation="landscape"
-                                className={styles.printButton}
-                                printMode={printMode}
-                                onPrintModeChange={setPrintMode}
-                            />
-                            <IndicatorMap
-                                className={styles.mapContainer}
-                                regionLevel={regionLevel}
-                                choroplethMapState={choroplethMapState}
-                                choroplethMapPaint={mapPaint}
-                                bubbleMapState={bubbleMapState}
-                                bubbleMapPaint={bubblePaint}
-                                rasterLayer={selectedRasterLayerDetail}
-                                vectorLayers={selectedVectorLayersDetail}
-                                onClick={handleMapRegionClick}
-                                printMode={printMode}
-                                selectedRegionId={region?.code}
-                            />
-                            <DropdownMenu
-                                label="Map Options"
-                                dropdownContainerClassName={styles.mapOptionsDropdown}
-                                {...mapOptionsButtonProps}
-                            >
-                                <MapOptions
-                                    fiveWOptions={fiveWOptions}
-                                    selectedFiveWOption={selectedFiveWOption}
-                                    handleFiveWOptionChange={handleFiveWOptionChange}
-                                    indicatorListPending={indicatorListPending}
-                                    indicatorList={indicatorList}
-                                    setSelectedIndicator={setSelectedIndicator}
-                                    validSelectedIndicator={validSelectedIndicator}
-                                    selectedIndicatorDetails={selectedIndicatorDetails}
-                                    mapStyleInverted={mapStyleInverted}
-                                    setMapStyleInverted={setMapStyleInverted}
-                                    mapLayerListPending={mapLayerListPending}
-                                    vectorLayers={vectorLayers}
-                                    setSelectedVectorLayers={setSelectedVectorLayers}
-                                    selectedVectorLayers={selectedVectorLayers}
-                                    rasterLayers={rasterLayers}
-                                    setSelectedRasterLayer={setSelectedRasterLayer}
-                                    selectedRasterLayer={selectedRasterLayer}
+                            <header className={styles.header}>
+                                <Label>
+                                    View by
+                                </Label>
+                                <SingleRegionSelect
+                                    onRegionLevelChange={handleRegionLevelChange}
+                                    regionLevel={regionLevel}
+                                    region={region?.id}
+                                    onRegionChange={handleRegionChange}
+                                    disabled={printMode}
                                 />
-                            </DropdownMenu>
-                            <div className={styles.summaryContainer}>
-                                <Summary
-                                    markerIdList={markerIdList}
-                                    submarkerIdList={submarkerIdList}
-                                    programIdList={programIdList}
-                                    componentIdList={componentIdList}
-                                    partnerIdList={partnerIdList}
-                                    sectorIdList={sectorIdList}
-                                    subsectorIdList={subsectorIdList}
+                            </header>
+                            <div className={styles.mapAndLegends}>
+                                <IndicatorMap
+                                    className={styles.mapContainer}
+                                    regionLevel={regionLevel}
+                                    choroplethMapState={choroplethMapState}
+                                    choroplethMapPaint={mapPaint}
+                                    bubbleMapState={bubbleMapState}
+                                    bubbleMapPaint={bubblePaint}
+                                    rasterLayer={selectedRasterLayerDetail}
+                                    vectorLayers={selectedVectorLayersDetail}
+                                    onClick={handleMapRegionClick}
+                                    printMode={printMode}
+                                    selectedRegionId={region?.code}
                                 />
-                                {region && (
-                                    <Tooltip
-                                        region={region}
-                                        className={styles.clickedRegionDetail}
-                                        regionLevel={regionLevel}
-
+                                <DropdownMenu
+                                    label="Map Options"
+                                    dropdownContainerClassName={styles.mapOptionsDropdown}
+                                    {...mapOptionsButtonProps}
+                                >
+                                    <MapOptions
+                                        fiveWOptions={fiveWOptions}
+                                        selectedFiveWOption={selectedFiveWOption}
+                                        handleFiveWOptionChange={handleFiveWOptionChange}
+                                        indicatorListPending={indicatorListPending}
+                                        indicatorList={indicatorList}
+                                        setSelectedIndicator={setSelectedIndicator}
+                                        validSelectedIndicator={validSelectedIndicator}
+                                        selectedIndicatorDetails={selectedIndicatorDetails}
+                                        mapStyleInverted={mapStyleInverted}
+                                        setMapStyleInverted={setMapStyleInverted}
+                                        mapLayerListPending={mapLayerListPending}
+                                        vectorLayers={vectorLayers}
+                                        setSelectedVectorLayers={setSelectedVectorLayers}
+                                        selectedVectorLayers={selectedVectorLayers}
+                                        rasterLayers={rasterLayers}
+                                        setSelectedRasterLayer={setSelectedRasterLayer}
+                                        selectedRasterLayer={selectedRasterLayer}
+                                    />
+                                </DropdownMenu>
+                                <div className={styles.summaryContainer}>
+                                    <Summary
                                         markerIdList={markerIdList}
                                         submarkerIdList={submarkerIdList}
                                         programIdList={programIdList}
@@ -672,56 +653,71 @@ const Dashboard = (props: Props) => {
                                         partnerIdList={partnerIdList}
                                         sectorIdList={sectorIdList}
                                         subsectorIdList={subsectorIdList}
+                                    />
+                                    {region && (
+                                        <Tooltip
+                                            region={region}
+                                            className={styles.clickedRegionDetail}
+                                            regionLevel={regionLevel}
 
-                                        tooltipExpanded={tooltipExpanded}
-                                        setTooltipExpanded={setTooltipExpanded}
-                                    />
-                                )}
-                            </div>
-                            <div
-                                className={_cs(
-                                    styles.legendContainer,
-                                    sideContentMinimized && styles.filterMinimized,
-                                )}
-                            >
-                                {choroplethSelected && (
-                                    <ChoroplethLegend
-                                        className={styles.legend}
-                                        title={choroplethTitle}
-                                        minValue={dataMinValue}
-                                        legend={mapLegend}
-                                        unit={choroplethUnit}
-                                        minExceeds={dataMinExceeds}
-                                        maxExceeds={dataMaxExceeds}
-                                        pending={choroplethPending}
-                                    />
-                                )}
-                                {bubbleSelected && (
-                                    <BubbleLegend
-                                        className={styles.legend}
-                                        title={bubbleTitle}
-                                        data={bubbleLegend}
-                                        keySelector={legendKeySelector}
-                                        valueSelector={legendValueSelector}
-                                        radiusSelector={legendRadiusSelector}
-                                        legendType={bubbleLegendType}
-                                        unit={bubbleUnit}
-                                        pending={bubblePending}
-                                    />
-                                )}
-                                {selectedRasterLayerDetail && (
-                                    <RasterLegend
-                                        className={styles.legend}
-                                        rasterLayer={selectedRasterLayerDetail}
-                                    />
-                                )}
-                                {selectedVectorLayersDetail
-                                    && selectedVectorLayersDetail.length > 0 && (
-                                    <VectorLegend
-                                        className={styles.legend}
-                                        vectorLayers={selectedVectorLayersDetail}
-                                    />
-                                )}
+                                            markerIdList={markerIdList}
+                                            submarkerIdList={submarkerIdList}
+                                            programIdList={programIdList}
+                                            componentIdList={componentIdList}
+                                            partnerIdList={partnerIdList}
+                                            sectorIdList={sectorIdList}
+                                            subsectorIdList={subsectorIdList}
+
+                                            tooltipExpanded={tooltipExpanded}
+                                            setTooltipExpanded={setTooltipExpanded}
+                                        />
+                                    )}
+                                </div>
+                                <div
+                                    className={_cs(
+                                        styles.legendContainer,
+                                        sideContentMinimized && styles.filterMinimized,
+                                    )}
+                                >
+                                    {choroplethSelected && (
+                                        <ChoroplethLegend
+                                            className={styles.legend}
+                                            title={choroplethTitle}
+                                            minValue={dataMinValue}
+                                            legend={mapLegend}
+                                            unit={choroplethUnit}
+                                            minExceeds={dataMinExceeds}
+                                            maxExceeds={dataMaxExceeds}
+                                            pending={choroplethPending}
+                                        />
+                                    )}
+                                    {bubbleSelected && (
+                                        <BubbleLegend
+                                            className={styles.legend}
+                                            title={bubbleTitle}
+                                            data={bubbleLegend}
+                                            keySelector={legendKeySelector}
+                                            valueSelector={legendValueSelector}
+                                            radiusSelector={legendRadiusSelector}
+                                            legendType={bubbleLegendType}
+                                            unit={bubbleUnit}
+                                            pending={bubblePending}
+                                        />
+                                    )}
+                                    {selectedRasterLayerDetail && (
+                                        <RasterLegend
+                                            className={styles.legend}
+                                            rasterLayer={selectedRasterLayerDetail}
+                                        />
+                                    )}
+                                    {selectedVectorLayersDetail
+                                        && selectedVectorLayersDetail.length > 0 && (
+                                        <VectorLegend
+                                            className={styles.legend}
+                                            vectorLayers={selectedVectorLayersDetail}
+                                        />
+                                    )}
+                                </div>
                             </div>
                             {region && tooltipExpanded && (
                                 <Modal

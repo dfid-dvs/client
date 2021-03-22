@@ -55,8 +55,8 @@
         }
 
         .icon {
-            font-size: var(--font-size-medium);
             margin: var(--spacing-medium) var(--spacing-small);
+            font-size: var(--font-size-medium);
 
             &:hover {
                 cursor: pointer;

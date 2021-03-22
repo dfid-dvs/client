@@ -9,9 +9,9 @@
     .chart-container {
         display: inline-block;
         margin: var(--spacing-medium);
+        border: var(--width-separator-thin) solid var(--color-button-background);
         width: calc(50% - 2 * var(--spacing-medium));
         vertical-align: top;
-        border: var(--width-separator-thin) solid var(--color-button-background);
     }
 
     .chart {
