@@ -1,8 +1,8 @@
 .table-actions {
     display: flex;
     align-items: flex-end;
-    justify-content: flex-end;
     flex-shrink: 0;
+    justify-content: flex-end;
     background: var(--color-grey-shade-2);
     padding: var(--spacing-large) var(--spacing-medium);
 

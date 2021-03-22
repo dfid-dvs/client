@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 
 import SegmentInput from '#components/SegmentInput';
 import PopupPage from '#components/PopupPage';
+import Label from '#components/Label';
+import SingleRegionSelect from '#components/SingleRegionSelect';
 import { Indicator, RegionLevelOption } from '#types';
 
 import Table from './Table';
@@ -39,6 +41,8 @@ interface Props {
     partnerIdList?: number[];
     sectorIdList?: number[];
     subsectorIdList?: number[];
+
+    handleRegionLevelChange?: (regionLvl: RegionLevelOption) => void;
 }
 
 const optionKeySelector = (item: TabOption) => item.key;
@@ -61,6 +65,7 @@ function RegionDetails(props: Props) {
         partnerIdList,
         sectorIdList,
         subsectorIdList,
+        handleRegionLevelChange,
     } = props;
 
 
@@ -74,7 +79,7 @@ function RegionDetails(props: Props) {
         if (filterButtonHidden && onShowFilterButton && tabKey !== 'sankey') {
             onShowFilterButton();
         }
-    }, [setSelectedTab, onHideFilterButton, filterButtonHidden]);
+    }, [setSelectedTab, onHideFilterButton, filterButtonHidden, onShowFilterButton]);
 
     const [
         selectedRegions,
@@ -82,6 +87,7 @@ function RegionDetails(props: Props) {
     ] = useState<number[]>([]);
 
     const [selectedIndicators, setSelectedIndicators] = useState<number[]>([]);
+    const hideRegionSelect = selectedTab === 'sankey';
 
     return (
         <PopupPage
@@ -91,23 +97,41 @@ function RegionDetails(props: Props) {
             hideArrow
             actions={(
                 <div className={styles.actionContainer}>
-                    <div className={styles.dummy} />
-                    <SegmentInput
-                        options={tabOptions}
-                        optionKeySelector={optionKeySelector}
-                        optionLabelSelector={optionLabelSelector}
-                        value={selectedTab}
-                        onChange={onSelectTab}
-                    />
-                    <Link
-                        className={styles.regionProfileLink}
-                        to="/region-profile/"
+                    <header
+                        className={_cs(
+                            styles.regionSelect,
+                            hideRegionSelect && styles.hidden,
+                        )}
                     >
-                        Create Regional Profile
-                    </Link>
+                        <Label className={styles.label}>
+                            View by
+                        </Label>
+                        <SingleRegionSelect
+                            onRegionLevelChange={handleRegionLevelChange}
+                            regionLevel={regionLevel}
+                            region={undefined}
+                        />
+                    </header>
+                    <div className={styles.midSection}>
+                        <div className={styles.dummy} />
+                        <SegmentInput
+                            options={tabOptions}
+                            optionKeySelector={optionKeySelector}
+                            optionLabelSelector={optionLabelSelector}
+                            value={selectedTab}
+                            onChange={onSelectTab}
+                        />
+                        <Link
+                            className={styles.regionProfileLink}
+                            to="/region-profile/"
+                        >
+                            Create Regional Profile
+                        </Link>
+                    </div>
                 </div>
             )}
             headerClassName={styles.header}
+            actionsClassName={styles.header}
         >
             {selectedTab === 'table' && (
                 <Table

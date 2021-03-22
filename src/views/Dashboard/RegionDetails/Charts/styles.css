@@ -1,10 +1,10 @@
 .table-actions {
     display: flex;
     align-items: flex-end;
-    justify-content: flex-end;
     flex-shrink: 0;
+    justify-content: flex-end;
     background: var(--color-grey-shade-2);
-    padding: var(--spacing-large) var(--spacing-medium);
+    padding: var(--spacing-medium);
 
     .add-chart-button {
         display: flex;
@@ -38,6 +38,7 @@
     flex-grow: 1;
     flex-wrap: wrap;
     justify-content: flex-start;
+    background: var(--color-grey-shade-2);
     overflow-y: auto;
 
     .poly-chart {
