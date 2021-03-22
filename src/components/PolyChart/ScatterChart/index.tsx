@@ -8,6 +8,7 @@ import {
     ResponsiveContainer,
     Scatter,
     TickFormatterFunction,
+    Label,
 } from 'recharts';
 import { isNotDefined, _cs, sum } from '@togglecorp/fujs';
 import { IoMdClose, IoMdDownload } from 'react-icons/io';
@@ -108,15 +109,17 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
-                        <Button
-                            onClick={handleDownload}
-                            name={id}
-                            title="Download"
-                            transparent
-                            variant="icon"
-                        >
-                            <IoMdDownload className={styles.deleteIcon} />
-                        </Button>
+                        {!expandableIconHidden && (
+                            <Button
+                                onClick={handleDownload}
+                                name={id}
+                                title="Download"
+                                transparent
+                                variant="icon"
+                            >
+                                <IoMdDownload className={styles.deleteIcon} />
+                            </Button>
+                        )}
                         {onSetEditableChartId && (
                             <Button
                                 onClick={onSetEditableChartId}
@@ -128,15 +131,17 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                                 <AiOutlineEdit className={styles.expandIcon} />
                             </Button>
                         )}
-                        <Button
-                            onClick={onDelete}
-                            name={id}
-                            title="Delete"
-                            transparent
-                            variant="icon"
-                        >
-                            <IoMdClose className={styles.deleteIcon} />
-                        </Button>
+                        {!expandableIconHidden && (
+                            <Button
+                                onClick={onDelete}
+                                name={id}
+                                title="Delete"
+                                transparent
+                                variant="icon"
+                            >
+                                <IoMdClose className={styles.deleteIcon} />
+                            </Button>
+                        )}
                         {!expandableIconHidden && (
                             <Button
                                 onClick={onExpand}
@@ -166,12 +171,23 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                                 textAnchor="end"
                                 name={firstData.title}
                                 tickFormatter={hasLongTitles ? valueTickFormatter : undefined}
-                            />
+                            >
+                                <Label
+                                    value={firstData.title}
+                                    offset={0}
+                                    position="insideBottom"
+                                />
+                            </XAxis>
                             <YAxis
                                 type="number"
                                 dataKey={secondData.key}
                                 name={secondData.title}
                                 tickFormatter={hasLongTitles ? valueTickFormatter : undefined}
+                                label={{
+                                    value: secondData.title,
+                                    angle: -90,
+                                    position: 'insideLeft',
+                                }}
                             />
                             <Tooltip
                                 allowEscapeViewBox={{ x: false, y: false }}
