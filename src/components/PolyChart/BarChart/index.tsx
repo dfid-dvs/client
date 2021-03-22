@@ -147,15 +147,17 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
-                        <Button
-                            onClick={handleDownload}
-                            name={id}
-                            title="Download"
-                            transparent
-                            variant="icon"
-                        >
-                            <IoMdDownload className={styles.deleteIcon} />
-                        </Button>
+                        {!expandableIconHidden && (
+                            <Button
+                                onClick={handleDownload}
+                                name={id}
+                                title="Download"
+                                transparent
+                                variant="icon"
+                            >
+                                <IoMdDownload className={styles.deleteIcon} />
+                            </Button>
+                        )}
                         {onSetEditableChartId && (
                             <Button
                                 onClick={onSetEditableChartId}
@@ -167,15 +169,17 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                 <AiOutlineEdit className={styles.expandIcon} />
                             </Button>
                         )}
-                        <Button
-                            onClick={onDelete}
-                            name={id}
-                            title="Delete"
-                            transparent
-                            variant="icon"
-                        >
-                            <IoMdClose className={styles.deleteIcon} />
-                        </Button>
+                        {!expandableIconHidden && (
+                            <Button
+                                onClick={onDelete}
+                                name={id}
+                                title="Delete"
+                                transparent
+                                variant="icon"
+                            >
+                                <IoMdClose className={styles.deleteIcon} />
+                            </Button>
+                        )}
                         {!expandableIconHidden && (
                             <Button
                                 onClick={onExpand}
