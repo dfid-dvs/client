@@ -10,6 +10,7 @@ import MapContainer from '#remap/MapContainer';
 import MapSource from '#remap/MapSource';
 import MapLayer from '#remap/MapSource/MapLayer';
 import MapState from '#remap/MapSource/MapState';
+import Popup from '#remap/MapTooltip';
 
 import { MultiResponse, VectorLayer, RasterLayer, MapStateItem } from '#types';
 
@@ -22,6 +23,11 @@ import VectorMapLayer from './VectorMapLayer';
 
 import styles from './styles.css';
 
+const tooltipOptions: mapboxgl.PopupOptions = {
+    closeOnClick: false,
+    closeButton: true,
+    maxWidth: '480px',
+};
 
 const defaultCenter: mapboxgl.LngLatLike = [
     84.1240, 28.3949,
@@ -68,6 +74,14 @@ export interface Municipality {
 
 type Region = Province | District | Municipality;
 
+interface MapRegion {
+    centroid?: string;
+    id: number;
+    name: string;
+    code: number;
+    lngLat?: mapboxgl.LngLat;
+}
+
 const defaultSpacing = 108;
 const defaultPadding = 32;
 
@@ -107,6 +121,14 @@ interface Props {
         point: mapboxgl.Point,
     ) => boolean | undefined;
     selectedRegionId?: number;
+    onHover?: (
+        feature: mapboxgl.MapboxGeoJSONFeature,
+        lngLat: mapboxgl.LngLat,
+        point: mapboxgl.Point,
+    ) => boolean | undefined;
+    onLeave?: () => void;
+    hoveredRegion?: MapRegion;
+    lngLat?: mapboxgl.LngLat;
 }
 
 function IndicatorMap(props: Props) {
@@ -126,6 +148,9 @@ function IndicatorMap(props: Props) {
         // hideTooltipOnHover,
         onClick,
         selectedRegionId,
+        hoveredRegion,
+        onHover,
+        onLeave,
     } = props;
 
     const isProvinceVisible = regionLevel === 'province';
@@ -163,7 +188,7 @@ function IndicatorMap(props: Props) {
         if (!bbox) {
             return undefined;
         }
-        const numberedBbox = bbox.split(',').map(b => Number(b));
+        const numberedBbox = bbox.split(',').map(b => +b);
         if (numberedBbox.length === 4) {
             return numberedBbox as Bound;
         }
@@ -172,6 +197,46 @@ function IndicatorMap(props: Props) {
 
     // eslint-disable-next-line no-unneeded-ternary
     const bounds = boundBox ? boundBox : defaultBounds;
+
+    const selectedRegionState: MapStateItem[] | undefined = useMemo(() => {
+        if (!selectedRegionId) {
+            return [];
+        }
+        return [{
+            id: selectedRegionId,
+            value: 1,
+        }];
+    }, [selectedRegionId]);
+
+    const hoveredRegionState: MapStateItem[] | undefined = useMemo(() => {
+        if (!hoveredRegion) {
+            return [];
+        }
+        return [{
+            id: hoveredRegion.id,
+            value: 1,
+        }];
+    }, [hoveredRegion]);
+
+    const hoveredRegionCentroid: mapboxgl.LngLat | undefined = useMemo(() => {
+        if (!hoveredRegion) {
+            return undefined;
+        }
+        const { centroid } = hoveredRegion;
+        if (!centroid) {
+            return undefined;
+        }
+        const numCentroids = centroid
+            .substring(1, centroid.length - 1)
+            .split(',')
+            .map(n => +n);
+        if (numCentroids.length < 2) {
+            return undefined;
+        }
+        const [lng, lat] = numCentroids;
+        return { lng, lat } as mapboxgl.LngLat;
+    }, [hoveredRegion]);
+
     return (
         <Map
             mapStyle="mapbox://styles/togglecorp/ck9jjmob30vio1it71wja5zhi"
@@ -208,6 +273,8 @@ function IndicatorMap(props: Props) {
                             ? visibleLayout : noneLayout,
                     }}
                     onClick={onClick}
+                    onMouseEnter={onHover}
+                    onMouseLeave={onLeave}
                 />
                 <MapLayer
                     layerKey="district-fill"
@@ -218,6 +285,8 @@ function IndicatorMap(props: Props) {
                         layout: (isDistrictVisible && !hideChoropleth) ? visibleLayout : noneLayout,
                     }}
                     onClick={onClick}
+                    onMouseEnter={onHover}
+                    onMouseLeave={onLeave}
                 />
                 <MapLayer
                     layerKey="province-fill"
@@ -228,6 +297,8 @@ function IndicatorMap(props: Props) {
                         layout: (isProvinceVisible && !hideChoropleth) ? visibleLayout : noneLayout,
                     }}
                     onClick={onClick}
+                    onMouseEnter={onHover}
+                    onMouseLeave={onLeave}
                 />
                 <MapLayer
                     layerKey="province-line"
@@ -263,9 +334,13 @@ function IndicatorMap(props: Props) {
                     }}
                 />
                 <MapState
-                    key={selectedSourceForChoropleth}
                     attributes={choroplethMapState}
                     attributeKey="value"
+                    sourceLayer={selectedSourceForChoropleth}
+                />
+                <MapState
+                    attributes={selectedRegionState}
+                    attributeKey="selected"
                     sourceLayer={selectedSourceForChoropleth}
                 />
             </MapSource>
@@ -351,6 +426,14 @@ function IndicatorMap(props: Props) {
                 />
             ))}
             { children }
+            {hoveredRegion && hoveredRegionCentroid && (
+                <Popup
+                    coordinates={hoveredRegionCentroid}
+                    tooltipOptions={tooltipOptions}
+                >
+                    <div>{hoveredRegion.name}</div>
+                </Popup>
+            )}
         </Map>
     );
 }

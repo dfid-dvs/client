@@ -166,7 +166,7 @@ const Tooltip = (props: Props) => {
     const [
         popupDataPending,
         popupDataResponse,
-    ] = useRequest<PopupData>(popupDataUrl, '');
+    ] = useRequest<PopupData>(popupDataUrl, 'pop-up');
 
     const details = popupDataResponse;
 
