@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
-import { IoIosArrowDropdown, IoIosArrowDropup } from 'react-icons/io';
+import { MdArrowDropDown, MdArrowDropUp } from 'react-icons/md';
 
 import styles from './styles.css';
 
@@ -57,11 +57,11 @@ export default function QAItem(props: QAItemProps) {
                     { qa.question }
                 </div>
                 {answerShown ? (
-                    <IoIosArrowDropup
+                    <MdArrowDropUp
                         className={styles.icon}
                     />
                 ) : (
-                    <IoIosArrowDropdown
+                    <MdArrowDropDown
                         className={styles.icon}
                     />
                 )}

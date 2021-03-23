@@ -1,12 +1,19 @@
 .tc-item {
     display: flex;
     flex-direction: column;
-    margin-bottom: calc(3 * var(--spacing-medium));
+
+    &:not(:first-child) {
+        margin-top: calc(3 * var(--spacing-medium));
+    }
 
     .title {
         margin: var(--spacing-medium) 0px var(--spacing-large-medium) 0px;
         font-size: var(--font-size-large);
         font-weight: var(--bold);
+        
+        &.selected {
+            color: var(--color-secondary);
+        }
     }
 
     .description {
