@@ -52,33 +52,63 @@ const municipalityLabelLayout: mapboxgl.SymbolLayout = {
 };
 
 const provinceOutlinePaint: mapboxgl.LinePaint = {
-    'line-color': '#000000',
-    'line-width': 1.4,
+    'line-color': [
+        'case',
+        ['==', ['feature-state', 'selected'], 1],
+        '#0a387b',
+        '#000000',
+    ],
+    'line-width': [
+        'case',
+        ['==', ['feature-state', 'selected'], 1],
+        2,
+        1.3,
+    ],
     'line-opacity': [
         'case',
-        ['==', ['feature-state', 'hovered'], true],
+        ['==', ['feature-state', 'selected'], 1],
         1,
         0.3,
     ],
 };
 
 const districtOutlinePaint: mapboxgl.LinePaint = {
-    'line-color': '#000000',
-    'line-width': 1.2,
+    'line-color': [
+        'case',
+        ['==', ['feature-state', 'selected'], 1],
+        '#a90011',
+        '#000000',
+    ],
+    'line-width': [
+        'case',
+        ['==', ['feature-state', 'selected'], 1],
+        1.8,
+        1.2,
+    ],
     'line-opacity': [
         'case',
-        ['==', ['feature-state', 'hovered'], true],
+        ['==', ['feature-state', 'selected'], 1],
         0.8,
         0.2,
     ],
 };
 
 const municipalityOutlinePaint: mapboxgl.LinePaint = {
-    'line-color': '#000000',
-    'line-width': 1,
+    'line-color': [
+        'case',
+        ['==', ['feature-state', 'selected'], 1],
+        '#a90011',
+        '#000000',
+    ],
+    'line-width': [
+        'case',
+        ['==', ['feature-state', 'selected'], 1],
+        1.5,
+        1,
+    ],
     'line-opacity': [
         'case',
-        ['==', ['feature-state', 'hovered'], true],
+        ['==', ['feature-state', 'selected'], 1],
         0.8,
         0.1,
     ],

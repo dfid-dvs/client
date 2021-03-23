@@ -70,15 +70,12 @@ import splitCombinedSelectors from './splitCombinedSelectors';
 
 import styles from './styles.css';
 
-interface Region {
+interface MapRegion {
+    centroid?: string;
     id: number;
     name: string;
     code: number;
-}
-
-interface ClickedRegion {
-    feature: GeoJSON.Feature<GeoJSON.Polygon, Region>;
-    lngLat: mapboxgl.LngLatLike;
+    lngLat?: mapboxgl.LngLat;
 }
 
 type AdminLevel = Province | District | Municipality | undefined;
@@ -164,12 +161,6 @@ const Dashboard = (props: Props) => {
         setSelectedVectorLayers,
     ] = useState<number[] | undefined>([]);
 
-    // tooltip
-    const [
-        clickedRegionProperties,
-        setClickedRegionProperties,
-    ] = useState<ClickedRegion | undefined>();
-
     // print
     const [
         printMode,
@@ -179,7 +170,12 @@ const Dashboard = (props: Props) => {
     const [
         region,
         setRegion,
-    ] = useState<Region>();
+    ] = useState<MapRegion>();
+
+    const [
+        hoveredRegion,
+        setHoveredRegion,
+    ] = useState<MapRegion>();
     // Show/hide filters
     const [sideContentMinimized, , , toggleSideContainerMinimized] = useBasicToggle();
     const [filterButtonHidden, hideFilterButton, showFilterButton] = useBasicToggle();
@@ -428,26 +424,37 @@ const Dashboard = (props: Props) => {
             feature: mapboxgl.MapboxGeoJSONFeature,
             lngLat: mapboxgl.LngLat,
         ) => {
-            setClickedRegionProperties({
-                feature: feature as unknown as GeoJSON.Feature<GeoJSON.Polygon, Region>,
-                lngLat,
-            });
-            const regionProperties = feature.properties as Region;
+            const regionProperties = feature.properties as MapRegion;
             setRegion({
                 ...regionProperties,
                 code: regionProperties.id,
+                lngLat,
             });
 
             return true;
         },
-        [setClickedRegionProperties, setRegion],
+        [setRegion],
     );
 
-    const handleTooltipClose = useCallback(
-        () => {
-            setClickedRegionProperties(undefined);
+    const handleMapRegionHover = useCallback(
+        (
+            feature: mapboxgl.MapboxGeoJSONFeature,
+            lngLat: mapboxgl.LngLat,
+        ) => {
+            const regionProperties = feature.properties as MapRegion;
+            setHoveredRegion({
+                ...regionProperties,
+                code: regionProperties.id,
+                lngLat,
+            });
+            return true;
         },
-        [setClickedRegionProperties],
+        [setHoveredRegion],
+    );
+
+    const handleMapRegionLeave = useCallback(
+        () => setHoveredRegion(undefined),
+        [setHoveredRegion],
     );
 
     const handleRegionChange = useCallback(
@@ -461,8 +468,8 @@ const Dashboard = (props: Props) => {
                 return;
             }
 
-            const reg: Region = {
-                id: Number(adminLevel.code),
+            const reg: MapRegion = {
+                id: +adminLevel.code,
                 name: adminLevel.name,
                 code: adminLevel.id,
             };
@@ -476,24 +483,12 @@ const Dashboard = (props: Props) => {
         (regionLvl: RegionLevelOption) => {
             setRegionLevel(regionLvl);
             setRegion(undefined);
+            setHoveredRegion(undefined);
         },
-        [setRegion, setRegionLevel],
-    );
-
-    useEffect(() => {
-        handleTooltipClose();
-    }, [hash, handleTooltipClose]);
-
-    // NOTE: clear tooltip on region change
-    useEffect(
-        () => {
-            setClickedRegionProperties(undefined);
-        },
-        [regionLevel],
+        [setRegion, setRegionLevel, setHoveredRegion],
     );
 
     const dataExplored = hash === 'regions' || hash === 'programs';
-    const regionSelectHidden = hash === 'programs';
 
     React.useEffect(() => {
         if (dataExplored) {
@@ -556,7 +551,7 @@ const Dashboard = (props: Props) => {
             </aside>
             <main className={styles.mainContent}>
                 <div className={styles.content}>
-                    { dataExplored ? (
+                    {dataExplored ? (
                         <>
                             {hash === 'regions' && (
                                 <RegionDetails
@@ -618,6 +613,9 @@ const Dashboard = (props: Props) => {
                                     onClick={handleMapRegionClick}
                                     printMode={printMode}
                                     selectedRegionId={region?.code}
+                                    onHover={handleMapRegionHover}
+                                    onLeave={handleMapRegionLeave}
+                                    hoveredRegion={hoveredRegion}
                                 />
                                 <DropdownMenu
                                     label="Map Options"
@@ -725,7 +723,6 @@ const Dashboard = (props: Props) => {
                                     className={styles.tooltipModal}
                                     headerClassName={styles.tooltipModalHeader}
                                     bodyClassName={styles.tooltipModalBody}
-                                    header="hello"
                                 >
                                     <Tooltip
                                         region={region}

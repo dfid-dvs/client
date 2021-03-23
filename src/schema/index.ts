@@ -569,6 +569,62 @@ const userDefinedSchemas: Schema[] = [
             },
         },
     },
+    {
+        name: 'pop-up',
+        description: 'Get pop up data',
+        fields: {
+            totalBudget: { type: 'number', required: true },
+            programs: {
+                arrayType: {
+                    name: 'program',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        program: { type: 'string', required: true },
+                        programBudget: { type: 'number', required: true },
+                        markers: {
+                            arrayType: {
+                                name: 'marker',
+                                fields: {
+                                    markerCategory: { type: 'string', required: true },
+                                    markerValue: { type: 'string', required: true },
+                                },
+                            },
+                        },
+                        components: {
+                            arrayType: {
+                                name: 'component',
+                                fields: {
+                                    id: { type: 'number', required: true },
+                                    name: { type: 'string', required: true },
+                                    componentBudget: { type: 'number', required: true },
+                                    partners: {
+                                        arrayType: {
+                                            name: 'partner',
+                                            fields: {
+                                                id: { type: 'number', required: true },
+                                                name: { type: 'string', required: true },
+                                                partnerBudget: { type: 'number', required: true },
+                                            },
+                                        },
+                                    },
+                                    sectors: {
+                                        arrayType: {
+                                            name: 'partner',
+                                            fields: {
+                                                id: { type: 'number', required: true },
+                                                sector: { type: 'string', required: true },
+                                                subSector: { type: 'string', required: true },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
 ];
 
 const warning = !isProduction;
