@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 
 import styles from './styles.css';
 import TermAndConditionItem from './TermAndConditionItem';
+import LeftTitleItem from './LeftTitleItem';
 
 // TODO: Delete json file and fetch from backend
 import tcData from './data.json';
 
 export default function TermsAndConditionsPage() {
-    const [tcId, setQAId] = useState<string>();
-
     const title = 'Terms and conditions';
     // eslint-disable-next-line max-len
     const subTitle = 'This page and any pages it links to explains GOV.UK’s terms of use. You must agree to these to use GOV.UK.';
@@ -25,12 +24,10 @@ export default function TermsAndConditionsPage() {
             <div className={styles.tcSection}>
                 <div className={styles.leftSection}>
                     {tcData.map(tc => (
-                        <div
+                        <LeftTitleItem
                             key={tc.id}
-                            className={styles.title}
-                        >
-                            {tc.title}
-                        </div>
+                            title={tc.title}
+                        />
                     ))}
                 </div>
                 <div className={styles.rightSection}>

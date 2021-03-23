@@ -21,13 +21,13 @@
 
     .faq {
         flex-grow: 1;
-        padding: var(--spacing-medium);
+        width: 100%;
     }
 
     .terms-and-conditions {
         flex-grow: 1;
         margin-bottom: var(--spacing-medium);
-        padding: var(--spacing-medium);
+        width: 100%;
     }
 
     .feedback {

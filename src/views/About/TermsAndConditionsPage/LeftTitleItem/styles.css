@@ -1,0 +1,11 @@
+.title {
+    padding: var(--spacing-medium) 0px;
+    text-decoration: none;
+    color: var(--color-grey-shade-6);
+    font-size: var(--font-size-large);
+    font-weight: var(--bold);
+
+    &.selected {
+        color: var(--color-secondary);
+    }
+}

@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { _cs } from '@togglecorp/fujs';
+
+import useHash from '#hooks/useHash';
 
 import styles from './styles.css';
 
@@ -19,9 +21,27 @@ export default function TermAndConditionItem(props: TermAndConditionItemProps) {
         className,
     } = props;
 
+    const hash = useHash();
+
+    const isSelectedItem: boolean = useMemo(() => {
+        const spacedHash = hash?.replace(/%20/g, ' ');
+        return tc.title === spacedHash;
+    }, [tc.title, hash]);
+
     return (
-        <div className={_cs(styles.tcItem, className)}>
-            <div className={styles.title}>
+        <div
+            className={_cs(
+                styles.tcItem,
+                className,
+            )}
+            id={tc.title}
+        >
+            <div
+                className={_cs(
+                    styles.title,
+                    isSelectedItem && styles.selected,
+                )}
+            >
                 { tc.title }
             </div>
             <div className={styles.description}>
