@@ -92,7 +92,7 @@ function ChoroplethLegend(
                     {unit ? `${title} (${unit})` : title}
                 </div>
             )}
-            {colors.length > 0 && (
+            {colors.length > 0 ? (
                 <div className={styles.choroplethLegend}>
                     {isDefined(minValue) && (
                         <LegendElement
@@ -115,6 +115,10 @@ function ChoroplethLegend(
                             />
                         );
                     })}
+                </div>
+            ) : (
+                <div className={styles.noDataText}>
+                    No data to show
                 </div>
             )}
         </div>

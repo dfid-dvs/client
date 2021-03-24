@@ -112,7 +112,13 @@ function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
     ]);
 
     return (
-        <div className={_cs(styles.bubbleLegend, className)}>
+        <div
+            className={_cs(
+                styles.bubbleLegend,
+                className,
+                data.length <= 0 && styles.noData,
+            )}
+        >
             {pending && (
                 <Backdrop>
                     <LoadingAnimation />
@@ -123,7 +129,7 @@ function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
                     {unit ? `${title} (${unit})` : title}
                 </h5>
             )}
-            {data.length > 0 && (
+            {data.length > 0 ? (
                 <>
                     <List
                         data={data}
@@ -150,6 +156,10 @@ function BubbleLegend<T, K extends OptionKey>(props: Props<T, K>) {
                         </div>
                     )}
                 </>
+            ) : (
+                <div className={styles.noDataText}>
+                    No data to show
+                </div>
             )}
         </div>
     );
