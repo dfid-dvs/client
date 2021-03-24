@@ -1,3 +1,25 @@
 .map-container {
     font-family: inherit;
 }
+
+.popup {
+    padding: var(--spacing-medium);
+    min-width: 200px;
+
+    .region-name {
+        color: var(--color-secondary-light-1);
+        font-weight: var(--font-weight-bold);
+        font-size: var(--font-size-large);
+    }
+
+    .data {
+        margin-top: var(--spacing-medium);
+        color: var(--color-grey-shade-6);
+        font-size: var(--font-size-large-medium);
+
+        .value {
+            color: var(--color-grey-shade-7);
+            font-weight: var(--font-weight-bold);
+        }
+    }
+}

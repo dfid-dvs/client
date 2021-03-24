@@ -41,5 +41,13 @@
             }
         }
     }
+
+    &.no-data {
+        min-height: 100px;
+    }
+
+    .no-data-text {
+        font-size: var(--spacing-medium);
+    }
 }
 

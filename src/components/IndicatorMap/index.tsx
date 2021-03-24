@@ -16,6 +16,7 @@ import { MultiResponse, VectorLayer, RasterLayer, MapStateItem } from '#types';
 
 import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
+import Numeral from '#components/Numeral';
 
 import theme, { noneLayout, visibleLayout } from './mapTheme';
 import RasterMapLayer from './RasterMapLayer';
@@ -108,6 +109,8 @@ interface Props {
     bubbleMapState?: MapStateItem[];
     choroplethMapPaint?: mapboxgl.FillPaint;
     bubbleMapPaint?: mapboxgl.CirclePaint;
+    choroplethTitle?: string;
+    bubbleTitle?: string;
     children?: React.ReactNode;
     hideChoropleth?: boolean;
     hideBubble?: boolean;
@@ -137,6 +140,8 @@ function IndicatorMap(props: Props) {
         regionLevel,
         choroplethMapState,
         bubbleMapState,
+        choroplethTitle,
+        bubbleTitle,
         choroplethMapPaint,
         bubbleMapPaint,
         children,
@@ -208,34 +213,27 @@ function IndicatorMap(props: Props) {
         }];
     }, [selectedRegionId]);
 
-    const hoveredRegionState: MapStateItem[] | undefined = useMemo(() => {
-        if (!hoveredRegion) {
-            return [];
+    const choroplethData = useMemo(() => {
+        const hoveredChoropleth = choroplethMapState?.find(c => c.id === hoveredRegion?.id);
+        if (!hoveredChoropleth) {
+            return undefined;
         }
-        return [{
-            id: hoveredRegion.id,
-            value: 1,
-        }];
-    }, [hoveredRegion]);
+        return {
+            ...hoveredChoropleth,
+            key: choroplethTitle,
+        };
+    }, [choroplethMapState, hoveredRegion, choroplethTitle]);
 
-    const hoveredRegionCentroid: mapboxgl.LngLat | undefined = useMemo(() => {
-        if (!hoveredRegion) {
+    const bubbleData = useMemo(() => {
+        const hoveredBubble = bubbleMapState?.find(c => c.id === hoveredRegion?.id);
+        if (!hoveredBubble) {
             return undefined;
         }
-        const { centroid } = hoveredRegion;
-        if (!centroid) {
-            return undefined;
-        }
-        const numCentroids = centroid
-            .substring(1, centroid.length - 1)
-            .split(',')
-            .map(n => +n);
-        if (numCentroids.length < 2) {
-            return undefined;
-        }
-        const [lng, lat] = numCentroids;
-        return { lng, lat } as mapboxgl.LngLat;
-    }, [hoveredRegion]);
+        return {
+            ...hoveredBubble,
+            key: bubbleTitle,
+        };
+    }, [bubbleMapState, hoveredRegion, bubbleTitle]);
 
     return (
         <Map
@@ -426,12 +424,35 @@ function IndicatorMap(props: Props) {
                 />
             ))}
             { children }
-            {hoveredRegion && hoveredRegionCentroid && (
+            {hoveredRegion && hoveredRegion.lngLat && (
                 <Popup
-                    coordinates={hoveredRegionCentroid}
+                    coordinates={hoveredRegion.lngLat}
                     tooltipOptions={tooltipOptions}
+                    trackPointer
                 >
-                    <div>{hoveredRegion.name}</div>
+                    <div className={styles.popup}>
+                        <div className={styles.regionName}>
+                            {hoveredRegion.name}
+                        </div>
+                        {choroplethData && (
+                            <div className={styles.data}>
+                                {choroplethData.key}
+                                <Numeral
+                                    value={choroplethData.value}
+                                    className={styles.value}
+                                />
+                            </div>
+                        )}
+                        {bubbleData && (
+                            <div className={styles.data}>
+                                {bubbleData.key}
+                                <Numeral
+                                    value={bubbleData.value}
+                                    className={styles.value}
+                                />
+                            </div>
+                        )}
+                    </div>
                 </Popup>
             )}
         </Map>
