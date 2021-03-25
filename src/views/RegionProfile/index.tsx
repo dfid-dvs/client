@@ -4,6 +4,8 @@ import {
     isDefined,
     isNotDefined,
 } from '@togglecorp/fujs';
+import { IoMdClose } from 'react-icons/io';
+
 import PrintButton from '#components/PrintButton';
 
 import useRequest from '#hooks/useRequest';
@@ -223,14 +225,28 @@ function RegionProfile(props: Props) {
         unsetSectorsHidden,
     ] = useBasicToggle();
 
-    const resetProfileShown = indicatorsHidden || sectorsHidden;
+    const [
+        descriptionHidden,
+        setDescriptionHidden,
+        unsetDescriptionHidden,
+    ] = useBasicToggle();
+
+
+    const resetProfileShown = indicatorsHidden || sectorsHidden || descriptionHidden;
 
     const onResetProfile = useCallback(
         () => {
             unsetIndicatorsHidden();
             unsetSectorsHidden();
+            unsetDescriptionHidden();
+            setDescription('');
         },
-        [unsetIndicatorsHidden, unsetSectorsHidden],
+        [
+            unsetIndicatorsHidden,
+            unsetSectorsHidden,
+            unsetDescriptionHidden,
+            setDescription,
+        ],
     );
 
     return (
@@ -321,19 +337,38 @@ function RegionProfile(props: Props) {
                                 className={styles.indicators}
                                 indicatorsData={indicatorsData}
                                 fiveWData={fiveWData}
+                                printMode={printMode}
                             />
                         )}
-                        {!dataPending && (
+                        {!dataPending && !descriptionHidden && (
                             <div className={styles.description}>
+                                <div className={styles.heading}>
+                                    <div className={styles.title}>
+                                        Description
+                                    </div>
+                                    <Button
+                                        onClick={setDescriptionHidden}
+                                        title="Hide Description"
+                                        transparent
+                                        variant="icon"
+                                        className={_cs(
+                                            styles.button,
+                                            printMode && styles.hidden,
+                                        )}
+                                    >
+                                        <IoMdClose
+                                            className={styles.icon}
+                                        />
+                                    </Button>
+                                </div>
                                 <TextAreaInput
-                                    label="Description"
                                     placeholder="Write your description..."
                                     autoFocus
                                     value={description}
                                     onChange={handleDescriptionChange}
                                     className={styles.textInput}
                                     inputClassName={styles.textAreaInput}
-                                    labelClassName={styles.label}
+                                    disabled={printMode}
                                 />
                             </div>
                         )}

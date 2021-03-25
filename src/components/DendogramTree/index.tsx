@@ -30,11 +30,11 @@ interface DendogramTreeInterface {
     treeData: TreeData;
 }
 
-let NODE_WIDTH = 164;
+let NODE_WIDTH = 260;
 const NODE_HEIGHT = 24;
 const NODE_CIRCLE_RADIUS = 4;
 const NODE_GAP_Y = 12;
-let NODE_GAP_X = 96;
+let NODE_GAP_X = 120;
 
 const customPathFunction = (linkDatum: {
     source: {
@@ -73,9 +73,9 @@ function DendogramTree(props: DendogramTreeInterface) {
         return n;
     }, [treeData]);
 
-    if (thirdLevelChildrens === 0) {
-        NODE_WIDTH = 260;
-        NODE_GAP_X = 120;
+    if (thirdLevelChildrens > 0) {
+        NODE_WIDTH = 164;
+        NODE_GAP_X = 96;
     }
 
     const nodeSize = {

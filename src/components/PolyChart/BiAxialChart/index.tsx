@@ -86,7 +86,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         id,
     } = settings;
 
-    const formattedChartData: (BiAxialData<T> | undefined)[] = useMemo(() => {
+    const [firstData, secondData]: (BiAxialData<T> | undefined)[] = useMemo(() => {
         const tmpChart: BiAxialData<T>[] = chartTypeToggled ? chartData.map(item => ({
             ...item,
             type: item.type === 'bar' ? 'line' : 'bar',
@@ -221,11 +221,21 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                                 type="number"
                                 width={36}
                                 tickFormatter={valueTickFormatter}
+                                label={{
+                                    value: firstData?.title,
+                                    angle: -90,
+                                    position: 'insideLeft',
+                                }}
                             />
                             <YAxis
                                 yAxisId="right"
                                 orientation="right"
                                 tickFormatter={valueTickFormatter}
+                                label={{
+                                    value: secondData?.title,
+                                    angle: 90,
+                                    position: 'insideRight',
+                                }}
                             />
                             <Tooltip
                                 allowEscapeViewBox={{ x: false, y: false }}
@@ -233,7 +243,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                                 formatter={valueTickFormatter}
                             />
                             <Legend />
-                            {formattedChartData.map(item => (
+                            {[firstData, secondData].map(item => (
                                 item?.type === 'bar'
                                     ? item && (
                                         <Bar

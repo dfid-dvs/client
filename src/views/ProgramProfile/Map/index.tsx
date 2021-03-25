@@ -53,7 +53,7 @@ const labelLayout: mapboxgl.SymbolLayout = {
     visibility: 'visible',
     'text-font': ['Source Sans Pro SemiBold', 'Arial Unicode MS Regular'],
     'text-field': ['get', 'name'],
-    'text-size': 14,
+    'text-size': 10,
     // 'text-transform': 'uppercase',
     'text-justify': 'center',
     'text-anchor': 'center',
@@ -72,10 +72,8 @@ function InfographicsMap(props: Props) {
         bounds,
         mapRegions,
     } = props;
-
     const { regionLevel } = useContext(DomainContext);
-    // TODO: make filter based on mapRegions
-    const filter = useMemo(() => ['includes', ['id'], mapRegions], [mapRegions]);
+    const filter = useMemo(() => ['in', ['id'], ['literal', mapRegions]], [mapRegions]);
 
     return (
         <Map
@@ -101,6 +99,7 @@ function InfographicsMap(props: Props) {
                             'source-layer': 'provincecentroidgeo',
                             paint: labelPaint,
                             layout: labelLayout,
+                            filter,
                         }}
                     />
                 )}
@@ -112,6 +111,7 @@ function InfographicsMap(props: Props) {
                             'source-layer': 'districtcentroidgeo',
                             paint: labelPaint,
                             layout: labelLayout,
+                            filter,
                         }}
                     />
                 )}
@@ -123,6 +123,7 @@ function InfographicsMap(props: Props) {
                             'source-layer': 'palikacentroidgeo',
                             paint: labelPaint,
                             layout: labelLayout,
+                            filter,
                         }}
                     />
                 )}

@@ -152,6 +152,12 @@ function ProgramProfile(props: Props) {
         });
         return mappedRes;
     }, [partnersTreeDendogramResponse]);
+
+    const partnersTreeDataShown = useMemo(
+        () => !!partnersTreeData?.find(p => p.countChild > 0),
+        [partnersTreeData],
+    );
+
     const regionTreeDendogramUrl = useMemo(
         () => {
             if (!selectedProgram) {
@@ -184,6 +190,11 @@ function ProgramProfile(props: Props) {
         });
         return mappedRes;
     }, [regionTreeDendogramResponse]);
+
+    const regionsTreeDataShown = useMemo(
+        () => !!regionsTreeData?.find(p => p.countChild > 0),
+        [regionsTreeData],
+    );
 
     const mapRegions: number[] | undefined = useMemo(
         () => {
@@ -244,16 +255,6 @@ function ProgramProfile(props: Props) {
         unsetFederalLevelComponentsHidden,
     ] = useBasicToggle();
 
-    const resetProfileShown = indicatorsHidden || federLevelHidden;
-
-    const onResetProfile = useCallback(
-        () => {
-            unsetIndicatorsHidden();
-            unsetFederalLevelComponentsHidden();
-        },
-        [unsetIndicatorsHidden, unsetFederalLevelComponentsHidden],
-    );
-
     const [description, setDescription] = useState('');
     const handleDescriptionChange = useCallback(
         (value: string) => {
@@ -261,6 +262,29 @@ function ProgramProfile(props: Props) {
         },
         [setDescription],
     );
+
+    const [
+        descriptionHidden,
+        setDescriptionHidden,
+        unsetDescriptionHidden,
+    ] = useBasicToggle();
+
+    const onResetProfile = useCallback(
+        () => {
+            unsetIndicatorsHidden();
+            unsetFederalLevelComponentsHidden();
+            unsetDescriptionHidden();
+            setDescription('');
+        },
+        [
+            unsetIndicatorsHidden,
+            unsetFederalLevelComponentsHidden,
+            unsetDescriptionHidden,
+            setDescription,
+        ],
+    );
+
+    const resetProfileShown = indicatorsHidden || federLevelHidden || descriptionHidden;
 
     return (
         <div
@@ -402,10 +426,28 @@ function ProgramProfile(props: Props) {
                                 </Button>
                             </div>
                         )}
-                        {!dataPending && (
+                        {!dataPending && !descriptionHidden && (
                             <div className={styles.description}>
+                                <div className={styles.heading}>
+                                    <div className={styles.title}>
+                                        Description
+                                    </div>
+                                    <Button
+                                        onClick={setDescriptionHidden}
+                                        title="Hide Description"
+                                        transparent
+                                        variant="icon"
+                                        className={_cs(
+                                            styles.button,
+                                            printMode && styles.hidden,
+                                        )}
+                                    >
+                                        <IoMdClose
+                                            className={styles.icon}
+                                        />
+                                    </Button>
+                                </div>
                                 <TextAreaInput
-                                    label="Description"
                                     placeholder="Write your description..."
                                     autoFocus
                                     value={description}
@@ -417,7 +459,8 @@ function ProgramProfile(props: Props) {
                                 />
                             </div>
                         )}
-                        {!dataPending && partnersTreeData && partnersTreeData.length > 0 && (
+                        {/* eslint-disable-next-line max-len */}
+                        {!dataPending && partnersTreeData && partnersTreeData.length > 0 && partnersTreeDataShown && (
                             <div className={styles.dendogramContainer}>
                                 <div className={styles.title}>
                                     Component and implementing partners tree
@@ -426,7 +469,6 @@ function ProgramProfile(props: Props) {
                                     <DendogramTree
                                         treeData={res}
                                         key={res.name}
-                                        separation={{ siblings: 2, nonSiblings: 2 }}
                                     />
                                 ))}
                             </div>
@@ -454,7 +496,8 @@ function ProgramProfile(props: Props) {
                                 />
                             </div>
                         )}
-                        {!dataPending && regionsTreeData && regionsTreeData.length > 0 && (
+                        {/* eslint-disable-next-line max-len */}
+                        {!dataPending && regionsTreeData && regionsTreeData.length > 0 && regionsTreeDataShown && (
                             <div className={styles.dendogramContainer}>
                                 <div className={styles.title}>
                                     Component and regions tree
@@ -463,7 +506,6 @@ function ProgramProfile(props: Props) {
                                     <DendogramTree
                                         treeData={res}
                                         key={res.name}
-                                        separation={{ siblings: 3, nonSiblings: 3 }}
                                     />
                                 ))}
                             </div>
