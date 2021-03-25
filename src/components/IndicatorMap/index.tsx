@@ -213,6 +213,16 @@ function IndicatorMap(props: Props) {
         }];
     }, [selectedRegionId]);
 
+    const hoveredRegionState: MapStateItem[] | undefined = useMemo(() => {
+        if (!hoveredRegion) {
+            return [];
+        }
+        return [{
+            id: hoveredRegion.id,
+            value: 1,
+        }];
+    }, [hoveredRegion]);
+
     const choroplethData = useMemo(() => {
         const hoveredChoropleth = choroplethMapState?.find(c => c.id === hoveredRegion?.id);
         if (!hoveredChoropleth) {
@@ -339,6 +349,11 @@ function IndicatorMap(props: Props) {
                 <MapState
                     attributes={selectedRegionState}
                     attributeKey="selected"
+                    sourceLayer={selectedSourceForChoropleth}
+                />
+                <MapState
+                    attributes={hoveredRegionState}
+                    attributeKey="hovered"
                     sourceLayer={selectedSourceForChoropleth}
                 />
             </MapSource>

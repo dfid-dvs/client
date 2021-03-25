@@ -25,6 +25,7 @@ interface IndicatorProps {
     indicatorsData: IndicatorValue[];
     setIndicatorsHidden: () => void;
     fiveWData: FiveWData[] | undefined;
+    printMode?: boolean;
 }
 export default function Indicators(props: IndicatorProps) {
     const {
@@ -33,6 +34,7 @@ export default function Indicators(props: IndicatorProps) {
         setIndicatorsHidden,
         indicatorsData,
         fiveWData,
+        printMode,
     } = props;
 
     return (
@@ -65,7 +67,10 @@ export default function Indicators(props: IndicatorProps) {
                 title="Hide Indicators"
                 transparent
                 variant="icon"
-                className={styles.button}
+                className={_cs(
+                    styles.button,
+                    printMode && styles.hidden,
+                )}
             >
                 <IoMdClose
                     className={styles.hideIcon}

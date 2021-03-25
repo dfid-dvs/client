@@ -1,17 +1,17 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
     randomString,
     isFalsyString,
     isTruthyString,
     getRandomFromList,
     _cs,
+    isDefined,
 } from '@togglecorp/fujs';
 
 import SelectInput from '#components/SelectInput';
 import Button from '#components/Button';
 import TextInput from '#components/TextInput';
 import ColorInput from '#components/ColorInput';
-import NumberInput from '#components/NumberInput';
 import { tableauColors } from '#utils/constants';
 
 import { ScatterChartSettings, NumericOption } from '#types';
@@ -25,20 +25,64 @@ interface Props<T> {
     editableChartData: ScatterChartSettings<T> | undefined;
 }
 
-type OrderOptionKey = 'asc' | 'dsc';
-
-interface OrderOption {
-    key: OrderOptionKey;
-    title: string;
+interface ScatterData{
+    id: string;
+    optionName?: string;
 }
 
-const orderOptions: OrderOption[] = [
-    { key: 'asc', title: 'ascending' },
-    { key: 'dsc', title: 'descending' },
-];
+interface BiAxialChartItemProps<T> {
+    value: ScatterData;
+    onValueChange: (val: (values: ScatterData[]) => ScatterData[]) => void;
+    index: number;
+    options: NumericOption<T>[];
+    onToggleChartType: () => void;
+}
 
-const orderKeySelector = (item: OrderOption) => item.key;
-const orderLabelSelector = (item: OrderOption) => item.title;
+function ScatterChartItem<T>(props: BiAxialChartItemProps<T>) {
+    const {
+        index,
+        value,
+        onValueChange,
+        options,
+    } = props;
+
+    // FIXME: memoize
+    const keySelector = (item: NumericOption<T>) => item.key;
+    const labelSelector = (item: NumericOption<T>) => item.title;
+    const groupSelector = (item: NumericOption<T>) => item.category;
+
+    const handleOptionNameChange = useCallback(
+        (optionName: string | undefined) => {
+            onValueChange((values) => {
+                const newValues = [...values];
+                newValues[index] = {
+                    ...newValues[index],
+                    optionName,
+                };
+                return newValues;
+            });
+        },
+        [onValueChange, index],
+    );
+
+    return (
+        <div className={styles.dataBar}>
+            <SelectInput
+                className={styles.select}
+                label={`Data #${index + 1}`}
+                options={options}
+                onChange={handleOptionNameChange}
+                value={value.optionName}
+                optionLabelSelector={labelSelector}
+                optionKeySelector={keySelector}
+                groupKeySelector={groupSelector}
+                nonClearable
+                labelClassName={styles.label}
+                showDropDownIcon
+            />
+        </div>
+    );
+}
 
 function ScatterChartConfig<T>(props: Props<T>) {
     const {
@@ -53,20 +97,46 @@ function ScatterChartConfig<T>(props: Props<T>) {
 
     const [title, setTitle] = useState(editableChartData ? editableChartData.title : '');
     const [color, setColor] = useState(
-        editableChartData ? editableChartData.color : () => getRandomFromList(tableauColors),
+        editableChartData?.color ? editableChartData.color : () => getRandomFromList(tableauColors),
     );
-    const [
-        firstData,
-        setFirstData,
-    ] = useState<string | undefined>(editableChartData?.data[0]?.key);
-    const [
-        secondData,
-        setSecondData,
-    ] = useState<string| undefined>(editableChartData?.data[1]?.key);
 
-    const keySelector = (item: NumericOption<T>) => item.key;
-    const labelSelector = (item: NumericOption<T>) => item.title;
-    const groupSelector = (item: NumericOption<T>) => item.category;
+    const scatterChartData: ScatterData[] = useMemo(
+        () => {
+            const defaultData: ScatterData[] = [
+                {
+                    id: randomString(),
+                },
+                {
+                    id: randomString(),
+                },
+            ];
+            if (editableChartData) {
+                const editableData = editableChartData.data;
+                if (!editableData) {
+                    return defaultData;
+                }
+                const mappedData = editableData.map((e) => {
+                    const opt = options.find(o => o.key === e.key);
+                    if (!opt) {
+                        return undefined;
+                    }
+                    return {
+                        id: randomString(),
+                        optionName: opt.key,
+                    };
+                }).filter(isDefined);
+                if (mappedData.length <= 0) {
+                    return defaultData;
+                }
+                const [firstDataValue, secondDataValue] = mappedData;
+                return [firstDataValue, secondDataValue];
+            }
+            return defaultData;
+        },
+        [editableChartData, options],
+    );
+
+    const [scatterData, setScatterData] = useState<ScatterData[]>(scatterChartData);
 
     const handleSave = useCallback(
         () => {
@@ -77,22 +147,29 @@ function ScatterChartConfig<T>(props: Props<T>) {
 
             const chartId = randomString();
 
-            const firstOption = options.find(item => item.key === firstData);
-            const secondOption = options.find(item => item.key === secondData);
+            const properScatterData = scatterData.map((data) => {
+                const option = options.find(item => item.key === data.optionName);
+
+                if (!option) {
+                    return undefined;
+                }
+
+                return {
+                    title: option.title,
+                    valueSelector: option.valueSelector,
+                    key: data.optionName,
+                };
+            }).filter(isDefined);
+
+            if (properScatterData.length <= 1) {
+                setError('Two data should be set.');
+                return;
+            }
 
             if (isFalsyString(color)) {
                 setError('Color field is required.');
                 return;
             }
-
-            if (isFalsyString(firstOption) || isFalsyString(secondOption)) {
-                setError('Data is required.');
-                return;
-            }
-
-            const dependencies = firstOption?.dependency
-                ? [firstOption.dependency]
-                : undefined;
 
             const settings: ScatterChartSettings<T> = {
                 id: chartId,
@@ -100,25 +177,14 @@ function ScatterChartConfig<T>(props: Props<T>) {
                 title,
                 keySelector: primaryKeySelector,
                 color,
-                dependencies,
-                data: [
-                    {
-                        title: firstOption.title,
-                        valueSelector: firstOption.valueSelector,
-                        key: firstOption.key,
-                    },
-                    {
-                        title: secondOption.title,
-                        valueSelector: secondOption.valueSelector,
-                        key: secondOption.key,
-                    },
-                ],
+                data: properScatterData,
             };
 
             onSave(settings);
         },
-        [onSave, options, title, color, firstData, secondData],
+        [onSave, options, title, color, primaryKeySelector, scatterData],
     );
+
     return (
         <div className={_cs(className, styles.scatterChartConfig)}>
             <div className={styles.content}>
@@ -139,30 +205,15 @@ function ScatterChartConfig<T>(props: Props<T>) {
                         </h3>
                     </div>
                     <div className={styles.dataGroup}>
-                        <SelectInput
-                            label="Data#1"
-                            className={styles.select}
-                            options={options}
-                            onChange={setFirstData}
-                            value={firstData}
-                            optionLabelSelector={labelSelector}
-                            optionKeySelector={keySelector}
-                            groupKeySelector={groupSelector}
-                            nonClearable
-                            labelClassName={styles.label}
-                        />
-                        <SelectInput
-                            label="Data#2"
-                            className={styles.select}
-                            options={options}
-                            onChange={setSecondData}
-                            value={secondData}
-                            optionLabelSelector={labelSelector}
-                            optionKeySelector={keySelector}
-                            groupKeySelector={groupSelector}
-                            nonClearable
-                            labelClassName={styles.label}
-                        />
+                        {scatterData.map((data, index) => (
+                            <ScatterChartItem
+                                key={data.id}
+                                index={index}
+                                value={data}
+                                onValueChange={setScatterData}
+                                options={options}
+                            />
+                        ))}
                     </div>
                 </section>
                 <ColorInput

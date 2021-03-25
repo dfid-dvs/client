@@ -33,40 +33,35 @@
 
         .data-group {
             display: flex;
-            align-items: flex-end;
             flex-direction: column;
             padding: var(--spacing-small) 0;
 
-            .select {
-                flex-grow: 1;
+            .data-bar {
+                display: flex;
+                align-items: flex-end;
                 padding: var(--spacing-small) 0;
-            }
 
-            .color-select {
-                flex-shrink: 0;
-            }
-        }
-        .group {
-            display: flex;
-            align-items: baseline;
-            flex-wrap: 0;
-            justify-content: space-evenly;
-            padding: var(--spacing-small) 0;
-
-            >*:first-child {
-                margin-right: var(--spacing-medium);
-            }
-
-            .order-input {
-                width: auto;
-                input {
-                    width: 160px;
+                .select {
+                    flex-grow: 1;
                 }
-            }
-            .limit-input {
-                width: auto;
-                input {
-                    width: 80px;
+
+                .data-type {
+                    display: flex;
+                    flex-direction: column;
+                    border: var(--width-separator-thin) solid var(--color-separator-light);
+                    background-color: var(--color-input-backgro]und);
+                    padding: var(--spacing-super-small);
+                }
+
+                .label {
+                    text-transform: uppercase;
+                    letter-spacing: var(--spacing-super-small);
+                    color: var(--color-accent-light);
+                    font-size: var(--font-size-small);
+                }
+
+                .color-select {
+                    flex-shrink: 0;
                 }
             }
         }

@@ -220,13 +220,29 @@
             .description {
                 margin-top: var(--spacing-ultra-large);
 
-                .label {
-                    padding: var(--spacing-small-medium) 0;
-                    text-transform: none;
-                    letter-spacing: unset;
-                    color: var(--color-text);
-                    font-size: var(--font-size-extra-large);
-                    font-weight: var(--font-weight-bold);
+                .heading {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+
+                    .title {
+                        padding: var(--spacing-small-medium) 0;
+                        text-transform: none;
+                        letter-spacing: unset;
+                        color: var(--color-text);
+                        font-size: var(--font-size-extra-large);
+                        font-weight: var(--font-weight-bold);
+                    }
+
+                    .icon {
+                        opacity: 0;
+                        color: var(--color-text);
+                        font-size: var(--font-size-large-medium);
+                    }
+                    
+                    .hidden {
+                        visibility: hidden;
+                    }
                 }
     
                 .text-area-input {
@@ -238,6 +254,14 @@
 
                 .text-input {
                     border: none;
+                }
+
+                &:hover {
+                    .heading {
+                        .icon {
+                            opacity: 1;
+                        }
+                    }
                 }
             }
         }
