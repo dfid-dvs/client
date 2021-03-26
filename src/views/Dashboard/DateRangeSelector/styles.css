@@ -1,0 +1,69 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-small-medium) calc(var(--spacing-large-medium) - var(--spacing-super-small));
+
+    &.calendar-container {
+        height: 142px;
+    }
+
+    .calendars {
+        display: flex;
+        justify-content: space-between;
+
+        .dateContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+
+            .label {
+                margin-right: var(--spacing-small-medium);
+            }
+
+            .dateInput {
+                padding: var(--spacing-small);
+                background: var(--color-grey-shade-3);
+                margin-right: var(--spacing-small-medium);
+            }
+        }
+
+        .clear-button {
+            visibility: hidden;
+
+            &.shown {
+                visibility: visible;
+            }
+        }
+    }
+
+    .slider {
+        flex: 1;
+        display: flex;
+        
+        .row {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex: 1;
+
+            &.no-date-range {
+                margin-top: var(--spacing-medium);
+            }
+
+            .icon {
+                font-size: var(--font-size-extra-large);
+                margin-right: var(--spacing-medium);
+
+                &.rotate {
+                    transform: rotate(90deg);
+                }
+            }
+            .range {
+                min-width: 94%;
+            }
+        }
+
+    }
+
+}
+

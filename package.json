@@ -164,6 +164,7 @@
         "immer": "^6.0.2",
         "mapbox-gl": "^1.9.0",
         "memoize-one": "^5.0.5",
+        "rc-slider": "^9.7.1",
         "react": "^0.0.0-experimental-e5d06e34b",
         "react-d3-tree": "^2.0.1",
         "react-dom": "^0.0.0-experimental-e5d06e34b",

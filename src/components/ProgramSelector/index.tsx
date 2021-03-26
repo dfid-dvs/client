@@ -11,6 +11,7 @@ import {
     Partner,
     DomainContextProps,
 } from '#types';
+import { prepareUrlParams as p } from '#utils/common';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
@@ -74,11 +75,15 @@ type ExpanedFilter = 'programs' | 'partners' | 'sectors' | 'markers';
 interface Props {
     className?: string;
     isMinimized?: boolean;
+    startDate?: string;
+    endDate?: string;
 }
 function ProgramSelector(props: Props) {
     const {
         className,
         isMinimized,
+        startDate,
+        endDate,
     } = props;
     const {
         markers: selectedMarker,
@@ -96,7 +101,17 @@ function ProgramSelector(props: Props) {
         setExpanedFilters,
     ] = useState<ExpanedFilter[]>(['markers', 'programs', 'partners', 'sectors']);
 
-    const programListGetUrl = `${apiEndPoint}/core/program/`;
+    const programUrlParams = p({
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        start_date: startDate,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        end_date: endDate,
+    });
+
+    const programListGetUrl = programUrlParams
+        ? `${apiEndPoint}/core/program/?${programUrlParams}`
+        : `${apiEndPoint}/core/program/`;
+
     const [
         programListPending,
         programListResponse,
@@ -371,12 +386,12 @@ function ProgramSelector(props: Props) {
 
     const programOptions: TreeItem<string>[] | undefined = useMemo(
         () => {
-            const programList = applicableProgramOptions?.map(p => ({
-                key: `program-${p.id}`,
+            const programList = applicableProgramOptions?.map(program => ({
+                key: `program-${program.id}`,
                 parentKey: undefined,
                 parentId: undefined,
-                name: p.name,
-                id: p.id,
+                name: program.name,
+                id: program.id,
             }));
 
             if (!programSearchText) {
@@ -390,11 +405,11 @@ function ProgramSelector(props: Props) {
     );
     const subProgramOptions: TreeItem[] | undefined = useMemo(
         () => {
-            const programList = applicableProgramOptions?.map(p => (
-                p.component.map((item => ({
+            const programList = applicableProgramOptions?.map(program => (
+                program.component.map((item => ({
                     key: `subprogram-${item.id}`,
-                    parentKey: `program-${p.id}`,
-                    parentId: p.id,
+                    parentKey: `program-${program.id}`,
+                    parentId: program.id,
                     name: item.name,
                     id: item.id,
                 })))

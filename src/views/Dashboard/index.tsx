@@ -67,6 +67,7 @@ import {
 
 import MapOptions from './MapOptions';
 import splitCombinedSelectors from './splitCombinedSelectors';
+import DateRangeSelector from './DateRangeSelector';
 
 import styles from './styles.css';
 
@@ -122,6 +123,9 @@ const legendRadiusSelector = (option: LegendItem) => option.radius;
 interface Props {
     className?: string;
 }
+
+const defaultStartDate = '2015-01-01';
+const defaultEndDate = '2021-12-31';
 
 const Dashboard = (props: Props) => {
     const { className } = props;
@@ -262,6 +266,9 @@ const Dashboard = (props: Props) => {
     const [programIdList, componentIdList] = splitCombinedSelectors(programs, 'subprogram');
     const [partnerIdList] = splitCombinedSelectors(partners, 'subpartner');
     const [sectorIdList, subsectorIdList] = splitCombinedSelectors(sectors, 'subsector');
+
+    const [startDate, setStartDate] = useState<string>(defaultStartDate);
+    const [endDate, setEndDate] = useState<string>(defaultEndDate);
 
     const [
         fiveWMapStatePending,
@@ -547,7 +554,11 @@ const Dashboard = (props: Props) => {
                         </RawButton>
                     </Portal>
                 )}
-                <FiltersPanel isMinimized={sideContentMinimized} />
+                <FiltersPanel
+                    isMinimized={sideContentMinimized}
+                    startDate={startDate}
+                    endDate={endDate}
+                />
             </aside>
             <main className={styles.mainContent}>
                 <div className={styles.content}>
@@ -717,6 +728,25 @@ const Dashboard = (props: Props) => {
                                             vectorLayers={selectedVectorLayersDetail}
                                         />
                                     )}
+                                </div>
+                                <div
+                                    className={_cs(
+                                        styles.timeSliderContainer,
+                                        region && styles.shiftLeft,
+                                    )}
+                                >
+                                    <DateRangeSelector
+                                        className={_cs(
+                                            styles.timeSlideContainer,
+                                            region && styles.shiftLeft,
+                                        )}
+                                        startDate={startDate}
+                                        setStartDate={setStartDate}
+                                        endDate={endDate}
+                                        setEndDate={setEndDate}
+                                        defaultStartDate={defaultStartDate}
+                                        defaultEndDate={defaultEndDate}
+                                    />
                                 </div>
                             </div>
                             {region && tooltipExpanded && (
