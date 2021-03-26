@@ -24,7 +24,7 @@ interface Props {
     regions: number[];
     onRegionsChange: (value: number[]) => void;
 
-    programIdList?: number[];
+    programIdList?: string[];
 }
 
 function RegionSankey(props: Props) {

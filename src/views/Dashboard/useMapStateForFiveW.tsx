@@ -17,13 +17,13 @@ import {
 
 function useMapStateForFiveW(
     regionLevel: RegionLevelOption,
-    markerIdList: number[] | undefined,
-    submarkerIdList: number[] | undefined,
-    programIdList: number[] | undefined,
-    componentIdList: number[] | undefined,
-    partnerIdList: number[] | undefined,
-    sectorIdList: number[] | undefined,
-    subsectorIdList: number[] | undefined,
+    markerIdList: string[] | undefined,
+    submarkerIdList: string[] | undefined,
+    programIdList: string[] | undefined,
+    componentIdList: string[] | undefined,
+    partnerIdList: string[] | undefined,
+    sectorIdList: string[] | undefined,
+    subsectorIdList: string[] | undefined,
     selectedFiveWOption?: FiveWOptionKey,
     preserveResponse = false,
 ): [boolean, MapStateItem[], FiveW[]] {
@@ -35,7 +35,7 @@ function useMapStateForFiveW(
         // eslint-disable-next-line @typescript-eslint/camelcase
         program_id: programIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
-        component_id: componentIdList,
+        component_code: componentIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
         supplier_id: partnerIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase

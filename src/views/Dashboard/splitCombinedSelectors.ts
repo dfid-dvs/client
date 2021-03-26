@@ -10,10 +10,10 @@ const splitCombinedSelectors = (options: string[], subKey: string) => {
     ).removed;
 
     const optionsIdsWithoutSubKeys = optionsWithoutSubKeys.length > 0 ? optionsWithoutSubKeys.map(
-        opt => Number(opt.replace(`${key}-`, '')),
+        opt => opt.replace(`${key}-`, ''),
     ) : undefined;
     const optionIdsWithSubKeys = optionsWithSubKeys.length > 0 ? optionsWithSubKeys.map(
-        opt => Number(opt.replace(`${subKey}-`, '')),
+        opt => opt.replace(`${subKey}-`, ''),
     ) : undefined;
 
     return [optionsIdsWithoutSubKeys, optionIdsWithSubKeys];

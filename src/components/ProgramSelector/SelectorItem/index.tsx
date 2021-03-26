@@ -15,7 +15,7 @@ import styles from './styles.css';
 
 interface TreeItem<T extends string | number> {
     key: T;
-    id: number;
+    id: number | string;
     parentKey: T | undefined;
     parentId: number | undefined;
     name: string;

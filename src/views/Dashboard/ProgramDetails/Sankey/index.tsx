@@ -20,7 +20,7 @@ const sankeyColorSelector = (item: { depth: number }) => tableauColors[item.dept
 const sankeyNameSelector = (item: { name: string }) => item.name;
 
 interface Props {
-    programs: number[];
+    programs: string[];
 }
 
 function ProgramSankey(props: Props) {
