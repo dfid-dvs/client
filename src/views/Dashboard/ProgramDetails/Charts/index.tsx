@@ -86,7 +86,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
 ];
 
 interface Props {
-    programs: number[];
+    programs: string[];
 }
 
 function Charts(props: Props) {

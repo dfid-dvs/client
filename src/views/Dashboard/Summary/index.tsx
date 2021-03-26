@@ -27,13 +27,13 @@ interface SummaryInfo {
 
 interface SummaryProps {
     className?: string;
-    markerIdList?: number[];
-    submarkerIdList?: number[];
-    programIdList?: number[];
-    componentIdList?: number[];
-    partnerIdList?: number[];
-    sectorIdList?: number[];
-    subsectorIdList?: number[];
+    markerIdList?: string[];
+    submarkerIdList?: string[];
+    programIdList?: string[];
+    componentIdList?: string[];
+    partnerIdList?: string[];
+    sectorIdList?: string[];
+    subsectorIdList?: string[];
 }
 
 function Summary(props: SummaryProps) {
@@ -56,7 +56,7 @@ function Summary(props: SummaryProps) {
         // eslint-disable-next-line @typescript-eslint/camelcase
         program_id: programIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
-        component_id: componentIdList,
+        component_code: componentIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
         supplier_id: partnerIdList,
         // eslint-disable-next-line @typescript-eslint/camelcase
@@ -71,7 +71,6 @@ function Summary(props: SummaryProps) {
         summaryPending,
         summary,
     ] = useRequest<SummaryInfo>(summaryUrl, 'fivew-summary');
-
     return (
         <div className={_cs(styles.summary, className)}>
             {summaryPending && (

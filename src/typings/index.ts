@@ -10,8 +10,8 @@ export interface DomainContextProps {
     setRegionLevel: (v: RegionLevelOption) => void;
     markers: string[];
     setMarkers: (markers: string[] | ((p: string[]) => string[])) => void;
-    programs: number[];
-    setPrograms: (programs: number[] | ((p: number[]) => number[])) => void;
+    programs: string[];
+    setPrograms: (programs: string[] | ((p: string[]) => string[])) => void;
     partners: string[];
     setPartners: (partners: string[] | ((p: string[]) => string[])) => void;
     sectors: string[];
@@ -110,6 +110,9 @@ export interface Indicator {
     federalLevel: 'all' | 'province' | 'district' | 'municipality';
 }
 
+interface ProgramComponent extends BaseEntity {
+    code: string;
+}
 export interface Program {
     id: number;
     name: string;
@@ -118,7 +121,7 @@ export interface Program {
     iati?: string;
     totalBudget: number;
 
-    component: BaseEntity[];
+    component: ProgramComponent[];
     sector: BaseEntity[];
     subSector: BaseEntity[];
     markerCategory: BaseEntity[];

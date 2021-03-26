@@ -91,13 +91,13 @@ interface Props {
     regionLevel: RegionLevelOption;
     className?: string;
 
-    markerIdList?: number[];
-    submarkerIdList?: number[];
-    programIdList?: number[];
-    componentIdList?: number[];
-    partnerIdList?: number[];
-    sectorIdList?: number[];
-    subsectorIdList?: number[];
+    markerIdList?: string[];
+    submarkerIdList?: string[];
+    programIdList?: string[];
+    componentIdList?: string[];
+    partnerIdList?: string[];
+    sectorIdList?: string[];
+    subsectorIdList?: string[];
 
     tooltipExpanded?: boolean;
     setTooltipExpanded?: () => void;
@@ -139,7 +139,7 @@ const Tooltip = (props: Props) => {
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 program_id: programIdList,
                 // eslint-disable-next-line @typescript-eslint/camelcase
-                component_id: componentIdList,
+                component_code: componentIdList,
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 supplier_id: partnerIdList,
                 // eslint-disable-next-line @typescript-eslint/camelcase

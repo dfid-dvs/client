@@ -64,7 +64,7 @@ interface SubMarker {
 
 interface TreeItem<T = string> {
     key: T;
-    id: number;
+    id: number | string;
     parentKey: T | undefined;
     parentId: number | undefined;
     name: string;
@@ -116,7 +116,6 @@ function ProgramSelector(props: Props) {
         programListPending,
         programListResponse,
     ] = useRequest<MultiResponse<Program>>(programListGetUrl, 'program-list');
-
     const partnerListGetUrl = `${apiEndPoint}/core/partner/`;
     const [
         partnerListPending,
@@ -407,7 +406,7 @@ function ProgramSelector(props: Props) {
         () => {
             const programList = applicableProgramOptions?.map(program => (
                 program.component.map((item => ({
-                    key: `subprogram-${item.id}`,
+                    key: `subprogram-${item.code}`,
                     parentKey: `program-${program.id}`,
                     parentId: program.id,
                     name: item.name,
@@ -464,7 +463,6 @@ function ProgramSelector(props: Props) {
         setSelectedSector,
     ]);
     // TODO: disable instead of hide
-
     return (
         <div className={_cs(className, styles.programSelector)}>
             {loading && (

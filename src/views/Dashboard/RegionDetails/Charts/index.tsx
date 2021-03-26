@@ -257,13 +257,13 @@ interface Props {
     indicatorList: Indicator[] | undefined;
     indicatorListPending: boolean | undefined;
 
-    markerIdList?: number[];
-    submarkerIdList?: number[];
-    programIdList?: number[];
-    componentIdList?: number[];
-    partnerIdList?: number[];
-    sectorIdList?: number[];
-    subsectorIdList?: number[];
+    markerIdList?: string[];
+    submarkerIdList?: string[];
+    programIdList?: string[];
+    componentIdList?: string[];
+    partnerIdList?: string[];
+    sectorIdList?: string[];
+    subsectorIdList?: string[];
 }
 
 function Charts(props: Props) {
