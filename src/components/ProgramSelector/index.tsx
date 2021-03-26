@@ -191,7 +191,21 @@ function ProgramSelector(props: Props) {
         selectedProgram.filter(item => item.startsWith('program')).map(item => Number(item.split('-')[1])),
     );
 
+    const selectedComponentOriginal = unique(
+        selectedProgram.filter(item => item.startsWith('subprogram')).map(item => item.replace('subprogram-', '')),
+    );
+
     const applicableProgramOptions = rawProgramOptions?.filter((item) => {
+        if (selectedComponentOriginal.length > 0) {
+            const common = intersection(
+                new Set(item.component.map(comp => comp.code)),
+                new Set(selectedComponentOriginal),
+            );
+            if (common.size !== selectedComponentOriginal.length) {
+                return false;
+            }
+        }
+
         if (selectedSectorOriginal.length > 0) {
             const common = intersection(
                 new Set(item.sector.map(sec => sec.id)),
