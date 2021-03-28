@@ -1,13 +1,26 @@
 import React, { useCallback, useState } from 'react';
 
+import { apiEndPoint } from '#utils/constants';
+import useRequest from '#hooks/useRequest';
+import Backdrop from '#components/Backdrop';
+import LoadingAnimation from '#components/LoadingAnimation';
+
 import styles from './styles.css';
 import QAItem from './QAItem';
 
-// TODO: Delete json file and fetch from backend
-import qaData from './data.json';
+interface FAQ {
+    count: number;
+    next?: number;
+    previous?: number;
+    results: {
+        id: number;
+        question: string;
+        answer: string;
+    }[];
+}
 
 export default function FaqPage() {
-    const [qaId, setQAId] = useState<string>();
+    const [qaId, setQAId] = useState<number>();
 
     const onSetQaId = useCallback(
         (id) => {
@@ -21,6 +34,15 @@ export default function FaqPage() {
         }, [setQAId],
     );
 
+    const faqUrl = `${apiEndPoint}/core/faq/`;
+
+    const [
+        faqPending,
+        faq,
+    ] = useRequest<FAQ>(faqUrl, 'faq');
+
+    const faqList = faq?.results;
+
     return (
         <div className={styles.container}>
             <div className={styles.firstSection}>
@@ -31,16 +53,28 @@ export default function FaqPage() {
                     Got a question? We have got answers.
                 </div>
             </div>
+            {faqPending && (
+                <Backdrop>
+                    <LoadingAnimation />
+                </Backdrop>
+            )}
             <div className={styles.qaSection}>
-                {qaData.map(qa => (
-                    <QAItem
-                        key={qa.id}
-                        qa={qa}
-                        qaId={qaId}
-                        onShowAnswer={onSetQaId}
-                        onHideAnswer={onResetQaId}
-                    />
-                ))}
+                {faqList && faqList.length < 0
+                    ? faqList.map(qa => (
+                        <QAItem
+                            key={qa.id}
+                            qa={qa}
+                            qaId={qaId}
+                            onShowAnswer={onSetQaId}
+                            onHideAnswer={onResetQaId}
+                        />
+                    ))
+                    : (
+                        <div className={styles.comingSoon}>
+                            Coming soon
+                        </div>
+                    )
+                }
             </div>
         </div>
     );

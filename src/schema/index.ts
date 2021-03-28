@@ -625,6 +625,46 @@ const userDefinedSchemas: Schema[] = [
             },
         },
     },
+    {
+        name: 'faq',
+        description: 'Get faq data in about page',
+        fields: {
+            count: { type: 'number' },
+            next: { type: 'number' },
+            previous: { type: 'number' },
+            results: {
+                arrayType: {
+                    name: 'question-answers',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        question: { type: 'string', required: true },
+                        answer: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'terms-conditions',
+        description: 'Get terms and conditions data in about page',
+        fields: {
+            count: { type: 'number' },
+            next: { type: 'number' },
+            previous: { type: 'number' },
+            results: {
+                arrayType: {
+                    name: 'question-answers',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        title: { type: 'string', required: true },
+                        subTitle: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
 ];
 
 const warning = !isProduction;

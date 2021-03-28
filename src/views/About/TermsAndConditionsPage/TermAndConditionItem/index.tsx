@@ -6,8 +6,9 @@ import useHash from '#hooks/useHash';
 import styles from './styles.css';
 
 interface TC {
+    id: number;
     title: string;
-    description: string;
+    subTitle: string;
 }
 
 interface TermAndConditionItemProps {
@@ -44,8 +45,8 @@ export default function TermAndConditionItem(props: TermAndConditionItemProps) {
             >
                 { tc.title }
             </div>
-            <div className={styles.description}>
-                { tc.description }
+            <div className={styles.subTitle}>
+                { tc.subTitle }
             </div>
         </div>
     );
