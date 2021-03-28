@@ -25,20 +25,28 @@
 
     .tc-section {
         display: flex;
+        justify-content: center;
         background: var(--color-background);
         padding: calc(4 * var(--spacing-extra-large)) calc(4 * var(--spacing-ultra-large));
+        width: 100%;
 
-        .left-section {
-            display: flex;
-            position: sticky;
-            top: 0;
-            flex-direction: column;
-            width: 30%;
-            height: 150px;
+        .tc-container {
+            .left-section {
+                display: flex;
+                position: sticky;
+                top: 0;
+                flex-direction: column;
+                width: 30%;
+                height: 150px;
+            }
+    
+            .right-section {
+                width: 60%;
+            }
         }
 
-        .right-section {
-            width: 60%;
+        .coming-soon {
+            font-size: var(--font-size-large);
         }
     }
 }

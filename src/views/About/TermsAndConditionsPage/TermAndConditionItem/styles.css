@@ -16,7 +16,7 @@
         }
     }
 
-    .description {
+    .sub-title {
         padding-bottom: calc(var(--spacing-small-medium) + var(--spacing-medium));
         font-size: var(--font-size-large);
     }

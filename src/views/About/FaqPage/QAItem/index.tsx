@@ -7,14 +7,14 @@ import styles from './styles.css';
 interface QA {
     question: string;
     answer: string;
-    id: string;
+    id: number;
 }
 
 interface QAItemProps {
     qa: QA;
     className?: string;
-    qaId?: string;
-    onShowAnswer: (id: string) => void;
+    qaId?: number;
+    onShowAnswer: (id: number) => void;
     onHideAnswer: () => void;
 }
 
