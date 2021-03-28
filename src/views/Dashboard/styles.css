@@ -48,6 +48,26 @@
     --width-dashboard-aside-minimized: 88px;
 }
 
+.tooltip-modal {
+    border-radius: 0;
+    padding: 0;
+    
+    .tooltip-modal-header {
+        display: none;
+    }
+
+    .tooltip-modal-body {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        overflow: auto;
+
+        .clicked-region-detail {
+            flex-grow: 1;
+        }
+    }
+}
+
 .dashboard {
     display: flex;
     position: relative;
@@ -177,13 +197,13 @@
         }
 
         .time-slider-container {
-            min-width: var(--width-min-time-slider-container);
-            background-color: var(--color-foreground);
             position: absolute;
-            bottom: var(--spacing-medium);
             right: var(--spacing-large);
-            min-height: var(--height-min-time-slider-container);
+            bottom: var(--spacing-medium);
             border: var(--width-separator-thin) solid var(--color-grey-shade-5);
+            background-color: var(--color-foreground);
+            min-width: var(--width-min-time-slider-container);
+            min-height: var(--height-min-time-slider-container);
 
             &.shift-left {
                 right: calc(3 * var(--spacing-medium) + var(--width-summary-container));
@@ -250,29 +270,7 @@
 }
 
 .map-options-dropdown {
+    visibility: visible;
     width: 340px!important;
     max-width: unset;
-
-    visibility: visible;
 }
-
-.tooltip-modal {
-    border-radius: 0;
-    padding: 0;
-    
-    .tooltip-modal-header {
-        display: none;
-    }
-
-    .tooltip-modal-body {
-        display: flex;
-        flex-direction: column;
-        padding: 0;
-        overflow: auto;
-
-        .clicked-region-detail {
-            flex-grow: 1;
-        }
-    }
-}
-

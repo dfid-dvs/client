@@ -8,8 +8,8 @@
 
     .region-name {
         color: var(--color-secondary-light-1);
-        font-weight: var(--font-weight-bold);
         font-size: var(--font-size-large);
+        font-weight: var(--font-weight-bold);
     }
 
     .data {
