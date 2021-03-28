@@ -13,17 +13,17 @@
 
         .dateContainer {
             display: flex;
-            flex-direction: column;
             align-items: flex-start;
+            flex-direction: column;
 
             .label {
                 margin-right: var(--spacing-small-medium);
             }
 
             .dateInput {
-                padding: var(--spacing-small);
-                background: var(--color-grey-shade-3);
                 margin-right: var(--spacing-small-medium);
+                background: var(--color-grey-shade-3);
+                padding: var(--spacing-small);
             }
         }
 
@@ -37,22 +37,22 @@
     }
 
     .slider {
-        flex: 1;
         display: flex;
+        flex: 1;
         
         .row {
             display: flex;
             align-items: center;
-            justify-content: space-around;
             flex: 1;
+            justify-content: space-around;
 
             &.no-date-range {
                 margin-top: var(--spacing-medium);
             }
 
             .icon {
-                font-size: var(--font-size-extra-large);
                 margin-right: var(--spacing-medium);
+                font-size: var(--font-size-extra-large);
 
                 &.rotate {
                     transform: rotate(90deg);
