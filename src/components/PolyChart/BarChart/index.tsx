@@ -56,6 +56,7 @@ interface BarChartUnitProps<T> {
     className?: string;
     chartClassName?: string;
     headerClassName?: string;
+    actionClassName?: string;
     hideActions?: boolean;
     onDelete: (name: string | undefined) => void;
     onExpand: (name: string | undefined) => void;
@@ -75,6 +76,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         className,
         chartClassName,
         headerClassName,
+        actionClassName,
         settings,
         data,
         onDelete,
@@ -146,7 +148,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                     {title}
                 </h3>
                 {!hideActions && (
-                    <div className={styles.actions}>
+                    <div className={_cs(styles.actions, actionClassName)}>
                         {!expandableIconHidden && (
                             <Button
                                 onClick={handleDownload}

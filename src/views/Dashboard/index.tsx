@@ -527,6 +527,9 @@ const Dashboard = (props: Props) => {
         setTooltipExpanded,
         unsetExpandableTooltip,
     ] = useBasicToggle();
+
+    const regionDetailShown = useMemo(() => !!region, [region]);
+
     return (
         <div
             className={_cs(
@@ -688,6 +691,8 @@ const Dashboard = (props: Props) => {
                                     className={_cs(
                                         styles.legendContainer,
                                         sideContentMinimized && styles.filterMinimized,
+                                        !sideContentMinimized && regionDetailShown
+                                        && styles.overflow,
                                     )}
                                 >
                                     {choroplethSelected && (
@@ -732,13 +737,13 @@ const Dashboard = (props: Props) => {
                                 <div
                                     className={_cs(
                                         styles.timeSliderContainer,
-                                        region && styles.shiftLeft,
+                                        regionDetailShown && styles.shiftLeft,
                                     )}
                                 >
                                     <DateRangeSelector
                                         className={_cs(
                                             styles.timeSlideContainer,
-                                            region && styles.shiftLeft,
+                                            regionDetailShown && styles.shiftLeft,
                                         )}
                                         startDate={startDate}
                                         setStartDate={setStartDate}

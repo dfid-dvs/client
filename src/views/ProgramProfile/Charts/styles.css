@@ -8,9 +8,9 @@
 
     .chart-container {
         display: inline-block;
-        margin: var(--spacing-medium);
+        margin: var(--spacing-small);
         border: var(--width-separator-thin) solid var(--color-button-background);
-        width: calc(50% - 2 * var(--spacing-medium));
+        width: calc(50% - var(--spacing-medium));
         vertical-align: top;
     }
 
@@ -23,6 +23,17 @@
                 font-size: 2.3mm!important;
             }
         }
+    }
+
+    .header {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+    }
+
+    .action {
+        display: flex;
+        justify-content: space-between;
     }
 }
 
