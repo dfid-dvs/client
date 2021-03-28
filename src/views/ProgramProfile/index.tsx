@@ -374,6 +374,15 @@ function ProgramProfile(props: Props) {
                                 </div>
                             </div>
                         </div>
+                        {selectedProgram && (
+                            <ProgramProfileCharts
+                                className={styles.charts}
+                                printMode={printMode}
+                                showAddModal={showAddModal}
+                                onAddModalVisibilityChange={setAddModalVisibility}
+                                selectedProgram={selectedProgram}
+                            />
+                        )}
                         {!indicatorsHidden && !programProfilePending && programProfileResponse && (
                             <div className={styles.statContainer}>
                                 <div className={styles.statList}>
@@ -509,15 +518,6 @@ function ProgramProfile(props: Props) {
                                     />
                                 ))}
                             </div>
-                        )}
-                        {regionLevel !== 'municipality' && (
-                            <ProgramProfileCharts
-                                className={styles.charts}
-                                printMode={printMode}
-                                showAddModal={showAddModal}
-                                selectedRegion={undefined}
-                                onAddModalVisibilityChange={setAddModalVisibility}
-                            />
                         )}
                     </div>
                 </div>

@@ -139,7 +139,7 @@
             left: var(--spacing-medium);
         }
 
-        --width-max-legend-container: 512px;
+        --width-max-legend-container: 576px;
         --height-max-legend-container: 420px;
         --width-map-control: 100px;
         --height-map-control: 158px;
@@ -154,9 +154,12 @@
             bottom: var(--spacing-medium);
             left: calc(var(--width-map-control) + var(--spacing-medium));
             align-items: flex-end;
-            max-width: var(--width-max-legend-container);
             max-height: var(--height-max-legend-container);
-            overflow: auto;
+
+            &.overflow {
+                max-width: var(--width-max-legend-container);
+                overflow-x: auto;
+            }
 
             .legend {
                 flex-direction: row;
@@ -249,6 +252,8 @@
 .map-options-dropdown {
     width: 340px!important;
     max-width: unset;
+
+    visibility: visible;
 }
 
 .tooltip-modal {

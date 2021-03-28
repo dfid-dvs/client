@@ -5,6 +5,7 @@ import {
     unique,
     listToMap,
     isFalsyString,
+    compareNumber,
 } from '@togglecorp/fujs';
 
 import LoadingAnimation from '#components/LoadingAnimation';
@@ -27,9 +28,9 @@ import {
     apiEndPoint,
 } from '#utils/constants';
 
-import useExtendedFiveW, { ExtendedFiveW } from '../../Dashboard/useExtendedFiveW';
-
 import styles from './styles.css';
+import useExtendedFiveW, { ExtendedFiveW } from '#views/Dashboard/useExtendedFiveW';
+import BarChartUnit from '#components/PolyChart/BarChart';
 
 const keySelector = (item: ExtendedFiveW) => item.name;
 
@@ -70,7 +71,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '1',
         type: 'bar-chart',
-        title: 'Top 10 by budget',
+        title: 'Priority provinces by budget spent',
         keySelector: item => item.name,
 
         limit: {
@@ -88,113 +89,6 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
             },
         ],
     },
-    {
-        id: '1.1',
-        type: 'bar-chart',
-        title: 'Top 10 by programs',
-        keySelector: item => item.name,
-
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.programCount,
-        },
-
-        bars: [
-            {
-                key: 'programCount',
-                title: 'Program count',
-                color: tableauColors[2],
-                valueSelector: item => item.programCount,
-            },
-        ],
-    },
-    {
-        id: '1.2',
-        type: 'bar-chart',
-        title: 'Top 10 by partners',
-        keySelector: item => item.name,
-
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.partnerCount,
-        },
-
-        bars: [
-            {
-                key: 'partnerCount',
-                title: 'Partner count',
-                color: tableauColors[3],
-                valueSelector: item => item.partnerCount,
-            },
-        ],
-    },
-    {
-        id: '1.3',
-        type: 'bar-chart',
-        title: 'Top 10 by sectors',
-        keySelector: item => item.name,
-
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.sectorCount,
-        },
-
-        bars: [
-            {
-                key: 'sectorCount',
-                title: 'Sector count',
-                color: tableauColors[4],
-                valueSelector: item => item.sectorCount,
-            },
-        ],
-    },
-    {
-        id: '2',
-        type: 'bar-chart',
-        title: 'Top 10 by population',
-        keySelector: item => item.name,
-
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.indicators[25] || null,
-        },
-
-        bars: [
-            {
-                key: '"indicator_314"',
-                title: 'Agriculture and Forestry',
-                color: tableauColors[5],
-                valueSelector: item => item.indicators[314] || null,
-            },
-        ],
-        dependencies: [314],
-    },
-    {
-        id: '3',
-        type: 'bar-chart',
-        title: 'Top 10 by poverty incidence',
-        keySelector: item => item.name,
-
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.indicators[132] || null,
-        },
-
-        bars: [
-            {
-                key: 'indicators_132',
-                title: 'Poverty Incidence',
-                color: tableauColors[6],
-                valueSelector: item => item.indicators[132] || null,
-            },
-        ],
-        dependencies: [132],
-    },
 ];
 
 interface Props {
@@ -202,16 +96,16 @@ interface Props {
     showAddModal: boolean;
     printMode: boolean;
     onAddModalVisibilityChange: (value: boolean) => void;
-    selectedRegion: number | undefined;
+    selectedProgram: number | undefined;
 }
 
-function InfographicsCharts(props: Props) {
+function ProgramProfileCharts(props: Props) {
     const {
         className,
         showAddModal,
         onAddModalVisibilityChange,
         printMode,
-        selectedRegion,
+        selectedProgram,
     } = props;
 
     const {
@@ -233,20 +127,6 @@ function InfographicsCharts(props: Props) {
     );
 
     const [editableChartId, setEditableChartId] = useState<string>();
-    const [hoveredChartId, setHoveredChartId] = useState<string>();
-    const onHoverChart = useCallback(
-        (id: string) => {
-            setHoveredChartId(id);
-        },
-        [setHoveredChartId],
-    );
-
-    const onLeaveChart = useCallback(
-        () => {
-            setHoveredChartId(undefined);
-        },
-        [setHoveredChartId],
-    );
 
     const handleModalClose = useCallback(() => {
         onAddModalVisibilityChange(false);
@@ -306,34 +186,28 @@ function InfographicsCharts(props: Props) {
         [chartSettings, indicatorMapping],
     );
 
-    const subsequentRegionLevel: RegionLevelOption | undefined = (
-        (regionLevel === 'province' && 'district')
-        || (regionLevel === 'district' && 'municipality')
-        || undefined
-    );
-
-    const extraUrlParams = {
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        province_id: regionLevel === 'province' ? selectedRegion : undefined,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        district_id: regionLevel === 'district' ? selectedRegion : undefined,
-    };
-
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
-        subsequentRegionLevel,
+        regionLevel,
         // eslint-disable-next-line max-len
         // passing markerId ,submarkerId ,programId ,componentId ,partnerId ,sectorId ,subsectorId as undefined
         undefined,
         undefined,
-        undefined,
+        [String(selectedProgram)],
         undefined,
         undefined,
         undefined,
         undefined,
         validSelectedIndicators,
-        true,
-        extraUrlParams,
     );
+
+    const filteredFiveWData = extendedFiveWList
+        .filter(data => data.allocatedBudget > 0)
+        .sort((foo, bar) => compareNumber(
+            foo.allocatedBudget,
+            bar.allocatedBudget,
+            1,
+        ))
+        .slice(0, 10);
 
     const options: NumericOption<ExtendedFiveW>[] = useMemo(
         () => {
@@ -417,15 +291,12 @@ function InfographicsCharts(props: Props) {
                     className={styles.chartContainer}
                     chartClassName={styles.chart}
                     hideActions={printMode}
-                    data={extendedFiveWList}
+                    data={filteredFiveWData}
                     settings={item}
                     onDelete={handleChartDelete}
                     onExpand={handleChartExpand}
                     chartExpanded={expandableChart}
                     onSetEditableChartId={onSetEditableChartId}
-                    hoveredChartId={hoveredChartId}
-                    onHoverChart={onHoverChart}
-                    onLeaveChart={onLeaveChart}
                 />
             ))}
             {showAddModal && (
@@ -459,4 +330,4 @@ function InfographicsCharts(props: Props) {
     );
 }
 
-export default InfographicsCharts;
+export default ProgramProfileCharts;

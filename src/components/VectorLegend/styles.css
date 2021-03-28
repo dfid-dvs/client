@@ -1,4 +1,5 @@
 .vector-legend {
+    min-height: 100px;
     .heading {
         margin-bottom: var(--spacing-large-medium);
     }
