@@ -44,7 +44,7 @@
 }
 
 :root {
-    --width-dashboard-aside: 320px;
+    --width-dashboard-aside: 360px;
     --width-dashboard-aside-minimized: 88px;
 }
 
@@ -110,8 +110,10 @@
         .header {
             display: flex;
             align-items: center;
+            border-top: 1px solid var(--color-grey-shade-3);
+            border-bottom: 1px solid var(--color-grey-shade-3);
             flex-shrink: 0;
-            padding: var(--spacing-small) var(--spacing-medium);
+            padding: calc(var(--spacing-small-medium) - 2 * var(--spacing-super-small)) var(--spacing-medium);
         }
 
         .map-and-legends {
@@ -143,6 +145,7 @@
             position: absolute;
             top: var(--spacing-medium);
             right: var(--spacing-large);
+
             flex-direction: column;
             width: var(--width-summary-container);
             max-height: calc(100% - var(--spacing-large) - var(--spacing-medium));
@@ -156,10 +159,11 @@
         .map-options-button {
             position: absolute;
             top: var(--spacing-medium);
-            left: var(--spacing-medium);
+            left: var(--spacing-extra-large);
+            font-weight: var(--font-weight-medium);
         }
 
-        --width-max-legend-container: 576px;
+        --width-max-legend-container: 496px;
         --height-max-legend-container: 420px;
         --width-map-control: 100px;
         --height-map-control: 158px;
@@ -171,7 +175,7 @@
         .legend-container {
             display: flex;
             position: absolute;
-            bottom: var(--spacing-medium);
+            bottom: var(--spacing-large-medium);
             left: calc(var(--width-map-control) + var(--spacing-medium));
             align-items: flex-end;
             max-height: var(--height-max-legend-container);
@@ -199,8 +203,8 @@
         .time-slider-container {
             position: absolute;
             right: var(--spacing-large);
-            bottom: var(--spacing-medium);
-            border: var(--width-separator-thin) solid var(--color-grey-shade-5);
+            bottom: var(--spacing-large-medium);
+            border: var(--width-separator-thin) solid var(--color-separator);
             background-color: var(--color-foreground);
             min-width: var(--width-min-time-slider-container);
             min-height: var(--height-min-time-slider-container);
@@ -252,7 +256,7 @@
 
         .summary-container {
             top: var(--spacing-small);
-            right: var(--spacing-small);
+            right: var(--spacing-mega-large);
             max-height: calc(100% - 2 * var(--spacing-small));
         }
     }

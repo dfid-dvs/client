@@ -107,23 +107,25 @@ export default function SelectorItem<T extends string | number>(props: SelectorI
     return (
         <div className={_cs(className, styles.selectorItem)}>
             <div className={styles.heading}>
-                {isFilterExpanded ? (
-                    <IoMdArrowDropup
-                        onClick={onCollapseFilter}
-                        className={styles.collapseIcon}
-                    />
-                ) : (
-                    <IoMdArrowDropdown
-                        onClick={onExpandFilter}
-                        className={styles.collapseIcon}
-                    />
-                )}
-                <div className={styles.icon}>
-                    {icon}
+                <div className={styles.leftSection}>
+                    {isFilterExpanded ? (
+                        <IoMdArrowDropup
+                            onClick={onCollapseFilter}
+                            className={styles.collapseIcon}
+                        />
+                    ) : (
+                        <IoMdArrowDropdown
+                            onClick={onExpandFilter}
+                            className={styles.collapseIcon}
+                        />
+                    )}
+                    <div className={styles.icon}>
+                        {icon}
+                    </div>
+                    <Subtitle className={styles.name}>
+                        {name}
+                    </Subtitle>
                 </div>
-                <Subtitle className={styles.name}>
-                    {name}
-                </Subtitle>
                 {selectedValueCount > 0 && (
                     <div className={styles.rightSection}>
                         <div className={styles.valueCount}>
@@ -138,30 +140,28 @@ export default function SelectorItem<T extends string | number>(props: SelectorI
             </div>
             {isFilterExpanded && (
                 <div className={styles.content}>
+                    <TextInput
+                        className={styles.searchInput}
+                        placeholder="Search"
+                        value={searchText}
+                        onChange={setSearchText}
+                        autoFocus
+                        icons={<IoIosSearch className={styles.searchIcon} />}
+                        inputContainerClassName={styles.inputContainer}
+                    />
                     { options?.length ? (
-                        <>
-                            <TextInput
-                                className={styles.searchInput}
-                                placeholder="Search"
-                                value={searchText}
-                                onChange={setSearchText}
-                                autoFocus
-                                icons={<IoIosSearch className={styles.searchIcon} />}
-                                inputContainerClassName={styles.inputContainer}
-                            />
-                            <TreeInput
-                                className={styles.treeInput}
-                                keySelector={treeKeySelector}
-                                parentKeySelector={treeParentSelector}
-                                labelSelector={treeLabelSelector}
-                                options={options}
-                                value={value}
-                                onChange={setSelectedValue}
-                                defaultCollapseLevel={collapseLevel}
-                                showClearButton={false}
-                                enabledOptions={enabledIds}
-                            />
-                        </>
+                        <TreeInput
+                            className={styles.treeInput}
+                            keySelector={treeKeySelector}
+                            parentKeySelector={treeParentSelector}
+                            labelSelector={treeLabelSelector}
+                            options={options}
+                            value={value}
+                            onChange={setSelectedValue}
+                            defaultCollapseLevel={collapseLevel}
+                            showClearButton={false}
+                            enabledOptions={enabledIds}
+                        />
                     ) : (
                         <div className={styles.empty}>
                             No option available

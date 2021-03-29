@@ -27,23 +27,17 @@ import {
     apiEndPoint,
 } from '#utils/constants';
 
-import useExtendedFiveW, { ExtendedFiveW } from '../../Dashboard/useExtendedFiveW';
+import useExtendedPrograms, { ExtendedProgram } from '../../Dashboard/useExtendedPrograms';
 
 import styles from './styles.css';
 
-const keySelector = (item: ExtendedFiveW) => item.name;
+const keySelector = (item: ExtendedProgram) => item.name;
 
-const staticOptions: NumericOption<ExtendedFiveW>[] = [
+const staticOptions: NumericOption<ExtendedProgram>[] = [
     {
         key: 'allocatedBudget',
         title: 'Allocated Budget',
-        valueSelector: item => item.allocatedBudget,
-        category: 'DFID Data',
-    },
-    {
-        key: 'programCount',
-        title: 'Programs',
-        valueSelector: item => item.programCount,
+        valueSelector: item => item.totalBudget,
         category: 'DFID Data',
     },
     {
@@ -66,7 +60,7 @@ const staticOptions: NumericOption<ExtendedFiveW>[] = [
     },
 ];
 
-const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
+const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
     {
         id: '1',
         type: 'bar-chart',
@@ -76,124 +70,17 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         limit: {
             count: 10,
             method: 'max',
-            valueSelector: item => item.allocatedBudget,
+            valueSelector: item => item.totalBudget,
         },
 
         bars: [
             {
-                key: 'allocatedBudget',
+                key: 'totalBudget',
                 title: 'Allocated Budget',
                 color: tableauColors[1],
-                valueSelector: item => item.allocatedBudget,
+                valueSelector: item => item.totalBudget,
             },
         ],
-    },
-    {
-        id: '1.1',
-        type: 'bar-chart',
-        title: 'Top 10 by programs',
-        keySelector: item => item.name,
-
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.programCount,
-        },
-
-        bars: [
-            {
-                key: 'programCount',
-                title: 'Program count',
-                color: tableauColors[2],
-                valueSelector: item => item.programCount,
-            },
-        ],
-    },
-    {
-        id: '1.2',
-        type: 'bar-chart',
-        title: 'Top 10 by partners',
-        keySelector: item => item.name,
-
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.partnerCount,
-        },
-
-        bars: [
-            {
-                key: 'partnerCount',
-                title: 'Partner count',
-                color: tableauColors[3],
-                valueSelector: item => item.partnerCount,
-            },
-        ],
-    },
-    {
-        id: '1.3',
-        type: 'bar-chart',
-        title: 'Top 10 by sectors',
-        keySelector: item => item.name,
-
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.sectorCount,
-        },
-
-        bars: [
-            {
-                key: 'sectorCount',
-                title: 'Sector count',
-                color: tableauColors[4],
-                valueSelector: item => item.sectorCount,
-            },
-        ],
-    },
-    {
-        id: '2',
-        type: 'bar-chart',
-        title: 'Top 10 by population',
-        keySelector: item => item.name,
-
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.indicators[25] || null,
-        },
-
-        bars: [
-            {
-                key: '"indicator_314"',
-                title: 'Agriculture and Forestry',
-                color: tableauColors[5],
-                valueSelector: item => item.indicators[314] || null,
-            },
-        ],
-        dependencies: [314],
-    },
-    {
-        id: '3',
-        type: 'bar-chart',
-        title: 'Top 10 by poverty incidence',
-        keySelector: item => item.name,
-
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.indicators[132] || null,
-        },
-
-        bars: [
-            {
-                key: 'indicators_132',
-                title: 'Poverty Incidence',
-                color: tableauColors[6],
-                valueSelector: item => item.indicators[132] || null,
-            },
-        ],
-        dependencies: [132],
     },
 ];
 
@@ -205,7 +92,7 @@ interface Props {
     selectedRegion: number | undefined;
 }
 
-function InfographicsCharts(props: Props) {
+function RegionlProfileCharts(props: Props) {
     const {
         className,
         showAddModal,
@@ -228,7 +115,7 @@ function InfographicsCharts(props: Props) {
         indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regionLevel,
     );
 
-    const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>(
+    const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedProgram>[]>(
         defaultChartSettings,
     );
 
@@ -239,7 +126,7 @@ function InfographicsCharts(props: Props) {
     }, [onAddModalVisibilityChange, setEditableChartId]);
 
     const handleChartAdd = useCallback(
-        (settings: ChartSettings<ExtendedFiveW>) => {
+        (settings: ChartSettings<ExtendedProgram>) => {
             if (!editableChartId) {
                 setChartSettings(currentChartSettings => [
                     ...currentChartSettings,
@@ -304,7 +191,7 @@ function InfographicsCharts(props: Props) {
         district_id: regionLevel === 'district' ? selectedRegion : undefined,
     };
 
-    const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
+    const [extendedFiveWPending, extendedFiveWList] = useExtendedPrograms(
         subsequentRegionLevel,
         // eslint-disable-next-line max-len
         // passing markerId ,submarkerId ,programId ,componentId ,partnerId ,sectorId ,subsectorId as undefined
@@ -320,7 +207,7 @@ function InfographicsCharts(props: Props) {
         extraUrlParams,
     );
 
-    const options: NumericOption<ExtendedFiveW>[] = useMemo(
+    const options: NumericOption<ExtendedProgram>[] = useMemo(
         () => {
             if (!indicatorList) {
                 return staticOptions;
@@ -331,7 +218,7 @@ function InfographicsCharts(props: Props) {
                     key: `indicator_${indicator.id}`,
                     title: indicator.fullTitle,
                     // FIXME: zero zero zero
-                    valueSelector: (item: ExtendedFiveW) => item.indicators[indicator.id] || 0,
+                    valueSelector: (item: ExtendedProgram) => item.indicators[indicator.id] || 0,
 
                     category: indicator.category,
 
@@ -342,7 +229,7 @@ function InfographicsCharts(props: Props) {
         [indicatorList],
     );
 
-    const editableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
+    const editableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
         () => {
             const chartSetting = chartSettings.find(c => c.id === editableChartId);
             if (!chartSetting) {
@@ -378,7 +265,7 @@ function InfographicsCharts(props: Props) {
         [setExpandableChart],
     );
 
-    const expandableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
+    const expandableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
         () => {
             const chartSetting = chartSettings.find(c => c.id === expandableChart);
             if (!chartSetting) {
@@ -441,4 +328,4 @@ function InfographicsCharts(props: Props) {
     );
 }
 
-export default InfographicsCharts;
+export default RegionlProfileCharts;

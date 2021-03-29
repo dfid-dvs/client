@@ -8,7 +8,7 @@ import Button from '#components/Button';
 import DropdownMenu from '#components/DropdownMenu';
 import useBasicToggle from '#hooks/useBasicToggle';
 
-import dfidLogo from '#resources/dfid-off-logo.jpg';
+import navBarLogo from '#resources/ukaid-navbar-logo.jpg';
 import styles from './styles.css';
 
 interface Props {
@@ -38,7 +38,7 @@ const Navbar = (props: Props) => {
             <div className={styles.appBrand}>
                 <img
                     className={styles.logo}
-                    src={dfidLogo}
+                    src={navBarLogo}
                     alt="DFID"
                 />
             </div>

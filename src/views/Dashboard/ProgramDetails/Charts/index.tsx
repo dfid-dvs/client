@@ -202,9 +202,7 @@ function Charts(props: Props) {
                     icons={<IoMdAddCircleOutline className={styles.icon} />}
                     transparent
                 >
-                    <div className={styles.text}>
-                        Add Chart
-                    </div>
+                    Add Chart
                 </Button>
             </div>
             <div className={styles.charts}>

@@ -34,6 +34,8 @@
             flex-grow: 1;
             padding: var(--spacing-small);
             text-transform: uppercase;
+            word-break: break-word;
+            font-size: var(--font-size-large);
         }
 
         .total-budget {
@@ -41,8 +43,8 @@
             padding: var(--spacing-small);
 
             .label {
-                padding: 0 var(--spacing-small);
                 text-align: right;
+                color: var(--color-grey-shade-6);
             }
 
             .value {
@@ -55,6 +57,7 @@
         }
 
         .icon {
+            flex-shrink: 0;
             margin: var(--spacing-medium) var(--spacing-small);
             font-size: var(--font-size-medium);
 

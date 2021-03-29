@@ -58,24 +58,26 @@ export default function FaqPage() {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            <div className={styles.qaSection}>
-                {faqList && faqList.length < 0
-                    ? faqList.map(qa => (
-                        <QAItem
-                            key={qa.id}
-                            qa={qa}
-                            qaId={qaId}
-                            onShowAnswer={onSetQaId}
-                            onHideAnswer={onResetQaId}
-                        />
-                    ))
-                    : (
-                        <div className={styles.comingSoon}>
-                            Coming soon
-                        </div>
-                    )
-                }
-            </div>
+            {!faqPending && (
+                <div className={styles.qaSection}>
+                    {faqList && faqList.length > 0
+                        ? faqList.map(qa => (
+                            <QAItem
+                                key={qa.id}
+                                qa={qa}
+                                qaId={qaId}
+                                onShowAnswer={onSetQaId}
+                                onHideAnswer={onResetQaId}
+                            />
+                        ))
+                        : (
+                            <div className={styles.comingSoon}>
+                                Coming soon
+                            </div>
+                        )
+                    }
+                </div>
+            )}
         </div>
     );
 }

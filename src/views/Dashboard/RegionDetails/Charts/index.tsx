@@ -438,10 +438,9 @@ function Charts(props: Props) {
                     className={styles.addChartButton}
                     icons={<IoMdAddCircleOutline className={styles.icon} />}
                     transparent
+                    variant="outline"
                 >
-                    <div className={styles.text}>
-                        Add Chart
-                    </div>
+                    Add Chart
                 </Button>
             </div>
             <div className={styles.charts}>

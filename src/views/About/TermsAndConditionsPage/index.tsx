@@ -1,11 +1,13 @@
 import React from 'react';
 
+import { apiEndPoint } from '#utils/constants';
+import useRequest from '#hooks/useRequest';
+import Backdrop from '#components/Backdrop';
+import LoadingAnimation from '#components/LoadingAnimation';
+
 import styles from './styles.css';
 import TermAndConditionItem from './TermAndConditionItem';
 import LeftTitleItem from './LeftTitleItem';
-
-import { apiEndPoint } from '#utils/constants';
-import useRequest from '#hooks/useRequest';
 
 interface TermsAndConditions {
     count: number;
@@ -42,35 +44,42 @@ export default function TermsAndConditionsPage() {
                     {subTitle}
                 </div>
             </div>
-            <div className={styles.tcSection}>
-                {termsConditionsList && termsConditionsList.length > 0
-                    ? (
-                        <div className={styles.tcContainer}>
-                            <div className={styles.leftSection}>
-                                {termsConditionsList.map(tc => (
-                                    <LeftTitleItem
-                                        key={tc.id}
-                                        title={tc.title}
-                                    />
-                                ))}
+            {termsConditionPending && (
+                <Backdrop>
+                    <LoadingAnimation />
+                </Backdrop>
+            )}
+            {!termsConditionPending && (
+                <div className={styles.tcSection}>
+                    {termsConditionsList && termsConditionsList.length > 0
+                        ? (
+                            <div className={styles.tcContainer}>
+                                <div className={styles.leftSection}>
+                                    {termsConditionsList.map(tc => (
+                                        <LeftTitleItem
+                                            key={tc.id}
+                                            title={tc.title}
+                                        />
+                                    ))}
+                                </div>
+                                <div className={styles.rightSection}>
+                                    {termsConditionsList.map(tc => (
+                                        <TermAndConditionItem
+                                            key={tc.id}
+                                            tc={tc}
+                                        />
+                                    ))}
+                                </div>
                             </div>
-                            <div className={styles.rightSection}>
-                                {termsConditionsList.map(tc => (
-                                    <TermAndConditionItem
-                                        key={tc.id}
-                                        tc={tc}
-                                    />
-                                ))}
+                        )
+                        : (
+                            <div className={styles.comingSoon}>
+                                Coming soon
                             </div>
-                        </div>
-                    )
-                    : (
-                        <div className={styles.comingSoon}>
-                            Coming soon
-                        </div>
-                    )
-                }
-            </div>
+                        )
+                    }
+                </div>
+            )}
         </div>
     );
 }

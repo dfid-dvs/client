@@ -16,6 +16,8 @@
         display: flex;
         align-items: center;
         flex-shrink: 0;
+        border-top: 1px solid var(--color-grey-shade-3);
+        border-bottom: 1px solid var(--color-grey-shade-3);
         padding: var(--spacing-small-medium) 0;
         width: 100%;
 
@@ -36,9 +38,10 @@
         width: 100%;
 
         .region-profile-link {
+            margin-right: var(--spacing-extra-large);
             border: var(--width-separator-thin) solid var(--color-button-background);
             background-color: var(--color-foreground);
-            padding: var(--spacing-small) var(--spacing-large);
+            padding: var(--spacing-small-medium);
             text-decoration: none;
             color: var(--color-text);
             font-weight: var(--font-weight-bold);

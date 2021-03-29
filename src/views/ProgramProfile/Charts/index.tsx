@@ -30,7 +30,6 @@ import {
 
 import styles from './styles.css';
 import useExtendedFiveW, { ExtendedFiveW } from '#views/Dashboard/useExtendedFiveW';
-import BarChartUnit from '#components/PolyChart/BarChart';
 
 const keySelector = (item: ExtendedFiveW) => item.name;
 

@@ -12,9 +12,10 @@
     padding: var(--spacing-medium);
 
     .program-profile-link {
+        margin-right: var(--spacing-extra-large);
         border: var(--width-separator-thin) solid var(--color-button-background);
         background-color: var(--color-foreground);
-        padding: var(--spacing-small) var(--spacing-large);
+        padding: var(--spacing-small-medium);
         text-decoration: none;
         color: var(--color-text);
         font-weight: var(--font-weight-bold);
