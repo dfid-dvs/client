@@ -322,6 +322,7 @@ function ProgramSelector(props: Props) {
     );
     const subSectorOptions: TreeItem[] | undefined = useMemo(
         () => {
+            const searchText = sectorSearchText.toLowerCase();
             const subSectorSet = new Set(
                 appliedProgramOptions
                     ?.map(item => item.subSector)
@@ -336,10 +337,11 @@ function ProgramSelector(props: Props) {
                     parentId: sectorId,
                     name,
                     id,
-                }),
-            ).filter(item => subSectorSet.has(item.id));
+                }))
+                .filter(item => subSectorSet.has(item.id))
+                .filter(item => item.name.toLowerCase().includes(searchText));
         },
-        [rawSubSectorOptions, appliedProgramOptions],
+        [rawSubSectorOptions, appliedProgramOptions, sectorSearchText],
     );
     const combinedSectorOptions = useMemo(
         () => join(sectorOptions, subSectorOptions),
@@ -380,6 +382,7 @@ function ProgramSelector(props: Props) {
                     .flat()
                     .map(item => item?.id),
             );
+            const searchText = markerSearchText.toLowerCase();
             return rawSubMarkerOptions
                 ?.map(({ id, markerCategoryId, value }) => ({
                     key: `submarker-${id}`,
@@ -388,9 +391,10 @@ function ProgramSelector(props: Props) {
                     name: value,
                     id,
                 }))
-                .filter(item => subMarkerSet.has(item.id));
+                .filter(item => subMarkerSet.has(item.id))
+                .filter(item => item.name.toLowerCase().includes(searchText));
         },
-        [rawSubMarkerOptions, appliedProgramOptions],
+        [rawSubMarkerOptions, appliedProgramOptions, markerSearchText],
     );
     const combinedMarkerOptions = useMemo(
         () => join(markerOptions, subMarkerOptions),
@@ -418,6 +422,7 @@ function ProgramSelector(props: Props) {
     );
     const subProgramOptions: TreeItem[] | undefined = useMemo(
         () => {
+            const searchText = programSearchText.toLowerCase();
             const programList = applicableProgramOptions?.map(program => (
                 program.component.map((item => ({
                     key: `subprogram-${item.code}`,
@@ -425,17 +430,18 @@ function ProgramSelector(props: Props) {
                     parentId: program.id,
                     name: item.name,
                     id: item.id,
-                })))
-            )).flat().filter(isDefined);
+                })))))
+                .flat()
+                .filter(isDefined)
+                .filter(item => item.name.toLowerCase().includes(searchText));
             return programList;
         },
-        [applicableProgramOptions],
+        [applicableProgramOptions, programSearchText],
     );
     const combinedProgramOptions = useMemo(
         () => join(programOptions, subProgramOptions),
         [programOptions, subProgramOptions],
     );
-
 
     // eslint-disable-next-line max-len
     const loading = (

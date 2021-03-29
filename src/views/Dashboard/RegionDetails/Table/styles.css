@@ -6,7 +6,10 @@
     padding: var(--spacing-small-medium) 0 0 0;
 
     .download-button {
-        margin: var(--spacing-small);
+        margin: 0 var(--spacing-mega-large);
+        border: var(--width-separator-medium) solid var(--color-secondary-light-1);
+        border-radius: 0;
+        height: 100%;
     }
 
     .indicator-select {

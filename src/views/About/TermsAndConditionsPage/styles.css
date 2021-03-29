@@ -24,13 +24,12 @@
     }
 
     .tc-section {
+        background: var(--color-background);
         padding: calc(4 * var(--spacing-extra-large)) calc(4 * var(--spacing-ultra-large));
-        width: 100%;
 
         .tc-container {
             display: flex;
             justify-content: center;
-            background: var(--color-background);
 
             .left-section {
                 display: flex;

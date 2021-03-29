@@ -2,7 +2,7 @@
     position: relative;
     box-shadow: 0 2px 5px -3px rgba(0, 0, 0, .3);
     background-color: var(--color-foreground);
-    padding: calc(var(--spacing-large) - var(--spacing-medium));
+    padding: var(--spacing-small-medium);
 
     &.hide-container {
         display: none;

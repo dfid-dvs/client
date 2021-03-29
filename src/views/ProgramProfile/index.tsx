@@ -374,15 +374,6 @@ function ProgramProfile(props: Props) {
                                 </div>
                             </div>
                         </div>
-                        {selectedProgram && (
-                            <ProgramProfileCharts
-                                className={styles.charts}
-                                printMode={printMode}
-                                showAddModal={showAddModal}
-                                onAddModalVisibilityChange={setAddModalVisibility}
-                                selectedProgram={selectedProgram}
-                            />
-                        )}
                         {!indicatorsHidden && !programProfilePending && programProfileResponse && (
                             <div className={styles.statContainer}>
                                 <div className={styles.statList}>
@@ -518,6 +509,15 @@ function ProgramProfile(props: Props) {
                                     />
                                 ))}
                             </div>
+                        )}
+                        {selectedProgram && (
+                            <ProgramProfileCharts
+                                className={styles.charts}
+                                printMode={printMode}
+                                showAddModal={showAddModal}
+                                onAddModalVisibilityChange={setAddModalVisibility}
+                                selectedProgram={selectedProgram}
+                            />
                         )}
                     </div>
                 </div>

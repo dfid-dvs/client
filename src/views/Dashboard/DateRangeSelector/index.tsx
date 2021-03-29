@@ -170,10 +170,7 @@ function DateRangeSelector(props: DateRangeProps) {
                         />
                     </div>
                     <Button
-                        className={_cs(
-                            styles.clearButton,
-                            styles.shown,
-                        )}
+                        className={styles.clearButton}
                         onClick={handleClearDates}
                         variant="icon"
                         icons={<MdRefresh />}

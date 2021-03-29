@@ -2,14 +2,14 @@
     display: flex;
     align-items: center;
     background-color: var(--color-backdrop-light);
-    padding: 0 calc(var(--spacing-large) - var(--spacing-medium));
+    padding: var(--spacing-small-medium) var(--spacing-mega-large);
     color: var(--color-text-on-primary);
 
     .app-brand {
         flex-shrink: 0;
 
         .logo {
-            height: 78px;
+            max-height: 55px;
         }
     }
 
@@ -71,10 +71,9 @@
         display: flex;
         align-items: center;
         border-left: var(--width-separator-thin) solid var(--color-separator-light);
-        padding: calc(var(--spacing-extra-large) - var(--spacing-medium));
 
         >* {
-            margin: 0 var(--spacing-medium);
+            margin: 0 0 0 var(--spacing-medium);
         }
     }
 

@@ -64,7 +64,7 @@ export default function MapOptions(props: MapOptionsProps) {
     return (
         <div className={_cs(styles.mapSelectorContainer, className)}>
             <SelectInput
-                placeholder="DFID Data"
+                placeholder="Data type"
                 className={styles.inputItem}
                 options={fiveWOptions}
                 onChange={handleFiveWOptionChange}

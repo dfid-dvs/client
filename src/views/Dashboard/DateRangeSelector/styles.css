@@ -28,11 +28,7 @@
         }
 
         .clear-button {
-            visibility: hidden;
-
-            &.shown {
-                visibility: visible;
-            }
+            align-self: center;
         }
     }
 
@@ -56,6 +52,8 @@
 
                 &.rotate {
                     transform: rotate(90deg);
+                    padding: 0 0 var(--spacing-small) 0;
+                    font-size: calc(2 * var(--font-size-medium));
                 }
             }
             .range {

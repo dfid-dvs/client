@@ -612,6 +612,7 @@ const Dashboard = (props: Props) => {
                                     region={region?.id}
                                     onRegionChange={handleRegionChange}
                                     disabled={printMode}
+                                    showDropDownIcon
                                 />
                             </header>
                             <div className={styles.mapAndLegends}>
