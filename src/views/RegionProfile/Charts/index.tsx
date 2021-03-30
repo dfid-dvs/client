@@ -1,9 +1,6 @@
-import React, { useCallback, useState, useMemo, useContext } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import {
     _cs,
-    isDefined,
-    unique,
-    listToMap,
     isFalsyString,
 } from '@togglecorp/fujs';
 
@@ -11,21 +8,12 @@ import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import PolyChart from '#components/PolyChart';
 import ChartModal from '#components/ChartModal';
-import DomainContext from '#components/DomainContext';
-import useRequest from '#hooks/useRequest';
 import Modal from '#components/Modal';
 
 import {
-    MultiResponse,
-    Indicator,
     ChartSettings,
     NumericOption,
-    RegionLevelOption,
 } from '#types';
-import {
-    tableauColors,
-    apiEndPoint,
-} from '#utils/constants';
 
 import useExtendedPrograms, { ExtendedProgram } from '../../Dashboard/useExtendedPrograms';
 
@@ -40,31 +28,19 @@ const staticOptions: NumericOption<ExtendedProgram>[] = [
         valueSelector: item => item.totalBudget,
         category: 'DFID Data',
     },
-    {
-        key: 'componentCount',
-        title: 'Components',
-        valueSelector: item => item.componentCount,
-        category: 'DFID Data',
-    },
-    {
-        key: 'partnerCount',
-        title: 'Partners',
-        valueSelector: item => item.partnerCount,
-        category: 'DFID Data',
-    },
-    {
-        key: 'sectorCount',
-        title: 'Sectors',
-        valueSelector: item => item.sectorCount,
-        category: 'DFID Data',
-    },
 ];
 
-const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
+interface ProfileChartData {
+    name: string;
+    totalBudget: number;
+    id: number;
+}
+
+const defaultChartSettings: ChartSettings<ExtendedProgram | ProfileChartData>[] = [
     {
-        id: '1',
+        id: 'topProgramByBudget',
         type: 'bar-chart',
-        title: 'Top 10 by budget',
+        title: 'Top Program by Budget',
         keySelector: item => item.name,
 
         limit: {
@@ -77,10 +53,18 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
             {
                 key: 'totalBudget',
                 title: 'Allocated Budget',
-                color: tableauColors[1],
+                color: '#4C6AA9',
                 valueSelector: item => item.totalBudget,
             },
         ],
+    },
+    {
+        id: 'activeSectors',
+        type: 'pie-chart',
+        title: 'Top Sectors by Budget',
+        key: 'totalBudget',
+        keySelector: item => item.name,
+        valueSelector: item => item.totalBudget,
     },
 ];
 
@@ -89,33 +73,23 @@ interface Props {
     showAddModal: boolean;
     printMode: boolean;
     onAddModalVisibilityChange: (value: boolean) => void;
-    selectedRegion: number | undefined;
+    activeSectors: ProfileChartData[] | undefined;
+    topProgramByBudget: ProfileChartData[] | undefined;
 }
 
-function RegionlProfileCharts(props: Props) {
+function RegionalProfileCharts(props: Props) {
     const {
         className,
         showAddModal,
         onAddModalVisibilityChange,
         printMode,
-        selectedRegion,
+        activeSectors,
+        topProgramByBudget,
     } = props;
-
-    const {
-        regionLevel,
-    } = useContext(DomainContext);
-
-    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_dashboard=true`;
     const [
-        indicatorListPending,
-        indicatorListResponse,
-    ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl, 'indicator-list');
-
-    const indicatorList = indicatorListResponse?.results.filter(
-        indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regionLevel,
-    );
-
-    const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedProgram>[]>(
+        chartSettings,
+        setChartSettings,
+    ] = useState<ChartSettings<ExtendedProgram | ProfileChartData>[]>(
         defaultChartSettings,
     );
 
@@ -126,7 +100,7 @@ function RegionlProfileCharts(props: Props) {
     }, [onAddModalVisibilityChange, setEditableChartId]);
 
     const handleChartAdd = useCallback(
-        (settings: ChartSettings<ExtendedProgram>) => {
+        (settings: ChartSettings<ExtendedProgram | ProfileChartData>) => {
             if (!editableChartId) {
                 setChartSettings(currentChartSettings => [
                     ...currentChartSettings,
@@ -154,80 +128,10 @@ function RegionlProfileCharts(props: Props) {
                 currentChartSettings.filter(item => item.id !== name)
             ));
         },
-        [],
+        [setChartSettings],
     );
 
-    const indicatorMapping = useMemo(
-        () => listToMap(
-            indicatorList,
-            item => item.id,
-            item => item,
-        ),
-        [indicatorList],
-    );
-
-    const validSelectedIndicators = useMemo(
-        () => unique(
-            [...chartSettings
-                .map(item => item.dependencies)
-                .filter(isDefined)
-                .flat(),
-            ].filter(i => !!indicatorMapping[i]),
-            item => item,
-        ).sort(),
-        [chartSettings, indicatorMapping],
-    );
-
-    const subsequentRegionLevel: RegionLevelOption | undefined = (
-        (regionLevel === 'province' && 'district')
-        || (regionLevel === 'district' && 'municipality')
-        || undefined
-    );
-
-    const extraUrlParams = {
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        province_id: regionLevel === 'province' ? selectedRegion : undefined,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        district_id: regionLevel === 'district' ? selectedRegion : undefined,
-    };
-
-    const [extendedFiveWPending, extendedFiveWList] = useExtendedPrograms(
-        subsequentRegionLevel,
-        // eslint-disable-next-line max-len
-        // passing markerId ,submarkerId ,programId ,componentId ,partnerId ,sectorId ,subsectorId as undefined
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        validSelectedIndicators,
-        true,
-        extraUrlParams,
-    );
-
-    const options: NumericOption<ExtendedProgram>[] = useMemo(
-        () => {
-            if (!indicatorList) {
-                return staticOptions;
-            }
-            return [
-                ...staticOptions,
-                ...indicatorList.map(indicator => ({
-                    key: `indicator_${indicator.id}`,
-                    title: indicator.fullTitle,
-                    // FIXME: zero zero zero
-                    valueSelector: (item: ExtendedProgram) => item.indicators[indicator.id] || 0,
-
-                    category: indicator.category,
-
-                    dependency: indicator.id,
-                })),
-            ];
-        },
-        [indicatorList],
-    );
+    const [programsPending, extendedPrograms] = useExtendedPrograms([]);
 
     const editableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
         () => {
@@ -276,9 +180,11 @@ function RegionlProfileCharts(props: Props) {
         [chartSettings, expandableChart],
     );
 
+    const chartData = { activeSectors, topProgramByBudget };
+
     return (
         <div className={_cs(styles.charts, className)}>
-            {(indicatorListPending || extendedFiveWPending) && (
+            {programsPending && (
                 <Backdrop className={styles.backdrop}>
                     <LoadingAnimation />
                 </Backdrop>
@@ -289,19 +195,19 @@ function RegionlProfileCharts(props: Props) {
                     className={styles.chartContainer}
                     chartClassName={styles.chart}
                     hideActions={printMode}
-                    data={extendedFiveWList}
+                    data={chartData[item.id]}
                     settings={item}
                     onDelete={handleChartDelete}
                     onExpand={handleChartExpand}
                     chartExpanded={expandableChart}
-                    onSetEditableChartId={onSetEditableChartId}
+                    // onSetEditableChartId={onSetEditableChartId}
                 />
             ))}
             {showAddModal && (
                 <ChartModal
                     onClose={handleModalClose}
                     onSave={handleChartAdd}
-                    options={options}
+                    options={staticOptions}
                     keySelector={keySelector}
                     editableChartSettings={editableChartSettings}
                 />
@@ -315,7 +221,7 @@ function RegionlProfileCharts(props: Props) {
                 >
                     <PolyChart
                         chartClassName={styles.chart}
-                        data={extendedFiveWList}
+                        data={extendedPrograms}
                         settings={expandableChartSettings}
                         onDelete={handleChartDelete}
                         className={styles.polyChart}
@@ -328,4 +234,4 @@ function RegionlProfileCharts(props: Props) {
     );
 }
 
-export default RegionlProfileCharts;
+export default RegionalProfileCharts;

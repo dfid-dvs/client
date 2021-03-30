@@ -295,7 +295,7 @@ function ProgramProfileCharts(props: Props) {
                     onDelete={handleChartDelete}
                     onExpand={handleChartExpand}
                     chartExpanded={expandableChart}
-                    onSetEditableChartId={onSetEditableChartId}
+                    // onSetEditableChartId={onSetEditableChartId}
                 />
             ))}
             {showAddModal && (

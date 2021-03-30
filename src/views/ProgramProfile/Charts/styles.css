@@ -17,7 +17,7 @@
         display: inline-block;
         margin: var(--spacing-small);
         border: var(--width-separator-thin) solid var(--color-button-background);
-        width: calc(50% - var(--spacing-medium));
+        width: calc(100% - var(--spacing-medium));
         vertical-align: top;
     }
 

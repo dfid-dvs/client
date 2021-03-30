@@ -74,10 +74,17 @@ interface FiveWDataResponse {
     totalBudget: number;
 }
 
+interface ProfileChartData {
+    name: string;
+    id: number;
+    totalBudget: number;
+}
+
 interface RegionProfileResponse {
     indicatordata: IndicatorValue[];
     fivewdata: FiveWDataResponse[];
-    activeSectors: string[];
+    activeSectors: ProfileChartData[];
+    topProgramByBudget: ProfileChartData[];
 }
 
 interface DendogramResponse {
@@ -156,10 +163,10 @@ function RegionProfile(props: Props) {
         [regionProfileResponse?.fivewdata],
     );
 
-    const activeSectors: string[] | undefined = useMemo(
-        () => regionProfileResponse?.activeSectors,
-        [regionProfileResponse?.activeSectors],
-    );
+    const activeSectors: ProfileChartData[] | undefined = regionProfileResponse?.activeSectors;
+
+    // eslint-disable-next-line max-len
+    const topProgramByBudget: ProfileChartData[] | undefined = regionProfileResponse?.topProgramByBudget;
 
     const handleAddChartModalClick = useCallback(() => {
         setAddModalVisibility(true);
@@ -274,14 +281,14 @@ function RegionProfile(props: Props) {
                     selectInputClassName={styles.selectInput}
                     showDropDownIcon
                 />
-                <Button
+                {/* <Button
                     className={styles.addChartButton}
                     onClick={handleAddChartModalClick}
                     disabled={printMode || isNotDefined(region)}
                     variant="secondary-outline"
                 >
                     Add Chart
-                </Button>
+                </Button> */}
                 <PrintButton
                     className={styles.printModeButton}
                     printMode={printMode}
@@ -399,8 +406,9 @@ function RegionProfile(props: Props) {
                                 className={styles.charts}
                                 printMode={printMode}
                                 showAddModal={showAddModal}
-                                selectedRegion={region}
                                 onAddModalVisibilityChange={setAddModalVisibility}
+                                activeSectors={activeSectors}
+                                topProgramByBudget={topProgramByBudget}
                             />
                         )}
                     </div>

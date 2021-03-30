@@ -36,12 +36,11 @@
 
     .sectors-list {
         display: flex;
+        flex-wrap: wrap;
 
         .sector {
             display: flex;
             align-items: center;
-            flex-basis: 0;
-            flex-grow: 1;
 
             .icon {
                 flex-shrink: 0;
