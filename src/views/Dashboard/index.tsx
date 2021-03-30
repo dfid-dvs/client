@@ -478,7 +478,7 @@ const Dashboard = (props: Props) => {
             const reg: MapRegion = {
                 id: +adminLevel.code,
                 name: adminLevel.name,
-                code: adminLevel.id,
+                code: +adminLevel.code,
             };
 
             setRegion(reg);
