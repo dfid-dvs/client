@@ -222,9 +222,6 @@ function Charts(props: Props) {
                         onExpand={handleChartExpand}
                         chartExpanded={expandableChart}
                         onSetEditableChartId={onSetEditableChartId}
-                        hoveredChartId={hoveredChartId}
-                        onHoverChart={onHoverChart}
-                        onLeaveChart={onLeaveChart}
                     />
                 ))}
             </div>

@@ -326,19 +326,20 @@ function ProgramProfile(props: Props) {
                     showDropDownIcon
                     searchHidden
                 />
-                <Button
+                {/* <Button
                     className={styles.addChartButton}
                     onClick={handleAddChartModalClick}
                     disabled={printMode}
                     variant="secondary-outline"
                 >
                     Add Chart
-                </Button>
+                </Button> */}
                 <PrintButton
                     className={styles.printModeButton}
                     printMode={printMode}
                     onPrintModeChange={setPrintMode}
                     orientation="portrait"
+                    disabled={!selectedProgram}
                 />
                 {resetProfileShown && (
                     <Button

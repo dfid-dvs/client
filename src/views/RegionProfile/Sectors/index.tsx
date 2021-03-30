@@ -5,9 +5,15 @@ import Button from '#components/Button';
 
 import styles from './styles.css';
 
+interface Sector {
+    name: string;
+    id: number;
+    totalBudget: number;
+}
+
 interface IndicatorProps {
     className?: string;
-    activeSectors: string[];
+    activeSectors: Sector[];
     setSectorsHidden: () => void;
 }
 export default function Sectors(props: IndicatorProps) {
@@ -38,12 +44,12 @@ export default function Sectors(props: IndicatorProps) {
             <div className={styles.sectorsList}>
                 {activeSectors?.map(sector => (
                     <div
-                        key={sector}
+                        key={sector.id}
                         className={styles.sector}
                     >
                         <IoMdCheckmarkCircle className={styles.icon} />
                         <h3 className={styles.value}>
-                            {sector}
+                            {sector.name}
                         </h3>
                     </div>
                 ))}
