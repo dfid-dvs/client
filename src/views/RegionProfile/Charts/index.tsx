@@ -24,7 +24,7 @@ const keySelector = (item: ExtendedProgram) => item.name;
 const staticOptions: NumericOption<ExtendedProgram>[] = [
     {
         key: 'allocatedBudget',
-        title: 'Allocated Budget',
+        title: 'Total Budget',
         valueSelector: item => item.totalBudget,
         category: 'DFID Data',
     },
@@ -52,7 +52,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram | ProfileChartData>[] 
         bars: [
             {
                 key: 'totalBudget',
-                title: 'Allocated Budget',
+                title: 'Total Budget',
                 color: '#4C6AA9',
                 valueSelector: item => item.totalBudget,
             },
@@ -66,6 +66,27 @@ const defaultChartSettings: ChartSettings<ExtendedProgram | ProfileChartData>[] 
         keySelector: item => item.name,
         valueSelector: item => item.totalBudget,
     },
+    {
+        id: 'topPartnerByBudget',
+        type: 'bar-chart',
+        title: 'Top Partner by Budget',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.totalBudget,
+        },
+
+        bars: [
+            {
+                key: 'totalBudget',
+                title: 'Total Budget',
+                color: '#4C6AA9',
+                valueSelector: item => item.totalBudget,
+            },
+        ],
+    },
 ];
 
 interface Props {
@@ -75,6 +96,7 @@ interface Props {
     onAddModalVisibilityChange: (value: boolean) => void;
     activeSectors: ProfileChartData[] | undefined;
     topProgramByBudget: ProfileChartData[] | undefined;
+    topPartnerByBudget: ProfileChartData[] | undefined;
 }
 
 function RegionalProfileCharts(props: Props) {
@@ -85,6 +107,7 @@ function RegionalProfileCharts(props: Props) {
         printMode,
         activeSectors,
         topProgramByBudget,
+        topPartnerByBudget,
     } = props;
     const [
         chartSettings,
@@ -180,7 +203,7 @@ function RegionalProfileCharts(props: Props) {
         [chartSettings, expandableChart],
     );
 
-    const chartData = { activeSectors, topProgramByBudget };
+    const chartData = { activeSectors, topProgramByBudget, topPartnerByBudget };
 
     return (
         <div className={_cs(styles.charts, className)}>
