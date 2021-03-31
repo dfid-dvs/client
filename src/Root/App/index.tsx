@@ -3,34 +3,12 @@ import React, { useState, useCallback } from 'react';
 import britishEmbassyKathmanduLogo from '#resources/dfid-off-logo.jpg';
 import TextInput from '#components/TextInput';
 import Button from '#components/Button';
+import useStoredState from '#hooks/useStoredState';
 
 import Multiplexer from './Multiplexer';
 
 import '../../../node_modules/mapbox-gl/dist/mapbox-gl.css';
 import styles from './styles.css';
-
-// eslint-disable-next-line import/prefer-default-export
-export function useStoredState<T>(key: string, defaultValue: T): [
-    T,
-    (v: T) => void,
-] {
-    const [value, setValue] = useState<T>((): T => {
-        const val = localStorage.getItem(key);
-        return val === null || value === undefined
-            ? defaultValue
-            : JSON.parse(val) as T;
-    });
-
-    const setValueAndStore = useCallback(
-        (v: T) => {
-            setValue(v);
-            localStorage.setItem(key, JSON.stringify(v));
-        },
-        [key],
-    );
-
-    return [value, setValueAndStore];
-}
 
 async function digestMessage(message: string) {
     const msgUint8 = new TextEncoder().encode(message);

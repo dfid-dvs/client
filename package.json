@@ -171,7 +171,9 @@
         "react-hook-form": "^5.7.2",
         "react-icons": "^3.9.0",
         "react-router-dom": "^5.0.1",
+        "reactour": "^1.18.3",
         "recharts": "https://github.com/toggle-corp/recharts#develop",
-        "resize-observer-polyfill": "^1.5.1"
+        "resize-observer-polyfill": "^1.5.1",
+        "styled-components": "^4.0.0"
     }
 }
