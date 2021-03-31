@@ -53,7 +53,7 @@ function Multiplexer(props: Props) {
 
     const [regionLevel, setRegionLevel] = useState<RegionLevelOption>('province');
     const [markers, setMarkers] = useState<string[]>([]);
-    const [programs, setPrograms] = useState<number[]>([]);
+    const [programs, setPrograms] = useState<string[]>([]);
     const [partners, setPartners] = useState<string[]>([]);
     const [sectors, setSectors] = useState<string[]>([]);
 

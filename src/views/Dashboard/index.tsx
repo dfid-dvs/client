@@ -7,9 +7,10 @@ import {
     IoIosArrowForward,
     IoIosArrowBack,
 } from 'react-icons/io';
+import Tour from 'reactour';
 
 import BubbleLegend, { BubbleLegendType } from '#components/BubbleLegend';
-import { useButtonStyling } from '#components/Button';
+import Button, { useButtonStyling } from '#components/Button';
 import RawButton from '#components/RawButton';
 import ChoroplethLegend from '#components/ChoroplethLegend';
 import DomainContext from '#components/DomainContext';
@@ -51,6 +52,7 @@ import {
     apiEndPoint,
 } from '#utils/constants';
 import useBasicToggle from '#hooks/useBasicToggle';
+import useStoredState from '#hooks/useStoredState';
 import Modal from '#components/Modal';
 
 import Tooltip from './Tooltip';
@@ -80,6 +82,43 @@ interface MapRegion {
 }
 
 type AdminLevel = Province | District | Municipality | undefined;
+
+const tourConfig = [
+    {
+        selector: '[data-tut=""]',
+        content: 'Okay lets get started ! This is overview',
+    },
+    {
+        selector: '[data-tut="left__filter"]',
+        content: 'Please feel play around with this dynamic panel. You can filter data by Program, Components, Partners, Sectors, Sub-sectors, Markers, and Sub-markers.',
+    },
+    {
+        selector: '[data-tut="view__by"]',
+        content: 'Also, you can filter data by region - Province, District and Municipality.',
+    },
+    {
+        selector: '[data-tut="map__options"]',
+        content: 'Select different map options to filter in more detail. You can filter by data types, indicators, layers. All the filtered effects can be observed in the map',
+        position: 'left',
+    },
+    {
+        selector: '[data-tut="date__slider"]',
+        content: 'Slide this date to get programs that belong to the date range set here. You can observe the programs being changed in the left filter panel.',
+    },
+    {
+        selector: '[data-tut="top__summary"]',
+        content: 'Summary is shown here',
+    },
+    {
+        selector: '[data-tut="indicator__graph"]',
+        content: 'Indicators legend is shown here',
+    },
+    {
+        selector: '[data-tut="nepal__map"]',
+        content: 'You can view map representation of data here based on filters and map options selected. Please hover or close on map to observe its features.',
+        position: 'left',
+    },
+];
 
 const fiveWOptions: FiveWOption[] = [
     {
@@ -530,6 +569,26 @@ const Dashboard = (props: Props) => {
 
     const regionDetailShown = useMemo(() => !!region, [region]);
 
+    const [toured, setToured] = useStoredState<string>(
+        'dashboard-toured',
+        'false',
+    );
+
+    const handleTourComplete = useCallback(
+        () => {
+            setToured('true');
+        },
+        [setToured],
+    );
+
+    const handleResetTour = useCallback(
+        () => {
+            setToured('false');
+        },
+        [setToured],
+    );
+    const demoHidden = useMemo(() => toured === 'true', [toured]);
+
     return (
         <div
             className={_cs(
@@ -538,11 +597,19 @@ const Dashboard = (props: Props) => {
                 printMode && styles.printMode,
             )}
         >
+            {!demoHidden && (
+                <Tour
+                    steps={tourConfig}
+                    isOpen
+                    onRequestClose={handleTourComplete}
+                />
+            )}
             <aside
                 className={_cs(
                     styles.sideContent,
                     sideContentMinimized && styles.minimized,
                 )}
+                data-tut="left__filter"
             >
                 {!printMode && (
                     <Portal>
@@ -602,7 +669,10 @@ const Dashboard = (props: Props) => {
                         </>
                     ) : (
                         <>
-                            <header className={styles.header}>
+                            <header
+                                className={styles.header}
+                                data-tut="view__by"
+                            >
                                 <Label>
                                     View by
                                 </Label>
@@ -613,31 +683,50 @@ const Dashboard = (props: Props) => {
                                     onRegionChange={handleRegionChange}
                                     disabled={printMode}
                                     showDropDownIcon
+                                    selectInputClassName={styles.demoModeRegionSelect}
                                 />
+                                {demoHidden && (
+                                    <Button
+                                        onClick={handleResetTour}
+                                        variant="secondary-outline"
+                                    >
+                                        View Demo
+                                    </Button>
+                                )}
                             </header>
-                            <div className={styles.mapAndLegends}>
-                                <IndicatorMap
-                                    className={styles.mapContainer}
-                                    regionLevel={regionLevel}
-                                    choroplethMapState={choroplethMapState}
-                                    choroplethMapPaint={mapPaint}
-                                    bubbleMapState={bubbleMapState}
-                                    bubbleMapPaint={bubblePaint}
-                                    rasterLayer={selectedRasterLayerDetail}
-                                    vectorLayers={selectedVectorLayersDetail}
-                                    onClick={handleMapRegionClick}
-                                    printMode={printMode}
-                                    selectedRegionId={region?.code}
-                                    onHover={handleMapRegionHover}
-                                    onLeave={handleMapRegionLeave}
-                                    hoveredRegion={hoveredRegion}
-                                    choroplethTitle={choroplethTitle}
-                                    bubbleTitle={bubbleTitle}
-                                />
+                            <div
+                                className={styles.mapAndLegends}
+                            >
+                                <React.Fragment
+                                    data-tut="nepal__map"
+                                >
+                                    <IndicatorMap
+                                        className={styles.mapContainer}
+                                        regionLevel={regionLevel}
+                                        choroplethMapState={choroplethMapState}
+                                        choroplethMapPaint={mapPaint}
+                                        bubbleMapState={bubbleMapState}
+                                        bubbleMapPaint={bubblePaint}
+                                        rasterLayer={selectedRasterLayerDetail}
+                                        vectorLayers={selectedVectorLayersDetail}
+                                        onClick={handleMapRegionClick}
+                                        printMode={printMode}
+                                        selectedRegionId={region?.code}
+                                        onHover={handleMapRegionHover}
+                                        onLeave={handleMapRegionLeave}
+                                        hoveredRegion={hoveredRegion}
+                                        choroplethTitle={choroplethTitle}
+                                        bubbleTitle={bubbleTitle}
+                                    />
+                                </React.Fragment>
                                 <DropdownMenu
                                     label="Map Options"
-                                    dropdownContainerClassName={styles.mapOptionsDropdown}
+                                    dropdownContainerClassName={_cs(
+                                        styles.mapOptionsDropdown,
+                                        !demoHidden && styles.demoMode,
+                                    )}
                                     {...mapOptionsButtonProps}
+                                    dataTut="map__options"
                                 >
                                     <MapOptions
                                         fiveWOptions={fiveWOptions}
@@ -659,7 +748,10 @@ const Dashboard = (props: Props) => {
                                         selectedRasterLayer={selectedRasterLayer}
                                     />
                                 </DropdownMenu>
-                                <div className={styles.summaryContainer}>
+                                <div
+                                    className={styles.summaryContainer}
+                                    data-tut="top__summary"
+                                >
                                     <Summary
                                         markerIdList={markerIdList}
                                         submarkerIdList={submarkerIdList}
@@ -674,7 +766,6 @@ const Dashboard = (props: Props) => {
                                             region={region}
                                             className={styles.clickedRegionDetail}
                                             regionLevel={regionLevel}
-
                                             markerIdList={markerIdList}
                                             submarkerIdList={submarkerIdList}
                                             programIdList={programIdList}
@@ -695,6 +786,7 @@ const Dashboard = (props: Props) => {
                                         !sideContentMinimized && regionDetailShown
                                         && styles.overflow,
                                     )}
+                                    data-tut="indicator__graph"
                                 >
                                     {choroplethSelected && (
                                         <ChoroplethLegend
@@ -740,6 +832,7 @@ const Dashboard = (props: Props) => {
                                         styles.timeSliderContainer,
                                         regionDetailShown && styles.shiftLeft,
                                     )}
+                                    data-tut="date__slider"
                                 >
                                     <DateRangeSelector
                                         className={_cs(

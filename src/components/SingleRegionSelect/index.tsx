@@ -77,6 +77,7 @@ interface Props {
     segmentLabelClassName?: string;
     segmentInputClassName?: string;
     selectInputClassName?: string;
+    selectDropDownContainerClassName?: string;
     showDropDownIcon?: boolean;
     regionLevel: RegionLevelOption;
     onRegionLevelChange?: (regionLevel: RegionLevelOption) => void;
@@ -99,6 +100,7 @@ function RegionSelector(props: Props) {
         segmentInputClassName,
         selectInputClassName,
         showDropDownIcon = false,
+        selectDropDownContainerClassName,
     } = props;
 
     const regionGetRequest = searchHidden ? undefined : `${apiEndPoint}/core/${regionLevel}/`;
@@ -167,6 +169,7 @@ function RegionSelector(props: Props) {
                     // groupKeySelector={regionGroupSelector}
                     optionKeySelector={regionKeySelector}
                     showDropDownIcon={showDropDownIcon}
+                    dropdownContainerClassName={selectDropDownContainerClassName}
                 />
             )}
         </div>
