@@ -19,10 +19,12 @@ interface DateRangeProps {
     defaultEndDate: string;
 }
 
-const minYear = 2014;
-const maxYear = new Date().getFullYear() + 2;
+const minYear = 2012;
+const maxYear = new Date().getFullYear() + 5;
 
 const marks = {
+    2012: '2012',
+    2013: '2013',
     2014: '2014',
     2015: '2015',
     2016: '2016',
@@ -33,6 +35,9 @@ const marks = {
     2021: '2021',
     2022: '2022',
     2023: '2023',
+    2024: '2024',
+    2025: '2025',
+    2026: '2026',
 };
 
 function DateRangeSelector(props: DateRangeProps) {
@@ -132,6 +137,9 @@ function DateRangeSelector(props: DateRangeProps) {
                 className,
                 dateRangeShown && styles.calendarContainer,
             )}
+            style={{
+                width: (maxYear - minYear) * 35,
+            }}
         >
             {dateRangeShown && (
                 <div className={styles.calendars}>

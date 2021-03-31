@@ -85,6 +85,7 @@ interface RegionProfileResponse {
     fivewdata: FiveWDataResponse[];
     activeSectors: ProfileChartData[];
     topProgramByBudget: ProfileChartData[];
+    topPartnerByBudget: ProfileChartData[];
 }
 
 interface DendogramResponse {
@@ -162,11 +163,13 @@ function RegionProfile(props: Props) {
         },
         [regionProfileResponse?.fivewdata],
     );
-
     const activeSectors: ProfileChartData[] | undefined = regionProfileResponse?.activeSectors;
 
     // eslint-disable-next-line max-len
     const topProgramByBudget: ProfileChartData[] | undefined = regionProfileResponse?.topProgramByBudget;
+
+    // eslint-disable-next-line max-len
+    const topPartnerByBudget: ProfileChartData[] | undefined = regionProfileResponse?.topPartnerByBudget;
 
     const handleAddChartModalClick = useCallback(() => {
         setAddModalVisibility(true);
@@ -409,6 +412,7 @@ function RegionProfile(props: Props) {
                                 onAddModalVisibilityChange={setAddModalVisibility}
                                 activeSectors={activeSectors}
                                 topProgramByBudget={topProgramByBudget}
+                                topPartnerByBudget={topPartnerByBudget}
                             />
                         )}
                     </div>
