@@ -3,6 +3,7 @@ import {
     _cs,
     isDefined,
     isNotDefined,
+    isFalsyString,
 } from '@togglecorp/fujs';
 import { IoMdClose } from 'react-icons/io';
 
@@ -175,21 +176,6 @@ function RegionProfile(props: Props) {
         setAddModalVisibility(true);
     }, [setAddModalVisibility]);
 
-    const handleRegionChange = useCallback((newRegionId, newSelectedRegionData) => {
-        setRegion(newRegionId);
-        setSelectedRegionData({
-            ...newSelectedRegionData,
-            type: regionLevel,
-        });
-    }, [setRegion, setSelectedRegionData, regionLevel]);
-
-    const handleRegionLevelChange = useCallback((newRegionLevel) => {
-        setRegion(undefined);
-        setSelectedRegionData(undefined);
-        setRegionLevel(newRegionLevel);
-        setDescription('');
-    }, [setRegion, setSelectedRegionData, setRegionLevel, setDescription]);
-
     const currentBounds: Bbox | undefined = useMemo(() => {
         const bounds = selectedRegionData
             ?.bbox
@@ -241,8 +227,31 @@ function RegionProfile(props: Props) {
         unsetDescriptionHidden,
     ] = useBasicToggle();
 
+    const [
+        dendrogramHidden,
+        setDendrogramHidden,
+        unsetDendrogramHidden,
+    ] = useBasicToggle();
 
-    const resetProfileShown = indicatorsHidden || sectorsHidden || descriptionHidden;
+    const [hiddenChartIds, setHiddenChartIds] = useState<string[]>();
+
+    const handleAddHideableChartIds = useCallback(
+        (id: string | undefined) => {
+            if (isFalsyString(id)) {
+                return;
+            }
+            setHiddenChartIds((prevIds) => {
+                if (!prevIds) {
+                    return [id];
+                }
+                return [...prevIds, id];
+            });
+        },
+        [setHiddenChartIds],
+    );
+
+    const resetProfileShown = indicatorsHidden || sectorsHidden
+        || descriptionHidden || dendrogramHidden || hiddenChartIds;
 
     const onResetProfile = useCallback(
         () => {
@@ -250,12 +259,56 @@ function RegionProfile(props: Props) {
             unsetSectorsHidden();
             unsetDescriptionHidden();
             setDescription('');
+            unsetDendrogramHidden();
+            setHiddenChartIds(undefined);
         },
         [
             unsetIndicatorsHidden,
             unsetSectorsHidden,
             unsetDescriptionHidden,
             setDescription,
+            unsetDendrogramHidden,
+            setHiddenChartIds,
+        ],
+    );
+
+    const handleRegionChange = useCallback(
+        (newRegionId, newSelectedRegionData) => {
+            setRegion(newRegionId);
+            setSelectedRegionData({
+                ...newSelectedRegionData,
+                type: regionLevel,
+            });
+            if (resetProfileShown) {
+                onResetProfile();
+            }
+        },
+        [
+            setRegion,
+            setSelectedRegionData,
+            regionLevel,
+            resetProfileShown,
+            onResetProfile,
+        ],
+    );
+
+    const handleRegionLevelChange = useCallback(
+        (newRegionLevel) => {
+            setRegion(undefined);
+            setSelectedRegionData(undefined);
+            setRegionLevel(newRegionLevel);
+            setDescription('');
+            if (resetProfileShown) {
+                onResetProfile();
+            }
+        },
+        [
+            setRegion,
+            setSelectedRegionData,
+            setRegionLevel,
+            setDescription,
+            resetProfileShown,
+            onResetProfile,
         ],
     );
 
@@ -304,7 +357,7 @@ function RegionProfile(props: Props) {
                         className={styles.resetProfileButton}
                         onClick={onResetProfile}
                         disabled={printMode}
-                        variant="transparent"
+                        variant="secondary-outline"
                     >
                         Reset Profile
                     </Button>
@@ -390,10 +443,26 @@ function RegionProfile(props: Props) {
                             />
                         )}
                         {/* eslint-disable-next-line max-len */}
-                        {!dataPending && mappedDendogramData && mappedDendogramData.length > 0 && (
+                        {!dataPending && !dendrogramHidden && mappedDendogramData && mappedDendogramData.length > 0 && (
                             <div className={styles.dendogramContainer}>
-                                <div className={styles.title}>
-                                    Dendogram of Region
+                                <div className={styles.header}>
+                                    <div className={styles.title}>
+                                        Dendogram of Region
+                                    </div>
+                                    <Button
+                                        onClick={setDendrogramHidden}
+                                        title="Hide Dendrogram"
+                                        transparent
+                                        variant="icon"
+                                        className={_cs(
+                                            styles.button,
+                                            printMode && styles.hidden,
+                                        )}
+                                    >
+                                        <IoMdClose
+                                            className={styles.icon}
+                                        />
+                                    </Button>
                                 </div>
                                 {mappedDendogramData.map(res => (
                                     <DendogramTree
@@ -404,7 +473,7 @@ function RegionProfile(props: Props) {
                                 ))}
                             </div>
                         )}
-                        {regionLevel !== 'municipality' && (
+                        {!dataPending && regionLevel !== 'municipality' && (
                             <RegionProfileCharts
                                 className={styles.charts}
                                 printMode={printMode}
@@ -413,6 +482,8 @@ function RegionProfile(props: Props) {
                                 activeSectors={activeSectors}
                                 topProgramByBudget={topProgramByBudget}
                                 topPartnerByBudget={topPartnerByBudget}
+                                hiddenChartIds={hiddenChartIds}
+                                handleAddHideableChartIds={handleAddHideableChartIds}
                             />
                         )}
                     </div>

@@ -4,7 +4,6 @@ import {
     isDefined,
     unique,
     listToMap,
-    isFalsyString,
     compareNumber,
 } from '@togglecorp/fujs';
 
@@ -16,12 +15,13 @@ import DomainContext from '#components/DomainContext';
 import useRequest from '#hooks/useRequest';
 import Modal from '#components/Modal';
 
+import useExtendedFiveW, { ExtendedFiveW } from '#views/Dashboard/useExtendedFiveW';
+
 import {
     MultiResponse,
     Indicator,
     ChartSettings,
     NumericOption,
-    RegionLevelOption,
 } from '#types';
 import {
     tableauColors,
@@ -29,7 +29,6 @@ import {
 } from '#utils/constants';
 
 import styles from './styles.css';
-import useExtendedFiveW, { ExtendedFiveW } from '#views/Dashboard/useExtendedFiveW';
 
 const keySelector = (item: ExtendedFiveW) => item.name;
 
@@ -70,7 +69,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '1',
         type: 'bar-chart',
-        title: 'Priority provinces by budget spent',
+        title: 'Priority region by budget spent',
         keySelector: item => item.name,
 
         limit: {
@@ -96,6 +95,8 @@ interface Props {
     printMode: boolean;
     onAddModalVisibilityChange: (value: boolean) => void;
     selectedProgram: number | undefined;
+    hiddenChartIds: string[] | undefined;
+    handleAddHideableChartIds: (id: string | undefined) => void;
 }
 
 function ProgramProfileCharts(props: Props) {
@@ -105,6 +106,8 @@ function ProgramProfileCharts(props: Props) {
         onAddModalVisibilityChange,
         printMode,
         selectedProgram,
+        hiddenChartIds,
+        handleAddHideableChartIds,
     } = props;
 
     const {
@@ -123,6 +126,16 @@ function ProgramProfileCharts(props: Props) {
 
     const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>(
         defaultChartSettings,
+    );
+
+    const showableChartSettings = useMemo(
+        () => {
+            if (!hiddenChartIds) {
+                return chartSettings;
+            }
+            return chartSettings.filter(c => !hiddenChartIds.includes(c.id));
+        },
+        [chartSettings, hiddenChartIds],
     );
 
     const [editableChartId, setEditableChartId] = useState<string>();
@@ -149,19 +162,6 @@ function ProgramProfileCharts(props: Props) {
             setChartSettings(tmpChartSettings);
         },
         [editableChartId],
-    );
-
-    const handleChartDelete = useCallback(
-        (name: string | undefined) => {
-            if (isFalsyString(name)) {
-                return;
-            }
-
-            setChartSettings(currentChartSettings => (
-                currentChartSettings.filter(item => item.id !== name)
-            ));
-        },
-        [],
     );
 
     const indicatorMapping = useMemo(
@@ -251,14 +251,6 @@ function ProgramProfileCharts(props: Props) {
         [setExpandableChart],
     );
 
-    const onSetEditableChartId = useCallback(
-        (id: string | undefined) => {
-            setEditableChartId(id);
-            onAddModalVisibilityChange(true);
-        },
-        [setEditableChartId, onAddModalVisibilityChange],
-    );
-
     const handleChartCollapse = useCallback(
         () => {
             setExpandableChart(undefined);
@@ -284,7 +276,7 @@ function ProgramProfileCharts(props: Props) {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            {chartSettings.map(item => (
+            {showableChartSettings.map(item => (
                 <PolyChart
                     key={item.id}
                     className={styles.chartContainer}
@@ -292,10 +284,9 @@ function ProgramProfileCharts(props: Props) {
                     hideActions={printMode}
                     data={filteredFiveWData}
                     settings={item}
-                    onDelete={handleChartDelete}
+                    onDelete={handleAddHideableChartIds}
                     onExpand={handleChartExpand}
                     chartExpanded={expandableChart}
-                    // onSetEditableChartId={onSetEditableChartId}
                 />
             ))}
             {showAddModal && (
@@ -318,7 +309,7 @@ function ProgramProfileCharts(props: Props) {
                         chartClassName={styles.chart}
                         data={extendedFiveWList}
                         settings={expandableChartSettings}
-                        onDelete={handleChartDelete}
+                        onDelete={handleAddHideableChartIds}
                         className={styles.polyChart}
                         onExpand={handleChartExpand}
                         chartExpanded={expandableChart}
