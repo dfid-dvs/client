@@ -62,7 +62,7 @@ const staticColumnOrdering: ColumnOrderingItem[] = [
 ];
 
 interface Props {
-    programs: string[];
+    programs: number[];
 }
 
 function ProgramTable(props: Props) {

@@ -51,7 +51,7 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
                 <InputLabel
                     disabled={disabled}
                     error={!!error}
-                    className={_cs(styles.className, labelClassName)}
+                    className={_cs(styles.inputLabel, labelClassName)}
                 >
                     {label}
                 </InputLabel>

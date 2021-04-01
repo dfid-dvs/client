@@ -102,20 +102,7 @@ function Charts(props: Props) {
 
     const [showModal, setModalVisibility] = useState(false);
     const [editableChartId, setEditableChartId] = useState<string>();
-    const [hoveredChartId, setHoveredChartId] = useState<string>();
-    const onHoverChart = useCallback(
-        (id: string) => {
-            setHoveredChartId(id);
-        },
-        [setHoveredChartId],
-    );
 
-    const onLeaveChart = useCallback(
-        () => {
-            setHoveredChartId(undefined);
-        },
-        [setHoveredChartId],
-    );
     const handleModalShow = useCallback(() => {
         setModalVisibility(true);
     }, [setModalVisibility]);
