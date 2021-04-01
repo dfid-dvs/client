@@ -13,6 +13,7 @@ import MapState from '#remap/MapSource/MapState';
 import Popup from '#remap/MapTooltip';
 
 import { MultiResponse, VectorLayer, RasterLayer, MapStateItem } from '#types';
+import { FiveW } from '#views/Dashboard/types';
 
 import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
@@ -109,7 +110,6 @@ interface Props {
     bubbleMapState?: MapStateItem[];
     choroplethMapPaint?: mapboxgl.FillPaint;
     bubbleMapPaint?: mapboxgl.CirclePaint;
-    choroplethTitle?: string;
     bubbleTitle?: string;
     children?: React.ReactNode;
     hideChoropleth?: boolean;
@@ -132,6 +132,7 @@ interface Props {
     onLeave?: () => void;
     hoveredRegion?: MapRegion;
     lngLat?: mapboxgl.LngLat;
+    fiveWMapDataForHover?: FiveW[];
 }
 
 function IndicatorMap(props: Props) {
@@ -140,7 +141,6 @@ function IndicatorMap(props: Props) {
         regionLevel,
         choroplethMapState,
         bubbleMapState,
-        choroplethTitle,
         bubbleTitle,
         choroplethMapPaint,
         bubbleMapPaint,
@@ -156,6 +156,7 @@ function IndicatorMap(props: Props) {
         hoveredRegion,
         onHover,
         onLeave,
+        fiveWMapDataForHover,
     } = props;
 
     const isProvinceVisible = regionLevel === 'province';
@@ -223,17 +224,6 @@ function IndicatorMap(props: Props) {
         }];
     }, [hoveredRegion]);
 
-    const choroplethData = useMemo(() => {
-        const hoveredChoropleth = choroplethMapState?.find(c => c.id === hoveredRegion?.id);
-        if (!hoveredChoropleth) {
-            return undefined;
-        }
-        return {
-            ...hoveredChoropleth,
-            key: choroplethTitle,
-        };
-    }, [choroplethMapState, hoveredRegion, choroplethTitle]);
-
     const bubbleData = useMemo(() => {
         const hoveredBubble = bubbleMapState?.find(c => c.id === hoveredRegion?.id);
         if (!hoveredBubble) {
@@ -241,9 +231,46 @@ function IndicatorMap(props: Props) {
         }
         return {
             ...hoveredBubble,
-            key: bubbleTitle,
+            title: bubbleTitle,
         };
     }, [bubbleMapState, hoveredRegion, bubbleTitle]);
+
+    const mapDataOnHover = useMemo(
+        () => {
+            if (!fiveWMapDataForHover) {
+                return undefined;
+            }
+            const hoveredMapRegion = fiveWMapDataForHover?.find(
+                c => hoveredRegion?.code === +c.code,
+            );
+            if (!hoveredMapRegion) {
+                return undefined;
+            }
+            return [
+                {
+                    label: 'Allocated Budget (£)',
+                    value: hoveredMapRegion.allocatedBudget,
+                },
+                {
+                    label: 'Programs',
+                    value: hoveredMapRegion.programCount,
+                },
+                {
+                    label: 'Partners',
+                    value: hoveredMapRegion.partnerCount,
+                },
+                {
+                    label: 'Components',
+                    value: hoveredMapRegion.componentCount,
+                },
+                {
+                    label: 'Sectors',
+                    value: hoveredMapRegion.sectorCount,
+                },
+            ];
+        },
+        [fiveWMapDataForHover, hoveredRegion],
+    );
 
     return (
         <Map
@@ -449,18 +476,23 @@ function IndicatorMap(props: Props) {
                         <div className={styles.regionName}>
                             {hoveredRegion.name}
                         </div>
-                        {choroplethData && (
-                            <div className={styles.data}>
-                                {choroplethData.key}
-                                <Numeral
-                                    value={choroplethData.value}
-                                    className={styles.value}
-                                />
-                            </div>
-                        )}
+                        {!bubbleData && mapDataOnHover && mapDataOnHover.length > 0
+                            && mapDataOnHover.map(data => (
+                                <div
+                                    className={styles.data}
+                                    key={data.label}
+                                >
+                                    {data.label}
+                                    <Numeral
+                                        value={data.value}
+                                        className={styles.value}
+                                    />
+                                </div>
+                            ))
+                        }
                         {bubbleData && (
                             <div className={styles.data}>
-                                {bubbleData.key}
+                                {bubbleData.title}
                                 <Numeral
                                     value={bubbleData.value}
                                     className={styles.value}

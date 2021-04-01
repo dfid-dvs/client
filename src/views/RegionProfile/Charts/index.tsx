@@ -245,7 +245,7 @@ function RegionalProfileCharts(props: Props) {
                 >
                     <PolyChart
                         chartClassName={styles.chart}
-                        data={extendedPrograms}
+                        data={chartData[expandableChart]}
                         settings={expandableChartSettings}
                         onDelete={handleAddHideableChartIds}
                         className={styles.polyChart}

@@ -162,8 +162,8 @@ interface Props {
     className?: string;
 }
 
-const defaultStartDate = '2015-01-01';
-const defaultEndDate = '2021-12-31';
+const defaultStartDate = '2012-01-01';
+const defaultEndDate = '2026-12-31';
 
 const Dashboard = (props: Props) => {
     const { className } = props;
@@ -308,6 +308,7 @@ const Dashboard = (props: Props) => {
     const [
         fiveWMapStatePending,
         fiveWMapState,
+        fiveWMapDataForHover,
     ] = useMapStateForFiveW(
         regionLevel,
         markerIdList,
@@ -719,8 +720,8 @@ const Dashboard = (props: Props) => {
                                         onHover={handleMapRegionHover}
                                         onLeave={handleMapRegionLeave}
                                         hoveredRegion={hoveredRegion}
-                                        choroplethTitle={choroplethTitle}
                                         bubbleTitle={bubbleTitle}
+                                        fiveWMapDataForHover={fiveWMapDataForHover}
                                     />
                                 </React.Fragment>
                                 <DropdownMenu
