@@ -2,6 +2,7 @@ import React, { useCallback, useState, useMemo, useContext } from 'react';
 import {
     _cs,
     isDefined,
+    isFalsyString,
 } from '@togglecorp/fujs';
 import { IoMdClose } from 'react-icons/io';
 import PrintButton from '#components/PrintButton';
@@ -99,12 +100,7 @@ function ProgramProfile(props: Props) {
     ] = useState<Region & { type: RegionLevelOption } | undefined>(undefined);
     const [showAddModal, setAddModalVisibility] = useState(false);
     const [selectedProgram, setSelectedProgram] = useState<number>();
-    const handleSelectProgram = useCallback(
-        (value?: number) => {
-            setSelectedProgram(value);
-        },
-        [setSelectedProgram],
-    );
+
     const programProfileUrl = useMemo(
         () => {
             if (!selectedProgram) {
@@ -221,11 +217,6 @@ function ProgramProfile(props: Props) {
         setAddModalVisibility(true);
     }, [setAddModalVisibility]);
 
-    const handleRegionLevelChange = useCallback((newRegionLevel) => {
-        setSelectedRegionData(undefined);
-        setRegionLevel(newRegionLevel);
-    }, [setSelectedRegionData, setRegionLevel]);
-
     const currentBounds: Bbox | undefined = useMemo(() => {
         const bounds = selectedRegionData
             ?.bbox
@@ -269,22 +260,88 @@ function ProgramProfile(props: Props) {
         unsetDescriptionHidden,
     ] = useBasicToggle();
 
+    const [
+        upperDendrogramHidden,
+        setUpperDendrogramHidden,
+        unsetUpperDendrogramHidden,
+    ] = useBasicToggle();
+
+    const [
+        mapHidden,
+        setMapHidden,
+        unsetMapHidden,
+    ] = useBasicToggle();
+
+    const [
+        lowerDendrogramHidden,
+        setLowerDendrogramHidden,
+        unsetLowerDendrogramHidden,
+    ] = useBasicToggle();
+
+    const [hiddenChartIds, setHiddenChartIds] = useState<string[]>();
+
+    const handleAddHideableChartIds = useCallback(
+        (id: string | undefined) => {
+            if (isFalsyString(id)) {
+                return;
+            }
+            setHiddenChartIds((prevIds) => {
+                if (!prevIds) {
+                    return [id];
+                }
+                return [...prevIds, id];
+            });
+        },
+        [setHiddenChartIds],
+    );
+
+    const resetProfileShown = indicatorsHidden || federLevelHidden
+        || descriptionHidden || upperDendrogramHidden || lowerDendrogramHidden
+        || mapHidden || hiddenChartIds;
+
     const onResetProfile = useCallback(
         () => {
             unsetIndicatorsHidden();
             unsetFederalLevelComponentsHidden();
             unsetDescriptionHidden();
             setDescription('');
+            unsetUpperDendrogramHidden();
+            unsetLowerDendrogramHidden();
+            unsetMapHidden();
+            setHiddenChartIds(undefined);
         },
         [
             unsetIndicatorsHidden,
             unsetFederalLevelComponentsHidden,
             unsetDescriptionHidden,
             setDescription,
+            unsetUpperDendrogramHidden,
+            unsetLowerDendrogramHidden,
+            unsetMapHidden,
+            setHiddenChartIds,
         ],
     );
 
-    const resetProfileShown = indicatorsHidden || federLevelHidden || descriptionHidden;
+    const handleSelectProgram = useCallback(
+        (value?: number) => {
+            setSelectedProgram(value);
+            if (resetProfileShown) {
+                onResetProfile();
+            }
+        },
+        [setSelectedProgram, resetProfileShown, onResetProfile],
+    );
+
+    const handleRegionLevelChange = useCallback(
+        (newRegionLevel) => {
+            setSelectedRegionData(undefined);
+            setRegionLevel(newRegionLevel);
+            if (resetProfileShown) {
+                onResetProfile();
+            }
+        },
+        [setSelectedRegionData, setRegionLevel, resetProfileShown, onResetProfile],
+    );
 
     return (
         <div
@@ -346,7 +403,7 @@ function ProgramProfile(props: Props) {
                         className={styles.resetProfileButton}
                         onClick={onResetProfile}
                         disabled={printMode}
-                        variant="transparent"
+                        variant="secondary-outline"
                     >
                         Reset Profile
                     </Button>
@@ -461,10 +518,26 @@ function ProgramProfile(props: Props) {
                             </div>
                         )}
                         {/* eslint-disable-next-line max-len */}
-                        {!dataPending && partnersTreeData && partnersTreeData.length > 0 && partnersTreeDataShown && (
+                        {!dataPending && !upperDendrogramHidden && partnersTreeData && partnersTreeData.length > 0 && partnersTreeDataShown && (
                             <div className={styles.dendogramContainer}>
-                                <div className={styles.title}>
-                                    Component and implementing partners tree
+                                <div className={styles.header}>
+                                    <div className={styles.title}>
+                                        Component and implementing partners tree
+                                    </div>
+                                    <Button
+                                        onClick={setUpperDendrogramHidden}
+                                        title="Hide Dendrogram"
+                                        transparent
+                                        variant="icon"
+                                        className={_cs(
+                                            styles.button,
+                                            printMode && styles.hidden,
+                                        )}
+                                    >
+                                        <IoMdClose
+                                            className={styles.icon}
+                                        />
+                                    </Button>
                                 </div>
                                 {partnersTreeData.map(res => (
                                     <DendogramTree
@@ -485,10 +558,26 @@ function ProgramProfile(props: Props) {
                                 )}
                             />
                         )}
-                        {mapRegions && (
+                        {mapRegions && !mapHidden && (
                             <div className={styles.mapSection}>
-                                <div className={styles.title}>
-                                    Active map at program level
+                                <div className={styles.header}>
+                                    <div className={styles.title}>
+                                        Active map at program level
+                                    </div>
+                                    <Button
+                                        onClick={setMapHidden}
+                                        title="Hide Map"
+                                        transparent
+                                        variant="icon"
+                                        className={_cs(
+                                            styles.button,
+                                            printMode && styles.hidden,
+                                        )}
+                                    >
+                                        <IoMdClose
+                                            className={styles.icon}
+                                        />
+                                    </Button>
                                 </div>
                                 <ProgramProfileMap
                                     className={styles.mapContainer}
@@ -498,10 +587,26 @@ function ProgramProfile(props: Props) {
                             </div>
                         )}
                         {/* eslint-disable-next-line max-len */}
-                        {!dataPending && regionsTreeData && regionsTreeData.length > 0 && regionsTreeDataShown && (
+                        {!dataPending && !lowerDendrogramHidden && regionsTreeData && regionsTreeData.length > 0 && regionsTreeDataShown && (
                             <div className={styles.dendogramContainer}>
-                                <div className={styles.title}>
-                                    Component and regions tree
+                                <div className={styles.header}>
+                                    <div className={styles.title}>
+                                        Component and regions tree
+                                    </div>
+                                    <Button
+                                        onClick={setLowerDendrogramHidden}
+                                        title="Hide Dendrogram"
+                                        transparent
+                                        variant="icon"
+                                        className={_cs(
+                                            styles.button,
+                                            printMode && styles.hidden,
+                                        )}
+                                    >
+                                        <IoMdClose
+                                            className={styles.icon}
+                                        />
+                                    </Button>
                                 </div>
                                 {regionsTreeData.map(res => (
                                     <DendogramTree
@@ -518,6 +623,8 @@ function ProgramProfile(props: Props) {
                                 showAddModal={showAddModal}
                                 onAddModalVisibilityChange={setAddModalVisibility}
                                 selectedProgram={selectedProgram}
+                                hiddenChartIds={hiddenChartIds}
+                                handleAddHideableChartIds={handleAddHideableChartIds}
                             />
                         )}
                     </div>

@@ -97,6 +97,8 @@ interface Props {
     activeSectors: ProfileChartData[] | undefined;
     topProgramByBudget: ProfileChartData[] | undefined;
     topPartnerByBudget: ProfileChartData[] | undefined;
+    hiddenChartIds: string[] | undefined;
+    handleAddHideableChartIds: (id: string | undefined) => void;
 }
 
 function RegionalProfileCharts(props: Props) {
@@ -108,12 +110,24 @@ function RegionalProfileCharts(props: Props) {
         activeSectors,
         topProgramByBudget,
         topPartnerByBudget,
+        hiddenChartIds,
+        handleAddHideableChartIds,
     } = props;
     const [
         chartSettings,
         setChartSettings,
     ] = useState<ChartSettings<ExtendedProgram | ProfileChartData>[]>(
         defaultChartSettings,
+    );
+
+    const showableChartSettings = useMemo(
+        () => {
+            if (!hiddenChartIds) {
+                return chartSettings;
+            }
+            return chartSettings.filter(c => !hiddenChartIds.includes(c.id));
+        },
+        [chartSettings, hiddenChartIds],
     );
 
     const [editableChartId, setEditableChartId] = useState<string>();
@@ -139,19 +153,6 @@ function RegionalProfileCharts(props: Props) {
             setChartSettings(tmpChartSettings);
         },
         [editableChartId, chartSettings],
-    );
-
-    const handleChartDelete = useCallback(
-        (name: string | undefined) => {
-            if (isFalsyString(name)) {
-                return;
-            }
-
-            setChartSettings(currentChartSettings => (
-                currentChartSettings.filter(item => item.id !== name)
-            ));
-        },
-        [setChartSettings],
     );
 
     const [programsPending, extendedPrograms] = useExtendedPrograms([]);
@@ -212,7 +213,7 @@ function RegionalProfileCharts(props: Props) {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            {chartSettings.map(item => (
+            {showableChartSettings.map(item => (
                 <PolyChart
                     key={item.id}
                     className={styles.chartContainer}
@@ -220,7 +221,7 @@ function RegionalProfileCharts(props: Props) {
                     hideActions={printMode}
                     data={chartData[item.id]}
                     settings={item}
-                    onDelete={handleChartDelete}
+                    onDelete={handleAddHideableChartIds}
                     onExpand={handleChartExpand}
                     chartExpanded={expandableChart}
                     // onSetEditableChartId={onSetEditableChartId}
@@ -246,7 +247,7 @@ function RegionalProfileCharts(props: Props) {
                         chartClassName={styles.chart}
                         data={extendedPrograms}
                         settings={expandableChartSettings}
-                        onDelete={handleChartDelete}
+                        onDelete={handleAddHideableChartIds}
                         className={styles.polyChart}
                         onExpand={handleChartExpand}
                         chartExpanded={expandableChart}

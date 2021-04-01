@@ -132,13 +132,38 @@
             .dendogram-container {
                 margin-top: var(--spacing-ultra-large);
 
-                .title {
-                    padding: var(--spacing-small-medium) 0;
-                    text-transform: none;
-                    letter-spacing: unset;
-                    color: var(--color-text);
-                    font-size: var(--font-size-extra-large);
-                    font-weight: var(--font-weight-bold);
+                .header {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+
+                    .title {
+                        padding: var(--spacing-small-medium) 0;
+                        font-size: var(--font-size-extra-large);
+                        font-weight: var(--font-weight-bold);
+                    }
+
+                    .button {
+                        display: flex;
+                        width: 36px;
+                        height: 36px;
+                
+                        .icon {
+                            opacity: 0;
+                            color: var(--color-text);
+                            font-size: var(--font-size-large-medium);
+                        }
+                    }
+                }
+            
+                &:hover {
+                    .header {
+                        .button {
+                            .icon {
+                                opacity: 1;
+                            }
+                        }
+                    }
                 }
             }
             .description {

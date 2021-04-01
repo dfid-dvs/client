@@ -114,7 +114,7 @@ const tourConfig = [
     },
     {
         selector: '[data-tut="nepal__map"]',
-        content: 'You can view map representation of data here based on filters and map options selected. Please hover or close on map to observe its features.',
+        content: 'You can view map representation of data here based on filters and map options selected. Please hover or click on map to observe its features.',
         position: 'left',
     },
 ];
@@ -588,6 +588,9 @@ const Dashboard = (props: Props) => {
     const [startDate, setStartDate] = useState<string>(defaultStartDate);
     const [endDate, setEndDate] = useState<string>(defaultEndDate);
 
+    const pending = mapLayerListPending || indicatorListPending
+        || indicatorMapStatePending || fiveWMapStatePending;
+
     return (
         <div
             className={_cs(
@@ -596,7 +599,7 @@ const Dashboard = (props: Props) => {
                 printMode && styles.printMode,
             )}
         >
-            {!demoHidden && (
+            {!demoHidden && !pending && (
                 <Tour
                     steps={tourConfig}
                     isOpen
