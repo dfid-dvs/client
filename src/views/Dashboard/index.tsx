@@ -18,7 +18,6 @@ import IndicatorMap from '#components/IndicatorMap';
 import RasterLegend from '#components/RasterLegend';
 import VectorLegend from '#components/VectorLegend';
 import SingleRegionSelect from '#components/SingleRegionSelect';
-import Label from '#components/Label';
 import Portal from '#components/Portal';
 import DropdownMenu from '#components/DropdownMenu';
 import PrintButton from '#components/PrintButton';
@@ -306,9 +305,6 @@ const Dashboard = (props: Props) => {
     const [partnerIdList] = splitCombinedSelectors(partners, 'subpartner');
     const [sectorIdList, subsectorIdList] = splitCombinedSelectors(sectors, 'subsector');
 
-    const [startDate, setStartDate] = useState<string>(defaultStartDate);
-    const [endDate, setEndDate] = useState<string>(defaultEndDate);
-
     const [
         fiveWMapStatePending,
         fiveWMapState,
@@ -589,6 +585,9 @@ const Dashboard = (props: Props) => {
     );
     const demoHidden = useMemo(() => toured === 'true', [toured]);
 
+    const [startDate, setStartDate] = useState<string>(defaultStartDate);
+    const [endDate, setEndDate] = useState<string>(defaultEndDate);
+
     return (
         <div
             className={_cs(
@@ -628,6 +627,7 @@ const Dashboard = (props: Props) => {
                     isMinimized={sideContentMinimized}
                     startDate={startDate}
                     endDate={endDate}
+                    dataExplored={dataExplored}
                 />
             </aside>
             <main className={styles.mainContent}>
@@ -673,9 +673,6 @@ const Dashboard = (props: Props) => {
                                 className={styles.header}
                                 data-tut="view__by"
                             >
-                                <Label>
-                                    View by
-                                </Label>
                                 <SingleRegionSelect
                                     onRegionLevelChange={handleRegionLevelChange}
                                     regionLevel={regionLevel}
@@ -684,11 +681,15 @@ const Dashboard = (props: Props) => {
                                     disabled={printMode}
                                     showDropDownIcon
                                     selectInputClassName={styles.demoModeRegionSelect}
+                                    segmentLabel="View by"
+                                    segmentInputClassName={styles.segmentInput}
+                                    segmentLabelClassName={styles.label}
                                 />
                                 {demoHidden && (
                                     <Button
                                         onClick={handleResetTour}
                                         variant="secondary-outline"
+                                        className={styles.demoButton}
                                     >
                                         View Demo
                                     </Button>

@@ -110,10 +110,26 @@
         .header {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             border-top: 1px solid var(--color-grey-shade-3);
             border-bottom: 1px solid var(--color-grey-shade-3);
             flex-shrink: 0;
             padding: calc(var(--spacing-small-medium) - 2 * var(--spacing-super-small)) var(--spacing-medium);
+
+            .segment-input {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+    
+            .label {
+                margin-right: var(--spacing-medium);
+            }
+
+            .demo-button {
+                margin-right: var(--spacing-small-medium);
+            }
         }
 
         .demo-mode-region-select {

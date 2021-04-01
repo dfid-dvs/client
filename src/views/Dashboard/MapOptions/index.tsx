@@ -106,7 +106,8 @@ export default function MapOptions(props: MapOptionsProps) {
                 optionKeySelector={layerKeySelector}
                 optionLabelSelector={layerLabelSelector}
             />
-            <SelectInput
+            {/* NOTE: Hidden as per clients's request. */}
+            {/* <SelectInput
                 placeholder="Background Layer"
                 className={styles.inputItem}
                 disabled={mapLayerListPending}
@@ -115,7 +116,7 @@ export default function MapOptions(props: MapOptionsProps) {
                 value={selectedRasterLayer}
                 optionKeySelector={layerKeySelector}
                 optionLabelSelector={layerLabelSelector}
-            />
+            /> */}
         </div>
     );
 }

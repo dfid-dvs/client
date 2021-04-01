@@ -6,6 +6,7 @@ interface FiltersPanelProps {
     isMinimized?: boolean;
     startDate?: string;
     endDate?: string;
+    dataExplored?: boolean;
 }
 export default function FiltersPanel(props: FiltersPanelProps) {
     const {
@@ -13,6 +14,7 @@ export default function FiltersPanel(props: FiltersPanelProps) {
         isMinimized,
         startDate,
         endDate,
+        dataExplored,
     } = props;
 
     return (
@@ -21,6 +23,7 @@ export default function FiltersPanel(props: FiltersPanelProps) {
             isMinimized={isMinimized}
             startDate={startDate}
             endDate={endDate}
+            dataExplored={dataExplored}
         />
     );
 }

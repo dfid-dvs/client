@@ -12,6 +12,14 @@ const userDefinedSchemas: Schema[] = [
         },
     },
     {
+        name: 'base-entity-with-code',
+        fields: {
+            id: { type: 'number', required: true },
+            name: { type: 'string', required: true },
+            code: { type: 'string', required: true },
+        },
+    },
+    {
         name: 'sankey-data',
         fields: {
             minThreshold: { type: 'number' },
@@ -254,7 +262,7 @@ const userDefinedSchemas: Schema[] = [
                         markerCategory: { type: 'array.base-entity', required: true },
                         markerValue: { type: 'array.base-entity', required: true },
 
-                        component: { type: 'array.base-entity', required: true },
+                        component: { type: 'array.base-entity-with-code', required: true },
 
                         partner: { type: 'array.base-entity', required: true },
                         startDate: { type: 'string' },
@@ -278,7 +286,7 @@ const userDefinedSchemas: Schema[] = [
                     fields: {
                         id: { type: 'uint', required: true },
                         name: { type: 'string', required: true },
-                        code: { type: 'string', required: true },
+                        code: { type: 'number', required: true },
 
                         description: { type: 'string' },
                         typeOfInstitution: { type: 'string' },

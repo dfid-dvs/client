@@ -77,6 +77,7 @@ interface Props {
     isMinimized?: boolean;
     startDate?: string;
     endDate?: string;
+    dataExplored?: boolean;
 }
 function ProgramSelector(props: Props) {
     const {
@@ -84,6 +85,7 @@ function ProgramSelector(props: Props) {
         isMinimized,
         startDate,
         endDate,
+        dataExplored,
     } = props;
     const {
         markers: selectedMarker,
@@ -103,9 +105,9 @@ function ProgramSelector(props: Props) {
 
     const programUrlParams = p({
         // eslint-disable-next-line @typescript-eslint/camelcase
-        start_date: startDate,
+        start_date: dataExplored ? undefined : startDate,
         // eslint-disable-next-line @typescript-eslint/camelcase
-        end_date: endDate,
+        end_date: dataExplored ? undefined : endDate,
     });
 
     const programListGetUrl = programUrlParams

@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { _cs } from '@togglecorp/fujs';
+import { unique, _cs } from '@togglecorp/fujs';
 
 import DomainContext from '#components/DomainContext';
 import SegmentInput from '#components/SegmentInput';
@@ -38,6 +38,9 @@ function ProgramDetails(props: Props) {
     } = useContext<DomainContextProps>(DomainContext);
 
     const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('charts');
+    const programIdList = unique(
+        programs.filter(item => item.startsWith('program')).map(item => Number(item.split('-')[1])),
+    );
 
     return (
         <PopupPage
@@ -66,16 +69,16 @@ function ProgramDetails(props: Props) {
             headerClassName={styles.header}
         >
             {selectedTab === 'table' && (
-                <Table programs={programs} />
+                <Table programs={programIdList} />
             )}
             {selectedTab === 'charts' && (
                 <Charts
-                    programs={programs}
+                    programs={programIdList}
                 />
             )}
             {selectedTab === 'sankey' && (
                 <Sankey
-                    programs={programs}
+                    programs={programIdList}
                 />
             )}
         </PopupPage>
