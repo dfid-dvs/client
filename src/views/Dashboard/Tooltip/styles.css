@@ -126,6 +126,33 @@
                 }
             }
 
+            .sectors {
+                padding: var(--spacing-medium) var(--spacing-large);
+
+                .sectors-header {
+                    padding: var(--spacing-extra-small) 0;
+                    text-transform: uppercase;
+                    letter-spacing: 0.16em;
+                    color: var(--color-accent);
+                    font-weight: var(--font-weight-bold);
+                }
+
+                .sector-list {
+
+                    .sector-item {
+                        display: flex;
+                        align-items: flex-start;
+                        padding: var(--spacing-extra-small) var(--spacing-small);
+
+                        &:before {
+                            display: block;
+                            flex-shrink: 0;
+                            padding-right: var(--spacing-medium);
+                            content: '●';
+                        }
+                    }
+                }
+            }
             .components {
                 .components-header {
                     padding: var(--spacing-small) var(--spacing-large);

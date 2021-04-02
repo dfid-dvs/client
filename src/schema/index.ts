@@ -589,6 +589,16 @@ const userDefinedSchemas: Schema[] = [
                         id: { type: 'number', required: true },
                         program: { type: 'string', required: true },
                         programBudget: { type: 'number', required: true },
+                        sector: {
+                            arrayType: {
+                                name: 'sector',
+                                fields: {
+                                    id: { type: 'number', required: true },
+                                    sector: { type: 'string', required: true },
+                                    subSector: { type: 'string', required: true },
+                                },
+                            },
+                        },
                         markers: {
                             arrayType: {
                                 name: 'marker',

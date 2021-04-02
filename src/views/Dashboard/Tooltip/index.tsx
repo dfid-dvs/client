@@ -58,6 +58,7 @@ interface Region {
 interface Sector {
     id: number;
     sector: string;
+    subSector: string;
 }
 
 interface Partner {
@@ -79,6 +80,7 @@ interface Program {
     program: string;
     programBudget: number;
     components: Component[];
+    sector: Sector[];
 }
 
 interface PopupData {
@@ -168,7 +170,25 @@ const Tooltip = (props: Props) => {
         popupDataResponse,
     ] = useRequest<PopupData>(popupDataUrl, 'pop-up');
 
-    const details = popupDataResponse;
+    const details = useMemo(
+        () => {
+            if (!popupDataResponse) {
+                return undefined;
+            }
+            if (!popupDataResponse.programs) {
+                return popupDataResponse;
+            }
+            const detailsWithUniqueSectors = popupDataResponse.programs.map(program => ({
+                ...program,
+                uniqueSector: unique(program.sector, item => item.sector),
+            }));
+            return {
+                ...popupDataResponse,
+                programs: detailsWithUniqueSectors,
+            };
+        },
+        [popupDataResponse],
+    );
 
     return (
         <div className={_cs(className, styles.tooltip)}>
@@ -238,6 +258,26 @@ const Tooltip = (props: Props) => {
                                         )}
                                     />
                                 </div>
+                            </div>
+                        </div>
+                        <div className={styles.sectors}>
+                            {program?.sector?.length > 0 && (
+                                <h4 className={styles.sectorsHeader}>
+                                    Sectors
+                                </h4>
+                            )}
+                            <div className={styles.sectorList}>
+                                {(unique(
+                                    program.sector,
+                                    d => d.sector,
+                                )?.map(sector => (
+                                    <div
+                                        key={sector.id}
+                                        className={styles.sectorItem}
+                                    >
+                                        <Badge title={sector.sector} />
+                                    </div>
+                                )))}
                             </div>
                         </div>
                         <div className={styles.components}>
