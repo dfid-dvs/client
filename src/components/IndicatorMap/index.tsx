@@ -295,7 +295,7 @@ function IndicatorMap(props: Props) {
                 sourceKey="nepal"
                 sourceOptions={{
                     type: 'vector',
-                    url: 'mapbox://togglecorp.2p8uqg5e',
+                    url: 'mapbox://togglecorp.9vc79z7w',
                 }}
             >
                 <MapLayer
@@ -388,7 +388,7 @@ function IndicatorMap(props: Props) {
                 sourceKey="nepal-centroids"
                 sourceOptions={{
                     type: 'vector',
-                    url: 'mapbox://togglecorp.4eqzulj8',
+                    url: 'mapbox://togglecorp.1bxzi3vk',
                 }}
             >
                 <MapLayer
