@@ -1,5 +1,6 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
+import { MdInfoOutline } from 'react-icons/md';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
@@ -71,6 +72,8 @@ function Summary(props: SummaryProps) {
         summaryPending,
         summary,
     ] = useRequest<SummaryInfo>(summaryUrl, 'fivew-summary');
+
+    const info = 'This is summary section';
     return (
         <div className={_cs(styles.summary, className)}>
             {summaryPending && (
@@ -78,6 +81,12 @@ function Summary(props: SummaryProps) {
                     <LoadingAnimation />
                 </Backdrop>
             )}
+            <div className={styles.info}>
+                <MdInfoOutline fontSize={18} />
+                <em>
+                    {info}
+                </em>
+            </div>
             <SummaryItem
                 className={styles.summaryItem}
                 label="Allocated Budget (£)"
