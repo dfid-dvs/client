@@ -367,7 +367,7 @@ function Charts(props: Props) {
             tmpChartSettings.splice(chartIndex, 1, settings);
             setChartSettings(tmpChartSettings);
         },
-        [editableChartId],
+        [editableChartId, setChartSettings],
     );
 
     const handleChartDelete = useCallback(

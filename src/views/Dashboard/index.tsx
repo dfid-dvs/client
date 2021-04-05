@@ -85,15 +85,15 @@ type AdminLevel = Province | District | Municipality | undefined;
 const tourConfig = [
     {
         selector: '[data-tut=""]',
-        content: 'Okay lets get started ! This is overview',
+        content: 'Welcome to British Embassy Kathmandu! Let\'s get started.',
     },
     {
         selector: '[data-tut="left__filter"]',
-        content: 'Please feel play around with this dynamic panel. You can filter data by Program, Components, Partners, Sectors, Sub-sectors, Markers, and Sub-markers.',
+        content: 'Please feel free to play around with this dynamic panel. You can filter data by Program, Components, Partners, Sectors, Sub-sectors, Markers, and Sub-markers.',
     },
     {
         selector: '[data-tut="view__by"]',
-        content: 'Also, you can filter data by region - Province, District and Municipality.',
+        content: 'The data can be filtered by region as well ( Province, District and Municipality. )',
     },
     {
         selector: '[data-tut="map__options"]',
@@ -106,11 +106,11 @@ const tourConfig = [
     },
     {
         selector: '[data-tut="top__summary"]',
-        content: 'Summary is shown here',
+        content: 'This section presents overally summary based on the filters selected in the left panel',
     },
     {
         selector: '[data-tut="indicator__graph"]',
-        content: 'Indicators legend is shown here',
+        content: 'The indicator legends are shown here. This changes according to the map options selected and data reflected in the map.',
     },
     {
         selector: '[data-tut="nepal__map"]',
@@ -605,6 +605,7 @@ const Dashboard = (props: Props) => {
                     steps={tourConfig}
                     isOpen
                     onRequestClose={handleTourComplete}
+                    closeWithMask={false}
                 />
             )}
             <aside

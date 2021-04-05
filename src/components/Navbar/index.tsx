@@ -39,7 +39,7 @@ const Navbar = (props: Props) => {
                 <img
                     className={styles.logo}
                     src={navBarLogo}
-                    alt="DFID"
+                    alt="British Embassy Kathmandu"
                 />
             </div>
             <div className={styles.actions}>

@@ -38,7 +38,7 @@ function PrintDetailsBar(props: Props) {
                 <img
                     className={styles.logo}
                     src={dfidLogo}
-                    alt="DFID"
+                    alt="British Embassy Kathmandu"
                 />
             </div>
         </div>

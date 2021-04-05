@@ -12,4 +12,11 @@
         display: flex;
         flex-direction: column;
     }
+
+    .info {
+        display: flex;
+        align-items: center;
+        padding: var(--spacing-small-medium) calc(var(--spacing-medium) - var(--spacing-small));
+        font-size: var(--font-size-caption);
+    }
 }

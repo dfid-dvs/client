@@ -109,16 +109,26 @@ function Charts(props: Props) {
 
     const handleModalClose = useCallback(() => {
         setModalVisibility(false);
-    }, [setModalVisibility]);
+        setEditableChartId(undefined);
+    }, [setModalVisibility, setEditableChartId]);
 
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedProgram>) => {
-            setChartSettings(currentChartSettings => [
-                ...currentChartSettings,
-                settings,
-            ]);
+            if (!editableChartId) {
+                setChartSettings(currentChartSettings => [
+                    ...currentChartSettings,
+                    settings,
+                ]);
+            }
+            const tmpChartSettings = [...chartSettings];
+            const chartIndex = tmpChartSettings.findIndex(c => c.id === editableChartId);
+            if (chartIndex <= -1) {
+                return;
+            }
+            tmpChartSettings.splice(chartIndex, 1, settings);
+            setChartSettings(tmpChartSettings);
         },
-        [],
+        [editableChartId, chartSettings, setChartSettings],
     );
 
     const handleChartDelete = useCallback(
@@ -131,7 +141,7 @@ function Charts(props: Props) {
                 currentChartSettings.filter(item => item.id !== name)
             ));
         },
-        [],
+        [setChartSettings],
     );
 
     const [expandableChart, setExpandableChart] = useState<string>();
