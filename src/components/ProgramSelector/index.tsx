@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useContext, useCallback } from 'react';
-import { _cs, isDefined, intersection, unique } from '@togglecorp/fujs';
+import { _cs, isDefined, intersection, unique, caseInsensitiveSubmatch } from '@togglecorp/fujs';
 import { MdAssignment, MdBusiness, MdPeople, MdRefresh } from 'react-icons/md';
 import { FaShapes } from 'react-icons/fa';
 
@@ -70,6 +70,14 @@ interface TreeItem<T = string> {
     name: string;
 }
 
+interface ProgramComponent {
+    id: number;
+    name: string;
+    sector: number[];
+    subSector: number[];
+    code: string;
+}
+
 type ExpanedFilter = 'programs' | 'partners' | 'sectors' | 'markers';
 
 interface Props {
@@ -118,6 +126,13 @@ function ProgramSelector(props: Props) {
         programListPending,
         programListResponse,
     ] = useRequest<MultiResponse<Program>>(programListGetUrl, 'program-list');
+
+    const componentListGetUrl = `${apiEndPoint}/core/component/`;
+    const [
+        componentListPending,
+        componentListResponse,
+    ] = useRequest<MultiResponse<ProgramComponent>>(componentListGetUrl, 'component-list');
+
     const partnerListGetUrl = `${apiEndPoint}/core/partner/`;
     const [
         partnerListPending,
@@ -168,13 +183,6 @@ function ProgramSelector(props: Props) {
         setMarkerSearchText,
     ] = useState('');
 
-    const rawPartnerOptions = partnerListResponse?.results;
-    const rawSectorOptions = sectorListResponse?.results;
-    const rawSubSectorOptions = subSectorListResponse?.results;
-    const rawMarkerOptions = markerListResponse?.results;
-    const rawSubMarkerOptions = subMarkerListResponse?.results;
-    const rawProgramOptions = programListResponse?.results;
-
     const selectedSectorOriginal = unique(
         selectedSector.filter(item => item.startsWith('sector')).map(item => Number(item.split('-')[1])),
     );
@@ -196,6 +204,30 @@ function ProgramSelector(props: Props) {
     const selectedComponentOriginal = unique(
         selectedProgram.filter(item => item.startsWith('subprogram')).map(item => item.replace('subprogram-', '')),
     );
+    const rawPartnerOptions = partnerListResponse?.results;
+    const rawSectorOptions = sectorListResponse?.results;
+    const rawSubSectorOptions = subSectorListResponse?.results;
+    const rawMarkerOptions = markerListResponse?.results;
+    const rawSubMarkerOptions = subMarkerListResponse?.results;
+    const rawProgramOptionsWithoutComponentSectors = programListResponse?.results;
+    const rawComponentOptions = componentListResponse?.results;
+    const rawProgramOptions = useMemo(() => {
+        if (!rawComponentOptions) {
+            return undefined;
+        }
+        if (!rawProgramOptionsWithoutComponentSectors) {
+            return undefined;
+        }
+        const programs = rawProgramOptionsWithoutComponentSectors.map((prog) => {
+            const progCompIds = prog.component.map(pc => pc.id);
+            const comp = rawComponentOptions.filter(rc => progCompIds.includes(rc.id));
+            return {
+                ...prog,
+                component: comp,
+            };
+        });
+        return programs;
+    }, [rawComponentOptions, rawProgramOptionsWithoutComponentSectors]);
 
     const applicableProgramOptions = rawProgramOptions?.filter((item) => {
         if (selectedComponentOriginal.length > 0) {
@@ -288,14 +320,48 @@ function ProgramSelector(props: Props) {
                 return mappedPartnerList;
             }
 
-            const searchText = partnerSearchText.toLowerCase();
-            return mappedPartnerList?.filter(item => item.name.toLowerCase().includes(searchText));
+            return mappedPartnerList?.filter(
+                item => caseInsensitiveSubmatch(item.name, partnerSearchText),
+            );
         },
         [rawPartnerOptions, appliedProgramOptions, partnerSearchText],
     );
 
     const sectorOptions: TreeItem[] | undefined = useMemo(
         () => {
+            if (selectedComponentOriginal.length > 0) {
+                if (!appliedProgramOptions) {
+                    return undefined;
+                }
+                const componentAssociatedProgram = appliedProgramOptions[0];
+                if (!componentAssociatedProgram) {
+                    return undefined;
+                }
+                const { component } = componentAssociatedProgram;
+                const selectedComponents = component.filter(
+                    c => selectedComponentOriginal.includes(c.code),
+                );
+
+                const componentSectorIds = selectedComponents.map(comp => comp.sector).flat();
+                const componentSectors = rawSectorOptions?.filter(
+                    rso => componentSectorIds.includes(rso.id),
+                );
+                if (!componentSectors) {
+                    return undefined;
+                }
+                const associatedComponentSectors = componentSectors.map(({ id, name }) => ({
+                    key: `sector-${id}`,
+                    parentKey: undefined,
+                    parentId: undefined,
+                    name,
+                    id,
+                }));
+                const searchedSectors = associatedComponentSectors?.filter(
+                    item => caseInsensitiveSubmatch(item.name, sectorSearchText),
+                );
+                return searchedSectors;
+            }
+
             const sectorSet = new Set(
                 appliedProgramOptions
                     ?.map(item => item.sector)
@@ -316,15 +382,52 @@ function ProgramSelector(props: Props) {
             if (!sectorSearchText) {
                 return mappedSectorList;
             }
-
-            const searchText = sectorSearchText.toLowerCase();
-            return mappedSectorList?.filter(item => item.name.toLowerCase().includes(searchText));
+            const searchedSectors = mappedSectorList?.filter(
+                item => caseInsensitiveSubmatch(item.name, sectorSearchText),
+            );
+            return searchedSectors;
         },
-        [rawSectorOptions, sectorSearchText, appliedProgramOptions],
+        [
+            rawSectorOptions,
+            sectorSearchText,
+            appliedProgramOptions,
+            selectedComponentOriginal,
+        ],
     );
     const subSectorOptions: TreeItem[] | undefined = useMemo(
         () => {
-            const searchText = sectorSearchText.toLowerCase();
+            if (selectedComponentOriginal.length > 0) {
+                if (!appliedProgramOptions) {
+                    return undefined;
+                }
+                const componentAssociatedProgram = appliedProgramOptions[0];
+                if (!componentAssociatedProgram) {
+                    return undefined;
+                }
+                const { component } = componentAssociatedProgram;
+                const selectedComponents = component.filter(
+                    c => selectedComponentOriginal.includes(c.code),
+                );
+
+                const componentSubSectorIds = selectedComponents.map(comp => comp.subSector).flat();
+                const componentSubSectors = rawSubSectorOptions?.filter(
+                    rso => componentSubSectorIds.includes(rso.id),
+                );
+                if (!componentSubSectors) {
+                    return undefined;
+                }
+                const associatedComponentSubSectors = componentSubSectors.map(
+                    ({ id, sectorId, name }) => ({
+                        key: `subsector-${id}`,
+                        parentKey: `sector-${sectorId}`,
+                        parentId: undefined,
+                        name,
+                        id,
+                    }),
+                );
+                return associatedComponentSubSectors;
+            }
+
             const subSectorSet = new Set(
                 appliedProgramOptions
                     ?.map(item => item.subSector)
@@ -339,12 +442,18 @@ function ProgramSelector(props: Props) {
                     parentId: sectorId,
                     name,
                     id,
-                }))
-                .filter(item => subSectorSet.has(item.id))
-                .filter(item => item.name.toLowerCase().includes(searchText));
+                }),
+            ).filter(item => subSectorSet.has(item.id))
+                .filter(item => caseInsensitiveSubmatch(item.name, sectorSearchText));
         },
-        [rawSubSectorOptions, appliedProgramOptions, sectorSearchText],
+        [
+            rawSubSectorOptions,
+            appliedProgramOptions,
+            sectorSearchText,
+            selectedComponentOriginal,
+        ],
     );
+
     const combinedSectorOptions = useMemo(
         () => join(sectorOptions, subSectorOptions),
         [sectorOptions, subSectorOptions],
@@ -371,8 +480,9 @@ function ProgramSelector(props: Props) {
             if (!markerSearchText) {
                 return mappedMarkerList;
             }
-            const searchText = markerSearchText.toLowerCase();
-            return mappedMarkerList?.filter(item => item.name.toLowerCase().includes(searchText));
+            return mappedMarkerList?.filter(
+                item => caseInsensitiveSubmatch(item.name, markerSearchText),
+            );
         },
         [rawMarkerOptions, markerSearchText, appliedProgramOptions],
     );
@@ -384,7 +494,6 @@ function ProgramSelector(props: Props) {
                     .flat()
                     .map(item => item?.id),
             );
-            const searchText = markerSearchText.toLowerCase();
             return rawSubMarkerOptions
                 ?.map(({ id, markerCategoryId, value }) => ({
                     key: `submarker-${id}`,
@@ -394,7 +503,7 @@ function ProgramSelector(props: Props) {
                     id,
                 }))
                 .filter(item => subMarkerSet.has(item.id))
-                .filter(item => item.name.toLowerCase().includes(searchText));
+                .filter(item => caseInsensitiveSubmatch(item.name, markerSearchText));
         },
         [rawSubMarkerOptions, appliedProgramOptions, markerSearchText],
     );
@@ -417,15 +526,72 @@ function ProgramSelector(props: Props) {
                 return programList;
             }
 
-            const searchText = programSearchText.toLowerCase();
-            return programList?.filter(item => item.name.toLowerCase().includes(searchText));
+            return programList?.filter(
+                item => caseInsensitiveSubmatch(item.name, programSearchText),
+            );
         },
-        [applicableProgramOptions, programSearchText],
+        [
+            applicableProgramOptions,
+            programSearchText,
+        ],
     );
     const subProgramOptions: TreeItem[] | undefined = useMemo(
         () => {
-            const searchText = programSearchText.toLowerCase();
-            const programList = applicableProgramOptions?.map(program => (
+            if (!applicableProgramOptions) {
+                return undefined;
+            }
+            if (selectedSectorOriginal.length <= 0 && selectedSubSectorOriginal.length <= 0) {
+                const programList = applicableProgramOptions?.map(program => (
+                    program.component.map((item => ({
+                        key: `subprogram-${item.code}`,
+                        parentKey: `program-${program.id}`,
+                        parentId: program.id,
+                        name: item.name,
+                        id: item.id,
+                    })))))
+                    .flat()
+                    .filter(isDefined)
+                    .filter(item => caseInsensitiveSubmatch(item.name, programSearchText));
+                return programList;
+            }
+
+            const combinedProgramListWithComponents = applicableProgramOptions.map((prog) => {
+                const compWithSectors = prog.component.map((comp) => {
+                    const commonSectIds = Array.from(intersection(
+                        new Set(comp.sector),
+                        new Set(selectedSectorOriginal),
+                    ));
+                    if (commonSectIds.length > 0) {
+                        return comp;
+                    }
+                    return undefined;
+                }).filter(isDefined);
+
+                const compWithSubSectors = prog.component.map((comp) => {
+                    const commonSubSectIds = Array.from(intersection(
+                        new Set(comp.subSector),
+                        new Set(selectedSubSectorOriginal),
+                    ));
+                    if (commonSubSectIds.length > 0) {
+                        return comp;
+                    }
+                    return undefined;
+                }).filter(isDefined);
+
+                const selectedSubSectors = prog.component.filter(
+                    c => selectedComponentOriginal.includes(c.code),
+                );
+                const combinedComps = unique(
+                    [...compWithSectors, ...compWithSubSectors, ...selectedSubSectors],
+                    comp => comp.code,
+                );
+                return {
+                    ...prog,
+                    component: combinedComps,
+                };
+            });
+
+            return combinedProgramListWithComponents.map(program => (
                 program.component.map((item => ({
                     key: `subprogram-${item.code}`,
                     parentKey: `program-${program.id}`,
@@ -435,11 +601,17 @@ function ProgramSelector(props: Props) {
                 })))))
                 .flat()
                 .filter(isDefined)
-                .filter(item => item.name.toLowerCase().includes(searchText));
-            return programList;
+                .filter(item => caseInsensitiveSubmatch(item.name, programSearchText));
         },
-        [applicableProgramOptions, programSearchText],
+        [
+            applicableProgramOptions,
+            programSearchText,
+            selectedSectorOriginal,
+            selectedSubSectorOriginal,
+            selectedComponentOriginal,
+        ],
     );
+
     const combinedProgramOptions = useMemo(
         () => join(programOptions, subProgramOptions),
         [programOptions, subProgramOptions],
@@ -448,6 +620,7 @@ function ProgramSelector(props: Props) {
     // eslint-disable-next-line max-len
     const loading = (
         programListPending
+        || componentListPending
         || partnerListPending
         || markerListPending
         || subMarkerListPending
