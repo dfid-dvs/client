@@ -112,9 +112,9 @@ function ProgramSelector(props: Props) {
     ] = useState<ExpanedFilter[]>(['markers', 'programs', 'partners', 'sectors']);
 
     const programUrlParams = p({
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line camelcase
         start_date: dataExplored ? undefined : startDate,
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line camelcase
         end_date: dataExplored ? undefined : endDate,
     });
 

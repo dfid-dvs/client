@@ -8,9 +8,6 @@ import CircularDependencyPlugin from 'circular-dependency-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import GitRevisionPlugin from 'git-revision-webpack-plugin';
 import StylishPlugin from 'eslint/lib/cli-engine/formatters/stylish';
-import postcssPresetEnv from 'postcss-preset-env';
-import postcssNested from 'postcss-nested';
-import postcssNormalize from 'postcss-normalize';
 import StyleLintPlugin from 'stylelint-webpack-plugin';
 
 import { config } from 'dotenv';
@@ -35,9 +32,9 @@ const appFaviconImage = path.resolve(appBase, 'public/favicon.png');
 
 const PUBLIC_PATH = '/';
 
-module.exports = (env) => {
+const localConfig = (env): webpack.Configuration => {
     const ENV_VARS = {
-        ...dotenv.pared,
+        ...dotenv.parsed,
         ...getEnvVariables(env),
         REACT_APP_VERSION: JSON.stringify(gitRevisionPlugin.version()),
         REACT_APP_COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
@@ -62,22 +59,10 @@ module.exports = (env) => {
 
         mode: 'development',
 
-        devtool: 'cheap-module-eval-source-map',
-
-        node: {
-            fs: 'empty',
-        },
+        devtool: 'cheap-module-source-map',
 
         performance: {
             hints: 'warning',
-        },
-
-        stats: {
-            assets: true,
-            colors: true,
-            errors: true,
-            errorDetails: true,
-            hash: true,
         },
 
         devServer: {
@@ -121,7 +106,7 @@ module.exports = (env) => {
                         {
                             loader: require.resolve('html-loader'),
                             options: {
-                                attrs: [':data-src'],
+                                // attrs: [':data-src'],
                             },
                         },
                     ],
@@ -138,20 +123,21 @@ module.exports = (env) => {
                                 importLoaders: 1,
                                 modules: {
                                     localIdentName: '[name]_[local]_[hash:base64]',
+                                    exportLocalsConvention: 'camelCaseOnly',
                                 },
-                                localsConvention: 'camelCaseOnly',
                                 sourceMap: true,
                             },
                         },
                         {
                             loader: require.resolve('postcss-loader'),
                             options: {
-                                ident: 'postcss',
-                                plugins: () => [
-                                    postcssPresetEnv(),
-                                    postcssNested(),
-                                    postcssNormalize(),
-                                ],
+                                postcssOptions: {
+                                    plugins: [
+                                        'postcss-preset-env',
+                                        'postcss-nested',
+                                        'postcss-normalize',
+                                    ],
+                                },
                                 sourceMap: true,
                             },
                         },
@@ -230,3 +216,4 @@ module.exports = (env) => {
         ],
     };
 };
+export default [localConfig];

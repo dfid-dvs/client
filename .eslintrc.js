@@ -100,6 +100,15 @@ module.exports = {
         '@typescript-eslint/no-empty-interface': 0,
         '@typescript-eslint/explicit-function-return-type': 0,
 
+        // note you must disable the base rule as it can report incorrect errors
+        'no-use-before-define': 'off',
+        '@typescript-eslint/no-use-before-define': ['error'],
+
+        // note you must disable the base rule as it can report incorrect errors
+        'no-unused-vars': 'off',
+        '@typescript-eslint/no-unused-vars': ['error'],
+
+        // NOTE: https://github.com/typescript-eslint/typescript-eslint/issues/2077
 
         'react/no-unused-state': 'warn',
         'react/default-props-match-prop-types': ['warn', {
