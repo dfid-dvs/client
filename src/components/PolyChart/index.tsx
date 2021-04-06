@@ -27,6 +27,7 @@ interface Props<T> {
     onSetEditableChartId?: (name: string | undefined) => void;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 function PolyChart<T extends object>(props: Props<T>) {
     const {
         settings,

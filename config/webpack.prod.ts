@@ -80,6 +80,7 @@ const localConfig = (env): webpack.Configuration => {
                 }),
             ],
             splitChunks: {
+                chunks: 'all',
                 cacheGroups: {
                     vendors: {
                         test: /[\\/]node_modules[\\/]/,
@@ -89,7 +90,7 @@ const localConfig = (env): webpack.Configuration => {
                 },
             },
             runtimeChunk: 'single',
-            moduleIds: 'hashed',
+            moduleIds: 'deterministic',
         },
 
         module: {
@@ -226,7 +227,7 @@ const localConfig = (env): webpack.Configuration => {
                 skipWaiting: true,
                 include: [/\.html$/, /\.js$/, /\.css$/],
                 navigateFallback: '/index.html',
-                navigateFallbackBlacklist: [/^\/assets/, /^\/admin/, /^\/api/],
+                navigateFallbackDenylist: [/^\/assets/, /^\/admin/, /^\/api/],
                 cleanupOutdatedCaches: true,
                 runtimeCaching: [
                     {

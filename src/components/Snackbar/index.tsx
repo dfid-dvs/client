@@ -7,11 +7,6 @@ import Button from '#components/Button';
 import styles from './styles.css';
 
 interface Props {
-    notification?: {
-        icons?: any;
-        children?: any;
-        actions?: any;
-    };
     className?: string;
 }
 function Snackbar(props: Props) {

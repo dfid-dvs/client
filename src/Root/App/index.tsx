@@ -6,8 +6,6 @@ import Button from '#components/Button';
 import useStoredState from '#hooks/useStoredState';
 
 import Multiplexer from './Multiplexer';
-
-import '../../../node_modules/mapbox-gl/dist/mapbox-gl.css';
 import styles from './styles.css';
 
 async function digestMessage(message: string) {

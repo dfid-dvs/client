@@ -7,26 +7,6 @@ interface TreeData extends RawNodeDatum {
     countChild?: number;
 }
 interface DendogramTreeInterface {
-    zoom?: number;
-    collapsible?: boolean;
-    scaleExtent?: {
-        min: number;
-        max: number;
-    };
-    nodeSize: {
-        x: number;
-        y: number;
-    };
-    pathFunc: number;
-    separation?: {
-        siblings: number;
-        nonSiblings: number;
-    };
-    translate: {
-        x: number;
-        y: number;
-    };
-    initialDepth: number;
     treeData: TreeData;
 }
 

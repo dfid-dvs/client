@@ -8,7 +8,7 @@
     "license": "ISC",
     "sideEffects": [
         "./node_modules/mapbox-gl/dist/mapbox-gl.css",
-        "./src/Root/App/styles.css"
+        "./src/Root/styles.css"
     ],
     "scripts": {
         "start": "webpack serve --mode development --config config/webpack.dev.ts --history-api-fallback",
