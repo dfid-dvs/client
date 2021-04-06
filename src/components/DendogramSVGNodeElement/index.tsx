@@ -4,7 +4,6 @@ import styles from './styles.css';
 
 interface DendogramInterface {
     nodeDatum: TreeNodeDatum;
-    isFirstNode?: boolean;
     nodeWidth: number;
     nodeHeight: number;
     nodeCircleRadius: number;

@@ -47,6 +47,7 @@ const chartMargin = {
     left: 10,
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
     const {
         settings,

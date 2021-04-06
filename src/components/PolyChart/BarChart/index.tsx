@@ -71,6 +71,7 @@ const chartMargin = {
     left: 10,
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     const {
         className,

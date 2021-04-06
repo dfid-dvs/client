@@ -50,6 +50,7 @@ const valueTickFormatter: TickFormatterFunction = (value) => {
     return str;
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<T>) {
     const {
         settings,

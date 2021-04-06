@@ -70,7 +70,7 @@ export function prepareUrlParams(params: UrlParams, encode = true) {
         .join('&');
 }
 
-const forEach = (obj: object, func: (key: string, val: unknown) => void) => {
+const forEach = (obj: Record<string, unknown>, func: (key: string, val: unknown) => void) => {
     Object.keys(obj).forEach((key) => {
         const val = (obj as any)[key];
         func(key, val);

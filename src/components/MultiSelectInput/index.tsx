@@ -84,8 +84,6 @@ interface Props<T, K> {
     disabled?: boolean;
     pending?: boolean;
     placeholder?: string;
-    hideLabel?: boolean;
-    error?: string;
     groupKeySelector?: (d: T) => string;
     allSelectable?: boolean;
 }

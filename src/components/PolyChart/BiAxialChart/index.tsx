@@ -60,6 +60,7 @@ const chartMargin = {
     left: 10,
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<T>) {
     const {
         className,

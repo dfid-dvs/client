@@ -76,7 +76,7 @@ interface ActiveShapeProps {
     startAngle: number;
     endAngle: number;
     fill: string;
-    payload: unknown;
+    // payload: unknown;
     percent: number;
 
     key: string;
@@ -151,6 +151,7 @@ const createActiveShape = (center: boolean) => (props: ActiveShapeProps) => {
 const ActiveShape = createActiveShape(false);
 const CenteredActiveShape = createActiveShape(true);
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
     const {
         settings,

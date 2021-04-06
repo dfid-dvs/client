@@ -35,7 +35,6 @@ interface BiAxialChartItemProps<T> {
     onValueChange: (val: (values: ScatterData[]) => ScatterData[]) => void;
     index: number;
     options: NumericOption<T>[];
-    onToggleChartType: () => void;
 }
 
 function ScatterChartItem<T>(props: BiAxialChartItemProps<T>) {

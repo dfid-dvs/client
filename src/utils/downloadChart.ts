@@ -3,7 +3,7 @@ import html2canvas from 'html2canvas';
 
 export default async function handleChartDownload(
     divRef: React.RefObject<HTMLDivElement>,
-    title: string = 'test',
+    title = 'test',
     className: string,
 ) {
     if (divRef?.current) {
