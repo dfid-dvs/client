@@ -430,6 +430,8 @@ function Charts(props: Props) {
         [chartSettings, expandableChart],
     );
 
+    const loading = extendedFiveWPending || indicatorListPending;
+
     return (
         <>
             <div className={styles.tableActions}>
@@ -444,12 +446,12 @@ function Charts(props: Props) {
                 </Button>
             </div>
             <div className={styles.charts}>
-                {(extendedFiveWPending || indicatorListPending) && (
+                {loading && (
                     <Backdrop className={styles.backdrop}>
                         <LoadingAnimation />
                     </Backdrop>
                 )}
-                {chartSettings.map(item => (
+                {!loading && chartSettings.map(item => (
                     <PolyChart
                         key={item.id}
                         chartClassName={styles.chart}

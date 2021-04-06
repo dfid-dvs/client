@@ -240,6 +240,28 @@ const userDefinedSchemas: Schema[] = [
         },
     },
     {
+        name: 'component-list',
+        description: 'Get components',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'component',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        name: { type: 'string', required: true },
+                        code: { type: 'string', required: true },
+                        sector: { type: 'array.number', required: true },
+                        subSector: { type: 'array.number', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
         name: 'program-list',
         description: 'Get programs',
         fields: {
@@ -521,7 +543,17 @@ const userDefinedSchemas: Schema[] = [
         name: 'region-profile',
         description: 'Get data of region profile',
         fields: {
-            activeSectors: { type: 'array.string' },
+            activeSectors: {
+                arrayType: {
+                    name: 'active-sectors',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        name: { type: 'string', required: true },
+                        key: { type: 'string', required: true },
+                        value: { type: 'number', required: true },
+                    },
+                },
+            },
             fivewdata: {
                 arrayType: {
                     name: 'fivew-data',
@@ -541,7 +573,40 @@ const userDefinedSchemas: Schema[] = [
                         code: { type: 'number', required: true },
                         indicator: { type: 'string', required: true },
                         indicatorId: { type: 'number', required: true },
-                        totalBudget: { type: 'number', required: true },
+                        value: { type: 'number', required: true },
+                    },
+                },
+            },
+            topProgramByBudget: {
+                arrayType: {
+                    name: 'top-program-by-budget',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        name: { type: 'string', required: true },
+                        key: { type: 'string', required: true },
+                        value: { type: 'number', required: true },
+                    },
+                },
+            },
+            topPartnerByBudget: {
+                arrayType: {
+                    name: 'top-program-by-budget',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        name: { type: 'string', required: true },
+                        key: { type: 'string', required: true },
+                        value: { type: 'number', required: true },
+                    },
+                },
+            },
+            topSectorByNoOfPartner: {
+                arrayType: {
+                    name: 'top-sector-by-number-of-partner',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        name: { type: 'string', required: true },
+                        key: { type: 'string', required: true },
+                        value: { type: 'number', required: true },
                     },
                 },
             },
@@ -680,6 +745,61 @@ const userDefinedSchemas: Schema[] = [
                     },
                 },
                 required: true,
+            },
+        },
+    },
+    {
+        name: 'partner-tree-dendogram',
+        description: 'Get data for upper dendrogram in program profile',
+        fields: {
+            results: {
+                arrayType: {
+                    name: 'data',
+                    fields: {
+                        name: { type: 'string', required: true },
+                        children: {
+                            arrayType: {
+                                name: 'child',
+                                fields: {
+                                    name: { type: 'string', required: true },
+                                },
+                            },
+                        },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'region-tree-dendogram',
+        description: 'Get data of lower dendogram in program profile',
+        fields: {
+            results: {
+                arrayType: {
+                    name: 'data',
+                    fields: {
+                        name: { type: 'string', required: true },
+                        children: {
+                            arrayType: {
+                                name: 'dendogram-child',
+                                fields: {
+                                    name: { type: 'string', required: true },
+                                    code: { type: 'string', required: true },
+                                    children: {
+                                        arrayType: {
+                                            name: 'child',
+                                            fields: {
+                                                name: { type: 'string', required: true },
+                                                code: { type: 'string', required: true },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
     },

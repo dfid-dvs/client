@@ -665,69 +665,81 @@ function ProgramSelector(props: Props) {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            <SelectorItem
-                name="programs"
-                className={styles.program}
-                options={combinedProgramOptions}
-                value={selectedProgram}
-                setSelectedValue={setSelectedPrograms}
-                expandedFilters={expandedFilters}
-                setExpandedFilters={setExpanedFilters}
-                isMinimized={isMinimized}
-                icon={<MdAssignment />}
-                searchText={programSearchText}
-                setSearchText={setProgramSearchText}
-            />
-            <SelectorItem
-                name="partners"
-                className={styles.partner}
-                options={partnerOptions}
-                value={selectedPartner}
-                setSelectedValue={setSelectedPartner}
-                expandedFilters={expandedFilters}
-                setExpandedFilters={setExpanedFilters}
-                isMinimized={isMinimized}
-                icon={<MdBusiness />}
-                searchText={partnerSearchText}
-                setSearchText={setPartnerSearchText}
-            />
-            <SelectorItem
-                name="sectors"
-                className={styles.sector}
-                options={combinedSectorOptions}
-                value={selectedSector}
-                setSelectedValue={setSelectedSector}
-                expandedFilters={expandedFilters}
-                setExpandedFilters={setExpanedFilters}
-                isMinimized={isMinimized}
-                icon={<FaShapes />}
-                searchText={sectorSearchText}
-                setSearchText={setSectorSearchText}
-            />
-            <SelectorItem
-                name="markers"
-                className={styles.marker}
-                options={combinedMarkerOptions}
-                value={selectedMarker}
-                setSelectedValue={setSelectedMarker}
-                expandedFilters={expandedFilters}
-                setExpandedFilters={setExpanedFilters}
-                isMinimized={isMinimized}
-                // collapseLevel={1}
-                icon={<MdPeople />}
-                searchText={markerSearchText}
-                setSearchText={setMarkerSearchText}
-            />
+            <div className={styles.selectorContainer}>
+                <SelectorItem
+                    name="programs"
+                    className={styles.program}
+                    options={combinedProgramOptions}
+                    value={selectedProgram}
+                    setSelectedValue={setSelectedPrograms}
+                    expandedFilters={expandedFilters}
+                    setExpandedFilters={setExpanedFilters}
+                    isMinimized={isMinimized}
+                    icon={<MdAssignment />}
+                    searchText={programSearchText}
+                    setSearchText={setProgramSearchText}
+                />
+                <SelectorItem
+                    name="partners"
+                    className={styles.partner}
+                    options={partnerOptions}
+                    value={selectedPartner}
+                    setSelectedValue={setSelectedPartner}
+                    expandedFilters={expandedFilters}
+                    setExpandedFilters={setExpanedFilters}
+                    isMinimized={isMinimized}
+                    icon={<MdBusiness />}
+                    searchText={partnerSearchText}
+                    setSearchText={setPartnerSearchText}
+                />
+                <SelectorItem
+                    name="sectors"
+                    className={styles.sector}
+                    options={combinedSectorOptions}
+                    value={selectedSector}
+                    setSelectedValue={setSelectedSector}
+                    expandedFilters={expandedFilters}
+                    setExpandedFilters={setExpanedFilters}
+                    isMinimized={isMinimized}
+                    icon={<FaShapes />}
+                    searchText={sectorSearchText}
+                    setSearchText={setSectorSearchText}
+                />
+                <SelectorItem
+                    name="markers"
+                    className={styles.marker}
+                    options={combinedMarkerOptions}
+                    value={selectedMarker}
+                    setSelectedValue={setSelectedMarker}
+                    expandedFilters={expandedFilters}
+                    setExpandedFilters={setExpanedFilters}
+                    isMinimized={isMinimized}
+                    // collapseLevel={1}
+                    icon={<MdPeople />}
+                    searchText={markerSearchText}
+                    setSearchText={setMarkerSearchText}
+                />
+            </div>
             {!clearButtonHidden && (
                 <div className={styles.actions}>
-                    <Button
-                        className={styles.clearButton}
-                        onClick={handleClearFilters}
-                        variant="secondary-outline"
-                        icons={<MdRefresh />}
-                    >
-                        Clear All
-                    </Button>
+                    {isMinimized ? (
+                        <Button
+                            className={styles.clearButton}
+                            onClick={handleClearFilters}
+                            variant="secondary-outline"
+                            icons={<MdRefresh />}
+                            title="Clear All"
+                        />
+                    ) : (
+                        <Button
+                            className={styles.clearButton}
+                            onClick={handleClearFilters}
+                            variant="secondary-outline"
+                            icons={<MdRefresh />}
+                        >
+                            Clear All
+                        </Button>
+                    )}
                 </div>
             )}
         </div>

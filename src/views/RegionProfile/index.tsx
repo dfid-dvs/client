@@ -13,7 +13,6 @@ import useRequest from '#hooks/useRequest';
 import {
     Bbox,
     RegionLevelOption,
-    MultiResponse,
     IndicatorValue,
 } from '#types';
 import { apiEndPoint } from '#utils/constants';
@@ -78,7 +77,8 @@ interface FiveWDataResponse {
 interface ProfileChartData {
     name: string;
     id: number;
-    totalBudget: number;
+    value: number;
+    key: string;
 }
 
 interface RegionProfileResponse {
@@ -87,6 +87,7 @@ interface RegionProfileResponse {
     activeSectors: ProfileChartData[];
     topProgramByBudget: ProfileChartData[];
     topPartnerByBudget: ProfileChartData[];
+    topSectorByNoOfPartner: ProfileChartData[];
 }
 
 interface DendogramResponse {
@@ -121,9 +122,9 @@ function RegionProfile(props: Props) {
         },
         [setDescription],
     );
-    const regionProfileUrl = selectedRegionData ? `${apiEndPoint}/core/profile?region=${regionLevel}&${regionLevel}_code=${+selectedRegionData.code}` : undefined;
+    const regionProfileUrl = selectedRegionData?.id ? `${apiEndPoint}/core/profile?region=${regionLevel}&${regionLevel}_code=${+selectedRegionData.code}` : undefined;
     const [regionProfilePending, regionProfileResponse] = useRequest<RegionProfileResponse>(regionProfileUrl, 'region-profile');
-    const dendogramUrl = selectedRegionData ? `${apiEndPoint}/core/regionaldendrogram?region=${regionLevel}&${regionLevel}_code=${selectedRegionData.code}` : undefined;
+    const dendogramUrl = selectedRegionData?.id ? `${apiEndPoint}/core/regionaldendrogram?region=${regionLevel}&${regionLevel}_code=${selectedRegionData.code}` : undefined;
 
     const [dendogramUrlPending, dendogramUrlResponse] = useRequest<DendogramResponse>(dendogramUrl, 'region-dendogram');
     const mappedDendogramData = useMemo(() => {
@@ -164,6 +165,7 @@ function RegionProfile(props: Props) {
         },
         [regionProfileResponse?.fivewdata],
     );
+
     const activeSectors: ProfileChartData[] | undefined = regionProfileResponse?.activeSectors;
 
     // eslint-disable-next-line max-len
@@ -171,6 +173,9 @@ function RegionProfile(props: Props) {
 
     // eslint-disable-next-line max-len
     const topPartnerByBudget: ProfileChartData[] | undefined = regionProfileResponse?.topPartnerByBudget;
+
+    // eslint-disable-next-line max-len
+    const topSectorByNoOfPartner: ProfileChartData[] | undefined = regionProfileResponse?.topSectorByNoOfPartner;
 
     const handleAddChartModalClick = useCallback(() => {
         setAddModalVisibility(true);
@@ -188,26 +193,9 @@ function RegionProfile(props: Props) {
             : undefined;
     }, [selectedRegionData]);
 
-    const url = useMemo(() => {
-        if (!selectedRegionData) {
-            return undefined;
-        }
-        if (selectedRegionData.type === 'district' && selectedRegionData.provinceId) {
-            // FIXME: use prepareUrlParams
-            return `${apiEndPoint}/core/province/?id=${selectedRegionData.provinceId}`;
-        }
-        if (selectedRegionData.type === 'municipality' && selectedRegionData.districtId) {
-            // FIXME: use prepareUrlParams
-            return `${apiEndPoint}/core/district/?id=${selectedRegionData.districtId}`;
-        }
-        return undefined;
-    }, [selectedRegionData]);
-
-    const [parentRegionPending, parentRegionResponse] = useRequest<MultiResponse<Region>>(url, 'parent-region');
-
     const currentDate = new Date().toDateString();
 
-    const dataPending = parentRegionPending || regionProfilePending || dendogramUrlPending;
+    const dataPending = regionProfilePending || dendogramUrlPending;
 
     const [
         indicatorsHidden,
@@ -381,9 +369,9 @@ function RegionProfile(props: Props) {
                                 <div className={styles.regionName}>
                                     { selectedRegionData?.name }
                                 </div>
-                                {regionLevel !== 'province' && (
+                                {selectedRegionData?.type === 'district' && (
                                     <div className={styles.parentRegionDetails}>
-                                        {parentRegionResponse?.results[0]?.name}
+                                        {selectedRegionData?.provinceName}
                                     </div>
                                 )}
                             </div>
@@ -440,6 +428,7 @@ function RegionProfile(props: Props) {
                                 className={styles.sectors}
                                 activeSectors={activeSectors}
                                 setSectorsHidden={setSectorsHidden}
+                                printMode={printMode}
                             />
                         )}
                         {/* eslint-disable-next-line max-len */}
@@ -483,6 +472,7 @@ function RegionProfile(props: Props) {
                                 topProgramByBudget={topProgramByBudget}
                                 topPartnerByBudget={topPartnerByBudget}
                                 hiddenChartIds={hiddenChartIds}
+                                topSectorByNoOfPartner={topSectorByNoOfPartner}
                                 handleAddHideableChartIds={handleAddHideableChartIds}
                             />
                         )}
