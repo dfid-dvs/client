@@ -80,7 +80,7 @@ function Sidepanel(props: Props) {
     const [isHidden, setIsHidden] = React.useState(false);
 
     const summaryParams = p({
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line camelcase
         program_id: programs,
     });
 

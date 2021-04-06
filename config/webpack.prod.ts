@@ -1,6 +1,4 @@
 import ResourceHintWebpackPlugin from 'resource-hints-webpack-plugin';
-import CompressionPlugin from 'compression-webpack-plugin';
-import WorkboxPlugin from 'workbox-webpack-plugin';
 import WebpackPwaManifest from 'webpack-pwa-manifest';
 import path from 'path';
 import webpack from 'webpack';
@@ -10,12 +8,11 @@ import CircularDependencyPlugin from 'circular-dependency-plugin';
 import { CleanWebpackPlugin } from 'clean-webpack-plugin';
 import GitRevisionPlugin from 'git-revision-webpack-plugin';
 import StylishPlugin from 'eslint/lib/cli-engine/formatters/stylish';
-import postcssPresetEnv from 'postcss-preset-env';
-import postcssNested from 'postcss-nested';
-import postcssNormalize from 'postcss-normalize';
 import StyleLintPlugin from 'stylelint-webpack-plugin';
 import OptimizeCssAssetsPlugin from 'optimize-css-assets-webpack-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
+import CompressionPlugin from 'compression-webpack-plugin';
+import WorkboxPlugin from 'workbox-webpack-plugin';
 import { config } from 'dotenv';
 
 import getEnvVariables from './env.js';
@@ -36,9 +33,11 @@ const appIndexHtml = path.resolve(appBase, 'public/index.html');
 const appFavicon = path.resolve(appBase, 'public/favicon.ico');
 const appFaviconImage = path.resolve(appBase, 'public/favicon.png');
 
-module.exports = (env) => {
+const PUBLIC_PATH = '/';
+
+const localConfig = (env): webpack.Configuration => {
     const ENV_VARS = {
-        ...dotenv.pared,
+        ...dotenv.parsed,
         ...getEnvVariables(env),
         REACT_APP_VERSION: JSON.stringify(gitRevisionPlugin.version()),
         REACT_APP_COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
@@ -49,7 +48,7 @@ module.exports = (env) => {
         entry: appIndexJs,
         output: {
             path: appDist,
-            publicPath: '/',
+            publicPath: PUBLIC_PATH,
             sourceMapFilename: 'sourcemaps/[file].map',
             chunkFilename: 'js/[name].[chunkhash].js',
             filename: 'js/[name].[contenthash].js',
@@ -64,16 +63,11 @@ module.exports = (env) => {
 
         devtool: 'source-map',
 
-        node: {
-            fs: 'empty',
-        },
-
         optimization: {
             minimizer: [
                 // NOTE: Using TerserPlugin instead of UglifyJsPlugin as es6 support deprecated
                 new TerserPlugin({
                     parallel: true,
-                    sourceMap: true,
                     terserOptions: {
                         mangle: true,
                         compress: { typeofs: false },
@@ -122,7 +116,7 @@ module.exports = (env) => {
                         {
                             loader: require.resolve('html-loader'),
                             options: {
-                                attrs: [':data-src'],
+                                // attrs: [':data-src'],
                             },
                         },
                     ],
@@ -133,25 +127,27 @@ module.exports = (env) => {
                     use: [
                         MiniCssExtractPlugin.loader,
                         {
+                            // NOTE: we may need to use postcss-modules instead of css-loader
                             loader: require.resolve('css-loader'),
                             options: {
                                 importLoaders: 1,
                                 modules: {
                                     localIdentName: '[name]_[local]_[hash:base64]',
+                                    exportLocalsConvention: 'camelCaseOnly',
                                 },
-                                localsConvention: 'camelCaseOnly',
                                 sourceMap: true,
                             },
                         },
                         {
                             loader: require.resolve('postcss-loader'),
                             options: {
-                                ident: 'postcss',
-                                plugins: () => [
-                                    postcssPresetEnv(),
-                                    postcssNested(),
-                                    postcssNormalize(),
-                                ],
+                                postcssOptions: {
+                                    plugins: [
+                                        'postcss-preset-env',
+                                        'postcss-nested',
+                                        'postcss-normalize',
+                                    ],
+                                },
                                 sourceMap: true,
                             },
                         },
@@ -205,6 +201,24 @@ module.exports = (env) => {
                 filename: 'css/[name].[contenthash].css',
                 chunkFilename: 'css/[id].[contenthash].css',
             }),
+            new WebpackPwaManifest({
+                name: 'dfid',
+                short_name: 'DFID',
+                description: 'DFID Data Visualization System',
+                background_color: '#f0f0f0',
+                orientation: 'portrait',
+                // theme_color: '#18bc9c',
+                display: 'standalone',
+                start_url: '/',
+                scope: '/',
+                icons: [
+                    {
+                        src: path.resolve(appFaviconImage),
+                        sizes: [96, 128, 192, 256, 384, 512],
+                        destination: path.join('assets', 'icons'),
+                    },
+                ],
+            }),
             new WorkboxPlugin.GenerateSW({
                 // these options encourage the ServiceWorkers to get in there fast
                 // and not allow any straggling "old" SWs to hang around
@@ -221,27 +235,10 @@ module.exports = (env) => {
                     },
                 ],
             }),
-            new WebpackPwaManifest({
-                name: 'dfid',
-                short_name: 'DFID',
-                description: 'DFID Data Visualization System',
-                background_color: '#ffffff',
-                orientation: 'portrait',
-                // theme_color: '#18bc9c',
-                display: 'standalone',
-                start_url: '/',
-                scope: '/',
-                icons: [
-                    {
-                        src: path.resolve(appFaviconImage),
-                        sizes: [96, 128, 192, 256, 384, 512],
-                        destination: path.join('assets', 'icons'),
-                    },
-                ],
-            }),
             new CompressionPlugin(),
             new ResourceHintWebpackPlugin(),
-            new webpack.HashedModuleIdsPlugin(),
+            new webpack.ids.HashedModuleIdsPlugin(),
         ],
     };
 };
+export default [localConfig];

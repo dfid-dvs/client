@@ -50,19 +50,19 @@ function Summary(props: SummaryProps) {
     } = props;
 
     const summaryParams = p({
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line camelcase
         marker_category_id: markerIdList,
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line camelcase
         marker_value_id: submarkerIdList,
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line camelcase
         program_id: programIdList,
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line camelcase
         component_code: componentIdList,
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line camelcase
         supplier_id: partnerIdList,
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line camelcase
         sector_id: sectorIdList,
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line camelcase
         sub_sector_id: subsectorIdList,
     });
 

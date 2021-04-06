@@ -18,7 +18,7 @@ function useMapStateForIndicator(
 ): [boolean, MapStateItem[]] {
     const regionIndicatorParams = isDefined(selectedIndicator) && String(selectedIndicator) !== '-1'
         ? p({
-            // eslint-disable-next-line @typescript-eslint/camelcase
+            // eslint-disable-next-line camelcase
             indicator_id: selectedIndicator,
         })
         : undefined;

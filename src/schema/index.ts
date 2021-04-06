@@ -1,7 +1,7 @@
 import Dict, { basicTypes, Schema } from '@togglecorp/ravl';
 import { isProduction } from '#config/env';
 
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable camelcase */
 
 const userDefinedSchemas: Schema[] = [
     {
