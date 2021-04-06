@@ -74,7 +74,9 @@
     overflow: auto;
 
     .side-content {
+        display: flex;
         position: relative;
+        flex-direction: column;
         flex-shrink: 0;
         transition: .2s width ease-in-out;
         width: var(--width-dashboard-aside);
@@ -110,16 +112,16 @@
         .header {
             display: flex;
             align-items: center;
+            flex-shrink: 0;
             justify-content: space-between;
             border-top: 1px solid var(--color-grey-shade-3);
             border-bottom: 1px solid var(--color-grey-shade-3);
-            flex-shrink: 0;
             padding: calc(var(--spacing-small-medium) - 2 * var(--spacing-super-small)) var(--spacing-medium);
 
             .segment-input {
                 display: flex;
-                flex-direction: row;
                 align-items: center;
+                flex-direction: row;
                 justify-content: space-between;
             }
     

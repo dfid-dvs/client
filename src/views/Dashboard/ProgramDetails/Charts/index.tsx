@@ -24,9 +24,27 @@ const keySelector = (item: ExtendedProgram) => item.name;
 
 const staticOptions: NumericOption<ExtendedProgram>[] = [
     {
-        key: 'allocatedBudget',
-        title: 'Allocated Budget',
+        key: 'totalBudget',
+        title: 'Total Budget',
         valueSelector: item => item.totalBudget,
+        category: 'DFID Data',
+    },
+    {
+        key: 'componentCount',
+        title: 'Component Count',
+        valueSelector: item => item.componentCount,
+        category: 'DFID Data',
+    },
+    {
+        key: 'partnerCount',
+        title: 'Partners',
+        valueSelector: item => item.partnerCount,
+        category: 'DFID Data',
+    },
+    {
+        key: 'sectorCount',
+        title: 'Sectors',
+        valueSelector: item => item.sectorCount,
         category: 'DFID Data',
     },
 ];
@@ -208,7 +226,7 @@ function Charts(props: Props) {
                         <LoadingAnimation />
                     </Backdrop>
                 )}
-                {chartSettings.map(item => (
+                {!programsPending && chartSettings.map(item => (
                     <PolyChart
                         key={item.id}
                         chartClassName={styles.chart}

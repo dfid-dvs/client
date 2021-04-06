@@ -82,40 +82,37 @@ interface MapRegion {
 
 type AdminLevel = Province | District | Municipality | undefined;
 
-const tourConfig = [
+const walkthroughContent = [
     {
-        selector: '[data-tut=""]',
-        content: 'Welcome to British Embassy Kathmandu! Let\'s get started.',
+        content: 'Welcome to British Embassy Kathmandu’s Data Visualisation System. Let\'s get started.',
     },
     {
         selector: '[data-tut="left__filter"]',
-        content: 'Please feel free to play around with this dynamic panel. You can filter data by Program, Components, Partners, Sectors, Sub-sectors, Markers, and Sub-markers.',
+        content: 'Use this panel to filter data by Program, Components, Partners, Sectors and Markers. Only the filtered information is displayed in the map and the summary panel on right.',
     },
     {
         selector: '[data-tut="view__by"]',
-        content: 'The data can be filtered by region as well ( Province, District and Municipality. )',
+        content: 'Use this panel to toggle between province, district and municipality view and select the region of your interest.',
     },
     {
         selector: '[data-tut="map__options"]',
-        content: 'Select different map options to filter in more detail. You can filter by data types, indicators, layers. All the filtered effects can be observed in the map',
+        content: 'Use this space to select different indicators to view in the map. BEK specific indicators include Budget allocated, programs, components, partners and sectors. There are also more than 30 external contextual indicators relevant to Nepal to select and visualise on the map.',
         position: 'left',
     },
     {
         selector: '[data-tut="date__slider"]',
-        content: 'Slide this date to get programs that belong to the date range set here. You can observe the programs being changed in the left filter panel.',
+        content: 'Drag this slider at both ends to select a specific time period. You can also manually inputthe start and end date.',
     },
     {
         selector: '[data-tut="top__summary"]',
-        content: 'This section presents overally summary based on the filters selected in the left panel',
+        content: 'This panel shows the overall summary based on the filters applied in the left panel.',
     },
     {
         selector: '[data-tut="indicator__graph"]',
-        content: 'The indicator legends are shown here. This changes according to the map options selected and data reflected in the map.',
+        content: 'This is the legend bar corresponding to the indicator(s) selected on the map option panel.',
     },
     {
-        selector: '[data-tut="nepal__map"]',
-        content: 'You can view map representation of data here based on filters and map options selected. Please hover or click on map to observe its features.',
-        position: 'left',
+        content: 'You can view map representation of data here based on filters and map options selected. Please hover or click on the map for more information.',
     },
 ];
 
@@ -602,7 +599,7 @@ const Dashboard = (props: Props) => {
         >
             {!demoHidden && !pending && (
                 <Tour
-                    steps={tourConfig}
+                    steps={walkthroughContent}
                     isOpen
                     onRequestClose={handleTourComplete}
                     closeWithMask={false}
@@ -703,28 +700,24 @@ const Dashboard = (props: Props) => {
                             <div
                                 className={styles.mapAndLegends}
                             >
-                                <React.Fragment
-                                    data-tut="nepal__map"
-                                >
-                                    <IndicatorMap
-                                        className={styles.mapContainer}
-                                        regionLevel={regionLevel}
-                                        choroplethMapState={choroplethMapState}
-                                        choroplethMapPaint={mapPaint}
-                                        bubbleMapState={bubbleMapState}
-                                        bubbleMapPaint={bubblePaint}
-                                        rasterLayer={selectedRasterLayerDetail}
-                                        vectorLayers={selectedVectorLayersDetail}
-                                        onClick={handleMapRegionClick}
-                                        printMode={printMode}
-                                        selectedRegionId={region?.code}
-                                        onHover={handleMapRegionHover}
-                                        onLeave={handleMapRegionLeave}
-                                        hoveredRegion={hoveredRegion}
-                                        bubbleTitle={bubbleTitle}
-                                        fiveWMapDataForHover={fiveWMapDataForHover}
-                                    />
-                                </React.Fragment>
+                                <IndicatorMap
+                                    className={styles.mapContainer}
+                                    regionLevel={regionLevel}
+                                    choroplethMapState={choroplethMapState}
+                                    choroplethMapPaint={mapPaint}
+                                    bubbleMapState={bubbleMapState}
+                                    bubbleMapPaint={bubblePaint}
+                                    rasterLayer={selectedRasterLayerDetail}
+                                    vectorLayers={selectedVectorLayersDetail}
+                                    onClick={handleMapRegionClick}
+                                    printMode={printMode}
+                                    selectedRegionId={region?.code}
+                                    onHover={handleMapRegionHover}
+                                    onLeave={handleMapRegionLeave}
+                                    hoveredRegion={hoveredRegion}
+                                    bubbleTitle={bubbleTitle}
+                                    fiveWMapDataForHover={fiveWMapDataForHover}
+                                />
                                 <DropdownMenu
                                     label="Map Options"
                                     dropdownContainerClassName={_cs(

@@ -1,8 +1,5 @@
 import React, { useCallback, useState, useMemo } from 'react';
-import {
-    _cs,
-    isFalsyString,
-} from '@togglecorp/fujs';
+import { _cs } from '@togglecorp/fujs';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
@@ -32,8 +29,9 @@ const staticOptions: NumericOption<ExtendedProgram>[] = [
 
 interface ProfileChartData {
     name: string;
-    totalBudget: number;
+    key: string;
     id: number;
+    value: number;
 }
 
 const defaultChartSettings: ChartSettings<ExtendedProgram | ProfileChartData>[] = [
@@ -46,7 +44,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram | ProfileChartData>[] 
         limit: {
             count: 10,
             method: 'max',
-            valueSelector: item => item.totalBudget,
+            valueSelector: item => item.value,
         },
 
         bars: [
@@ -54,7 +52,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram | ProfileChartData>[] 
                 key: 'totalBudget',
                 title: 'Total Budget',
                 color: '#4C6AA9',
-                valueSelector: item => item.totalBudget,
+                valueSelector: item => item.value,
             },
         ],
     },
@@ -64,7 +62,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram | ProfileChartData>[] 
         title: 'Top Sectors by Budget',
         key: 'totalBudget',
         keySelector: item => item.name,
-        valueSelector: item => item.totalBudget,
+        valueSelector: item => item.value,
     },
     {
         id: 'topPartnerByBudget',
@@ -75,7 +73,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram | ProfileChartData>[] 
         limit: {
             count: 10,
             method: 'max',
-            valueSelector: item => item.totalBudget,
+            valueSelector: item => item.value,
         },
 
         bars: [
@@ -83,7 +81,29 @@ const defaultChartSettings: ChartSettings<ExtendedProgram | ProfileChartData>[] 
                 key: 'totalBudget',
                 title: 'Total Budget',
                 color: '#4C6AA9',
-                valueSelector: item => item.totalBudget,
+                valueSelector: item => item.value,
+            },
+        ],
+    },
+
+    {
+        id: 'topSectorByNoOfPartner',
+        type: 'bar-chart',
+        title: 'Top Sectors by number of partners',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.value,
+        },
+
+        bars: [
+            {
+                key: 'sectorCount',
+                title: 'Sector Count',
+                color: '#4C6AA9',
+                valueSelector: item => item.value,
             },
         ],
     },
@@ -97,6 +117,7 @@ interface Props {
     activeSectors: ProfileChartData[] | undefined;
     topProgramByBudget: ProfileChartData[] | undefined;
     topPartnerByBudget: ProfileChartData[] | undefined;
+    topSectorByNoOfPartner: ProfileChartData[] | undefined;
     hiddenChartIds: string[] | undefined;
     handleAddHideableChartIds: (id: string | undefined) => void;
 }
@@ -110,6 +131,7 @@ function RegionalProfileCharts(props: Props) {
         activeSectors,
         topProgramByBudget,
         topPartnerByBudget,
+        topSectorByNoOfPartner,
         hiddenChartIds,
         handleAddHideableChartIds,
     } = props;
@@ -204,7 +226,12 @@ function RegionalProfileCharts(props: Props) {
         [chartSettings, expandableChart],
     );
 
-    const chartData = { activeSectors, topProgramByBudget, topPartnerByBudget };
+    const chartData = {
+        activeSectors,
+        topProgramByBudget,
+        topPartnerByBudget,
+        topSectorByNoOfPartner,
+    };
 
     return (
         <div className={_cs(styles.charts, className)}>

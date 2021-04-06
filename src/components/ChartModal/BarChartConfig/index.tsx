@@ -230,7 +230,7 @@ function BarChartConfig<T>(props: Props<T>) {
         limitValue,
         setLimitValue,
     ] = useState<string>(
-        editableChartData ? String(editableChartData.limit?.count) : '7',
+        editableChartData?.limit?.count ? String(editableChartData.limit.count) : '7',
     );
     const [order, setOrder] = useState<OrderOptionKey | undefined>('asc');
     const [orderField, setOrderField] = useState<string | undefined>();

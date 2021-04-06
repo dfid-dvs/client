@@ -8,19 +8,22 @@ import styles from './styles.css';
 interface Sector {
     name: string;
     id: number;
-    totalBudget: number;
+    value: number;
+    key: string;
 }
 
 interface IndicatorProps {
     className?: string;
     activeSectors: Sector[];
     setSectorsHidden: () => void;
+    printMode?: boolean;
 }
 export default function Sectors(props: IndicatorProps) {
     const {
         className,
         activeSectors,
         setSectorsHidden,
+        printMode,
     } = props;
 
     return (
@@ -34,7 +37,10 @@ export default function Sectors(props: IndicatorProps) {
                     title="Hide Sectors"
                     transparent
                     variant="icon"
-                    className={styles.button}
+                    className={_cs(
+                        styles.button,
+                        printMode && styles.hidden,
+                    )}
                 >
                     <IoMdClose
                         className={styles.hideIcon}

@@ -360,7 +360,7 @@ function ProgramProfile(props: Props) {
                     pending={programListPending}
                     placeholder="Program"
                     className={styles.programSelectInput}
-                    disabled={programListPending}
+                    disabled={programListPending || printMode}
                     options={programListResponse?.results}
                     onChange={handleSelectProgram}
                     value={selectedProgram}
@@ -580,7 +580,10 @@ function ProgramProfile(props: Props) {
                                     </Button>
                                 </div>
                                 <ProgramProfileMap
-                                    className={styles.mapContainer}
+                                    className={_cs(
+                                        styles.mapContainer,
+                                        printMode && styles.disabled,
+                                    )}
                                     bounds={currentBounds}
                                     mapRegions={mapRegions}
                                 />
