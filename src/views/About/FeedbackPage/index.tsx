@@ -14,6 +14,7 @@ import Snackbar from '#components/Snackbar';
 import { apiEndPoint } from '#utils/constants';
 
 import styles from './styles.css';
+import AboutPageContainer from '../AboutPageContainer';
 
 interface TypeOption {
     key: string;
@@ -177,99 +178,101 @@ function FeedbackPage() {
     );
 
     return (
-        <div className={styles.container}>
-            <div className={styles.firstSection}>
-                <div className={styles.title}>
-                    {title}
+        <AboutPageContainer>
+            <div className={styles.container}>
+                <div className={styles.firstSection}>
+                    <div className={styles.title}>
+                        {title}
+                    </div>
+                    <div className={styles.subTitle}>
+                        {subTitle}
+                    </div>
                 </div>
-                <div className={styles.subTitle}>
-                    {subTitle}
-                </div>
+                <form
+                    className={styles.formSection}
+                    onSubmit={handleSubmit}
+                >
+                    {error && (
+                        <div className={styles.error}>
+                            {error}
+                        </div>
+                    )}
+                    <TextInput
+                        label="Name"
+                        placeholder="Your name"
+                        value={name}
+                        onChange={handleNameChange}
+                        className={styles.textInput}
+                    />
+                    <TextInput
+                        label="Email"
+                        placeholder="Your email address"
+                        type="email"
+                        value={email}
+                        onChange={handleEmailChange}
+                        className={styles.textInput}
+                    />
+                    <SelectInput
+                        label="Type"
+                        placeholder="Choose one"
+                        className={styles.selectInput}
+                        options={typeOptions}
+                        onChange={handleTypeChange}
+                        value={type}
+                        optionLabelSelector={typeLabelSelector}
+                        optionKeySelector={typeKeySelector}
+                        showDropDownIcon
+                    />
+                    <TextInput
+                        label="Subject"
+                        placeholder="Subject"
+                        value={subject}
+                        onChange={handleSubjectChange}
+                        className={styles.textInput}
+                        labelClassName={styles.label}
+                    />
+                    <div className={styles.attachment}>
+                        <InputLabel>
+                            Add an attachment
+                        </InputLabel>
+                        <div className={styles.inputContainer}>
+                            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                            <label
+                                htmlFor="attachment"
+                                {...labelProps}
+                            />
+                            <input
+                                className={styles.fileInput}
+                                id="attachment"
+                                type="file"
+                                name="attachment"
+                                onChange={handleFileInput}
+                                key={attachmentKey}
+                            />
+                        </div>
+                    </div>
+                    <TextAreaInput
+                        rows={3}
+                        label="Your Feedback"
+                        placeholder="Write us your feedback..."
+                        autoFocus
+                        value={feedback}
+                        onChange={handleFeedbackChange}
+                        className={styles.textInput}
+                    />
+                    <div className={styles.actions}>
+                        <Button
+                            className={styles.button}
+                            disabled={!!error || disabled}
+                            type="submit"
+                        >
+                            Send
+                        </Button>
+                    </div>
+                </form>
+                <Snackbar className={styles.notify} />
             </div>
-            <form
-                className={styles.formSection}
-                onSubmit={handleSubmit}
-            >
-                {error && (
-                    <div className={styles.error}>
-                        {error}
-                    </div>
-                )}
-                <TextInput
-                    label="Name"
-                    placeholder="Your name"
-                    value={name}
-                    onChange={handleNameChange}
-                    className={styles.textInput}
-                />
-                <TextInput
-                    label="Email"
-                    placeholder="Your email address"
-                    type="email"
-                    value={email}
-                    onChange={handleEmailChange}
-                    className={styles.textInput}
-                />
-                <SelectInput
-                    label="Type"
-                    placeholder="Choose one"
-                    className={styles.selectInput}
-                    options={typeOptions}
-                    onChange={handleTypeChange}
-                    value={type}
-                    optionLabelSelector={typeLabelSelector}
-                    optionKeySelector={typeKeySelector}
-                    showDropDownIcon
-                />
-                <TextInput
-                    label="Subject"
-                    placeholder="Subject"
-                    value={subject}
-                    onChange={handleSubjectChange}
-                    className={styles.textInput}
-                    labelClassName={styles.label}
-                />
-                <div className={styles.attachment}>
-                    <InputLabel>
-                        Add an attachment
-                    </InputLabel>
-                    <div className={styles.inputContainer}>
-                        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                        <label
-                            htmlFor="attachment"
-                            {...labelProps}
-                        />
-                        <input
-                            className={styles.fileInput}
-                            id="attachment"
-                            type="file"
-                            name="attachment"
-                            onChange={handleFileInput}
-                            key={attachmentKey}
-                        />
-                    </div>
-                </div>
-                <TextAreaInput
-                    rows={3}
-                    label="Your Feedback"
-                    placeholder="Write us your feedback..."
-                    autoFocus
-                    value={feedback}
-                    onChange={handleFeedbackChange}
-                    className={styles.textInput}
-                />
-                <div className={styles.actions}>
-                    <Button
-                        className={styles.button}
-                        disabled={!!error || disabled}
-                        type="submit"
-                    >
-                        Send
-                    </Button>
-                </div>
-            </form>
-            <Snackbar className={styles.notify} />
-        </div>
+        </AboutPageContainer>
     );
 }
 export default FeedbackPage;

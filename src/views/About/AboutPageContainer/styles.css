@@ -1,0 +1,31 @@
+.container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding-top: var(--spacing-extra-large);
+    overflow: auto;
+
+    .about-tabs {
+        display: flex;
+        border: var(--width-separator-medium) solid var(--color-separator-dark);
+        border-radius: calc(1em + 2 * var(--spacing-small));
+        background: var(--color-grey-shade-3);
+
+        .link {
+            padding: var(--spacing-small) var(--spacing-large);
+            text-decoration: none;
+            color: var(--color-text-label);
+
+            &.active {
+                border-radius: calc(1em + 2 * var(--spacing-small));
+                background: var(--color-foreground);
+            }
+        }
+    }
+
+    .footer {
+        padding: calc(2 * var(--spacing-large)) 0;
+        width: 100%;
+        text-align: center;
+    }
+}

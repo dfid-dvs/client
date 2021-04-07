@@ -27,12 +27,6 @@ export default function QAItem(props: QAItemProps) {
         onHideAnswer,
     } = props;
 
-    const onViewAnswer = useCallback(
-        () => {
-            onShowAnswer(qa.id);
-        }, [onShowAnswer, qa.id],
-    );
-
     const answerShown = useMemo(() => qa.id === qaId, [qa.id, qaId]);
 
     const onToggleAnswer = useCallback(
@@ -53,9 +47,10 @@ export default function QAItem(props: QAItemProps) {
                 role="presentation"
                 onClick={onToggleAnswer}
             >
-                <div className={styles.question}>
-                    { qa.question }
-                </div>
+                <div
+                    className={styles.question}
+                    dangerouslySetInnerHTML={{ __html: qa.question }}
+                />
                 {answerShown ? (
                     <MdArrowDropUp
                         className={styles.icon}
@@ -67,9 +62,10 @@ export default function QAItem(props: QAItemProps) {
                 )}
             </div>
             {answerShown && (
-                <div className={styles.answer}>
-                    { qa.answer }
-                </div>
+                <div
+                    className={styles.answer}
+                    dangerouslySetInnerHTML={{ __html: qa.answer }}
+                />
             )}
         </div>
     );

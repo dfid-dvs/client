@@ -25,9 +25,11 @@ export default function TermAndConditionItem(props: TermAndConditionItemProps) {
     const hash = useHash();
 
     const isSelectedItem: boolean = useMemo(() => {
-        const spacedHash = hash?.replace(/%20/g, ' ');
-        return tc.title === spacedHash;
-    }, [tc.title, hash]);
+        if (!hash) {
+            return false;
+        }
+        return tc.id === +hash;
+    }, [tc.id, hash]);
 
     return (
         <div
@@ -35,19 +37,19 @@ export default function TermAndConditionItem(props: TermAndConditionItemProps) {
                 styles.tcItem,
                 className,
             )}
-            id={tc.title}
+            id={String(tc.id)}
         >
             <div
                 className={_cs(
                     styles.title,
                     isSelectedItem && styles.selected,
                 )}
-            >
-                { tc.title }
-            </div>
-            <div className={styles.subTitle}>
-                { tc.subTitle }
-            </div>
+                dangerouslySetInnerHTML={{ __html: tc.title }}
+            />
+            <div
+                className={styles.subTitle}
+                dangerouslySetInnerHTML={{ __html: tc.subTitle }}
+            />
         </div>
     );
 }

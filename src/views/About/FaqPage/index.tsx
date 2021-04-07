@@ -7,6 +7,7 @@ import LoadingAnimation from '#components/LoadingAnimation';
 
 import styles from './styles.css';
 import QAItem from './QAItem';
+import AboutPageContainer from '../AboutPageContainer';
 
 interface FAQ {
     count: number;
@@ -44,40 +45,42 @@ export default function FaqPage() {
     const faqList = faq?.results;
 
     return (
-        <div className={styles.container}>
-            <div className={styles.firstSection}>
-                <div className={styles.title}>
-                    Frequently Asked Questions
+        <AboutPageContainer>
+            <div className={styles.container}>
+                <div className={styles.firstSection}>
+                    <div className={styles.title}>
+                        Frequently Asked Questions
+                    </div>
+                    <div className={styles.subTitle}>
+                        Got a question? We have got answers.
+                    </div>
                 </div>
-                <div className={styles.subTitle}>
-                    Got a question? We have got answers.
-                </div>
+                {faqPending && (
+                    <Backdrop>
+                        <LoadingAnimation />
+                    </Backdrop>
+                )}
+                {!faqPending && (
+                    <div className={styles.qaSection}>
+                        {faqList && faqList.length > 0
+                            ? faqList.map(qa => (
+                                <QAItem
+                                    key={qa.id}
+                                    qa={qa}
+                                    qaId={qaId}
+                                    onShowAnswer={onSetQaId}
+                                    onHideAnswer={onResetQaId}
+                                />
+                            ))
+                            : (
+                                <div className={styles.comingSoon}>
+                                    Coming soon
+                                </div>
+                            )
+                        }
+                    </div>
+                )}
             </div>
-            {faqPending && (
-                <Backdrop>
-                    <LoadingAnimation />
-                </Backdrop>
-            )}
-            {!faqPending && (
-                <div className={styles.qaSection}>
-                    {faqList && faqList.length > 0
-                        ? faqList.map(qa => (
-                            <QAItem
-                                key={qa.id}
-                                qa={qa}
-                                qaId={qaId}
-                                onShowAnswer={onSetQaId}
-                                onHideAnswer={onResetQaId}
-                            />
-                        ))
-                        : (
-                            <div className={styles.comingSoon}>
-                                Coming soon
-                            </div>
-                        )
-                    }
-                </div>
-            )}
-        </div>
+        </AboutPageContainer>
     );
 }
