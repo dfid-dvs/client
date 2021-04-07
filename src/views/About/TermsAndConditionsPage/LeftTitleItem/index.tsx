@@ -7,20 +7,24 @@ import styles from './styles.css';
 interface LeftTitleItemProps {
     title: string;
     className?: string;
+    id: number;
 }
 
 export default function LeftTitleItem(props: LeftTitleItemProps) {
     const {
         title,
         className,
+        id,
     } = props;
 
     const hash = useHash();
 
     const isSelectedItem: boolean = useMemo(() => {
-        const spacedHash = hash?.replace(/%20/g, ' ');
-        return title === spacedHash;
-    }, [title, hash]);
+        if (!hash) {
+            return false;
+        }
+        return id === +hash;
+    }, [id, hash]);
 
     return (
         <a
@@ -29,9 +33,8 @@ export default function LeftTitleItem(props: LeftTitleItemProps) {
                 className,
                 isSelectedItem && styles.selected,
             )}
-            href={`#${title}`}
-        >
-            {title}
-        </a>
+            href={`#${id}`}
+            dangerouslySetInnerHTML={{ __html: title }}
+        />
     );
 }

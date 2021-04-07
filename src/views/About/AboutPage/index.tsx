@@ -10,6 +10,7 @@ import aboutUsImage from '#resources/about-us.jpg';
 
 import StatItem from './StatItem';
 import styles from './styles.css';
+import AboutPageContainer from '../AboutPageContainer';
 
 const listedData = [
     'Development Tracker to explore international development projects funded by the UK government by country and sector',
@@ -58,100 +59,102 @@ export default function AboutPage() {
         summary,
     ] = useRequest<Summary>(summaryUrl, 'fivew-summary');
     return (
-        <div className={styles.container}>
-            <div className={styles.firstSection}>
-                <div className={styles.title}>
-                    {firstSectionTitle}
-                </div>
-                <div className={styles.subTitle}>
-                    {firstSectionSubTitle}
-                </div>
-            </div>
-            <div className={styles.stats}>
-                {summaryPending && (
-                    <Backdrop>
-                        <LoadingAnimation />
-                    </Backdrop>
-                )}
-                <StatItem
-                    value={summary?.allocatedBudget}
-                    label="Allocated Budget (£)"
-                />
-                <StatItem
-                    value={summary?.program}
-                    label="Programs"
-                />
-                <StatItem
-                    value={summary?.component}
-                    label="Components"
-                />
-                <StatItem
-                    value={summary?.partner}
-                    label="Partners (1st tier)"
-                />
-                <StatItem
-                    value={summary?.sector}
-                    label="Sectors"
-                />
-            </div>
-            <div className={styles.details}>
-                <div className={styles.left}>
+        <AboutPageContainer>
+            <div className={styles.container}>
+                <div className={styles.firstSection}>
                     <div className={styles.title}>
-                        {articleTitle}
+                        {firstSectionTitle}
                     </div>
-                    <div className={styles.description}>
-                        {articleDescription}
-                    </div>
-                    <div className={styles.list}>
-                        {listedData.map(data => (
-                            <div
-                                key={data}
-                                className={styles.listItem}
-                            >
-                                <IoMdCheckmarkCircleOutline className={styles.checkBox} />
-                                <div className={styles.description}>
-                                    {data}
-                                </div>
-                            </div>
-                        ))}
+                    <div className={styles.subTitle}>
+                        {firstSectionSubTitle}
                     </div>
                 </div>
-                <div className={styles.right}>
-                    <img
-                        src={aboutUsImage}
-                        alt="British Embassy Kathmandu"
-                        className={styles.image}
+                <div className={styles.stats}>
+                    {summaryPending && (
+                        <Backdrop>
+                            <LoadingAnimation />
+                        </Backdrop>
+                    )}
+                    <StatItem
+                        value={summary?.allocatedBudget}
+                        label="Allocated Budget (£)"
+                    />
+                    <StatItem
+                        value={summary?.program}
+                        label="Programs"
+                    />
+                    <StatItem
+                        value={summary?.component}
+                        label="Components"
+                    />
+                    <StatItem
+                        value={summary?.partner}
+                        label="Partners (1st tier)"
+                    />
+                    <StatItem
+                        value={summary?.sector}
+                        label="Sectors"
                     />
                 </div>
-            </div>
-            <div className={styles.contact}>
-                <div className={styles.left}>
-                    Contact us
+                <div className={styles.details}>
+                    <div className={styles.left}>
+                        <div className={styles.title}>
+                            {articleTitle}
+                        </div>
+                        <div className={styles.description}>
+                            {articleDescription}
+                        </div>
+                        <div className={styles.list}>
+                            {listedData.map(data => (
+                                <div
+                                    key={data}
+                                    className={styles.listItem}
+                                >
+                                    <IoMdCheckmarkCircleOutline className={styles.checkBox} />
+                                    <div className={styles.description}>
+                                        {data}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className={styles.right}>
+                        <img
+                            src={aboutUsImage}
+                            alt="British Embassy Kathmandu"
+                            className={styles.image}
+                        />
+                    </div>
                 </div>
-                <div className={styles.right}>
-                    <div className={styles.contactDetails}>
-                        <div className={styles.name}>
-                            {name}
-                        </div>
-                        <div className={styles.address}>
-                            {address}
-                        </div>
-                        {contactDetails.map(data => (
-                            <div
-                                key={data.title}
-                                className={styles.contactItem}
-                            >
-                                <div className={styles.contactTitle}>
-                                    {data.title}
-                                </div>
-                                <div>
-                                    {data.value}
-                                </div>
+                <div className={styles.contact}>
+                    <div className={styles.left}>
+                        Contact us
+                    </div>
+                    <div className={styles.right}>
+                        <div className={styles.contactDetails}>
+                            <div className={styles.name}>
+                                {name}
                             </div>
-                        ))}
+                            <div className={styles.address}>
+                                {address}
+                            </div>
+                            {contactDetails.map(data => (
+                                <div
+                                    key={data.title}
+                                    className={styles.contactItem}
+                                >
+                                    <div className={styles.contactTitle}>
+                                        {data.title}
+                                    </div>
+                                    <div>
+                                        {data.value}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </AboutPageContainer>
     );
 }

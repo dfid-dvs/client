@@ -4,6 +4,9 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    flex-grow: 1;
+    margin-bottom: var(--spacing-medium);
+    padding: var(--spacing-medium);
 
     .first-section {
         padding: 4em var(--spacing-large);

@@ -8,6 +8,7 @@ import LoadingAnimation from '#components/LoadingAnimation';
 import styles from './styles.css';
 import TermAndConditionItem from './TermAndConditionItem';
 import LeftTitleItem from './LeftTitleItem';
+import AboutPageContainer from '../AboutPageContainer';
 
 interface TermsAndConditions {
     count: number;
@@ -35,51 +36,54 @@ export default function TermsAndConditionsPage() {
     const termsConditionsList = termsAndConditions?.results;
 
     return (
-        <div className={styles.container}>
-            <div className={styles.firstSection}>
-                <div className={styles.title}>
-                    {title}
+        <AboutPageContainer>
+            <div className={styles.container}>
+                <div className={styles.firstSection}>
+                    <div className={styles.title}>
+                        {title}
+                    </div>
+                    <div className={styles.subTitle}>
+                        {subTitle}
+                    </div>
                 </div>
-                <div className={styles.subTitle}>
-                    {subTitle}
-                </div>
+                {termsConditionPending && (
+                    <Backdrop>
+                        <LoadingAnimation />
+                    </Backdrop>
+                )}
+                {!termsConditionPending && (
+                    <div className={styles.tcSection}>
+                        {termsConditionsList && termsConditionsList.length > 0
+                            ? (
+                                <div className={styles.tcContainer}>
+                                    <div className={styles.leftSection}>
+                                        {termsConditionsList.map(tc => (
+                                            <LeftTitleItem
+                                                key={tc.id}
+                                                title={tc.title}
+                                                id={tc.id}
+                                            />
+                                        ))}
+                                    </div>
+                                    <div className={styles.rightSection}>
+                                        {termsConditionsList.map(tc => (
+                                            <TermAndConditionItem
+                                                key={tc.id}
+                                                tc={tc}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )
+                            : (
+                                <div className={styles.comingSoon}>
+                                    Coming soon
+                                </div>
+                            )
+                        }
+                    </div>
+                )}
             </div>
-            {termsConditionPending && (
-                <Backdrop>
-                    <LoadingAnimation />
-                </Backdrop>
-            )}
-            {!termsConditionPending && (
-                <div className={styles.tcSection}>
-                    {termsConditionsList && termsConditionsList.length > 0
-                        ? (
-                            <div className={styles.tcContainer}>
-                                <div className={styles.leftSection}>
-                                    {termsConditionsList.map(tc => (
-                                        <LeftTitleItem
-                                            key={tc.id}
-                                            title={tc.title}
-                                        />
-                                    ))}
-                                </div>
-                                <div className={styles.rightSection}>
-                                    {termsConditionsList.map(tc => (
-                                        <TermAndConditionItem
-                                            key={tc.id}
-                                            tc={tc}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        )
-                        : (
-                            <div className={styles.comingSoon}>
-                                Coming soon
-                            </div>
-                        )
-                    }
-                </div>
-            )}
-        </div>
+        </AboutPageContainer>
     );
 }

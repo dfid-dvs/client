@@ -4,6 +4,9 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    flex-grow: 1;
+    margin-bottom: var(--spacing-medium);
+    width: 100%;
 
     .first-section {
         padding: calc(6 * var(--spacing-medium)) var(--spacing-medium);
@@ -24,7 +27,6 @@
     }
 
     .tc-section {
-        background: var(--color-background);
         padding: calc(4 * var(--spacing-extra-large)) calc(4 * var(--spacing-ultra-large));
 
         .tc-container {

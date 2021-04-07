@@ -38,5 +38,9 @@
         width: 92%;
         color: var(--color-grey-shade-7);
         font-size: var(--font-size-large-medium);
+
+        p {
+            line-height: 1.5em;
+        }
     }
 }

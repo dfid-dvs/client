@@ -40,7 +40,25 @@ const routeSettings: SomeRoute[] = [
         path: '/about/',
         name: 'about',
         title: 'About',
-        load: lazy(() => import('../../../views/About')),
+        load: lazy(() => import('../../../views/About/AboutPage')),
+    },
+    {
+        path: '/faqs/',
+        name: 'faq',
+        title: 'FAQs',
+        load: lazy(() => import('../../../views/About/FaqPage')),
+    },
+    {
+        path: '/termsandconditions/',
+        name: 'termsandconditions',
+        title: 'Terms & Conditions',
+        load: lazy(() => import('../../../views/About/TermsAndConditionsPage')),
+    },
+    {
+        path: '/feedback/',
+        name: 'feedback',
+        title: 'Feedback Form',
+        load: lazy(() => import('../../../views/About/FeedbackPage')),
     },
     {
         path: '/region-profile/',
