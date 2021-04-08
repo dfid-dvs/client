@@ -217,6 +217,7 @@ const Dashboard = (props: Props) => {
     ] = useState<MapRegion>();
     // Show/hide filters
     const [sideContentMinimized, , , toggleSideContainerMinimized] = useBasicToggle();
+    const [toolTipMinimized, , , toggleToolTipMinimized] = useBasicToggle();
     const [filterButtonHidden, hideFilterButton, showFilterButton] = useBasicToggle();
 
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
@@ -717,6 +718,7 @@ const Dashboard = (props: Props) => {
                                     hoveredRegion={hoveredRegion}
                                     bubbleTitle={bubbleTitle}
                                     fiveWMapDataForHover={fiveWMapDataForHover}
+                                    isMinimized={sideContentMinimized}
                                 />
                                 <DropdownMenu
                                     label="Map Options"
@@ -775,6 +777,8 @@ const Dashboard = (props: Props) => {
 
                                             tooltipExpanded={tooltipExpanded}
                                             setTooltipExpanded={setTooltipExpanded}
+                                            toolTipMinimized={toolTipMinimized}
+                                            toggleTooltipMinimized={toggleToolTipMinimized}
                                         />
                                     )}
                                 </div>
@@ -784,6 +788,7 @@ const Dashboard = (props: Props) => {
                                         sideContentMinimized && styles.filterMinimized,
                                         !sideContentMinimized && regionDetailShown
                                         && styles.overflow,
+                                        toolTipMinimized && styles.tooltipMinimized,
                                     )}
                                     data-tut="indicator__graph"
                                 >
@@ -830,6 +835,7 @@ const Dashboard = (props: Props) => {
                                     className={_cs(
                                         styles.timeSliderContainer,
                                         regionDetailShown && styles.shiftLeft,
+                                        toolTipMinimized && styles.tooltipMinimized,
                                     )}
                                     data-tut="date__slider"
                                 >
