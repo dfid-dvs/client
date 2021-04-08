@@ -5,12 +5,13 @@ import {
     unique,
 } from '@togglecorp/fujs';
 import { FaExpandAlt } from 'react-icons/fa';
-import { IoMdClose } from 'react-icons/io';
+import { IoIosArrowDown, IoIosArrowUp, IoMdClose } from 'react-icons/io';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import TextOutput from '#components/TextOutput';
 import Numeral from '#components/Numeral';
+import RawButton from '#components/RawButton';
 
 import useRequest from '#hooks/useRequest';
 
@@ -104,6 +105,9 @@ interface Props {
     tooltipExpanded?: boolean;
     setTooltipExpanded?: () => void;
     unsetTooltipExpanded?: () => void;
+
+    toolTipMinimized?: boolean;
+    toggleTooltipMinimized?: () => void;
 }
 
 const Tooltip = (props: Props) => {
@@ -127,6 +131,9 @@ const Tooltip = (props: Props) => {
         tooltipExpanded,
         setTooltipExpanded,
         unsetTooltipExpanded,
+
+        toolTipMinimized,
+        toggleTooltipMinimized,
     } = props;
 
     const popupDataUrl = useMemo(
@@ -191,8 +198,23 @@ const Tooltip = (props: Props) => {
     );
 
     return (
-        <div className={_cs(className, styles.tooltip)}>
+        <div
+            className={_cs(
+                className,
+                styles.tooltip,
+                toolTipMinimized && styles.toolTipMinimized,
+            )}
+        >
             <div className={styles.header}>
+                <RawButton
+                    className={_cs(
+                        styles.toggleVisibilityButton,
+                        tooltipExpanded && styles.hidden,
+                    )}
+                    onClick={toggleTooltipMinimized}
+                >
+                    {toolTipMinimized ? <IoIosArrowDown /> : <IoIosArrowUp />}
+                </RawButton>
                 <h2 className={styles.heading}>
                     { name }
                 </h2>
@@ -223,7 +245,12 @@ const Tooltip = (props: Props) => {
                     />
                 )}
             </div>
-            <div className={styles.scrollWrapper}>
+            <div
+                className={_cs(
+                    styles.scrollWrapper,
+                    toolTipMinimized && styles.toolTipMinimized,
+                )}
+            >
                 {popupDataPending && (
                     <Backdrop className={styles.backdrop}>
                         <LoadingAnimation />

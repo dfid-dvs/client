@@ -133,6 +133,7 @@ interface Props {
     hoveredRegion?: MapRegion;
     lngLat?: mapboxgl.LngLat;
     fiveWMapDataForHover?: FiveW[];
+    isMinimized?: boolean;
 }
 
 function IndicatorMap(props: Props) {
@@ -157,6 +158,7 @@ function IndicatorMap(props: Props) {
         onHover,
         onLeave,
         fiveWMapDataForHover,
+        isMinimized,
     } = props;
 
     const isProvinceVisible = regionLevel === 'province';
@@ -185,25 +187,24 @@ function IndicatorMap(props: Props) {
         regionListResponse,
     ] = useRequest<MultiResponse<Region>>(regionGetRequest, regionSchema);
 
-    const boundBox: Bound | undefined = useMemo(() => {
+    const bounds: Bound = useMemo(() => {
+        if (isMinimized) {
+            return defaultBounds;
+        }
         const res = regionListResponse?.results;
         if (!res || res.length <= 0) {
-            return undefined;
+            return defaultBounds;
         }
         const { bbox } = res[0];
         if (!bbox) {
-            return undefined;
+            return defaultBounds;
         }
         const numberedBbox = bbox.split(',').map(b => +b);
         if (numberedBbox.length === 4) {
             return numberedBbox as Bound;
         }
-        return undefined;
-    }, [regionListResponse?.results]);
-
-    // eslint-disable-next-line no-unneeded-ternary
-    const bounds = boundBox ? boundBox : defaultBounds;
-
+        return defaultBounds;
+    }, [regionListResponse?.results, isMinimized]);
     const selectedRegionState: MapStateItem[] | undefined = useMemo(() => {
         if (!selectedRegionId) {
             return [];
