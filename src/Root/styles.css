@@ -284,16 +284,16 @@
 :root {
     /* SPACING */
     --spacing-super-small: 1px;
-    --spacing-extra-small: 3px;
-    --spacing-small: 5px;
-    --spacing-small-medium: 10px;
-    --spacing-medium: 12px;
-    --spacing-large-medium: 15px;
-    --spacing-large: 20px;
-    --spacing-extra-large: 24px;
+    --spacing-extra-small: 2px;
+    --spacing-small: 4px;
+    --spacing-small-medium: 6px;
+    --spacing-medium: 8px;
+    --spacing-large-medium: 12px;
+    --spacing-large: 16px;
+    --spacing-extra-large: 22px;
     --spacing-super-large: 30px;
-    --spacing-mega-large: 36px;
-    --spacing-ultra-large: 40px;
+    --spacing-mega-large: 38px;
+    --spacing-ultra-large: 48px;
 
     --spacing-letter-medium: 1.5px;
     --spacing-letter-large: 3.4px;
@@ -372,26 +372,26 @@
     /* FONT SIZE */
     --font-size-extra-small: 11px;
     --font-size-small: 12px;
-    --font-size-small-medium: 14px;
-    --font-size-medium: 15px;
-    --font-size-large-medium: 16px;
-    --font-size-large: 18px;
-    --font-size-extra-large: 26px;
-    --font-size-super-large: 36px;
-    --font-size-mega-large: 50px;
-    --font-size-ultra-large: 70px;
+    --font-size-small-medium: 13px;
+    --font-size-medium: 14px;
+    --font-size-large-medium: 15px;
+    --font-size-large: 16px;
+    --font-size-extra-large: 20px;
+    --font-size-super-large: 30px;
+    --font-size-mega-large: 40px;
+    --font-size-ultra-large: 56px;
 
-    --font-size-heading-1: 70px;
-    --font-size-heading-2: 50px;
-    --font-size-heading-3: 36px;
-    --font-size-heading-4: 26px;
+    --font-size-heading-1: 56px;
+    --font-size-heading-2: 40px;
+    --font-size-heading-3: 30px;
+    --font-size-heading-4: 20px;
     --font-size-heading-5: 18px;
-    --font-size-subtitle-1: 17px;
-    --font-size-subtitle-2: 15px;
-    --font-size-body-1: 16px;
-    --font-size-body-2: 15px;
-    --font-size-button: 16px;
-    --font-size-caption: 14px;
+    --font-size-subtitle-1: 15px;
+    --font-size-subtitle-2: 13px;
+    --font-size-body-1: 14px;
+    --font-size-body-2: 13px;
+    --font-size-button: 14px;
+    --font-size-caption: 13px;
 
     /* FONT WEIGHT */
     --font-weight-light: 400;

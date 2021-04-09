@@ -1,53 +1,67 @@
 .legend-container {
-    position: relative;
-    min-height: 100px;
+    min-height: 90px;
 
     .heading {
         margin-bottom: var(--spacing-medium);
-        text-transform: uppercase;
-        color: var(--color-text-pastel-blue);
-        font-size: var(--font-size-large-medium);
     }
 
     .choropleth-legend {
         display: flex;
-        position: relative;
-        flex-direction: flex;
+        justify-content: center;
+        padding: var(--spacing-small) var(--spacing-medium);
 
         .legend-element {
+            position: relative;
             flex-grow: 1;
 
             .color {
                 flex-shrink: 0;
                 width: 60px;
-                height: var(--spacing-large-medium);
+                height: var(--font-size-small);
+            }
+
+            .fake-color {
+                height: var(--font-size-small);
             }
 
             .value {
-                align-self: flex-end;
+                display: inline;
+                position: absolute;
+                right: 0;
+                bottom: -2em;
                 flex-shrink: 0;
-                margin-bottom: calc(-1 * var(--font-size-medium) / 2);
-                text-align: center;
+                padding: var(--spacing-small) 0;
                 color: var(--color-text-label);
+                font-size: var(--font-size-small);
 
                 .numeral {
-                    display: inline-block;
+                    display: inline;
                 }
 
                 .suffix {
+                    display: inline;
                     margin-left: var(--spacing-extra-small);
-                    font-size: var(--font-size-small);
+                    font-size: var(--font-size-extra-small);
                 }
             }
         }
     }
 
-    &.no-data {
-        min-height: 100px;
+    .no-data-text {
+        padding: var(--spacing-medium);
+        font-size: var(--font-size-small);
     }
 
-    .no-data-text {
-        font-size: var(--spacing-medium);
+    &.has-min-value {
+        .choropleth-legend {
+            padding: var(--spacing-small) var(--spacing-extra-large);
+
+            .legend-element {
+                .value {
+                    transform: translateX(50%);
+                }
+            }
+        }
     }
 }
 
