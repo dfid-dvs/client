@@ -4,8 +4,6 @@
     .label {
         margin-bottom: var(--spacing-small);
         padding: 0 var(--spacing-small);
-        letter-spacing: var(--spacing-letter-medium);
-        font-size: var(--font-size-medium);
     }
 
     .data-line {
@@ -32,7 +30,7 @@
                 font-size: var(--font-size-large-medium);
             }
         }
-    
+
         .line {
             display: flex;
             width: 50%;

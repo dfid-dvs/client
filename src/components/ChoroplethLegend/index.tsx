@@ -1,6 +1,7 @@
 import React, { memo } from 'react';
 import { _cs, isDefined } from '@togglecorp/fujs';
 
+import Label from '#components/Label';
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Numeral from '#components/Numeral';
@@ -12,6 +13,7 @@ interface LegendElementProps {
     value: string | number;
     opacity?: number;
     suffix?: string;
+    prefix?: string;
 }
 
 function LegendElement(props: LegendElementProps) {
@@ -20,6 +22,7 @@ function LegendElement(props: LegendElementProps) {
         value,
         opacity = 1,
         suffix,
+        prefix,
     } = props;
 
     return (
@@ -37,6 +40,7 @@ function LegendElement(props: LegendElementProps) {
                         className={styles.numeral}
                         value={value}
                         normalize
+                        prefix={prefix}
                     />
                 )}
                 {typeof value === 'string' && (
@@ -81,27 +85,46 @@ function ChoroplethLegend(
     const colors = Object.keys(legend);
 
     return (
-        <div className={_cs(styles.legendContainer, className)}>
+        <div
+            className={_cs(
+                styles.legendContainer,
+                isDefined(minValue) && styles.hasMinValue,
+                className,
+            )}
+        >
             {pending && (
                 <Backdrop>
                     <LoadingAnimation />
                 </Backdrop>
             )}
             {title && (
-                <div className={styles.heading}>
+                <Label className={styles.heading}>
                     {unit ? `${title} (${unit})` : title}
-                </div>
+                </Label>
             )}
             {colors.length > 0 ? (
                 <div className={styles.choroplethLegend}>
-                    {isDefined(minValue) && (
+                    { isDefined(minValue) && (
+                        <div className={styles.legendElement}>
+                            <div className={styles.fakeColor} />
+                            <div className={styles.value}>
+                                <Numeral
+                                    className={styles.numeral}
+                                    value={minValue}
+                                    normalize
+                                    prefix={minExceeds ? '≤' : ''}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {/* isDefined(minValue) && (
                         <LegendElement
                             value={minValue}
                             color="white"
                             opacity={0}
                             suffix={minExceeds ? 'or less' : undefined}
                         />
-                    )}
+                        ) */}
                     {colors.map((color, index) => {
                         const value = legend[color];
                         const isLastElement = index === colors.length - 1;
@@ -111,7 +134,7 @@ function ChoroplethLegend(
                                 value={value}
                                 color={color}
                                 opacity={opacity}
-                                suffix={isLastElement && maxExceeds ? 'or more' : undefined}
+                                prefix={isLastElement && maxExceeds ? '≥' : undefined}
                             />
                         );
                     })}

@@ -71,7 +71,7 @@ function DateRangeSelector(props: DateRangeProps) {
             }
         }
         return defYear;
-    }, [startDate, endDate]);
+    }, [startDate, endDate, defaultStartDate, defaultEndDate]);
 
     const [sliderDateRange, setSliderDateRange] = useState(selectedSliderDateRange);
 
@@ -97,7 +97,7 @@ function DateRangeSelector(props: DateRangeProps) {
             tmpDateRange[1] = new Date(e.target.value).getFullYear();
             setSliderDateRange(tmpDateRange);
         },
-        [setEndDate],
+        [setEndDate, sliderDateRange],
     );
 
     const [dateRangeShown, , , toggleDateRange] = useBasicToggle();
@@ -111,6 +111,7 @@ function DateRangeSelector(props: DateRangeProps) {
             setSliderDateRange(defaultYears);
         },
         [
+            defaultYears,
             setStartDate,
             setEndDate,
             setSliderDateRange,
