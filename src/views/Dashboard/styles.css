@@ -199,8 +199,8 @@
             bottom: var(--spacing-large-medium);
             left: calc(var(--width-map-control) + var(--spacing-medium));
             align-items: flex-end;
-            max-height: var(--height-max-legend-container);
             max-width: calc(var(--width-max-legend-container) + var(--width-summary-container));
+            max-height: var(--height-max-legend-container);
             overflow-x: auto;
 
             &.overflow {

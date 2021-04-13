@@ -124,16 +124,14 @@ function ProgramProfileCharts(props: Props) {
         indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regionLevel,
     );
 
-    const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>(
-        defaultChartSettings,
-    );
+    const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>();
 
     const showableChartSettings = useMemo(
         () => {
             if (!hiddenChartIds) {
                 return chartSettings;
             }
-            return chartSettings.filter(c => !hiddenChartIds.includes(c.id));
+            return chartSettings?.filter(c => !hiddenChartIds.includes(c.id));
         },
         [chartSettings, hiddenChartIds],
     );
@@ -148,10 +146,18 @@ function ProgramProfileCharts(props: Props) {
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedFiveW>) => {
             if (!editableChartId) {
-                setChartSettings(currentChartSettings => [
-                    ...currentChartSettings,
-                    settings,
-                ]);
+                setChartSettings((currentChartSettings) => {
+                    if (!currentChartSettings) {
+                        return [settings];
+                    }
+                    return [
+                        ...currentChartSettings,
+                        settings,
+                    ];
+                });
+            }
+            if (!chartSettings) {
+                return;
             }
             const tmpChartSettings = [...chartSettings];
             const chartIndex = tmpChartSettings.findIndex(c => c.id === editableChartId);
@@ -173,17 +179,31 @@ function ProgramProfileCharts(props: Props) {
         [indicatorList],
     );
 
-    const validSelectedIndicators = useMemo(
-        () => unique(
+    // const validSelectedIndicators = useMemo(
+    //     () => unique(
+    //         [...chartSettings
+    //             .map(item => item.dependencies)
+    //             .filter(isDefined)
+    //             .flat(),
+    //         ].filter(i => !!indicatorMapping[i]),
+    //         item => item,
+    //     ).sort(),
+    //     [chartSettings, indicatorMapping],
+    // );
+
+    const validSelectedIndicators = useMemo(() => {
+        if (!chartSettings) {
+            return [];
+        }
+        return unique(
             [...chartSettings
                 .map(item => item.dependencies)
                 .filter(isDefined)
                 .flat(),
             ].filter(i => !!indicatorMapping[i]),
             item => item,
-        ).sort(),
-        [chartSettings, indicatorMapping],
-    );
+        ).sort();
+    }, [chartSettings, indicatorMapping]);
 
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
         regionLevel,
@@ -232,7 +252,7 @@ function ProgramProfileCharts(props: Props) {
 
     const editableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
         () => {
-            const chartSetting = chartSettings.find(c => c.id === editableChartId);
+            const chartSetting = chartSettings?.find(c => c.id === editableChartId);
             if (!chartSetting) {
                 return undefined;
             }
@@ -240,6 +260,32 @@ function ProgramProfileCharts(props: Props) {
             return chartSetting;
         },
         [chartSettings, editableChartId],
+    );
+
+    const [expandableDefaultChart, setExpandableDefaultChart] = useState<string>();
+    const handleDefaultChartExpand = useCallback(
+        (id: string | undefined) => {
+            setExpandableDefaultChart(id);
+        },
+        [setExpandableDefaultChart],
+    );
+
+    const handleDefaultChartCollapse = useCallback(
+        () => {
+            setExpandableDefaultChart(undefined);
+        },
+        [setExpandableDefaultChart],
+    );
+
+    const expandableDefaultChartSettings = useMemo(
+        () => {
+            const chartSetting = defaultChartSettings.find(c => c.id === expandableDefaultChart);
+            if (!chartSetting) {
+                return undefined;
+            }
+            return chartSetting;
+        },
+        [expandableDefaultChart],
     );
 
     const [expandableChart, setExpandableChart] = useState<string>();
@@ -260,13 +306,21 @@ function ProgramProfileCharts(props: Props) {
 
     const expandableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
         () => {
-            const chartSetting = chartSettings.find(c => c.id === expandableChart);
+            const chartSetting = chartSettings?.find(c => c.id === expandableChart);
             if (!chartSetting) {
                 return undefined;
             }
             return chartSetting;
         },
         [chartSettings, expandableChart],
+    );
+
+    const onSetEditableChartId = useCallback(
+        (id: string | undefined) => {
+            setEditableChartId(id);
+            onAddModalVisibilityChange(true);
+        },
+        [setEditableChartId, onAddModalVisibilityChange],
     );
 
     return (
@@ -276,7 +330,20 @@ function ProgramProfileCharts(props: Props) {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            {showableChartSettings.map(item => (
+            {defaultChartSettings.map(item => (
+                <PolyChart
+                    key={item.id}
+                    className={styles.chartContainer}
+                    chartClassName={styles.chart}
+                    hideActions={printMode}
+                    data={filteredFiveWData}
+                    settings={item}
+                    onDelete={handleAddHideableChartIds}
+                    onExpand={handleDefaultChartExpand}
+                    chartExpanded={expandableDefaultChart}
+                />
+            ))}
+            {showableChartSettings?.map(item => (
                 <PolyChart
                     key={item.id}
                     className={styles.chartContainer}
@@ -287,6 +354,7 @@ function ProgramProfileCharts(props: Props) {
                     onDelete={handleAddHideableChartIds}
                     onExpand={handleChartExpand}
                     chartExpanded={expandableChart}
+                    onSetEditableChartId={onSetEditableChartId}
                 />
             ))}
             {showAddModal && (
@@ -297,6 +365,24 @@ function ProgramProfileCharts(props: Props) {
                     keySelector={keySelector}
                     editableChartSettings={editableChartSettings}
                 />
+            )}
+            {expandableDefaultChart && expandableDefaultChartSettings && (
+                <Modal
+                    onClose={handleChartCollapse}
+                    className={styles.modalChart}
+                    header={expandableDefaultChartSettings.title}
+                    headerClassName={styles.header}
+                >
+                    <PolyChart
+                        chartClassName={styles.chart}
+                        data={extendedFiveWList}
+                        settings={expandableDefaultChartSettings}
+                        onDelete={handleAddHideableChartIds}
+                        className={styles.polyChart}
+                        onExpand={handleDefaultChartExpand}
+                        chartExpanded={expandableDefaultChart}
+                    />
+                </Modal>
             )}
             {expandableChart && expandableChartSettings && (
                 <Modal

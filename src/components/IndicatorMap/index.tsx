@@ -109,6 +109,7 @@ interface Props {
     choroplethMapState?: MapStateItem[];
     bubbleMapState?: MapStateItem[];
     choroplethMapPaint?: mapboxgl.FillPaint;
+    choroplethTitle?: string;
     bubbleMapPaint?: mapboxgl.CirclePaint;
     bubbleTitle?: string;
     children?: React.ReactNode;
@@ -117,6 +118,7 @@ interface Props {
     rasterLayer?: RasterLayer;
     vectorLayers?: VectorLayer[];
     printMode?: boolean;
+    indicatorMapState?: MapStateItem[],
     // hideTooltipOnHover?: boolean;
     onClick?: (
         feature: mapboxgl.MapboxGeoJSONFeature,
@@ -141,6 +143,7 @@ function IndicatorMap(props: Props) {
         className,
         regionLevel,
         choroplethMapState,
+        choroplethTitle,
         bubbleMapState,
         bubbleTitle,
         choroplethMapPaint,
@@ -159,6 +162,7 @@ function IndicatorMap(props: Props) {
         onLeave,
         fiveWMapDataForHover,
         isMinimized,
+        indicatorMapState,
     } = props;
 
     const isProvinceVisible = regionLevel === 'province';
@@ -247,7 +251,8 @@ function IndicatorMap(props: Props) {
             if (!hoveredMapRegion) {
                 return undefined;
             }
-            return [
+
+            const defaultDataOnHover = [
                 {
                     label: 'Allocated Budget (£)',
                     value: hoveredMapRegion.allocatedBudget,
@@ -269,8 +274,22 @@ function IndicatorMap(props: Props) {
                     value: hoveredMapRegion.sectorCount,
                 },
             ];
+
+            if (indicatorMapState && indicatorMapState.length > 0) {
+                const indicatorData = indicatorMapState.find(
+                    ims => ims.id === +hoveredMapRegion.code,
+                );
+                if (!indicatorData) {
+                    return defaultDataOnHover;
+                }
+                return [{
+                    value: indicatorData.value,
+                    label: choroplethTitle,
+                }];
+            }
+            return defaultDataOnHover;
         },
-        [fiveWMapDataForHover, hoveredRegion],
+        [fiveWMapDataForHover, hoveredRegion, indicatorMapState],
     );
 
     return (

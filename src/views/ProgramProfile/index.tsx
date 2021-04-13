@@ -383,14 +383,14 @@ function ProgramProfile(props: Props) {
                     showDropDownIcon
                     searchHidden
                 />
-                {/* <Button
+                <Button
                     className={styles.addChartButton}
                     onClick={handleAddChartModalClick}
-                    disabled={printMode}
+                    disabled={printMode || !selectedProgram}
                     variant="secondary-outline"
                 >
                     Add Chart
-                </Button> */}
+                </Button>
                 <PrintButton
                     className={styles.printModeButton}
                     printMode={printMode}

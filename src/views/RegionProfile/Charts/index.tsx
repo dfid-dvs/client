@@ -34,7 +34,7 @@ interface ProfileChartData {
     value: number;
 }
 
-const defaultChartSettings: ChartSettings<ExtendedProgram | ProfileChartData>[] = [
+const defaultChartSettings: ChartSettings<ProfileChartData>[] = [
     {
         id: 'topProgramByBudget',
         type: 'bar-chart',
@@ -138,16 +138,14 @@ function RegionalProfileCharts(props: Props) {
     const [
         chartSettings,
         setChartSettings,
-    ] = useState<ChartSettings<ExtendedProgram | ProfileChartData>[]>(
-        defaultChartSettings,
-    );
+    ] = useState<ChartSettings<ExtendedProgram>[]>();
 
     const showableChartSettings = useMemo(
         () => {
             if (!hiddenChartIds) {
                 return chartSettings;
             }
-            return chartSettings.filter(c => !hiddenChartIds.includes(c.id));
+            return chartSettings?.filter(c => !hiddenChartIds.includes(c.id));
         },
         [chartSettings, hiddenChartIds],
     );
@@ -159,12 +157,10 @@ function RegionalProfileCharts(props: Props) {
     }, [onAddModalVisibilityChange, setEditableChartId]);
 
     const handleChartAdd = useCallback(
-        (settings: ChartSettings<ExtendedProgram | ProfileChartData>) => {
-            if (!editableChartId) {
-                setChartSettings(currentChartSettings => [
-                    ...currentChartSettings,
-                    settings,
-                ]);
+        (settings: ChartSettings<ExtendedProgram>) => {
+            
+            if (!chartSettings) {
+                return;
             }
             const tmpChartSettings = [...chartSettings];
             const chartIndex = tmpChartSettings.findIndex(c => c.id === editableChartId);
@@ -181,7 +177,7 @@ function RegionalProfileCharts(props: Props) {
 
     const editableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
         () => {
-            const chartSetting = chartSettings.find(c => c.id === editableChartId);
+            const chartSetting = chartSettings?.find(c => c.id === editableChartId);
             if (!chartSetting) {
                 return undefined;
             }
@@ -189,6 +185,21 @@ function RegionalProfileCharts(props: Props) {
             return chartSetting;
         },
         [chartSettings, editableChartId],
+    );
+
+    const [expandableDefaultChart, setExpandableDefaultChart] = useState<string>();
+    const handleDefaultChartExpand = useCallback(
+        (id: string | undefined) => {
+            setExpandableDefaultChart(id);
+        },
+        [setExpandableDefaultChart],
+    );
+
+    const handleDefaultChartCollapse = useCallback(
+        () => {
+            setExpandableDefaultChart(undefined);
+        },
+        [setExpandableDefaultChart],
     );
 
     const [expandableChart, setExpandableChart] = useState<string>();
@@ -215,9 +226,16 @@ function RegionalProfileCharts(props: Props) {
         [setExpandableChart],
     );
 
-    const expandableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
+    const defaultChartData = {
+        activeSectors,
+        topProgramByBudget,
+        topPartnerByBudget,
+        topSectorByNoOfPartner,
+    };
+
+    const expandableChartSettings = useMemo(
         () => {
-            const chartSetting = chartSettings.find(c => c.id === expandableChart);
+            const chartSetting = chartSettings?.find(c => c.id === expandableChart);
             if (!chartSetting) {
                 return undefined;
             }
@@ -226,12 +244,16 @@ function RegionalProfileCharts(props: Props) {
         [chartSettings, expandableChart],
     );
 
-    const chartData = {
-        activeSectors,
-        topProgramByBudget,
-        topPartnerByBudget,
-        topSectorByNoOfPartner,
-    };
+    const expandableDefaultChartSettings = useMemo(
+        () => {
+            const chartSetting = defaultChartSettings.find(c => c.id === expandableDefaultChart);
+            if (!chartSetting) {
+                return undefined;
+            }
+            return chartSetting;
+        },
+        [expandableDefaultChart],
+    );
 
     return (
         <div className={_cs(styles.charts, className)}>
@@ -240,18 +262,31 @@ function RegionalProfileCharts(props: Props) {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            {showableChartSettings.map(item => (
+            {defaultChartSettings.map(item => (
                 <PolyChart
                     key={item.id}
                     className={styles.chartContainer}
                     chartClassName={styles.chart}
                     hideActions={printMode}
-                    data={chartData[item.id]}
+                    data={defaultChartData[item.id]}
+                    settings={item}
+                    onDelete={handleAddHideableChartIds}
+                    onExpand={handleDefaultChartExpand}
+                    chartExpanded={expandableDefaultChart}
+                />
+            ))}
+            {showableChartSettings?.map(item => (
+                <PolyChart
+                    key={item.id}
+                    className={styles.chartContainer}
+                    chartClassName={styles.chart}
+                    hideActions={printMode}
+                    data={extendedPrograms}
                     settings={item}
                     onDelete={handleAddHideableChartIds}
                     onExpand={handleChartExpand}
                     chartExpanded={expandableChart}
-                    // onSetEditableChartId={onSetEditableChartId}
+                    onSetEditableChartId={onSetEditableChartId}
                 />
             ))}
             {showAddModal && (
@@ -263,6 +298,24 @@ function RegionalProfileCharts(props: Props) {
                     editableChartSettings={editableChartSettings}
                 />
             )}
+            {expandableDefaultChart && expandableDefaultChartSettings && (
+                <Modal
+                    onClose={handleDefaultChartCollapse}
+                    className={styles.modalChart}
+                    header={expandableDefaultChartSettings.title}
+                    headerClassName={styles.header}
+                >
+                    <PolyChart
+                        chartClassName={styles.chart}
+                        data={defaultChartData[expandableDefaultChart]}
+                        settings={expandableDefaultChartSettings}
+                        onDelete={handleAddHideableChartIds}
+                        className={styles.polyChart}
+                        onExpand={handleDefaultChartCollapse}
+                        chartExpanded={expandableDefaultChart}
+                    />
+                </Modal>
+            )}
             {expandableChart && expandableChartSettings && (
                 <Modal
                     onClose={handleChartCollapse}
@@ -272,7 +325,7 @@ function RegionalProfileCharts(props: Props) {
                 >
                     <PolyChart
                         chartClassName={styles.chart}
-                        data={chartData[expandableChart]}
+                        data={extendedPrograms}
                         settings={expandableChartSettings}
                         onDelete={handleAddHideableChartIds}
                         className={styles.polyChart}
