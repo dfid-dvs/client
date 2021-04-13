@@ -222,6 +222,46 @@ function RegionProfile(props: Props) {
     ] = useBasicToggle();
 
     const [hiddenChartIds, setHiddenChartIds] = useState<string[]>();
+    const [hiddenFiveWDataKeys, setHiddenFiveWDataKeys] = useState<string[]>();
+    const [hiddenIndicatorsIds, setHiddenIndicatorsIds] = useState<string[]>();
+
+    const handleAddHideableFiveWDataKeys = useCallback(
+        (key: string | undefined) => {
+            if (isFalsyString(key)) {
+                return;
+            }
+            setHiddenFiveWDataKeys((prevKeys) => {
+                if (!prevKeys) {
+                    return [key];
+                }
+                return [...prevKeys, key];
+            });
+        },
+        [setHiddenFiveWDataKeys],
+    );
+
+    const handleAddHideableIndicatorsIds = useCallback(
+        (id: string | undefined) => {
+            if (isFalsyString(id)) {
+                return;
+            }
+            setHiddenIndicatorsIds((prevIds) => {
+                if (!prevIds) {
+                    return [id];
+                }
+                return [...prevIds, id];
+            });
+        },
+        [setHiddenIndicatorsIds],
+    );
+
+    const onResetIndicators = useCallback(
+        () => {
+            setHiddenFiveWDataKeys(undefined);
+            setHiddenIndicatorsIds(undefined);
+        },
+        [setHiddenFiveWDataKeys, setHiddenIndicatorsIds],
+    );
 
     const handleAddHideableChartIds = useCallback(
         (id: string | undefined) => {
@@ -298,6 +338,37 @@ function RegionProfile(props: Props) {
             resetProfileShown,
             onResetProfile,
         ],
+    );
+
+    const filteredFiveWData = useMemo(
+        () => {
+            if (!hiddenFiveWDataKeys) {
+                return fiveWData;
+            }
+            return fiveWData?.filter(f => !hiddenFiveWDataKeys.includes(f.key));
+        },
+        [hiddenFiveWDataKeys, fiveWData],
+    );
+
+    const filteredIndicatorsData = useMemo(
+        () => {
+            if (!hiddenIndicatorsIds) {
+                return indicatorsData;
+            }
+            return indicatorsData?.filter(
+                f => !hiddenIndicatorsIds.includes(String(f.indicatorId)),
+            );
+        },
+        [hiddenIndicatorsIds, indicatorsData],
+    );
+
+    const resetIndicatorsShown = useMemo(
+        () => {
+            const totalHiddenFiveWData = !!hiddenFiveWDataKeys?.length;
+            const totalHiddenIndicators = !!hiddenIndicatorsIds?.length;
+            return totalHiddenFiveWData || totalHiddenIndicators; 
+        },
+        [hiddenFiveWDataKeys, hiddenIndicatorsIds],
     );
 
     return (
@@ -386,9 +457,13 @@ function RegionProfile(props: Props) {
                                 dataPending={dataPending}
                                 setIndicatorsHidden={setIndicatorsHidden}
                                 className={styles.indicators}
-                                indicatorsData={indicatorsData}
-                                fiveWData={fiveWData}
+                                indicatorsData={filteredIndicatorsData}
+                                fiveWData={filteredFiveWData}
                                 printMode={printMode}
+                                onAddHideableFiveWDataKeys={handleAddHideableFiveWDataKeys}
+                                onAddHideableIndicatorsIds={handleAddHideableIndicatorsIds}
+                                resetIndicatorsShown={resetIndicatorsShown}
+                                onResetIndicators={onResetIndicators}
                             />
                         )}
                         {!dataPending && !descriptionHidden && (

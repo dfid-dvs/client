@@ -20,25 +20,35 @@
         }
     }
 
-    .button {
+
+    .button-group {
         display: flex;
-        width: 36px;
-        height: 36px;
+        flex-direction: column;
 
-        .hide-icon {
-            opacity: 0;
-            color: var(--color-text);
-            font-size: var(--font-size-large-medium);
+        .button {
+            display: flex;
+            width: 36px;
+            height: 36px;
+    
+            .hide-icon {
+                opacity: 0;
+                color: var(--color-text);
+                font-size: var(--font-size-large-medium);
+            }
+    
+            .reset-icon {
+                color: var(--color-text);
+                font-size: var(--font-size-large-medium);
+            }
         }
-    }
-
-    .hidden {
-        display: none;
-    }
-
-    &:hover {
-        .hide-icon {
-            opacity: 1;
+        .hidden {
+            display: none;
+        }
+    
+        &:hover {
+            .hide-icon {
+                opacity: 1;
+            }
         }
     }
 }

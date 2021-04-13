@@ -11,10 +11,29 @@
     }
 
     .label {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
         padding: 0 var(--spacing-extra-small);
         text-transform: uppercase;
         letter-spacing: calc(var(--font-size-small-medium) / 10);
         color: var(--color-accent-light);
         font-size: var(--font-size-small-medium);
+
+        .icon {
+            flex-shrink: 0;
+            opacity: 0;
+        }
+    }
+
+    &:hover {
+        .label {
+            .icon {
+                opacity: 1;
+                background: var(--color-secondary-light-2);
+                cursor: pointer;
+                color: var(--color-accent-light);
+            }
+        }
     }
 }
