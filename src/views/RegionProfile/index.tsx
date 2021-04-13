@@ -325,14 +325,14 @@ function RegionProfile(props: Props) {
                     selectInputClassName={styles.selectInput}
                     showDropDownIcon
                 />
-                {/* <Button
+                <Button
                     className={styles.addChartButton}
                     onClick={handleAddChartModalClick}
                     disabled={printMode || isNotDefined(region)}
                     variant="secondary-outline"
                 >
                     Add Chart
-                </Button> */}
+                </Button>
                 <PrintButton
                     className={styles.printModeButton}
                     printMode={printMode}

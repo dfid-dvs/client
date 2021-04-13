@@ -717,8 +717,10 @@ const Dashboard = (props: Props) => {
                                     onLeave={handleMapRegionLeave}
                                     hoveredRegion={hoveredRegion}
                                     bubbleTitle={bubbleTitle}
+                                    choroplethTitle={choroplethTitle}
                                     fiveWMapDataForHover={fiveWMapDataForHover}
                                     isMinimized={sideContentMinimized}
+                                    indicatorMapState={indicatorMapState}
                                 />
                                 <DropdownMenu
                                     label="Map Options"
