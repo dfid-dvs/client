@@ -166,22 +166,21 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                         >
                             <CartesianGrid />
                             <XAxis
-                                dataKey={firstData.key}
+                                dataKey={firstData.valueSelector}
                                 type="number"
                                 interval={0}
                                 textAnchor="end"
                                 name={firstData.title}
                                 tickFormatter={hasLongTitles ? valueTickFormatter : undefined}
-                            >
-                                <Label
-                                    value={firstData.title}
-                                    offset={0}
-                                    position="insideBottom"
-                                />
-                            </XAxis>
+                                label={{
+                                    value: firstData.title,
+                                    offset: 0,
+                                    position: 'insideBottom',
+                                }}
+                            />
                             <YAxis
                                 type="number"
-                                dataKey={secondData.key}
+                                dataKey={secondData.valueSelector}
                                 name={secondData.title}
                                 tickFormatter={hasLongTitles ? valueTickFormatter : undefined}
                                 label={{
@@ -190,6 +189,7 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                                     position: 'insideLeft',
                                 }}
                             />
+                            {/* FIXME: Show data on hover */}
                             <Tooltip
                                 allowEscapeViewBox={{ x: false, y: false }}
                                 offset={20}
