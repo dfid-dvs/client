@@ -10,6 +10,7 @@ interface Sector {
     id: number;
     value: number;
     key: string;
+    subSector: string[];
 }
 
 interface IndicatorProps {
@@ -48,15 +49,24 @@ export default function Sectors(props: IndicatorProps) {
                 </Button>
             </div>
             <div className={styles.sectorsList}>
-                {activeSectors?.map(sector => (
+                {activeSectors?.map((sector, index) => (
                     <div
                         key={sector.id}
                         className={styles.sector}
                     >
-                        <IoMdCheckmarkCircle className={styles.icon} />
-                        <h3 className={styles.value}>
-                            {sector.name}
-                        </h3>
+                        <div className={styles.title}>
+                            {`${index+1}. ${sector.name}`}
+                        </div>
+                        <div className={styles.subSectorList}>
+                            {sector.subSector.map((sect, subIndex) => (
+                                <div
+                                    key={sect}
+                                    className={styles.item}
+                                >
+                                    {`${index+1}.${subIndex+1}. ${sect}`}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 ))}
             </div>
