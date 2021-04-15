@@ -58,8 +58,8 @@ export default function MapOptions(props: MapOptionsProps) {
         setSelectedVectorLayers,
         selectedVectorLayers,
         rasterLayers,
-        setSelectedRasterLayer,
-        selectedRasterLayer,
+        // setSelectedRasterLayer,
+        // selectedRasterLayer,
     } = props;
     return (
         <div className={_cs(styles.mapSelectorContainer, className)}>
@@ -84,9 +84,22 @@ export default function MapOptions(props: MapOptionsProps) {
                 groupKeySelector={indicatorGroupKeySelector}
                 pending={indicatorListPending}
             />
-            {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
-                <div className={styles.abstract}>
-                    { selectedIndicatorDetails.abstract}
+            {selectedIndicatorDetails && (
+                <div className={styles.indicatorInfo}>
+                    {selectedIndicatorDetails.abstract && (
+                        <div className={styles.abstract}>
+                            {selectedIndicatorDetails.abstract}
+                        </div>
+                    )}
+                    {selectedIndicatorDetails.url && (
+                        <a
+                            className={styles.url}
+                            href={selectedIndicatorDetails.url}
+                            target="_blank"
+                        >
+                            View Link
+                        </a>
+                    )}
                 </div>
             )}
             <ToggleButton
