@@ -255,6 +255,7 @@ const userDefinedSchemas: Schema[] = [
                         code: { type: 'string', required: true },
                         sector: { type: 'array.number', required: true },
                         subSector: { type: 'array.number', required: true },
+                        partners: { type: 'array.number', required: true },
                     },
                 },
                 required: true,

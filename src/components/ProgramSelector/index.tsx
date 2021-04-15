@@ -76,6 +76,7 @@ interface ProgramComponent {
     sector: number[];
     subSector: number[];
     code: string;
+    partners: number[];
 }
 
 type ExpanedFilter = 'programs' | 'partners' | 'sectors' | 'markers';
@@ -299,12 +300,20 @@ function ProgramSelector(props: Props) {
 
     const partnerOptions: TreeItem[] | undefined = useMemo(
         () => {
-            const partnerSet = new Set(
-                appliedProgramOptions
-                    ?.map(item => item.partner)
-                    .flat()
-                    .map(item => item?.id),
-            );
+            let partnerSet = new Set<number>();
+            if (selectedComponentOriginal.length > 0) {
+                const componentPartners = rawComponentOptions?.filter(
+                    rc => selectedComponentOriginal.includes(rc.code),
+                ).map(c => c.partners).flat();
+                partnerSet = new Set(componentPartners);
+            } else {
+                partnerSet = new Set(
+                    appliedProgramOptions
+                        ?.map(item => item.partner)
+                        .flat()
+                        .map(item => item?.id),
+                );
+            }
 
             const mappedPartnerList = rawPartnerOptions
                 ?.map(({ id, name }) => ({
@@ -324,7 +333,13 @@ function ProgramSelector(props: Props) {
                 item => caseInsensitiveSubmatch(item.name, partnerSearchText),
             );
         },
-        [rawPartnerOptions, appliedProgramOptions, partnerSearchText],
+        [
+            rawPartnerOptions,
+            appliedProgramOptions,
+            partnerSearchText,
+            rawComponentOptions,
+            selectedComponentOriginal,
+        ],
     );
 
     const sectorOptions: TreeItem[] | undefined = useMemo(
@@ -428,6 +443,18 @@ function ProgramSelector(props: Props) {
                 return associatedComponentSubSectors;
             }
 
+            const textFilteredSectors = rawSectorOptions?.filter(
+                r => caseInsensitiveSubmatch(r.name, sectorSearchText),
+            ).filter(isDefined);
+
+            if (!textFilteredSectors) {
+                return undefined;
+            }
+
+            if (textFilteredSectors.length <= 0) {
+                return undefined;
+            }
+
             const subSectorSet = new Set(
                 appliedProgramOptions
                     ?.map(item => item.subSector)
@@ -443,14 +470,14 @@ function ProgramSelector(props: Props) {
                     name,
                     id,
                 }),
-            ).filter(item => subSectorSet.has(item.id))
-                .filter(item => caseInsensitiveSubmatch(item.name, sectorSearchText));
+            ).filter(item => subSectorSet.has(item.id));
         },
         [
             rawSubSectorOptions,
             appliedProgramOptions,
             sectorSearchText,
             selectedComponentOriginal,
+            rawSectorOptions,
         ],
     );
 
@@ -540,8 +567,11 @@ function ProgramSelector(props: Props) {
             if (!applicableProgramOptions) {
                 return undefined;
             }
+            const textFilteredPrograms = applicableProgramOptions?.filter(
+                item => caseInsensitiveSubmatch(item.name, programSearchText),
+            );
             if (selectedSectorOriginal.length <= 0 && selectedSubSectorOriginal.length <= 0) {
-                const programList = applicableProgramOptions?.map(program => (
+                const programList = textFilteredPrograms?.map(program => (
                     program.component.map((item => ({
                         key: `subprogram-${item.code}`,
                         parentKey: `program-${program.id}`,
@@ -550,12 +580,11 @@ function ProgramSelector(props: Props) {
                         id: item.id,
                     })))))
                     .flat()
-                    .filter(isDefined)
-                    .filter(item => caseInsensitiveSubmatch(item.name, programSearchText));
+                    .filter(isDefined);
                 return programList;
             }
 
-            const combinedProgramListWithComponents = applicableProgramOptions.map((prog) => {
+            const combinedProgramListWithComponents = textFilteredPrograms.map((prog) => {
                 const compWithSectors = prog.component.map((comp) => {
                     const commonSectIds = Array.from(intersection(
                         new Set(comp.sector),
@@ -598,10 +627,8 @@ function ProgramSelector(props: Props) {
                     parentId: program.id,
                     name: item.name,
                     id: item.id,
-                })))))
-                .flat()
-                .filter(isDefined)
-                .filter(item => caseInsensitiveSubmatch(item.name, programSearchText));
+                })))
+            )).flat().filter(isDefined);
         },
         [
             applicableProgramOptions,
