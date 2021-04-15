@@ -6,6 +6,7 @@ import {
     getRandomFromList,
     _cs,
     isDefined,
+    unique,
 } from '@togglecorp/fujs';
 
 import SelectInput from '#components/SelectInput';
@@ -127,6 +128,12 @@ function ScatterChartConfig<T>(props: Props<T>) {
                 if (mappedData.length <= 0) {
                     return defaultData;
                 }
+                if (mappedData.length === 1) {
+                    return [
+                        ...mappedData,
+                        defaultData[0],
+                    ];
+                }
                 const [firstDataValue, secondDataValue] = mappedData;
                 return [firstDataValue, secondDataValue];
             }
@@ -157,6 +164,7 @@ function ScatterChartConfig<T>(props: Props<T>) {
                     title: option.title,
                     valueSelector: option.valueSelector,
                     key: data.optionName,
+                    dependency: option.dependency,
                 };
             }).filter(isDefined);
 
@@ -170,6 +178,16 @@ function ScatterChartConfig<T>(props: Props<T>) {
                 return;
             }
 
+
+            const nonUniqueDependencies = properScatterData.map(
+                item => item.dependency,
+            ).filter(isDefined);
+
+            const dependencies = unique(
+                nonUniqueDependencies.filter(isDefined),
+                item => item,
+            );
+
             const settings: ScatterChartSettings<T> = {
                 id: chartId,
                 type: 'scatter-chart',
@@ -177,6 +195,7 @@ function ScatterChartConfig<T>(props: Props<T>) {
                 keySelector: primaryKeySelector,
                 color,
                 data: properScatterData,
+                dependencies,
             };
 
             onSave(settings);
