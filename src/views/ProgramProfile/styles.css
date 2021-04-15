@@ -250,19 +250,23 @@
                         font-weight: var(--font-weight-bold);
                     }
 
-                    .button {
+                    .button-group {
                         display: flex;
-                        width: 36px;
-                        height: 36px;
-                
-                        .icon {
-                            opacity: 0;
-                            color: var(--color-text);
-                            font-size: var(--font-size-large-medium);
-                        }
-                        
-                        &.hidden {
-                            visibility: hidden;
+
+                        .button {
+                            display: flex;
+                            width: 36px;
+                            height: 36px;
+                    
+                            .icon {
+                                opacity: 0;
+                                color: var(--color-text);
+                                font-size: var(--font-size-large-medium);
+                            }
+    
+                            &.hidden {
+                                visibility: hidden;
+                            }
                         }
                     }
                 }

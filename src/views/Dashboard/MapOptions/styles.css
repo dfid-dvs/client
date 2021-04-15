@@ -20,14 +20,14 @@
 
         .abstract {
             padding: 0 var(-spacing-extra-small) 0 0;
-            font-size: var(--font-size-body-2);
             text-align: justify;
+            font-size: var(--font-size-body-2);
         }
 
         .url {
             align-self: flex-end;
-            font-size: var(--font-size-body-2);
             text-decoration: none;
+            font-size: var(--font-size-body-2);
         }
     }
 }

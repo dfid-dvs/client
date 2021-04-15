@@ -5,7 +5,7 @@ import {
     isNotDefined,
     isFalsyString,
 } from '@togglecorp/fujs';
-import { IoMdClose } from 'react-icons/io';
+import { IoMdClose, IoMdRefresh } from 'react-icons/io';
 
 import PrintButton from '#components/PrintButton';
 
@@ -224,6 +224,7 @@ function RegionProfile(props: Props) {
     const [hiddenChartIds, setHiddenChartIds] = useState<string[]>();
     const [hiddenFiveWDataKeys, setHiddenFiveWDataKeys] = useState<string[]>();
     const [hiddenIndicatorsIds, setHiddenIndicatorsIds] = useState<string[]>();
+    const [hiddenDendrogramNames, setHiddenDendrogramNames] = useState<string[]>();
 
     const handleAddHideableFiveWDataKeys = useCallback(
         (key: string | undefined) => {
@@ -263,6 +264,28 @@ function RegionProfile(props: Props) {
         [setHiddenFiveWDataKeys, setHiddenIndicatorsIds],
     );
 
+    const handleAddHideableDendrogramNames = useCallback(
+        (id: string | undefined) => {
+            if (isFalsyString(id)) {
+                return;
+            }
+            setHiddenDendrogramNames((prevIds) => {
+                if (!prevIds) {
+                    return [id];
+                }
+                return [...prevIds, id];
+            });
+        },
+        [setHiddenDendrogramNames],
+    );
+
+    const onResetDendrogram = useCallback(
+        () => {
+            setHiddenDendrogramNames(undefined);
+        },
+        [setHiddenDendrogramNames],
+    );
+
     const handleAddHideableChartIds = useCallback(
         (id: string | undefined) => {
             if (isFalsyString(id)) {
@@ -289,6 +312,8 @@ function RegionProfile(props: Props) {
             setDescription('');
             unsetDendrogramHidden();
             setHiddenChartIds(undefined);
+            onResetIndicators();
+            onResetDendrogram();
         },
         [
             unsetIndicatorsHidden,
@@ -297,6 +322,8 @@ function RegionProfile(props: Props) {
             setDescription,
             unsetDendrogramHidden,
             setHiddenChartIds,
+            onResetIndicators,
+            onResetDendrogram,
         ],
     );
 
@@ -362,11 +389,23 @@ function RegionProfile(props: Props) {
         [hiddenIndicatorsIds, indicatorsData],
     );
 
+    const filteredDendrogramData = useMemo(
+        () => {
+            if (!hiddenDendrogramNames) {
+                return mappedDendogramData;
+            }
+            return mappedDendogramData?.filter(
+                f => !hiddenDendrogramNames.includes(String(f.name)),
+            );
+        },
+        [hiddenDendrogramNames, mappedDendogramData],
+    );
+
     const resetIndicatorsShown = useMemo(
         () => {
             const totalHiddenFiveWData = !!hiddenFiveWDataKeys?.length;
             const totalHiddenIndicators = !!hiddenIndicatorsIds?.length;
-            return totalHiddenFiveWData || totalHiddenIndicators; 
+            return totalHiddenFiveWData || totalHiddenIndicators;
         },
         [hiddenFiveWDataKeys, hiddenIndicatorsIds],
     );
@@ -511,28 +550,47 @@ function RegionProfile(props: Props) {
                             <div className={styles.dendogramContainer}>
                                 <div className={styles.header}>
                                     <div className={styles.title}>
-                                        Dendogram of Region
+                                        Dendrogram of Region
                                     </div>
-                                    <Button
-                                        onClick={setDendrogramHidden}
-                                        title="Hide Dendrogram"
-                                        transparent
-                                        variant="icon"
-                                        className={_cs(
-                                            styles.button,
-                                            printMode && styles.hidden,
+                                    <div className={styles.buttonGroup}>
+                                        {hiddenDendrogramNames
+                                            && hiddenDendrogramNames.length > 0 && (
+                                            <Button
+                                                onClick={onResetDendrogram}
+                                                title="Reset Dendrogram"
+                                                transparent
+                                                variant="icon"
+                                                className={_cs(
+                                                    styles.button,
+                                                    printMode && styles.hidden,
+                                                )}
+                                            >
+                                                <IoMdRefresh
+                                                    className={styles.icon}
+                                                />
+                                            </Button>
                                         )}
-                                    >
-                                        <IoMdClose
-                                            className={styles.icon}
-                                        />
-                                    </Button>
+                                        <Button
+                                            onClick={setDendrogramHidden}
+                                            title="Hide Dendrogram"
+                                            transparent
+                                            variant="icon"
+                                            className={_cs(
+                                                styles.button,
+                                                printMode && styles.hidden,
+                                            )}
+                                        >
+                                            <IoMdClose
+                                                className={styles.icon}
+                                            />
+                                        </Button>
+                                    </div>
                                 </div>
-                                {mappedDendogramData.map(res => (
+                                {filteredDendrogramData && filteredDendrogramData.map(res => (
                                     <DendogramTree
                                         treeData={res}
                                         key={res.name}
-                                        collapsible
+                                        onHideDendrogram={handleAddHideableDendrogramNames}
                                     />
                                 ))}
                             </div>
