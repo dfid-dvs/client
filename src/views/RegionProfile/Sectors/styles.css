@@ -40,22 +40,26 @@
 
     .sectors-list {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
 
         .sector {
             display: flex;
-            align-items: center;
-
-            .icon {
-                flex-shrink: 0;
-                margin: var(--spacing-small-medium);
-                color: var(--color-secondary-light-1);
-                font-size: var(--font-size-large);
-            }
-
-            .value {
+            flex-direction: column;
+            padding: var(--spacing-small-medium) var(--spacing-large-medium);
+            .title {
                 font-size: var(--font-size-medium);
                 font-weight: var(--font-weight-bold);
+            }
+
+            .sub-sector-list {
+                display: flex;
+                flex-direction: column;
+    
+                .item {
+                    margin-left: var(--spacing-large-medium);
+                    padding: var(--spacing-small);
+                    font-size: var(--font-size-body-2);
+                }
             }
         }
     }

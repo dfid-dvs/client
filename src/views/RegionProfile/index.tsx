@@ -81,10 +81,14 @@ interface ProfileChartData {
     key: string;
 }
 
+interface ActiveSectors extends ProfileChartData {
+    subSectors: string[];
+}
+
 interface RegionProfileResponse {
     indicatordata: IndicatorValue[];
     fivewdata: FiveWDataResponse[];
-    activeSectors: ProfileChartData[];
+    activeSectors: ActiveSectors[];
     topProgramByBudget: ProfileChartData[];
     topPartnerByBudget: ProfileChartData[];
     topSectorByNoOfPartner: ProfileChartData[];
@@ -166,7 +170,14 @@ function RegionProfile(props: Props) {
         [regionProfileResponse?.fivewdata],
     );
 
-    const activeSectors: ProfileChartData[] | undefined = regionProfileResponse?.activeSectors;
+    const activeSectors: ActiveSectors[] | undefined = regionProfileResponse?.activeSectors;
+
+    const activeSectorsForChart: ProfileChartData[] | undefined = activeSectors?.map(sect => ({
+        name: sect.name,
+        id: sect.id,
+        value: sect.value,
+        key: sect.key,
+    }));
 
     // eslint-disable-next-line max-len
     const topProgramByBudget: ProfileChartData[] | undefined = regionProfileResponse?.topProgramByBudget;
@@ -601,7 +612,7 @@ function RegionProfile(props: Props) {
                                 printMode={printMode}
                                 showAddModal={showAddModal}
                                 onAddModalVisibilityChange={setAddModalVisibility}
-                                activeSectors={activeSectors}
+                                activeSectors={activeSectorsForChart}
                                 topProgramByBudget={topProgramByBudget}
                                 topPartnerByBudget={topPartnerByBudget}
                                 hiddenChartIds={hiddenChartIds}

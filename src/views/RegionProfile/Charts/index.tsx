@@ -100,8 +100,8 @@ const defaultChartSettings: ChartSettings<ProfileChartData>[] = [
 
         bars: [
             {
-                key: 'sectorCount',
-                title: 'Sector Count',
+                key: 'partnerCount',
+                title: 'Partner Count',
                 color: '#4C6AA9',
                 valueSelector: item => item.value,
             },

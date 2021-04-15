@@ -16,7 +16,7 @@
 
     .chart {
         padding: var(--spacing-medium);
-        height: 88mm!important;
+        height: 100mm!important;
 
         :global {
             text {
