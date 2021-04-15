@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import Tree from 'react-d3-tree';
 import { CustomNodeElementProps, RawNodeDatum } from 'react-d3-tree/lib/types/common';
+
+import { IoMdClose } from 'react-icons/io';
 import DendogramSVGNodeElement from '#components/DendogramSVGNodeElement';
+import Button from '#components/Button';
+import styles from './styles.css';
 
 interface TreeData extends RawNodeDatum {
     countChild?: number;
 }
 interface DendogramTreeInterface {
     treeData: TreeData;
+    onHideDendrogram?: (id: string | undefined) => void
 }
 
 let NODE_WIDTH = 260;
@@ -40,8 +45,7 @@ const renderCustomNodeElement = (nodeDatum: CustomNodeElementProps) => (
 );
 
 function DendogramTree(props: DendogramTreeInterface) {
-    const { treeData } = props;
-
+    const { treeData, onHideDendrogram } = props;
     const secondLevelChildrens = treeData?.children?.length || 0;
     const thirdLevelChildrens = React.useMemo(() => {
         let n = 0;
@@ -65,24 +69,47 @@ function DendogramTree(props: DendogramTreeInterface) {
 
     const childCount = secondLevelChildrens + thirdLevelChildrens;
 
+    const handleHideDendrogram = useCallback(
+        () => {
+            if (!onHideDendrogram) {
+                return;
+            }
+            onHideDendrogram(treeData.name);
+        },
+        [onHideDendrogram, treeData.name],
+    )
+
     return (
-        <div
-            style={{
-                height: childCount * nodeSize.y,
-                pointerEvents: 'none',
-                position: 'relative',
-            }}
-        >
-            <Tree
-                data={treeData}
-                nodeSize={nodeSize}
-                pathFunc={customPathFunction}
-                renderCustomNodeElement={renderCustomNodeElement}
-                translate={{
-                    x: 0,
-                    y: (childCount * nodeSize.y) / 2,
+        <div className={styles.container}>
+            {onHideDendrogram && (
+                <Button
+                    onClick={handleHideDendrogram}
+                    title="Hide Dendrogram"
+                    transparent
+                    variant="icon"
+                    className={styles.button}
+                >
+                    <IoMdClose />
+                </Button>
+            )}
+            <div
+                style={{
+                    pointerEvents: 'none',
+                    height: childCount * nodeSize.y,
+                    width: '100%',
                 }}
-            />
+            >
+                <Tree
+                    data={treeData}
+                    nodeSize={nodeSize}
+                    pathFunc={customPathFunction}
+                    renderCustomNodeElement={renderCustomNodeElement}
+                    translate={{
+                        x: 0,
+                        y: (childCount * nodeSize.y) / 2,
+                    }}
+                />
+            </div>
         </div>
     );
 }

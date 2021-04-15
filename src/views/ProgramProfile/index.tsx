@@ -4,7 +4,7 @@ import {
     isDefined,
     isFalsyString,
 } from '@togglecorp/fujs';
-import { IoMdClose } from 'react-icons/io';
+import { IoMdClose, IoMdRefresh } from 'react-icons/io';
 import PrintButton from '#components/PrintButton';
 
 import useRequest from '#hooks/useRequest';
@@ -279,7 +279,75 @@ function ProgramProfile(props: Props) {
     ] = useBasicToggle();
 
     const [hiddenChartIds, setHiddenChartIds] = useState<string[]>();
+    const [hiddenUpperDendrogramNames, setHiddenUpperDendrogramNames] = useState<string[]>();
+    const [hiddenLowerDendrogramNames, setHiddenLowerDendrogramNames] = useState<string[]>();
+    const handleAddHideableUpperDendrogramNames = useCallback(
+        (id: string | undefined) => {
+            if (isFalsyString(id)) {
+                return;
+            }
+            setHiddenUpperDendrogramNames((prevIds) => {
+                if (!prevIds) {
+                    return [id];
+                }
+                return [...prevIds, id];
+            });
+        },
+        [setHiddenUpperDendrogramNames],
+    );
 
+    const onResetUpperDendrogram = useCallback(
+        () => {
+            setHiddenUpperDendrogramNames(undefined);
+        },
+        [setHiddenUpperDendrogramNames],
+    );
+
+    const handleAddHideableLowerDendrogramNames = useCallback(
+        (id: string | undefined) => {
+            if (isFalsyString(id)) {
+                return;
+            }
+            setHiddenLowerDendrogramNames((prevIds) => {
+                if (!prevIds) {
+                    return [id];
+                }
+                return [...prevIds, id];
+            });
+        },
+        [setHiddenLowerDendrogramNames],
+    );
+
+    const onResetLowerDendrogram = useCallback(
+        () => {
+            setHiddenLowerDendrogramNames(undefined);
+        },
+        [setHiddenLowerDendrogramNames],
+    );
+
+    const filteredUpperDendrogramData = useMemo(
+        () => {
+            if (!hiddenUpperDendrogramNames) {
+                return partnersTreeData;
+            }
+            return partnersTreeData?.filter(
+                f => !hiddenUpperDendrogramNames.includes(String(f.name)),
+            );
+        },
+        [hiddenUpperDendrogramNames, partnersTreeData],
+    );
+
+    const filteredLowerDendrogramData = useMemo(
+        () => {
+            if (!hiddenLowerDendrogramNames) {
+                return regionsTreeData;
+            }
+            return regionsTreeData?.filter(
+                f => !hiddenLowerDendrogramNames.includes(String(f.name)),
+            );
+        },
+        [hiddenLowerDendrogramNames, regionsTreeData],
+    );
     const handleAddHideableChartIds = useCallback(
         (id: string | undefined) => {
             if (isFalsyString(id)) {
@@ -309,6 +377,8 @@ function ProgramProfile(props: Props) {
             unsetLowerDendrogramHidden();
             unsetMapHidden();
             setHiddenChartIds(undefined);
+            onResetUpperDendrogram();
+            onResetLowerDendrogram();
         },
         [
             unsetIndicatorsHidden,
@@ -319,6 +389,8 @@ function ProgramProfile(props: Props) {
             unsetLowerDendrogramHidden,
             unsetMapHidden,
             setHiddenChartIds,
+            onResetUpperDendrogram,
+            onResetLowerDendrogram,
         ],
     );
 
@@ -524,25 +596,45 @@ function ProgramProfile(props: Props) {
                                     <div className={styles.title}>
                                         Component and implementing partners tree
                                     </div>
-                                    <Button
-                                        onClick={setUpperDendrogramHidden}
-                                        title="Hide Dendrogram"
-                                        transparent
-                                        variant="icon"
-                                        className={_cs(
-                                            styles.button,
-                                            printMode && styles.hidden,
+                                    <div className={styles.buttonGroup}>
+                                        {hiddenUpperDendrogramNames
+                                            && hiddenUpperDendrogramNames.length > 0 && (
+                                            <Button
+                                                onClick={onResetUpperDendrogram}
+                                                title="Reset Dendrogram"
+                                                transparent
+                                                variant="icon"
+                                                className={_cs(
+                                                    styles.button,
+                                                    printMode && styles.hidden,
+                                                )}
+                                            >
+                                                <IoMdRefresh
+                                                    className={styles.icon}
+                                                />
+                                            </Button>
                                         )}
-                                    >
-                                        <IoMdClose
-                                            className={styles.icon}
-                                        />
-                                    </Button>
+                                        <Button
+                                            onClick={setUpperDendrogramHidden}
+                                            title="Hide Dendrogram"
+                                            transparent
+                                            variant="icon"
+                                            className={_cs(
+                                                styles.button,
+                                                printMode && styles.hidden,
+                                            )}
+                                        >
+                                            <IoMdClose
+                                                className={styles.icon}
+                                            />
+                                        </Button>
+                                    </div>
                                 </div>
-                                {partnersTreeData.map(res => (
+                                {filteredUpperDendrogramData?.map(res => (
                                     <DendogramTree
                                         treeData={res}
                                         key={res.name}
+                                        onHideDendrogram={handleAddHideableUpperDendrogramNames}
                                     />
                                 ))}
                             </div>
@@ -596,25 +688,45 @@ function ProgramProfile(props: Props) {
                                     <div className={styles.title}>
                                         Component and regions tree
                                     </div>
-                                    <Button
-                                        onClick={setLowerDendrogramHidden}
-                                        title="Hide Dendrogram"
-                                        transparent
-                                        variant="icon"
-                                        className={_cs(
-                                            styles.button,
-                                            printMode && styles.hidden,
+                                    <div className={styles.buttonGroup}>
+                                        {hiddenLowerDendrogramNames
+                                            && hiddenLowerDendrogramNames.length > 0 && (
+                                            <Button
+                                                onClick={onResetLowerDendrogram}
+                                                title="Reset Dendrogram"
+                                                transparent
+                                                variant="icon"
+                                                className={_cs(
+                                                    styles.button,
+                                                    printMode && styles.hidden,
+                                                )}
+                                            >
+                                                <IoMdRefresh
+                                                    className={styles.icon}
+                                                />
+                                            </Button>
                                         )}
-                                    >
-                                        <IoMdClose
-                                            className={styles.icon}
-                                        />
-                                    </Button>
+                                        <Button
+                                            onClick={setLowerDendrogramHidden}
+                                            title="Hide Dendrogram"
+                                            transparent
+                                            variant="icon"
+                                            className={_cs(
+                                                styles.button,
+                                                printMode && styles.hidden,
+                                            )}
+                                        >
+                                            <IoMdClose
+                                                className={styles.icon}
+                                            />
+                                        </Button>
+                                    </div>
                                 </div>
-                                {regionsTreeData.map(res => (
+                                {filteredLowerDendrogramData?.map(res => (
                                     <DendogramTree
                                         treeData={res}
                                         key={res.name}
+                                        onHideDendrogram={handleAddHideableLowerDendrogramNames}
                                     />
                                 ))}
                             </div>
