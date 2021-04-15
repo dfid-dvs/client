@@ -13,4 +13,21 @@
     .separator {
         border-bottom: var(--width-separator-thin) solid var(--color-separator-light);
     }
+
+    .indicator-info {
+        display: flex;
+        flex-direction: column;
+
+        .abstract {
+            padding: 0 var(-spacing-extra-small) 0 0;
+            font-size: var(--font-size-body-2);
+            text-align: justify;
+        }
+
+        .url {
+            align-self: flex-end;
+            font-size: var(--font-size-body-2);
+            text-decoration: none;
+        }
+    }
 }
