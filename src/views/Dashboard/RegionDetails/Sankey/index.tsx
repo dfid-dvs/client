@@ -24,19 +24,36 @@ interface Props {
     regions: number[];
     onRegionsChange: (value: number[]) => void;
 
+    markerIdList?: string[];
+    submarkerIdList?: string[];
     programIdList?: string[];
+    componentIdList?: string[];
+    partnerIdList?: string[];
+    sectorIdList?: string[];
+    subsectorIdList?: string[];
 }
 
 function RegionSankey(props: Props) {
     const {
         regions,
         onRegionsChange,
+        markerIdList,
+        submarkerIdList,
         programIdList,
+        componentIdList,
+        partnerIdList,
+        sectorIdList,
+        subsectorIdList,
     } = props;
-
     const params = p({
-        program: programIdList,
         province: regions,
+        program: programIdList,
+        component_code: componentIdList,
+        sector_id: sectorIdList,
+        sub_sector_id: subsectorIdList,
+        marker_category_id: markerIdList,
+        marker_value_id: submarkerIdList,
+        supplier_id: partnerIdList,
         threshold: 0.8,
     });
 

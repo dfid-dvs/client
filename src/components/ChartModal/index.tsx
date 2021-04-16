@@ -14,7 +14,6 @@ import HistogramConfig from './HistogramConfig';
 import BiAxialChartConfig from './BiAxialChartConfig';
 
 import styles from './styles.css';
-import { SnackBarContents, SnackBarContext } from '#components/SnackContext';
 
 type ChartType = 'bar-chart' | 'pie-chart' | 'histogram' | 'bi-axial-chart' | 'scatter-chart';
 
@@ -97,21 +96,13 @@ function ChartModal<T>(props: Props<T>) {
     } = props;
 
     const [chartType, setChartType] = useState<ChartType>(editableChartSettings ? editableChartSettings.type : 'bar-chart');
-    const {
-        setSnackBarContents,
-    } = useContext(SnackBarContext);
 
     const handleSave = useCallback(
         (value: ChartSettings<T>) => {
             onSave(value);
             onClose();
-            const contents: SnackBarContents = {
-                message: 'Chart added successfully.',
-                severity: 'success',
-            };
-            setSnackBarContents(contents);
         },
-        [onClose, setSnackBarContents, onSave],
+        [onClose, onSave],
     );
 
     return (

@@ -170,7 +170,13 @@ function RegionDetails(props: Props) {
             )}
             {selectedTab === 'sankey' && (
                 <Sankey
+                    markerIdList={markerIdList}
+                    submarkerIdList={submarkerIdList}
                     programIdList={programIdList}
+                    componentIdList={componentIdList}
+                    partnerIdList={partnerIdList}
+                    sectorIdList={sectorIdList}
+                    subsectorIdList={subsectorIdList}
                     regions={selectedRegions}
                     onRegionsChange={setSelectedRegions}
                 />

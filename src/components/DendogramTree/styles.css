@@ -1,0 +1,21 @@
+.container {
+    display: flex;
+    align-items: center;
+    margin-left: -8px;
+
+    .button {
+        visibility: hidden;
+
+        .icon {
+            opacity: 0;
+            color: var(--color-text);
+            font-size: var(--font-size-large-medium);
+        }
+    }
+
+    &:hover {
+        .button {
+            visibility: visible;
+        }
+    }
+}
