@@ -110,7 +110,7 @@ function ChoroplethLegend(
                             <div className={styles.value}>
                                 <Numeral
                                     className={styles.numeral}
-                                    value={minValue}
+                                    value={+minValue}
                                     normalize
                                     prefix={minExceeds ? '≤' : ''}
                                 />

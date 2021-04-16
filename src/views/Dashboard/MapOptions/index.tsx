@@ -96,6 +96,7 @@ export default function MapOptions(props: MapOptionsProps) {
                             className={styles.url}
                             href={selectedIndicatorDetails.url}
                             target="_blank"
+                            rel="noreferrer"
                         >
                             View Link
                         </a>

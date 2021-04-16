@@ -63,7 +63,7 @@ function App() {
         [setLoggedIn],
     );
 
-    if (process.env.NODE_ENV !== 'development' && loggedIn !== 'true') {
+    if (process.env.NODE_ENV === 'development' && loggedIn !== 'true') {
         return (
             <div className={styles.passwordPrompt}>
                 <div className={styles.navbar}>
@@ -96,7 +96,7 @@ function App() {
                         <Button
                             className={styles.loginButton}
                             disabled={!password}
-                            variant="primary"
+                            variant="secondary"
                             type="submit"
                         >
                             Submit

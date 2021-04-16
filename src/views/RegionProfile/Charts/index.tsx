@@ -158,7 +158,6 @@ function RegionalProfileCharts(props: Props) {
 
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedProgram>) => {
-            
             if (!chartSettings) {
                 return;
             }

@@ -346,7 +346,7 @@ const userDefinedSchemas: Schema[] = [
                         dataType: { type: 'string' }, // only 'float' for now
                         federalLevel: { type: 'string' }, // only 'district', 'municipality', 'province', 'all' for now
                         filter: { type: 'unknown' }, // not used
-                        url: { type: 'string'},
+                        url: { type: 'string' },
                     },
                 },
                 required: true,

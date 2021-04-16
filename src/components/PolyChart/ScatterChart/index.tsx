@@ -8,7 +8,6 @@ import {
     ResponsiveContainer,
     Scatter,
     TickFormatterFunction,
-    Label,
 } from 'recharts';
 import { isNotDefined, _cs, sum } from '@togglecorp/fujs';
 import { IoMdClose, IoMdDownload } from 'react-icons/io';
