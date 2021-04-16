@@ -82,7 +82,7 @@ interface ProfileChartData {
 }
 
 interface ActiveSectors extends ProfileChartData {
-    subSectors: string[];
+    subSector: string[];
 }
 
 interface RegionProfileResponse {

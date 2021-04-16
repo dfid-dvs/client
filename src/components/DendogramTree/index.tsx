@@ -77,7 +77,7 @@ function DendogramTree(props: DendogramTreeInterface) {
             onHideDendrogram(treeData.name);
         },
         [onHideDendrogram, treeData.name],
-    )
+    );
 
     return (
         <div className={styles.container}>

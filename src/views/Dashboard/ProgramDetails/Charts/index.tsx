@@ -13,7 +13,6 @@ import {
     ChartSettings,
     NumericOption,
 } from '#types';
-import { prepareUrlParams as p } from '#utils/common';
 
 import useExtendedPrograms, { ExtendedProgram } from '../../useExtendedPrograms';
 

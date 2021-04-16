@@ -1,6 +1,6 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
-import { IoMdCheckmarkCircle, IoMdClose } from 'react-icons/io';
+import { IoMdClose } from 'react-icons/io';
 import Button from '#components/Button';
 
 import styles from './styles.css';
@@ -55,7 +55,7 @@ export default function Sectors(props: IndicatorProps) {
                         className={styles.sector}
                     >
                         <div className={styles.title}>
-                            {`${index+1}. ${sector.name}`}
+                            {`${index + 1}. ${sector.name}`}
                         </div>
                         <div className={styles.subSectorList}>
                             {sector.subSector.map((sect, subIndex) => (
@@ -63,7 +63,7 @@ export default function Sectors(props: IndicatorProps) {
                                     key={sect}
                                     className={styles.item}
                                 >
-                                    {`${index+1}.${subIndex+1}. ${sect}`}
+                                    {`${index + 1}.${subIndex + 1}. ${sect}`}
                                 </div>
                             ))}
                         </div>

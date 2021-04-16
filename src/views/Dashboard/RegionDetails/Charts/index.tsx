@@ -367,7 +367,7 @@ function Charts(props: Props) {
             tmpChartSettings.splice(chartIndex, 1, settings);
             setChartSettings(tmpChartSettings);
         },
-        [editableChartId, setChartSettings],
+        [editableChartId, setChartSettings, chartSettings],
     );
 
     const handleChartDelete = useCallback(
@@ -380,7 +380,7 @@ function Charts(props: Props) {
                 currentChartSettings.filter(item => item.id !== name)
             ));
         },
-        [],
+        [setChartSettings],
     );
 
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(

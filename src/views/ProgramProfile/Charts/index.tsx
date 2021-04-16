@@ -167,7 +167,7 @@ function ProgramProfileCharts(props: Props) {
             tmpChartSettings.splice(chartIndex, 1, settings);
             setChartSettings(tmpChartSettings);
         },
-        [editableChartId],
+        [editableChartId, chartSettings, setChartSettings],
     );
 
     const indicatorMapping = useMemo(

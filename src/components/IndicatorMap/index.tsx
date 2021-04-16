@@ -289,7 +289,7 @@ function IndicatorMap(props: Props) {
             }
             return defaultDataOnHover;
         },
-        [fiveWMapDataForHover, hoveredRegion, indicatorMapState],
+        [fiveWMapDataForHover, hoveredRegion, indicatorMapState, choroplethTitle],
     );
 
     return (

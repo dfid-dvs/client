@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { NavLink } from 'react-router-dom';
 

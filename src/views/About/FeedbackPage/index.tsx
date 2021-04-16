@@ -174,6 +174,7 @@ function FeedbackPage() {
             setFeedback,
             setSelectedAttachment,
             setError,
+            setSnackBarContents,
         ],
     );
 
