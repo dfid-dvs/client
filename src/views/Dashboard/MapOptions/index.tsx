@@ -58,8 +58,8 @@ export default function MapOptions(props: MapOptionsProps) {
         setSelectedVectorLayers,
         selectedVectorLayers,
         rasterLayers,
-        // setSelectedRasterLayer,
-        // selectedRasterLayer,
+        setSelectedRasterLayer,
+        selectedRasterLayer,
     } = props;
     return (
         <div className={_cs(styles.mapSelectorContainer, className)}>
