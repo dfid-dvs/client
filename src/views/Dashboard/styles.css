@@ -218,7 +218,7 @@
                 border: var(--width-separator-thin) solid var(--color-separator);
                 background-color: var(--color-foreground);
                 padding: var(--spacing-medium);
-                min-width: var(--width-legend-min);
+                width: min-content;
             }
 
             .legend-element {
@@ -228,6 +228,7 @@
 
         .time-slider-container {
             position: absolute;
+            padding-right: var(--spacing-medium);
             right: var(--spacing-large);
             bottom: var(--spacing-large-medium);
             border: var(--width-separator-thin) solid var(--color-separator);

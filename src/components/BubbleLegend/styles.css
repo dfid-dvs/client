@@ -1,6 +1,7 @@
 .bubble-legend {
     position: relative;
     min-height: 150px;
+    width: min-content;
 
     .heading {
         margin-bottom: var(--spacing-large-medium);
