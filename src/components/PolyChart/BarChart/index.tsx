@@ -32,7 +32,6 @@ const orientations: {
     { key: 'horizontal', label: <RiBarChartLine />, title: 'Vertical' },
 ];
 
-
 const categoryTickFormatter = (value: string) => {
     const words = value.trim().split(/\s+/);
     if (words.length <= 1) {
@@ -62,6 +61,7 @@ interface BarChartUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
+    longTilesShown?: boolean;
 }
 
 const chartMargin = {
@@ -85,6 +85,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
+        longTilesShown,
     } = props;
     const {
         title,
@@ -131,6 +132,26 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         : 15;
 
     const hasLongTitles = averageLength > acceptableLength;
+
+    const tickFormatter = useMemo(
+        () => {
+            if (layout === 'vertical' && longTilesShown) {
+                return undefined;
+            }
+            return hasLongTitles ? categoryTickFormatter : undefined;
+        },
+        [layout, longTilesShown, hasLongTitles, categoryTickFormatter],
+    );
+
+    const xCompWidth = useMemo(
+        () => {
+            if (layout === 'horizontal') {
+                return undefined;
+            }
+            return hasLongTitles ? 140 : 86;
+        },
+        [layout],
+    );
 
     const handleDownload = useCallback(
         () => {
@@ -225,8 +246,8 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                 dataKey={keySelector}
                                 type="category"
                                 interval={0}
-                                width={layout === 'vertical' ? 86 : undefined}
-                                tickFormatter={hasLongTitles ? categoryTickFormatter : undefined}
+                                width={xCompWidth}
+                                tickFormatter={tickFormatter}
                                 angle={layout === 'horizontal' ? -45 : undefined}
                                 textAnchor="end"
                             />

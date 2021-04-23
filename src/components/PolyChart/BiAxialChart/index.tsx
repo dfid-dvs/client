@@ -51,6 +51,7 @@ interface BiAxialChartUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
+    longTilesShown?: boolean;
 }
 
 const chartMargin = {
@@ -73,6 +74,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
+        longTilesShown,
     } = props;
 
     const newRef = React.useRef<HTMLDivElement>(null);
@@ -121,7 +123,15 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         return 0;
     }, [finalData, keySelector]);
 
-    const hasLongTitles = averageLength > 5;
+    const hasLongTitles = useMemo(
+        () => {
+            if (longTilesShown) {
+                return true;
+            }
+            return averageLength > 5; // acceptableLength = 5
+        },
+        [longTilesShown, averageLength],
+    );
 
     const handleDownload = useCallback(
         () => {
