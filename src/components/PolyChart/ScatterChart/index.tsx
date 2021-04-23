@@ -9,7 +9,7 @@ import {
     Scatter,
     TickFormatterFunction,
 } from 'recharts';
-import { isNotDefined, _cs, sum } from '@togglecorp/fujs';
+import { isNotDefined, _cs, sum, isDefined } from '@togglecorp/fujs';
 import { IoMdClose, IoMdDownload } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 
@@ -95,6 +95,34 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
         [title],
     );
 
+    const finalDataWithIndicators = useMemo(
+        () => {
+            if (!finalData) {
+                return;
+            }
+            return finalData.map(f => {
+                const indicatorKeys = Object.keys(f.indicators);
+                if (indicatorKeys.length <= 0) {
+                    return f;
+                }
+                const mappedIndicators = indicatorKeys.map(i => {
+                    const strInd = `indicator_${i}`;
+                    return {
+                        [strInd]: f.indicators[i],
+                    }
+                });
+
+                const [firstIndicator, secondIndicator] = mappedIndicators;
+                return {
+                    ...f,
+                    ...firstIndicator,
+                    ...secondIndicator,
+                };
+            }).filter(isDefined);
+        },
+        [finalData],
+    );
+
     if (!firstData || !secondData) {
         return null;
     }
@@ -165,7 +193,7 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                         >
                             <CartesianGrid />
                             <XAxis
-                                dataKey={firstData.valueSelector}
+                                dataKey={firstData.key}
                                 type="number"
                                 interval={0}
                                 textAnchor="end"
@@ -179,7 +207,7 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                             />
                             <YAxis
                                 type="number"
-                                dataKey={secondData.valueSelector}
+                                dataKey={secondData.key}
                                 name={secondData.title}
                                 tickFormatter={hasLongTitles ? valueTickFormatter : undefined}
                                 label={{
@@ -196,7 +224,7 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                             />
                             <Scatter
                                 name={title}
-                                data={finalData}
+                                data={finalDataWithIndicators}
                                 fill={color}
                             />
                         </ScatterChart>

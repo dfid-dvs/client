@@ -25,6 +25,7 @@ interface Props<T> {
     onExpand: (name: string | undefined) => void;
     chartExpanded: string | undefined;
     onSetEditableChartId?: (name: string | undefined) => void;
+    longTilesShown?: boolean;
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -39,6 +40,7 @@ function PolyChart<T extends object>(props: Props<T>) {
         onExpand,
         chartExpanded,
         onSetEditableChartId,
+        longTilesShown = false,
     } = props;
 
     const expandableIconHidden = useMemo(
@@ -58,6 +60,7 @@ function PolyChart<T extends object>(props: Props<T>) {
                 onExpand={onExpand}
                 expandableIconHidden={expandableIconHidden}
                 onSetEditableChartId={onSetEditableChartId}
+                longTilesShown={longTilesShown}
             />
         );
     }
@@ -104,6 +107,7 @@ function PolyChart<T extends object>(props: Props<T>) {
                 onExpand={onExpand}
                 expandableIconHidden={expandableIconHidden}
                 onSetEditableChartId={onSetEditableChartId}
+                longTilesShown={longTilesShown}
             />
         );
     }

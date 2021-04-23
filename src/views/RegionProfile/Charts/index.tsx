@@ -272,6 +272,7 @@ function RegionalProfileCharts(props: Props) {
                     onDelete={handleAddHideableChartIds}
                     onExpand={handleDefaultChartExpand}
                     chartExpanded={expandableDefaultChart}
+                    longTilesShown
                 />
             ))}
             {showableChartSettings?.map(item => (
@@ -286,6 +287,7 @@ function RegionalProfileCharts(props: Props) {
                     onExpand={handleChartExpand}
                     chartExpanded={expandableChart}
                     onSetEditableChartId={onSetEditableChartId}
+                    longTilesShown
                 />
             ))}
             {showAddModal && (
@@ -312,6 +314,7 @@ function RegionalProfileCharts(props: Props) {
                         className={styles.polyChart}
                         onExpand={handleDefaultChartCollapse}
                         chartExpanded={expandableDefaultChart}
+                        longTilesShown
                     />
                 </Modal>
             )}
@@ -330,6 +333,7 @@ function RegionalProfileCharts(props: Props) {
                         className={styles.polyChart}
                         onExpand={handleChartExpand}
                         chartExpanded={expandableChart}
+                        longTilesShown
                     />
                 </Modal>
             )}
