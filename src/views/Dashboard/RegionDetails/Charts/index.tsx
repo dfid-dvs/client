@@ -25,7 +25,7 @@ const keySelector = (item: ExtendedFiveW) => item.name;
 const staticOptions: NumericOption<ExtendedFiveW>[] = [
     {
         key: 'allocatedBudget',
-        title: 'Allocated Budget',
+        title: 'Budget Spend',
         valueSelector: item => item.allocatedBudget,
         category: 'DFID Data',
     },
@@ -70,7 +70,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
-                title: 'Allocated Budget',
+                title: 'Budget Spend',
                 key: 'allocatedBudget',
                 color: tableauColors[1],
                 valueSelector: item => item.allocatedBudget,
@@ -215,7 +215,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
             },
             {
                 type: 'line',
-                title: 'Allocated Budget',
+                title: 'Budget Spend',
                 key: 'allocatedBudget',
                 color: tableauColors[4],
                 valueSelector: item => item.allocatedBudget,
@@ -242,7 +242,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
                 valueSelector: item => item.programCount,
             },
             {
-                title: 'Allocated Budget',
+                title: 'Budget Spend',
                 key: 'allocatedBudget',
                 valueSelector: item => item.allocatedBudget,
             },

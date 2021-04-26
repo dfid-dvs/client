@@ -254,7 +254,7 @@ function IndicatorMap(props: Props) {
 
             const defaultDataOnHover = [
                 {
-                    label: 'Allocated Budget (£)',
+                    label: 'Budget Spend (£)',
                     value: hoveredMapRegion.allocatedBudget,
                 },
                 {

@@ -570,7 +570,7 @@ function ProgramSelector(props: Props) {
             const textFilteredPrograms = applicableProgramOptions?.filter(
                 item => caseInsensitiveSubmatch(item.name, programSearchText),
             );
-            if (selectedSectorOriginal.length <= 0 && selectedSubSectorOriginal.length <= 0) {
+            if (selectedSectorOriginal.length <= 0 && selectedSubSectorOriginal.length <= 0 && selectedPartnerOriginal.length <= 0) {
                 const programList = textFilteredPrograms?.map(program => (
                     program.component.map((item => ({
                         key: `subprogram-${item.code}`,
@@ -614,11 +614,39 @@ function ProgramSelector(props: Props) {
                     [...compWithSectors, ...compWithSubSectors, ...selectedSubSectors],
                     comp => comp.code,
                 );
+
+                if (selectedPartnerOriginal.length <= 0) {
+                    return {
+                        ...prog,
+                        component: combinedComps,
+                    };
+                }
+                const compWithPartners = prog.component.map((comp) => {
+                    const commonPartnerIds = Array.from(intersection(
+                        new Set(comp.partners),
+                        new Set(selectedPartnerOriginal),
+                    ));
+                    if (commonPartnerIds.length > 0) {
+                        return comp;
+                    }
+                    return undefined;
+                }).filter(isDefined);
+                const selectedPartners = prog.component.filter(
+                    c => selectedPartnerOriginal.includes(c.id),
+                );
+                const combinedPartnerComps = unique(
+                    [...compWithPartners, ...selectedPartners],
+                    comp => comp.code,
+                );
                 return {
                     ...prog,
-                    component: combinedComps,
-                };
+                    component: combinedPartnerComps,
+                }
             });
+
+// Data for Development Programme - Phase 2
+// Support for Managing Fiscal Federalism in Nepal
+// Evidence for Development - Assessing Government Data Flows in Nepal
 
             return combinedProgramListWithComponents.map(program => (
                 program.component.map((item => ({
@@ -636,6 +664,7 @@ function ProgramSelector(props: Props) {
             selectedSectorOriginal,
             selectedSubSectorOriginal,
             selectedComponentOriginal,
+            selectedPartnerOriginal,
         ],
     );
 

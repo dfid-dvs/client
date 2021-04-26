@@ -101,6 +101,26 @@ const userDefinedSchemas: Schema[] = [
         },
     },
     {
+        name: 'navbar-url-options',
+        description: 'Get url options for navbar',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'option-item',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        title: { type: 'string', required: true },
+                        url: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
         name: 'map-layer-list',
         description: 'Get metadata on map layersj',
         fields: {

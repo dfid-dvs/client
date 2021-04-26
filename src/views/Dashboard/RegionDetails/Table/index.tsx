@@ -298,7 +298,7 @@ function RegionTable(props: Props) {
 
             const staticColumns = [
                 createColumn(stringColumn, 'name', 'Name', true),
-                createColumn(numberColumn, 'allocatedBudget', 'Allocated Budget (£)'),
+                createColumn(numberColumn, 'allocatedBudget', 'Budget Spend (£)'),
                 createColumn(numberColumn, 'componentCount', 'Components (count)'),
                 createColumn(numberColumn, 'programCount', 'Programs (count)'),
                 createColumn(numberColumn, 'partnerCount', 'Partners (count)'),

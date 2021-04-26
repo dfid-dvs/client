@@ -67,13 +67,12 @@ function Summary(props: SummaryProps) {
     });
 
     const summaryUrl = summaryParams ? `${apiEndPoint}/core/summary/?${summaryParams}` : `${apiEndPoint}/core/summary/`;
-
     const [
         summaryPending,
         summary,
     ] = useRequest<SummaryInfo>(summaryUrl, 'fivew-summary');
 
-    const info = 'This is summary section';
+    const info = 'Summary';
     return (
         <div className={_cs(styles.summary, className)}>
             {summaryPending && (
@@ -89,7 +88,7 @@ function Summary(props: SummaryProps) {
             </div>
             <SummaryItem
                 className={styles.summaryItem}
-                label="Allocated Budget (£)"
+                label="Budget Spend (£)"
                 value={summary?.allocatedBudget}
                 total={summary?.totalAllocatedBudget}
             />

@@ -77,7 +77,7 @@ export default function AboutPage() {
                     )}
                     <StatItem
                         value={summary?.allocatedBudget}
-                        label="Allocated Budget (£)"
+                        label="Budget Spend (£)"
                     />
                     <StatItem
                         value={summary?.program}

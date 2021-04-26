@@ -6,15 +6,26 @@ import { IoMdArrowDropdown } from 'react-icons/io';
 
 import Button from '#components/Button';
 import DropdownMenu from '#components/DropdownMenu';
+
+import { apiEndPoint } from '#utils/constants';
+
 import useBasicToggle from '#hooks/useBasicToggle';
 
 import navBarLogo from '#resources/ukaid-navbar-logo.jpg';
 import styles from './styles.css';
+import useRequest from '#hooks/useRequest';
+import { MultiResponse } from '#types';
 
 interface Props {
     className?: string;
     onLogout: () => void;
     administrator?: boolean;
+}
+
+interface UrlOptions {
+    id: number;
+    title: string;
+    url: string;
 }
 
 const Navbar = (props: Props) => {
@@ -25,6 +36,15 @@ const Navbar = (props: Props) => {
     } = props;
 
     const link = process.env.REACT_APP_SERVER_URL || 'https://dvsnaxa.naxa.com.np/';
+
+    const urlOptionsUrl = `${apiEndPoint}/core/national-statistic/`;
+
+    const [
+        urlOptionsPending,
+        urlOptionsResponse,
+    ] = useRequest<MultiResponse<UrlOptions>>(urlOptionsUrl, 'navbar-url-options');
+
+    const urlOption = urlOptionsResponse?.results[0];
 
     const [
         dropdownShown, , , toggleDropdownShown,
@@ -115,6 +135,16 @@ const Navbar = (props: Props) => {
                 </div>
             </div>
             <div className={styles.userActions}>
+                    {!urlOptionsPending && urlOption && (
+                        <a
+                            className={styles.adminConsoleLink}
+                            href={urlOption.url}
+                            rel="noreferrer noopener"
+                            target="_blank"
+                        >
+                            {urlOption.title}
+                        </a>
+                    )}
                 {administrator && (
                     <a
                         className={styles.adminConsoleLink}
