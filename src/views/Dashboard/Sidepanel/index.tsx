@@ -152,7 +152,7 @@ function Sidepanel(props: Props) {
                             )}
                             <SummaryOutput
                                 className={styles.summaryOutput}
-                                label="Allocated Budget (£)"
+                                label="Budget Spend (£)"
                                 value={summary?.allocatedBudget}
                             />
                             <SummaryOutput

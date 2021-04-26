@@ -64,7 +64,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
         bars: [
             {
                 key: 'totalBudget',
-                title: 'Allocated Budget',
+                title: 'Budget Spend',
                 color: tableauColors[1],
                 valueSelector: item => item.totalBudget,
             },

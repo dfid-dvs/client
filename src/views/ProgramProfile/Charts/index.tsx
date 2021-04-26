@@ -35,7 +35,7 @@ const keySelector = (item: ExtendedFiveW) => item.name;
 const staticOptions: NumericOption<ExtendedFiveW>[] = [
     {
         key: 'allocatedBudget',
-        title: 'Allocated Budget',
+        title: 'Budget Spend',
         valueSelector: item => item.allocatedBudget,
         category: 'DFID Data',
     },
@@ -81,7 +81,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         bars: [
             {
                 key: 'allocatedBudget',
-                title: 'Allocated Budget',
+                title: 'Budget Spend',
                 color: tableauColors[1],
                 valueSelector: item => item.allocatedBudget,
             },

@@ -119,7 +119,7 @@ const walkthroughContent = [
 const fiveWOptions: FiveWOption[] = [
     {
         key: 'allocatedBudget',
-        label: 'Allocated Budget',
+        label: 'Budget Spend',
         unit: '£',
     },
     {
