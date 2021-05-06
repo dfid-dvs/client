@@ -1,5 +1,5 @@
-import React, { useCallback, useState, useMemo } from 'react';
-import { _cs } from '@togglecorp/fujs';
+import React, { useCallback, useState, useMemo, useContext } from 'react';
+import { compareNumber, isDefined, listToMap, unique, _cs } from '@togglecorp/fujs';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
@@ -9,23 +9,53 @@ import Modal from '#components/Modal';
 
 import {
     ChartSettings,
+    Indicator,
+    MultiResponse,
     NumericOption,
 } from '#types';
 
-import useExtendedPrograms, { ExtendedProgram } from '../../Dashboard/useExtendedPrograms';
+import useExtendedFiveW, { ExtendedFiveW } from '#views/Dashboard/useExtendedFiveW';
 
 import styles from './styles.css';
+import { apiEndPoint } from '#utils/constants';
+import useRequest from '#hooks/useRequest';
+import domainContext from '#components/DomainContext';
 
-const keySelector = (item: ExtendedProgram) => item.name;
+const keySelector = (item: ExtendedFiveW) => item.name;
 
-const staticOptions: NumericOption<ExtendedProgram>[] = [
+const staticOptions: NumericOption<ExtendedFiveW>[] = [
     {
         key: 'allocatedBudget',
-        title: 'Total Budget',
-        valueSelector: item => item.totalBudget,
+        title: 'Budget Spend',
+        valueSelector: item => item.allocatedBudget,
+        category: 'DFID Data',
+    },
+    {
+        key: 'programCount',
+        title: 'Programs',
+        valueSelector: item => item.programCount,
+        category: 'DFID Data',
+    },
+    {
+        key: 'componentCount',
+        title: 'Components',
+        valueSelector: item => item.componentCount,
+        category: 'DFID Data',
+    },
+    {
+        key: 'partnerCount',
+        title: 'Partners',
+        valueSelector: item => item.partnerCount,
+        category: 'DFID Data',
+    },
+    {
+        key: 'sectorCount',
+        title: 'Sectors',
+        valueSelector: item => item.sectorCount,
         category: 'DFID Data',
     },
 ];
+
 
 interface ProfileChartData {
     name: string;
@@ -138,7 +168,7 @@ function RegionalProfileCharts(props: Props) {
     const [
         chartSettings,
         setChartSettings,
-    ] = useState<ChartSettings<ExtendedProgram>[]>();
+    ] = useState<ChartSettings<ExtendedFiveW>[]>();
 
     const showableChartSettings = useMemo(
         () => {
@@ -157,7 +187,18 @@ function RegionalProfileCharts(props: Props) {
     }, [onAddModalVisibilityChange, setEditableChartId]);
 
     const handleChartAdd = useCallback(
-        (settings: ChartSettings<ExtendedProgram>) => {
+        (settings: ChartSettings<ExtendedFiveW>) => {
+            if (!editableChartId) {
+                setChartSettings((currentChartSettings) => {
+                    if (!currentChartSettings) {
+                        return [settings];
+                    }
+                    return [
+                        ...currentChartSettings,
+                        settings,
+                    ];
+                });
+            }
             if (!chartSettings) {
                 return;
             }
@@ -169,12 +210,92 @@ function RegionalProfileCharts(props: Props) {
             tmpChartSettings.splice(chartIndex, 1, settings);
             setChartSettings(tmpChartSettings);
         },
-        [editableChartId, chartSettings],
+        [editableChartId, chartSettings, setChartSettings],
     );
 
-    const [programsPending, extendedPrograms] = useExtendedPrograms([]);
+    const {
+        regionLevel,
+    } = useContext(domainContext);
 
-    const editableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
+    const indicatorListGetUrl = `${apiEndPoint}/core/indicator-list/?is_dashboard=true`;
+    const [
+        indicatorListPending,
+        indicatorListResponse,
+    ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl, 'indicator-list');
+
+    const indicatorList = indicatorListResponse?.results.filter(
+        indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regionLevel,
+    );
+
+    const indicatorMapping = useMemo(
+        () => listToMap(
+            indicatorList,
+            item => item.id,
+            item => item,
+        ),
+        [indicatorList],
+    );
+
+    const validSelectedIndicators = useMemo(() => {
+        if (!chartSettings) {
+            return [];
+        }
+        return unique(
+            [...chartSettings
+                .map(item => item.dependencies)
+                .filter(isDefined)
+                .flat(),
+            ].filter(i => !!indicatorMapping[i]),
+            item => item,
+        ).sort();
+    }, [chartSettings, indicatorMapping]);
+
+    const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
+        regionLevel,
+        // eslint-disable-next-line max-len
+        // passing markerId ,submarkerId ,programId ,componentId ,partnerId ,sectorId ,subsectorId as undefined
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        validSelectedIndicators,
+    );
+
+    const filteredFiveWData = extendedFiveWList
+        .filter(data => data.allocatedBudget > 0)
+        .sort((foo, bar) => compareNumber(
+            foo.allocatedBudget,
+            bar.allocatedBudget,
+            1,
+        ))
+        .slice(0, 10);
+
+    const options: NumericOption<ExtendedFiveW>[] = useMemo(
+        () => {
+            if (!indicatorList) {
+                return staticOptions;
+            }
+            return [
+                ...staticOptions,
+                ...indicatorList.map(indicator => ({
+                    key: `indicator_${indicator.id}`,
+                    title: indicator.fullTitle,
+                    // FIXME: zero zero zero
+                    valueSelector: (item: ExtendedFiveW) => item.indicators[indicator.id] || 0,
+
+                    category: indicator.category,
+
+                    dependency: indicator.id,
+                })),
+            ];
+        },
+        [indicatorList],
+    );
+
+    const editableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
         () => {
             const chartSetting = chartSettings?.find(c => c.id === editableChartId);
             if (!chartSetting) {
@@ -254,9 +375,11 @@ function RegionalProfileCharts(props: Props) {
         [expandableDefaultChart],
     );
 
+    const loading = extendedFiveWPending || indicatorListPending;
+
     return (
         <div className={_cs(styles.charts, className)}>
-            {programsPending && (
+            {loading && (
                 <Backdrop className={styles.backdrop}>
                     <LoadingAnimation />
                 </Backdrop>
@@ -281,7 +404,7 @@ function RegionalProfileCharts(props: Props) {
                     className={styles.chartContainer}
                     chartClassName={styles.chart}
                     hideActions={printMode}
-                    data={extendedPrograms}
+                    data={filteredFiveWData}
                     settings={item}
                     onDelete={handleAddHideableChartIds}
                     onExpand={handleChartExpand}
@@ -294,7 +417,7 @@ function RegionalProfileCharts(props: Props) {
                 <ChartModal
                     onClose={handleModalClose}
                     onSave={handleChartAdd}
-                    options={staticOptions}
+                    options={options}
                     keySelector={keySelector}
                     editableChartSettings={editableChartSettings}
                 />
@@ -327,7 +450,7 @@ function RegionalProfileCharts(props: Props) {
                 >
                     <PolyChart
                         chartClassName={styles.chart}
-                        data={extendedPrograms}
+                        data={extendedFiveWList}
                         settings={expandableChartSettings}
                         onDelete={handleAddHideableChartIds}
                         className={styles.polyChart}

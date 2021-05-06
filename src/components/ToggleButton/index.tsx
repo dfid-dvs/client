@@ -60,6 +60,7 @@ function ToggleButton(props: Props) {
             <ToggleSwitch
                 value={value}
                 disabled={disabled}
+                className={styles.switch}
             />
             <div className={styles.label}>
                 { label }

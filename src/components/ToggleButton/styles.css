@@ -48,7 +48,8 @@
 
     .switch {
         margin: 0 var(--spacing-small);
-        font-size: 1.2rem
+        font-size: 1.2rem;
+        width: calc(2* var(--spacing-large) + var(--spacing-super-small));
     }
 
     .label {

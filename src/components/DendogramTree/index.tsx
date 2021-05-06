@@ -38,7 +38,7 @@ const customPathFunction = (linkDatum: {
 const renderCustomNodeElement = (nodeDatum: CustomNodeElementProps) => (
     <DendogramSVGNodeElement
         nodeWidth={NODE_WIDTH}
-        nodeHeight={NODE_HEIGHT}
+        nodeHeight={NODE_HEIGHT + NODE_GAP_Y / 2}
         nodeCircleRadius={NODE_CIRCLE_RADIUS}
         nodeDatum={nodeDatum.nodeDatum}
     />
@@ -58,13 +58,13 @@ function DendogramTree(props: DendogramTreeInterface) {
     }, [treeData]);
 
     if (thirdLevelChildrens > 0) {
-        NODE_WIDTH = 164;
-        NODE_GAP_X = 96;
+        NODE_WIDTH = 160;
+        NODE_GAP_X = 90;
     }
 
     const nodeSize = {
         x: NODE_WIDTH + NODE_GAP_X,
-        y: NODE_HEIGHT + NODE_GAP_Y,
+        y: (treeData.name.length > NODE_HEIGHT ? treeData.name.length : NODE_HEIGHT) + NODE_GAP_Y,
     };
 
     const childCount = secondLevelChildrens + thirdLevelChildrens;
@@ -80,7 +80,14 @@ function DendogramTree(props: DendogramTreeInterface) {
     );
 
     return (
-        <div className={styles.container}>
+        <div
+            className={styles.container}
+            style={{
+                height: childCount * nodeSize.y * 1.15,
+                width: '100%',
+                justifyContent: 'center',
+            }}
+        >
             {onHideDendrogram && (
                 <Button
                     onClick={handleHideDendrogram}
@@ -95,7 +102,7 @@ function DendogramTree(props: DendogramTreeInterface) {
             <div
                 style={{
                     pointerEvents: 'none',
-                    height: childCount * nodeSize.y,
+                    height: childCount * nodeSize.y * 1.15,
                     width: '100%',
                 }}
             >
@@ -106,7 +113,7 @@ function DendogramTree(props: DendogramTreeInterface) {
                     renderCustomNodeElement={renderCustomNodeElement}
                     translate={{
                         x: 0,
-                        y: (childCount * nodeSize.y) / 2,
+                        y: (childCount * nodeSize.y * 1.15) / 2,
                     }}
                 />
             </div>

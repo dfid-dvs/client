@@ -31,6 +31,18 @@ function DendogramSVGNodeElement(props: DendogramInterface) {
     // eslint-disable-next-line no-underscore-dangle
     const nodeDepth = nodeDatum.__rd3t.depth;
 
+    const foHeight = useMemo(
+        () => {
+            if (!nodeDatum.name) {
+                return nodeHeight;
+            }
+            const nameLength = nodeDatum.name.length;
+
+            return nameLength < nodeHeight ? nodeHeight : nameLength;
+        },
+        [nodeDatum.name.length, nodeHeight],
+    );
+
     return (
         <>
             {nodeDepth > 0 && (
@@ -42,9 +54,11 @@ function DendogramSVGNodeElement(props: DendogramInterface) {
             )}
             <foreignObject
                 width={`${nodeWidth}px`}
-                height={`${nodeHeight}px`}
+                height={`${foHeight}px`}
                 style={{
-                    transform: `translateY(-${nodeHeight / 2}px)`,
+                    transform: `translateY(-${foHeight / 2}px)`,
+                    display: 'flex',
+                    alignItems: 'center',
                 }}
             >
                 <div className={styles.nameContainer}>
