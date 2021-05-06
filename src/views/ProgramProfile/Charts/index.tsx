@@ -29,20 +29,15 @@ import {
 } from '#utils/constants';
 
 import styles from './styles.css';
+import useExtendedProgram, { ExtendedProgram } from '#views/Dashboard/useExtendedPrograms';
 
-const keySelector = (item: ExtendedFiveW) => item.name;
+const keySelector = (item: ExtendedProgram) => item.name;
 
-const staticOptions: NumericOption<ExtendedFiveW>[] = [
+const staticOptions: NumericOption<ExtendedProgram>[] = [
     {
         key: 'allocatedBudget',
         title: 'Budget Spend',
-        valueSelector: item => item.allocatedBudget,
-        category: 'DFID Data',
-    },
-    {
-        key: 'programCount',
-        title: 'Programs',
-        valueSelector: item => item.programCount,
+        valueSelector: item => item.totalBudget,
         category: 'DFID Data',
     },
     {
@@ -124,7 +119,7 @@ function ProgramProfileCharts(props: Props) {
         indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regionLevel,
     );
 
-    const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>();
+    const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedProgram>[]>();
 
     const showableChartSettings = useMemo(
         () => {
@@ -144,7 +139,7 @@ function ProgramProfileCharts(props: Props) {
     }, [onAddModalVisibilityChange, setEditableChartId]);
 
     const handleChartAdd = useCallback(
-        (settings: ChartSettings<ExtendedFiveW>) => {
+        (settings: ChartSettings<ExtendedProgram>) => {
             if (!editableChartId) {
                 setChartSettings((currentChartSettings) => {
                     if (!currentChartSettings) {
@@ -179,19 +174,7 @@ function ProgramProfileCharts(props: Props) {
         [indicatorList],
     );
 
-    // const validSelectedIndicators = useMemo(
-    //     () => unique(
-    //         [...chartSettings
-    //             .map(item => item.dependencies)
-    //             .filter(isDefined)
-    //             .flat(),
-    //         ].filter(i => !!indicatorMapping[i]),
-    //         item => item,
-    //     ).sort(),
-    //     [chartSettings, indicatorMapping],
-    // );
-
-    const validSelectedIndicators = useMemo(() => {
+	const validSelectedIndicators = useMemo(() => {
         if (!chartSettings) {
             return [];
         }
@@ -228,29 +211,7 @@ function ProgramProfileCharts(props: Props) {
         ))
         .slice(0, 10);
 
-    const options: NumericOption<ExtendedFiveW>[] = useMemo(
-        () => {
-            if (!indicatorList) {
-                return staticOptions;
-            }
-            return [
-                ...staticOptions,
-                ...indicatorList.map(indicator => ({
-                    key: `indicator_${indicator.id}`,
-                    title: indicator.fullTitle,
-                    // FIXME: zero zero zero
-                    valueSelector: (item: ExtendedFiveW) => item.indicators[indicator.id] || 0,
-
-                    category: indicator.category,
-
-                    dependency: indicator.id,
-                })),
-            ];
-        },
-        [indicatorList],
-    );
-
-    const editableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
+	const editableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
         () => {
             const chartSetting = chartSettings?.find(c => c.id === editableChartId);
             if (!chartSetting) {
@@ -304,7 +265,7 @@ function ProgramProfileCharts(props: Props) {
         [setExpandableChart],
     );
 
-    const expandableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
+    const expandableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
         () => {
             const chartSetting = chartSettings?.find(c => c.id === expandableChart);
             if (!chartSetting) {
@@ -322,10 +283,12 @@ function ProgramProfileCharts(props: Props) {
         },
         [setEditableChartId, onAddModalVisibilityChange],
     );
-
+    const [programsPending, extendedPrograms] = useExtendedProgram([]);
+	
+	const loading = indicatorListPending || extendedFiveWPending || programsPending;
     return (
         <div className={_cs(styles.charts, className)}>
-            {(indicatorListPending || extendedFiveWPending) && (
+            {loading && (
                 <Backdrop className={styles.backdrop}>
                     <LoadingAnimation />
                 </Backdrop>
@@ -350,7 +313,7 @@ function ProgramProfileCharts(props: Props) {
                     className={styles.chartContainer}
                     chartClassName={styles.chart}
                     hideActions={printMode}
-                    data={filteredFiveWData}
+                    data={extendedPrograms}
                     settings={item}
                     onDelete={handleAddHideableChartIds}
                     onExpand={handleChartExpand}
@@ -363,14 +326,14 @@ function ProgramProfileCharts(props: Props) {
                 <ChartModal
                     onClose={handleModalClose}
                     onSave={handleChartAdd}
-                    options={options}
+                    options={staticOptions}
                     keySelector={keySelector}
                     editableChartSettings={editableChartSettings}
                 />
             )}
             {expandableDefaultChart && expandableDefaultChartSettings && (
                 <Modal
-                    onClose={handleChartCollapse}
+                    onClose={handleDefaultChartCollapse}
                     className={styles.modalChart}
                     header={expandableDefaultChartSettings.title}
                     headerClassName={styles.header}
@@ -396,7 +359,7 @@ function ProgramProfileCharts(props: Props) {
                 >
                     <PolyChart
                         chartClassName={styles.chart}
-                        data={extendedFiveWList}
+                        data={extendedPrograms}
                         settings={expandableChartSettings}
                         onDelete={handleAddHideableChartIds}
                         className={styles.polyChart}
