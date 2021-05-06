@@ -4,6 +4,7 @@ import {
     isDefined,
     isNotDefined,
     isFalsyString,
+    compareNumber,
 } from '@togglecorp/fujs';
 import { IoMdClose, IoMdRefresh } from 'react-icons/io';
 
@@ -146,7 +147,11 @@ function RegionProfile(props: Props) {
                 countChild: childCount,
             };
         });
-        return mappedRes;
+        return mappedRes.sort((foo, bar) => compareNumber(
+            foo.countChild,
+            bar.countChild,
+            1,
+        ));
     }, [dendogramUrlResponse]);
 
     const indicatorsData = useMemo(

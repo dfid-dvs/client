@@ -91,6 +91,31 @@ export default function MapOptions(props: MapOptionsProps) {
                             {selectedIndicatorDetails.abstract}
                         </div>
                     )}
+                    {selectedIndicatorDetails.source && (
+                        <div className={styles.titleValue}>
+                            <div className={styles.title}>
+                                Source:
+                            </div>
+                            <div className={styles.value}>
+                                {selectedIndicatorDetails.source}
+                            </div>
+                        </div>
+                    )}
+                    {selectedIndicatorDetails.unit && (
+                        <div
+                            className={_cs(
+                                styles.titleValue,
+                                styles.flex,
+                            )}
+                        >
+                            <div className={styles.title}>
+                                Unit:
+                            </div>
+                            <div className={styles.value}>
+                                {selectedIndicatorDetails.unit}
+                            </div>
+                        </div>
+                    )}
                     {selectedIndicatorDetails.url && (
                         <a
                             className={styles.url}

@@ -109,6 +109,7 @@ export interface Indicator {
     datatype?: 'float' | 'integer';
     federalLevel: 'all' | 'province' | 'district' | 'municipality';
     url?: string;
+    source?: string;
 }
 
 interface ProgramComponent extends BaseEntity {

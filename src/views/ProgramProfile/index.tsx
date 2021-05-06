@@ -3,6 +3,7 @@ import {
     _cs,
     isDefined,
     isFalsyString,
+    compareNumber,
 } from '@togglecorp/fujs';
 import { IoMdClose, IoMdRefresh } from 'react-icons/io';
 import PrintButton from '#components/PrintButton';
@@ -146,7 +147,11 @@ function ProgramProfile(props: Props) {
                 countChild: childCount,
             };
         });
-        return mappedRes;
+        return mappedRes.sort((foo, bar) => compareNumber(
+            foo.countChild,
+            bar.countChild,
+            1,
+        ));;
     }, [partnersTreeDendogramResponse]);
 
     const partnersTreeDataShown = useMemo(
@@ -184,7 +189,11 @@ function ProgramProfile(props: Props) {
                 countChild: childCount,
             };
         });
-        return mappedRes;
+        return mappedRes.sort((foo, bar) => compareNumber(
+            foo.countChild,
+            bar.countChild,
+            1,
+        ));
     }, [regionTreeDendogramResponse]);
 
     const regionsTreeDataShown = useMemo(
