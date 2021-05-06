@@ -375,6 +375,16 @@ function RegionalProfileCharts(props: Props) {
         [expandableDefaultChart],
     );
 
+    const showableDefaultChartSettings = useMemo(
+        () => {
+            if (!hiddenChartIds) {
+                return defaultChartSettings;
+            }
+            return defaultChartSettings?.filter(c => !hiddenChartIds.includes(c.id));
+        },
+        [hiddenChartIds],
+    );
+
     const loading = extendedFiveWPending || indicatorListPending;
 
     return (
@@ -384,7 +394,7 @@ function RegionalProfileCharts(props: Props) {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            {defaultChartSettings.map(item => (
+            {showableDefaultChartSettings.map(item => (
                 <PolyChart
                     key={item.id}
                     className={styles.chartContainer}

@@ -29,5 +29,23 @@
             text-decoration: none;
             font-size: var(--font-size-body-2);
         }
+
+        .title-value {
+            margin: var(--spacing-medium) 0;
+            align-items: center;
+
+            .title {
+                margin-right: var(--spacing-small);
+                font-weight: var(--font-weight-bold);
+            }
+
+            .value {
+                font-size: var(--font-size-body-2);
+            }
+        }
+
+        .flex {
+            display: flex;
+        }
     }
 }

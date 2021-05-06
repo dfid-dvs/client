@@ -131,6 +131,17 @@ function ProgramProfileCharts(props: Props) {
         [chartSettings, hiddenChartIds],
     );
 
+
+    const showableDefaultChartSettings = useMemo(
+        () => {
+            if (!hiddenChartIds) {
+                return defaultChartSettings;
+            }
+            return defaultChartSettings?.filter(c => !hiddenChartIds.includes(c.id));
+        },
+        [hiddenChartIds],
+    );
+
     const [editableChartId, setEditableChartId] = useState<string>();
 
     const handleModalClose = useCallback(() => {
@@ -174,7 +185,7 @@ function ProgramProfileCharts(props: Props) {
         [indicatorList],
     );
 
-	const validSelectedIndicators = useMemo(() => {
+    const validSelectedIndicators = useMemo(() => {
         if (!chartSettings) {
             return [];
         }
@@ -211,7 +222,7 @@ function ProgramProfileCharts(props: Props) {
         ))
         .slice(0, 10);
 
-	const editableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
+    const editableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
         () => {
             const chartSetting = chartSettings?.find(c => c.id === editableChartId);
             if (!chartSetting) {
@@ -241,9 +252,6 @@ function ProgramProfileCharts(props: Props) {
     const expandableDefaultChartSettings = useMemo(
         () => {
             const chartSetting = defaultChartSettings.find(c => c.id === expandableDefaultChart);
-            if (!chartSetting) {
-                return undefined;
-            }
             return chartSetting;
         },
         [expandableDefaultChart],
@@ -284,8 +292,7 @@ function ProgramProfileCharts(props: Props) {
         [setEditableChartId, onAddModalVisibilityChange],
     );
     const [programsPending, extendedPrograms] = useExtendedProgram([]);
-	
-	const loading = indicatorListPending || extendedFiveWPending || programsPending;
+    const loading = indicatorListPending || extendedFiveWPending || programsPending;
     return (
         <div className={_cs(styles.charts, className)}>
             {loading && (
@@ -293,7 +300,7 @@ function ProgramProfileCharts(props: Props) {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            {defaultChartSettings.map(item => (
+            {showableDefaultChartSettings.map(item => (
                 <PolyChart
                     key={item.id}
                     className={styles.chartContainer}

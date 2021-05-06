@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useContext, useCallback } from 'react';
-import { _cs, isDefined, intersection, unique, caseInsensitiveSubmatch } from '@togglecorp/fujs';
+import { _cs, isDefined, intersection, unique, caseInsensitiveSubmatch, compareString } from '@togglecorp/fujs';
 import { MdAssignment, MdBusiness, MdPeople, MdRefresh } from 'react-icons/md';
 import { FaShapes } from 'react-icons/fa';
 
@@ -205,13 +205,48 @@ function ProgramSelector(props: Props) {
     const selectedComponentOriginal = unique(
         selectedProgram.filter(item => item.startsWith('subprogram')).map(item => item.replace('subprogram-', '')),
     );
-    const rawPartnerOptions = partnerListResponse?.results;
-    const rawSectorOptions = sectorListResponse?.results;
-    const rawSubSectorOptions = subSectorListResponse?.results;
-    const rawMarkerOptions = markerListResponse?.results;
-    const rawSubMarkerOptions = subMarkerListResponse?.results;
-    const rawProgramOptionsWithoutComponentSectors = programListResponse?.results;
-    const rawComponentOptions = componentListResponse?.results;
+    const rawPartnerOptions = partnerListResponse?.results.sort(
+        (a, b) => compareString(
+            a.name,
+            b.name,
+        ),
+    );
+    const rawSectorOptions = sectorListResponse?.results.sort(
+        (a, b) => compareString(
+            a.name,
+            b.name,
+        ),
+    );
+    const rawSubSectorOptions = subSectorListResponse?.results.sort(
+        (a, b) => compareString(
+            a.name,
+            b.name,
+        ),
+    );
+    const rawMarkerOptions = markerListResponse?.results.sort(
+        (a, b) => compareString(
+            a.name,
+            b.name,
+        ),
+    );
+    const rawSubMarkerOptions = subMarkerListResponse?.results.sort(
+        (a, b) => compareString(
+            a.markerCategory,
+            b.markerCategory,
+        ),
+    );
+    const rawProgramOptionsWithoutComponentSectors = programListResponse?.results.sort(
+        (a, b) => compareString(
+            a.name,
+            b.name,
+        ),
+    );
+    const rawComponentOptions = componentListResponse?.results.sort(
+        (a, b) => compareString(
+            a.name,
+            b.name,
+        ),
+    );
     const rawProgramOptions = useMemo(() => {
         if (!rawComponentOptions) {
             return undefined;
@@ -294,7 +329,6 @@ function ProgramSelector(props: Props) {
             const selections = new Set(selectedProgramOriginal);
             return selections.has(item.id);
         }
-        // TODO: when component is selected, treat it as program is selected.
         return true;
     });
 
@@ -644,10 +678,6 @@ function ProgramSelector(props: Props) {
                 }
             });
 
-// Data for Development Programme - Phase 2
-// Support for Managing Fiscal Federalism in Nepal
-// Evidence for Development - Assessing Government Data Flows in Nepal
-
             return combinedProgramListWithComponents.map(program => (
                 program.component.map((item => ({
                     key: `subprogram-${item.code}`,
@@ -713,7 +743,7 @@ function ProgramSelector(props: Props) {
         setSelectedPartner,
         setSelectedSector,
     ]);
-    // TODO: disable instead of hide
+
     return (
         <div className={_cs(className, styles.programSelector)}>
             {loading && (
@@ -770,7 +800,6 @@ function ProgramSelector(props: Props) {
                     expandedFilters={expandedFilters}
                     setExpandedFilters={setExpanedFilters}
                     isMinimized={isMinimized}
-                    // collapseLevel={1}
                     icon={<MdPeople />}
                     searchText={markerSearchText}
                     setSearchText={setMarkerSearchText}

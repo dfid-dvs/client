@@ -477,7 +477,7 @@ const userDefinedSchemas: Schema[] = [
 
                         nCode: { type: 'number' }, // Not used
                         // TODO: Fix this
-                        bbox: { type: 'string', required: true },
+                        bbox: { type: 'string' },
                     },
                 },
                 required: true,
@@ -501,7 +501,7 @@ const userDefinedSchemas: Schema[] = [
                         districtId: { type: 'uint', required: true },
                         name: { type: 'string', required: true },
                         // TODO: Fix this
-                        bbox: { type: 'string', required: true },
+                        bbox: { type: 'string' },
 
                         districtName: { type: 'string', required: true },
                         provinceName: { type: 'string', required: true },
@@ -530,7 +530,7 @@ const userDefinedSchemas: Schema[] = [
                         code: { type: 'string', required: true },
                         name: { type: 'string', required: true },
                         // TODO: Fix this
-                        bbox: { type: 'string', required: true },
+                        bbox: { type: 'string' },
                     },
                 },
                 required: true,

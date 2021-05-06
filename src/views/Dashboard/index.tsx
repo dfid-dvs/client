@@ -298,7 +298,6 @@ const Dashboard = (props: Props) => {
     );
 
     const [markerIdList, submarkerIdList] = splitCombinedSelectors(markers, 'submarker');
-    // FIXME: Update programs to String[]
     const [programIdList, componentIdList] = splitCombinedSelectors(programs, 'subprogram');
     const [partnerIdList] = splitCombinedSelectors(partners, 'subpartner');
     const [sectorIdList, subsectorIdList] = splitCombinedSelectors(sectors, 'subsector');
