@@ -693,7 +693,7 @@ const Dashboard = (props: Props) => {
                                         variant="secondary-outline"
                                         className={styles.demoButton}
                                     >
-                                        How to use guide
+                                        View Demo
                                     </Button>
                                 )}
                             </header>

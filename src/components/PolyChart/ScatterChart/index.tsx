@@ -71,12 +71,7 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
         keySelector,
     } = settings;
 
-    const [firstData, secondData] = useMemo(() => {
-        if (!scatterData) {
-            return [undefined, undefined];
-        }
-        return scatterData;
-    }, [scatterData]);
+    const [firstData, secondData] = scatterData ?? [undefined, undefined];
     const newRef = useRef<HTMLDivElement>(null);
 
     const averageLength: number = useMemo(() => {
@@ -96,30 +91,25 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
     );
 
     const finalDataWithIndicators = useMemo(
-        () => {
-            if (!finalData) {
-                return;
+        () => finalData?.map((f) => {
+            const indicatorKeys = Object.keys(f.indicators);
+            if (indicatorKeys.length <= 0) {
+                return f;
             }
-            return finalData.map(f => {
-                const indicatorKeys = Object.keys(f.indicators);
-                if (indicatorKeys.length <= 0) {
-                    return f;
-                }
-                const mappedIndicators = indicatorKeys.map(i => {
-                    const strInd = `indicator_${i}`;
-                    return {
-                        [strInd]: f.indicators[i],
-                    }
-                });
-
-                const [firstIndicator, secondIndicator] = mappedIndicators;
+            const mappedIndicators = indicatorKeys.map((i) => {
+                const strInd = `indicator_${i}`;
                 return {
-                    ...f,
-                    ...firstIndicator,
-                    ...secondIndicator,
+                    [strInd]: f.indicators[i],
                 };
-            }).filter(isDefined);
-        },
+            });
+
+            const [firstIndicator, secondIndicator] = mappedIndicators;
+            return {
+                ...f,
+                ...firstIndicator,
+                ...secondIndicator,
+            };
+        }).filter(isDefined),
         [finalData],
     );
 
@@ -216,7 +206,6 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                                     position: 'insideLeft',
                                 }}
                             />
-                            {/* FIXME: Show data on hover */}
                             <Tooltip
                                 allowEscapeViewBox={{ x: false, y: false }}
                                 offset={20}

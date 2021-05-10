@@ -209,7 +209,7 @@ function IndicatorMap(props: Props) {
         }
         return defaultBounds;
     }, [regionListResponse?.results, isMinimized]);
-    const selectedRegionState: MapStateItem[] | undefined = useMemo(() => {
+    const selectedRegionState: MapStateItem[] = useMemo(() => {
         if (!selectedRegionId) {
             return [];
         }
@@ -219,7 +219,7 @@ function IndicatorMap(props: Props) {
         }];
     }, [selectedRegionId]);
 
-    const hoveredRegionState: MapStateItem[] | undefined = useMemo(() => {
+    const hoveredRegionState: MapStateItem[] = useMemo(() => {
         if (!hoveredRegion) {
             return [];
         }

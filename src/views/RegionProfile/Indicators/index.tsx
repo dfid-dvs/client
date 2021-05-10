@@ -1,5 +1,5 @@
-import React from 'react';
-import { _cs } from '@togglecorp/fujs';
+import React, { useMemo } from 'react';
+import { compareString, listToGroupList, _cs } from '@togglecorp/fujs';
 import { IoMdClose, IoMdRefresh } from 'react-icons/io';
 
 import Backdrop from '#components/Backdrop';
@@ -9,6 +9,7 @@ import { IndicatorValue } from '#types';
 
 import styles from './styles.css';
 import NumberOutput from '../NumberOutput';
+import GroupedIndicator from './GroupedIndicator';
 
 type fiveWDataKey = 'componentCount' | 'programCount'
 | 'sectorCount' | 'supplierCount' | 'totalBudget';
@@ -27,10 +28,18 @@ interface IndicatorProps {
     fiveWData: FiveWData[] | undefined;
     printMode?: boolean;
     onAddHideableFiveWDataKeys?: (key: string) => void;
-    onAddHideableIndicatorsIds?: (key: string) => void;
+    onAddHideableIndicatorsIds?: (category: string, indicatorId: string) => void;
     resetIndicatorsShown?: boolean;
     onResetIndicators?: () => void;
+    onAddHideableIndicatorsCategories?: (key: string) => void;
+    resetBekShown?: boolean;
+    onResetBek?: () => void;
+    onHideBekData?: () => void;
+    bekDataHidden?: boolean;
+    onResetCategory?: (category: string) => void;
+    resettableIndicatorCategories: string[] | undefined;
 }
+
 export default function Indicators(props: IndicatorProps) {
     const {
         className,
@@ -43,7 +52,27 @@ export default function Indicators(props: IndicatorProps) {
         onAddHideableIndicatorsIds,
         resetIndicatorsShown,
         onResetIndicators,
+        onAddHideableIndicatorsCategories,
+        resetBekShown,
+        onResetBek,
+        onHideBekData,
+        bekDataHidden,
+        onResetCategory,
+        resettableIndicatorCategories,
     } = props;
+
+    const groupedIndicatorsData = useMemo(() => listToGroupList(
+        indicatorsData?.sort(
+            (a, b) => compareString(
+                a.indicator,
+                b.indicator,
+            ),
+        ),
+        item => item.category,
+    ), [indicatorsData]);
+
+    const categories = Object.keys(groupedIndicatorsData)
+        .sort((a, b) => compareString(a, b));
 
     return (
         <div className={_cs(styles.indicators, className)}>
@@ -52,28 +81,6 @@ export default function Indicators(props: IndicatorProps) {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            <div className={styles.regionDetails}>
-                {fiveWData?.map(f => (
-                    <NumberOutput
-                        value={f.value || 0}
-                        label={f.label}
-                        key={f.key}
-                        className={styles.numberOutput}
-                        onHideData={onAddHideableFiveWDataKeys}
-                        id={f.key}
-                    />
-                ))}
-                {indicatorsData?.map(d => (
-                    <NumberOutput
-                        value={d.value || 0}
-                        label={d.indicator}
-                        key={d.indicatorId}
-                        className={styles.numberOutput}
-                        id={String(d.indicatorId)}
-                        onHideData={onAddHideableIndicatorsIds}
-                    />
-                ))}
-            </div>
             <div className={styles.buttonGroup}>
                 <Button
                     onClick={setIndicatorsHidden}
@@ -102,6 +109,113 @@ export default function Indicators(props: IndicatorProps) {
                         icons={<IoMdRefresh className={styles.hideIcon} />}
                     />
                 )}
+            </div>
+            <div className={styles.regionDetails}>
+                {!bekDataHidden && (
+                    <div
+                        className={_cs(
+                            styles.categoryContainer,
+                            !bekDataHidden && styles.containerShown,
+                            fiveWData && fiveWData.length === 0 && styles.containerHidden,
+                        )}
+                    >
+                        <div className={styles.category}>
+                            BEK Data
+                            <div className={styles.buttonGroup}>
+                                {onHideBekData && (
+                                    <Button
+                                        onClick={onHideBekData}
+                                        title="Hide"
+                                        transparent
+                                        variant="icon"
+                                        className={_cs(
+                                            styles.button,
+                                            printMode && styles.hidden,
+                                        )}
+                                        icons={<IoMdClose className={styles.hideIcon} />}
+                                    />
+                                )}
+                                {resetBekShown && onResetBek && (
+                                    <Button
+                                        onClick={onResetBek}
+                                        title="Reset"
+                                        transparent
+                                        variant="icon"
+                                        className={_cs(
+                                            styles.button,
+                                            printMode && styles.hidden,
+                                        )}
+                                        icons={<IoMdRefresh className={styles.hideIcon} />}
+                                    />
+                                )}
+                            </div>
+                        </div>
+                        <div className={styles.data}>
+                            {fiveWData?.map(f => (
+                                <NumberOutput
+                                    value={f.value || 0}
+                                    label={f.label}
+                                    key={f.key}
+                                    className={styles.numberOutput}
+                                    onHideData={onAddHideableFiveWDataKeys}
+                                    id={f.key}
+                                    printMode={printMode}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )}
+                {categories.map(cat => (
+                    <GroupedIndicator
+                        key={cat}
+                        className={styles.categoryContainer}
+                        category={cat}
+                        handleHideIndicatorId={onAddHideableIndicatorsIds}
+                        printMode={printMode}
+                        groupedData={groupedIndicatorsData[cat]}
+                        onHideCategory={onAddHideableIndicatorsCategories}
+                        onResetCategory={onResetCategory}
+                        resettableIndicatorCategories={resettableIndicatorCategories}
+                    />
+                ))}
+                {/* {categories.map((cat) => (
+                    <div
+                        key={cat}
+                        className={styles.categoryContainer}
+                    >
+                        <div className={styles.category}>
+                            {cat}
+                            <Button
+                                onClick={setIndicatorsHidden}
+                                title="Hide Indicators"
+                                transparent
+                                variant="icon"
+                                className={_cs(
+                                    styles.button,
+                                    printMode && styles.hidden,
+                                )}
+                            >
+                                <IoMdClose
+                                    className={styles.hideIcon}
+                                />
+                            </Button>
+                        </div>
+                        <div className={styles.data}>
+                            {groupedIndicatorsData[cat].map(d => (
+                                <NumberOutput
+                                    value={d.value ||
+                                            0}
+                                    label={d.indicator}
+                                    key={d.indicatorId}
+                                    className={styles.numberOutput}
+                                    id={String(d.indicatorId)}
+                                    onHideData={onAddHideableIndicatorsIds}
+                                    printMode={printMode}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                ))} */}
             </div>
         </div>
     );

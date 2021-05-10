@@ -11,6 +11,7 @@ export default function NumberOutput(props: {
     className?: string;
     onHideData?: (id: string) => void;
     id: string;
+    printMode?: boolean;
 }) {
     const {
         label,
@@ -18,6 +19,7 @@ export default function NumberOutput(props: {
         className,
         onHideData,
         id,
+        printMode,
     } = props;
 
     const handleHideData = useCallback(
@@ -31,12 +33,20 @@ export default function NumberOutput(props: {
     );
 
     return (
-        <div className={_cs(styles.numberOutput, className)}>
+        <div
+            className={_cs(
+                styles.numberOutput,
+                className,
+            )}
+        >
             <div className={styles.label}>
                 { label }
                 {onHideData && (
                     <IoMdClose
-                        className={styles.icon}
+                        className={_cs(
+                            styles.icon,
+                            printMode && styles.hidden,
+                        )}
                         onClick={handleHideData}
                     />
                 )}

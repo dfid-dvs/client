@@ -228,11 +228,11 @@
 
         .time-slider-container {
             position: absolute;
-            padding-right: var(--spacing-medium);
             right: var(--spacing-large);
             bottom: var(--spacing-large-medium);
             border: var(--width-separator-thin) solid var(--color-separator);
             background-color: var(--color-foreground);
+            padding-right: var(--spacing-medium);
             min-width: var(--width-min-time-slider-container);
             min-height: var(--height-min-time-slider-container);
 
