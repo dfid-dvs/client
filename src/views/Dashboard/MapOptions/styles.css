@@ -31,8 +31,8 @@
         }
 
         .title-value {
-            margin: var(--spacing-medium) 0;
             align-items: center;
+            margin: var(--spacing-medium) 0;
 
             .title {
                 margin-right: var(--spacing-small);

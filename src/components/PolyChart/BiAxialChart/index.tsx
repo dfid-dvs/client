@@ -123,15 +123,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         return 0;
     }, [finalData, keySelector]);
 
-    const hasLongTitles = useMemo(
-        () => {
-            if (longTilesShown) {
-                return true;
-            }
-            return averageLength > 5; // acceptableLength = 5
-        },
-        [longTilesShown, averageLength],
-    );
+    const hasLongTitles = longTilesShown || averageLength > 5;
 
     const handleDownload = useCallback(
         () => {

@@ -477,7 +477,7 @@ const userDefinedSchemas: Schema[] = [
 
                         nCode: { type: 'number' }, // Not used
                         // TODO: Fix this
-                        bbox: { type: 'string' },
+                        bbox: { type: 'string', required: true },
                     },
                 },
                 required: true,
@@ -501,7 +501,7 @@ const userDefinedSchemas: Schema[] = [
                         districtId: { type: 'uint', required: true },
                         name: { type: 'string', required: true },
                         // TODO: Fix this
-                        bbox: { type: 'string' },
+                        bbox: { type: 'string', required: true },
 
                         districtName: { type: 'string', required: true },
                         provinceName: { type: 'string', required: true },
@@ -530,7 +530,7 @@ const userDefinedSchemas: Schema[] = [
                         code: { type: 'string', required: true },
                         name: { type: 'string', required: true },
                         // TODO: Fix this
-                        bbox: { type: 'string' },
+                        bbox: { type: 'string', required: true },
                     },
                 },
                 required: true,
@@ -565,18 +565,6 @@ const userDefinedSchemas: Schema[] = [
         name: 'region-profile',
         description: 'Get data of region profile',
         fields: {
-            activeSectors: {
-                arrayType: {
-                    name: 'active-sectors',
-                    fields: {
-                        id: { type: 'number', required: true },
-                        name: { type: 'string', required: true },
-                        key: { type: 'string', required: true },
-                        value: { type: 'number', required: true },
-                        subSector: { type: 'array.string', required: true },
-                    },
-                },
-            },
             fivewdata: {
                 arrayType: {
                     name: 'fivew-data',
@@ -597,6 +585,7 @@ const userDefinedSchemas: Schema[] = [
                         indicator: { type: 'string', required: true },
                         indicatorId: { type: 'number', required: true },
                         value: { type: 'number', required: true },
+                        category: { type: 'string', required: true },
                     },
                 },
             },
@@ -619,6 +608,24 @@ const userDefinedSchemas: Schema[] = [
                         name: { type: 'string', required: true },
                         key: { type: 'string', required: true },
                         value: { type: 'number', required: true },
+                    },
+                },
+            },
+        },
+    },
+    {
+        name: 'region-sector-graph',
+        description: 'Get sector related graph data of region profile',
+        fields: {
+            activeSectors: {
+                arrayType: {
+                    name: 'active-sectors',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        name: { type: 'string', required: true },
+                        key: { type: 'string', required: true },
+                        value: { type: 'number', required: true },
+                        subSector: { type: 'array.string', required: true },
                     },
                 },
             },

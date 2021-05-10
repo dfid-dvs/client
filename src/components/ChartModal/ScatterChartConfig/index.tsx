@@ -110,34 +110,29 @@ function ScatterChartConfig<T>(props: Props<T>) {
                     id: randomString(),
                 },
             ];
-            if (editableChartData) {
-                const editableData = editableChartData.data;
-                if (!editableData) {
-                    return defaultData;
-                }
-                const mappedData = editableData.map((e) => {
-                    const opt = options.find(o => o.key === e.key);
-                    if (!opt) {
-                        return undefined;
-                    }
-                    return {
-                        id: randomString(),
-                        optionName: opt.key,
-                    };
-                }).filter(isDefined);
-                if (mappedData.length <= 0) {
-                    return defaultData;
-                }
-                if (mappedData.length === 1) {
-                    return [
-                        ...mappedData,
-                        defaultData[0],
-                    ];
-                }
-                const [firstDataValue, secondDataValue] = mappedData;
-                return [firstDataValue, secondDataValue];
+            const editableData = editableChartData?.data;
+            if (!editableData) {
+                return defaultData;
             }
-            return defaultData;
+            const mappedData = editableData.map((e) => {
+                const opt = options.find(o => o.key === e.key);
+                return opt ? {
+                    id: randomString(),
+                    optionName: opt.key,
+                } : undefined;
+            }).filter(isDefined);
+
+            if (mappedData.length <= 0) {
+                return defaultData;
+            }
+            if (mappedData.length === 1) {
+                return [
+                    ...mappedData,
+                    defaultData[0],
+                ];
+            }
+            const [firstDataValue, secondDataValue] = mappedData;
+            return [firstDataValue, secondDataValue];
         },
         [editableChartData, options],
     );

@@ -23,6 +23,7 @@ import SingleRegionSelect, { Province, District, Municipality } from '#component
 import Button from '#components/Button';
 import TextAreaInput from '#components/TextAreaInput';
 import DendogramTree from '#components/DendogramTree';
+import LoadingAnimation from '#components/LoadingAnimation';
 
 import uiAidBEKLogo from '#resources/ukaid-bek-logo.jpg';
 import useBasicToggle from '#hooks/useBasicToggle';
@@ -105,6 +106,11 @@ interface DendogramResponse {
     }[];
 }
 
+interface RegionSectorGraphResponse {
+    activeSectors: ActiveSectors[];
+    topSectorByNoOfPartner: ProfileChartData[];
+}
+
 function RegionProfile(props: Props) {
     const { className } = props;
     const {
@@ -130,8 +136,8 @@ function RegionProfile(props: Props) {
     const regionProfileUrl = selectedRegionData?.id ? `${apiEndPoint}/core/profile?region=${regionLevel}&${regionLevel}_code=${+selectedRegionData.code}` : undefined;
     const [regionProfilePending, regionProfileResponse] = useRequest<RegionProfileResponse>(regionProfileUrl, 'region-profile');
     const dendogramUrl = selectedRegionData?.id ? `${apiEndPoint}/core/regionaldendrogram?region=${regionLevel}&${regionLevel}_code=${selectedRegionData.code}` : undefined;
-
     const [dendogramUrlPending, dendogramUrlResponse] = useRequest<DendogramResponse>(dendogramUrl, 'region-dendogram');
+
     const mappedDendogramData = useMemo(() => {
         if (!dendogramUrlResponse) {
             return undefined;
@@ -175,7 +181,10 @@ function RegionProfile(props: Props) {
         [regionProfileResponse?.fivewdata],
     );
 
-    const activeSectors: ActiveSectors[] | undefined = regionProfileResponse?.activeSectors;
+    const regionalSectorGraphUrl = selectedRegionData?.id ? `${apiEndPoint}/core/regional-sector-graph?region=${regionLevel}&${regionLevel}_code=${+selectedRegionData.code}` : undefined;
+    const [regionSectorGraphPending, regionSectorGraphResponse] = useRequest<RegionSectorGraphResponse>(regionalSectorGraphUrl, 'region-sector-graph');
+
+    const activeSectors: ActiveSectors[] | undefined = regionSectorGraphResponse?.activeSectors;
 
     const activeSectorsForChart: ProfileChartData[] | undefined = activeSectors?.map(sect => ({
         name: sect.name,
@@ -185,13 +194,13 @@ function RegionProfile(props: Props) {
     }));
 
     // eslint-disable-next-line max-len
-    const topProgramByBudget: ProfileChartData[] | undefined = regionProfileResponse?.topProgramByBudget;
+    const topProgramByBudget = regionProfileResponse?.topProgramByBudget;
 
     // eslint-disable-next-line max-len
-    const topPartnerByBudget: ProfileChartData[] | undefined = regionProfileResponse?.topPartnerByBudget;
+    const topPartnerByBudget = regionProfileResponse?.topPartnerByBudget;
 
     // eslint-disable-next-line max-len
-    const topSectorByNoOfPartner: ProfileChartData[] | undefined = regionProfileResponse?.topSectorByNoOfPartner;
+    const topSectorByNoOfPartner = regionSectorGraphResponse?.topSectorByNoOfPartner;
 
     const handleAddChartModalClick = useCallback(() => {
         setAddModalVisibility(true);
@@ -212,6 +221,12 @@ function RegionProfile(props: Props) {
     const currentDate = new Date().toDateString();
 
     const dataPending = regionProfilePending || dendogramUrlPending;
+
+    const [
+        bekDataHidden,
+        onHideBekData,
+        onShowBekData,
+    ] = useBasicToggle();
 
     const [
         indicatorsHidden,
@@ -240,7 +255,9 @@ function RegionProfile(props: Props) {
     const [hiddenChartIds, setHiddenChartIds] = useState<string[]>();
     const [hiddenFiveWDataKeys, setHiddenFiveWDataKeys] = useState<string[]>();
     const [hiddenIndicatorsIds, setHiddenIndicatorsIds] = useState<string[]>();
+    const [hiddenIndicatorsCategories, setHiddenIndicatorsCategories] = useState<string[]>();
     const [hiddenDendrogramNames, setHiddenDendrogramNames] = useState<string[]>();
+    const [resettableIndicatorCategories, setResettableIndicatorCategories] = useState<string[]>();
 
     const handleAddHideableFiveWDataKeys = useCallback(
         (key: string | undefined) => {
@@ -258,26 +275,42 @@ function RegionProfile(props: Props) {
     );
 
     const handleAddHideableIndicatorsIds = useCallback(
-        (id: string | undefined) => {
-            if (isFalsyString(id)) {
-                return;
-            }
+        (category: string, id: string) => {
             setHiddenIndicatorsIds((prevIds) => {
                 if (!prevIds) {
                     return [id];
                 }
                 return [...prevIds, id];
             });
+
+            setResettableIndicatorCategories((prevCategories) => {
+                if (!prevCategories) {
+                    return [category];
+                }
+                return [...prevCategories, category];
+            });
         },
-        [setHiddenIndicatorsIds],
+        [setHiddenIndicatorsIds, setResettableIndicatorCategories],
     );
 
     const onResetIndicators = useCallback(
         () => {
             setHiddenFiveWDataKeys(undefined);
             setHiddenIndicatorsIds(undefined);
+            setHiddenIndicatorsCategories(undefined);
+            onShowBekData();
         },
-        [setHiddenFiveWDataKeys, setHiddenIndicatorsIds],
+        [
+            setHiddenFiveWDataKeys,
+            setHiddenIndicatorsIds,
+            setHiddenIndicatorsCategories,
+            onShowBekData,
+        ],
+    );
+
+    const onResetFiveW = useCallback(
+        () =>  setHiddenFiveWDataKeys(undefined),
+        [setHiddenFiveWDataKeys],
     );
 
     const handleAddHideableDendrogramNames = useCallback(
@@ -293,6 +326,21 @@ function RegionProfile(props: Props) {
             });
         },
         [setHiddenDendrogramNames],
+    );
+
+    const handleAddHideableIndicatorsCategories = useCallback(
+        (category: string | undefined) => {
+            if (isFalsyString(category)) {
+                return;
+            }
+            setHiddenIndicatorsCategories((prevCategories) => {
+                if (!prevCategories) {
+                    return [category];
+                }
+                return [...prevCategories, category];
+            });
+        },
+        [setHiddenIndicatorsCategories],
     );
 
     const onResetDendrogram = useCallback(
@@ -372,6 +420,13 @@ function RegionProfile(props: Props) {
             if (resetProfileShown) {
                 onResetProfile();
             }
+            setHiddenChartIds(undefined);
+            setHiddenFiveWDataKeys(undefined);
+            setHiddenIndicatorsIds(undefined);
+            setHiddenIndicatorsCategories(undefined);
+            setHiddenDendrogramNames(undefined);
+            setResettableIndicatorCategories(undefined);
+            onShowBekData();
         },
         [
             setRegion,
@@ -380,6 +435,13 @@ function RegionProfile(props: Props) {
             setDescription,
             resetProfileShown,
             onResetProfile,
+            setHiddenChartIds,
+            setHiddenFiveWDataKeys,
+            setHiddenIndicatorsIds,
+            setHiddenIndicatorsCategories,
+            setHiddenDendrogramNames,
+            setResettableIndicatorCategories,
+            onShowBekData,
         ],
     );
 
@@ -393,16 +455,46 @@ function RegionProfile(props: Props) {
         [hiddenFiveWDataKeys, fiveWData],
     );
 
+    const resetFiveWShown = hiddenFiveWDataKeys && hiddenFiveWDataKeys?.length > 0; 
+
     const filteredIndicatorsData = useMemo(
         () => {
-            if (!hiddenIndicatorsIds) {
+            if (!hiddenIndicatorsIds && !hiddenIndicatorsCategories) {
                 return indicatorsData;
             }
-            return indicatorsData?.filter(
-                f => !hiddenIndicatorsIds.includes(String(f.indicatorId)),
+
+            return indicatorsData?.filter(f => !hiddenIndicatorsCategories?.includes(f.category))
+                .filter(f => !hiddenIndicatorsIds?.includes(String(f.indicatorId)));
+        },
+        [
+            hiddenIndicatorsCategories,
+            hiddenIndicatorsIds,
+            indicatorsData,
+        ],
+    );
+
+    const onResetCategory = useCallback(
+        (category: string) => {
+            const categoryIndicatorsData = indicatorsData?.filter(data => data.category === category)
+                .map(item => String(item.indicatorId));
+            
+            if (!categoryIndicatorsData) {
+                return;
+            }
+
+            setHiddenIndicatorsIds((prevIds) => {
+                if (!prevIds) {
+                    return undefined;
+                }
+                const filteredIds = prevIds.filter(id => !categoryIndicatorsData.includes(id));
+                return filteredIds;
+            });
+
+            setResettableIndicatorCategories(
+                (prevCategories) => prevCategories?.filter(cat => cat !== category),
             );
         },
-        [hiddenIndicatorsIds, indicatorsData],
+        [indicatorsData, setHiddenIndicatorsIds, setResettableIndicatorCategories],
     );
 
     const filteredDendrogramData = useMemo(
@@ -419,11 +511,19 @@ function RegionProfile(props: Props) {
 
     const resetIndicatorsShown = useMemo(
         () => {
-            const totalHiddenFiveWData = !!hiddenFiveWDataKeys?.length;
-            const totalHiddenIndicators = !!hiddenIndicatorsIds?.length;
-            return totalHiddenFiveWData || totalHiddenIndicators;
+            const fiveWDataHidden = hiddenFiveWDataKeys && hiddenFiveWDataKeys.length > 0;
+            const indicatorIdsHidden = hiddenIndicatorsIds && hiddenIndicatorsIds.length > 0;
+            // eslint-disable-next-line max-len
+            const indicatorCategoriesHidden = hiddenIndicatorsCategories && hiddenIndicatorsCategories.length > 0;
+            return fiveWDataHidden || indicatorIdsHidden
+                || indicatorCategoriesHidden || bekDataHidden;
         },
-        [hiddenFiveWDataKeys, hiddenIndicatorsIds],
+        [
+            hiddenFiveWDataKeys,
+            hiddenIndicatorsIds,
+            hiddenIndicatorsCategories,
+            bekDataHidden,
+        ],
     );
 
     return (
@@ -519,6 +619,14 @@ function RegionProfile(props: Props) {
                                 onAddHideableIndicatorsIds={handleAddHideableIndicatorsIds}
                                 resetIndicatorsShown={resetIndicatorsShown}
                                 onResetIndicators={onResetIndicators}
+                                // eslint-disable-next-line max-len
+                                onAddHideableIndicatorsCategories={handleAddHideableIndicatorsCategories}
+                                resetBekShown={resetFiveWShown}
+                                onResetBek={onResetFiveW}
+                                onHideBekData={onHideBekData}
+                                bekDataHidden={bekDataHidden}
+                                onResetCategory={onResetCategory}
+                                resettableIndicatorCategories={resettableIndicatorCategories}
                             />
                         )}
                         {!dataPending && !descriptionHidden && (
@@ -602,7 +710,7 @@ function RegionProfile(props: Props) {
                                         </Button>
                                     </div>
                                 </div>
-                                {filteredDendrogramData && filteredDendrogramData.map(res => (
+                                {filteredDendrogramData?.map(res => (
                                     <DendogramTree
                                         treeData={res}
                                         key={res.name}
@@ -611,7 +719,10 @@ function RegionProfile(props: Props) {
                                 ))}
                             </div>
                         )}
-                        {!dataPending && regionLevel !== 'municipality' && (
+                        {regionSectorGraphPending && (
+                            <LoadingAnimation />
+                        )}
+                        {!regionSectorGraphPending && regionLevel !== 'municipality' && (
                             <RegionProfileCharts
                                 className={styles.charts}
                                 printMode={printMode}

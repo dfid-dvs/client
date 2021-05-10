@@ -248,10 +248,7 @@ function ProgramSelector(props: Props) {
         ),
     );
     const rawProgramOptions = useMemo(() => {
-        if (!rawComponentOptions) {
-            return undefined;
-        }
-        if (!rawProgramOptionsWithoutComponentSectors) {
+        if (!rawComponentOptions || !rawProgramOptionsWithoutComponentSectors) {
             return undefined;
         }
         const programs = rawProgramOptionsWithoutComponentSectors.map((prog) => {
@@ -604,6 +601,7 @@ function ProgramSelector(props: Props) {
             const textFilteredPrograms = applicableProgramOptions?.filter(
                 item => caseInsensitiveSubmatch(item.name, programSearchText),
             );
+            // eslint-disable-next-line max-len
             if (selectedSectorOriginal.length <= 0 && selectedSubSectorOriginal.length <= 0 && selectedPartnerOriginal.length <= 0) {
                 const programList = textFilteredPrograms?.map(program => (
                     program.component.map((item => ({
@@ -675,7 +673,7 @@ function ProgramSelector(props: Props) {
                 return {
                     ...prog,
                     component: combinedPartnerComps,
-                }
+                };
             });
 
             return combinedProgramListWithComponents.map(program => (
