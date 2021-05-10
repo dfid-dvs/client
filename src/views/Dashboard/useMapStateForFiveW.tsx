@@ -24,6 +24,7 @@ function useMapStateForFiveW(
     partnerIdList: string[] | undefined,
     sectorIdList: string[] | undefined,
     subsectorIdList: string[] | undefined,
+    selectedStatus: "ongoing" | "completed" | undefined = undefined,
     selectedFiveWOption?: FiveWOptionKey,
     preserveResponse = false,
 ): [boolean, MapStateItem[], FiveW[]] {
@@ -42,6 +43,7 @@ function useMapStateForFiveW(
         sector_id: sectorIdList,
         // eslint-disable-next-line camelcase
         sub_sector_id: subsectorIdList,
+        status: selectedStatus,
     };
     const regionUrlParams = p(params);
     const regionFiveWGetUrl = regionUrlParams

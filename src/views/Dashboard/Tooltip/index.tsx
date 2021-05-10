@@ -108,6 +108,8 @@ interface Props {
 
     toolTipMinimized?: boolean;
     toggleTooltipMinimized?: () => void;
+
+    selectedStatus: 'ongoing' | 'completed' | undefined;
 }
 
 const Tooltip = (props: Props) => {
@@ -134,6 +136,7 @@ const Tooltip = (props: Props) => {
 
         toolTipMinimized,
         toggleTooltipMinimized,
+        selectedStatus,
     } = props;
 
     const popupDataUrl = useMemo(
@@ -155,6 +158,7 @@ const Tooltip = (props: Props) => {
                 sector_id: sectorIdList,
                 // eslint-disable-next-line camelcase
                 sub_sector_id: subsectorIdList,
+                status: selectedStatus,
             };
 
             return `${apiEndPoint}/core/popup/?${p(urlParams)}`;
@@ -169,6 +173,7 @@ const Tooltip = (props: Props) => {
             partnerIdList,
             sectorIdList,
             subsectorIdList,
+            selectedStatus,
         ],
     );
 

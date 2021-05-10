@@ -117,11 +117,19 @@
             border-bottom: 1px solid var(--color-grey-shade-3);
             padding: calc(var(--spacing-small-medium) - 2 * var(--spacing-super-small)) var(--spacing-medium);
 
-            .segment-input {
+            .filters {
                 display: flex;
-                align-items: center;
-                flex-direction: row;
-                justify-content: space-between;
+
+                .segment-input {
+                    display: flex;
+                    align-items: center;
+                    flex-direction: row;
+                    justify-content: space-between;
+                }
+
+                .status-filter {
+                    margin-left: var(--spacing-extra-large);
+                }
             }
     
             .label {
