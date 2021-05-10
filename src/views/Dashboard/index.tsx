@@ -53,6 +53,7 @@ import {
 import useBasicToggle from '#hooks/useBasicToggle';
 import useStoredState from '#hooks/useStoredState';
 import Modal from '#components/Modal';
+import SegmentInput from '#components/SegmentInput';
 
 import Tooltip from './Tooltip';
 
@@ -81,6 +82,22 @@ interface MapRegion {
 }
 
 type AdminLevel = Province | District | Municipality | undefined;
+
+type StatusTabOptionKeys = 'all' | 'ongoing' | 'completed';
+
+interface StatusTabOption {
+    key: StatusTabOptionKeys;
+    label: string;
+}
+
+const statusTabOptions: StatusTabOption[] = [
+    { key: 'all', label: 'All' },
+    { key: 'ongoing', label: 'Ongoing' },
+    { key: 'completed', label: 'Completed' },
+];
+
+const statusKeySelector = (item: StatusTabOption) => item.key;
+const statusLabelSelector = (item: StatusTabOption) => item.label;
 
 const walkthroughContent = [
     {
@@ -219,6 +236,16 @@ const Dashboard = (props: Props) => {
     const [sideContentMinimized, , , toggleSideContainerMinimized] = useBasicToggle();
     const [toolTipMinimized, , , toggleToolTipMinimized] = useBasicToggle();
     const [filterButtonHidden, hideFilterButton, showFilterButton] = useBasicToggle();
+    const [selectedStatus, setSelectedStatus] = useState<StatusTabOptionKeys>('all');
+
+    const onSelectStatus = useCallback(
+        (statusTabKey: StatusTabOptionKeys) => {
+            setSelectedStatus(statusTabKey);
+        },
+        [setSelectedStatus],
+    );
+
+    const selectedFilterStatus = selectedStatus === 'all' ? undefined : selectedStatus;
 
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
     const [
@@ -315,6 +342,7 @@ const Dashboard = (props: Props) => {
         partnerIdList,
         sectorIdList,
         subsectorIdList,
+        selectedFilterStatus,
         fiveWOptionKey,
         false,
     );
@@ -675,18 +703,28 @@ const Dashboard = (props: Props) => {
                                 className={styles.header}
                                 data-tut="view__by"
                             >
-                                <SingleRegionSelect
-                                    onRegionLevelChange={handleRegionLevelChange}
-                                    regionLevel={regionLevel}
-                                    region={region?.id}
-                                    onRegionChange={handleRegionChange}
-                                    disabled={printMode}
-                                    showDropDownIcon
-                                    selectInputClassName={styles.demoModeRegionSelect}
-                                    segmentLabel="View by"
-                                    segmentInputClassName={styles.segmentInput}
-                                    segmentLabelClassName={styles.label}
-                                />
+                                <div className={styles.filters}>
+                                    <SingleRegionSelect
+                                        onRegionLevelChange={handleRegionLevelChange}
+                                        regionLevel={regionLevel}
+                                        region={region?.id}
+                                        onRegionChange={handleRegionChange}
+                                        disabled={printMode}
+                                        showDropDownIcon
+                                        selectInputClassName={styles.demoModeRegionSelect}
+                                        segmentLabel="View by"
+                                        segmentInputClassName={styles.segmentInput}
+                                        segmentLabelClassName={styles.label}
+                                    />
+                                    <SegmentInput
+                                        options={statusTabOptions}
+                                        optionKeySelector={statusKeySelector}
+                                        optionLabelSelector={statusLabelSelector}
+                                        value={selectedStatus}
+                                        onChange={onSelectStatus}
+                                        className={styles.statusFilter}
+                                    />
+                                </div>
                                 {demoHidden && (
                                     <Button
                                         onClick={handleResetTour}
@@ -762,6 +800,7 @@ const Dashboard = (props: Props) => {
                                         partnerIdList={partnerIdList}
                                         sectorIdList={sectorIdList}
                                         subsectorIdList={subsectorIdList}
+                                        selectedStatus={selectedFilterStatus}
                                     />
                                     {region && (
                                         <Tooltip
@@ -780,6 +819,7 @@ const Dashboard = (props: Props) => {
                                             setTooltipExpanded={setTooltipExpanded}
                                             toolTipMinimized={toolTipMinimized}
                                             toggleTooltipMinimized={toggleToolTipMinimized}
+                                            selectedStatus={selectedFilterStatus}
                                         />
                                     )}
                                 </div>
@@ -875,6 +915,7 @@ const Dashboard = (props: Props) => {
                                         subsectorIdList={subsectorIdList}
                                         unsetTooltipExpanded={unsetExpandableTooltip}
                                         tooltipExpanded={tooltipExpanded}
+                                        selectedStatus={selectedFilterStatus}
                                     />
                                 </Modal>
                             )}

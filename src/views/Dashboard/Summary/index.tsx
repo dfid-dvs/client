@@ -35,6 +35,7 @@ interface SummaryProps {
     partnerIdList?: string[];
     sectorIdList?: string[];
     subsectorIdList?: string[];
+    selectedStatus: 'ongoing' | 'completed' | undefined;
 }
 
 function Summary(props: SummaryProps) {
@@ -47,6 +48,7 @@ function Summary(props: SummaryProps) {
         partnerIdList,
         sectorIdList,
         subsectorIdList,
+        selectedStatus,
     } = props;
 
     const summaryParams = p({
@@ -64,6 +66,7 @@ function Summary(props: SummaryProps) {
         sector_id: sectorIdList,
         // eslint-disable-next-line camelcase
         sub_sector_id: subsectorIdList,
+        status: selectedStatus,
     });
 
     const summaryUrl = summaryParams ? `${apiEndPoint}/core/summary/?${summaryParams}` : `${apiEndPoint}/core/summary/`;
