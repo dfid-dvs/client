@@ -102,15 +102,16 @@ export function isVectorLayer(layer: Layer): layer is VectorLayer {
 export interface Indicator {
     id: number;
     fullTitle: string;
-    abstract: string | undefined;
+    abstract?: string;
     category: string;
 
     unit?: string;
-    datatype?: 'float' | 'integer';
+    dataType?: 'float' | 'integer';
     federalLevel: 'all' | 'province' | 'district' | 'municipality';
     url?: string;
     source?: string;
 }
+
 
 interface ProgramComponent extends BaseEntity {
     code: string;

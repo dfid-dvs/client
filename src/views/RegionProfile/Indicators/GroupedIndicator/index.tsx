@@ -15,9 +15,9 @@ interface Props {
     handleHideIndicatorId?: (category: string, indicatorId: string) => void;
     onHideCategory?: (category: string) => void;
     printMode?: boolean;
-	groupedData: IndicatorValue[];
-	onResetCategory?: (category: string) => void;
-	resettableIndicatorCategories: string[] | undefined;
+    groupedData: IndicatorValue[];
+    onResetCategory?: (category: string) => void;
+    resettableIndicatorCategories: string[] | undefined;
 }
 export default function GroupedIndicator(props: Props) {
     const {
@@ -25,13 +25,13 @@ export default function GroupedIndicator(props: Props) {
         className,
         handleHideIndicatorId,
         printMode,
-		groupedData,
-		onHideCategory,
-		onResetCategory,
-		resettableIndicatorCategories,
+        groupedData,
+        onHideCategory,
+        onResetCategory,
+        resettableIndicatorCategories,
     } = props;
 
-	const handleHideCategory = useCallback(
+    const handleHideCategory = useCallback(
         () => {
             if (!onHideCategory) {
                 return;
@@ -41,7 +41,7 @@ export default function GroupedIndicator(props: Props) {
         [category, onHideCategory],
     );
 
-	const handleResetCategory = useCallback(
+    const handleResetCategory = useCallback(
         () => {
             if (!onResetCategory) {
                 return;
@@ -51,74 +51,74 @@ export default function GroupedIndicator(props: Props) {
         [category, onResetCategory],
     );
 
-	const resetButtonShown = useMemo(
-		() => resettableIndicatorCategories?.includes(category),
-		[resettableIndicatorCategories, category],
-	);
+    const resetButtonShown = useMemo(
+        () => resettableIndicatorCategories?.includes(category),
+        [resettableIndicatorCategories, category],
+    );
 
-	const onHideIndicatorId = useCallback(
-		(id: string) => {
-			if (!handleHideIndicatorId) {
-				return;
-			}
-			handleHideIndicatorId(category, id);
-		},
-		[handleHideIndicatorId]
-	);
+    const onHideIndicatorId = useCallback(
+        (id: string) => {
+            if (!handleHideIndicatorId) {
+                return;
+            }
+            handleHideIndicatorId(category, id);
+        },
+        [handleHideIndicatorId, category],
+    );
 
-	return (
+    return (
         <div
-			className={_cs(
-				styles.categoryContainer,
-				className,
-			)}
-		>
-			<div className={styles.category}>
-				{category}
-				<div className={styles.buttonGroup}>
-					<Button
-						onClick={handleHideCategory}
-						title="Hide Category"
-						transparent
-						variant="icon"
-						className={_cs(
-							styles.button,
-							printMode && styles.hidden,
-						)}
-					>
-						<IoMdClose
-							className={styles.hideIcon}
-						/>
-					</Button>
-					{onResetCategory && (
-						<Button
-							onClick={handleResetCategory}
-							title="Reset Indicators"
-							transparent
-							variant="icon"
-							className={_cs(
-								styles.button,
-								printMode && styles.hidden,
-								!resetButtonShown && styles.hidden,
-							)}
-							icons={<IoMdRefresh className={styles.hideIcon} />}
-						/>
-					)}
-				</div>
-			</div>
-			<div className={styles.data}>
-				{groupedData?.map(f => (
-					<NumberOutput
-						value={f.value || 0}
-						label={f.indicator}
-						key={f.indicatorId}
-						className={styles.numberOutput}
-						onHideData={onHideIndicatorId}
-						id={String(f.indicatorId)}
-						printMode={printMode}
-					/>
-				))}
-			</div>
-		</div>
+            className={_cs(
+                styles.categoryContainer,
+                className,
+            )}
+        >
+            <div className={styles.category}>
+                {category}
+                <div className={styles.buttonGroup}>
+                    <Button
+                        onClick={handleHideCategory}
+                        title="Hide Category"
+                        transparent
+                        variant="icon"
+                        className={_cs(
+                            styles.button,
+                            printMode && styles.hidden,
+                        )}
+                    >
+                        <IoMdClose
+                            className={styles.hideIcon}
+                        />
+                    </Button>
+                    {onResetCategory && (
+                        <Button
+                            onClick={handleResetCategory}
+                            title="Reset Indicators"
+                            transparent
+                            variant="icon"
+                            className={_cs(
+                                styles.button,
+                                printMode && styles.hidden,
+                                !resetButtonShown && styles.hidden,
+                            )}
+                            icons={<IoMdRefresh className={styles.hideIcon} />}
+                        />
+                    )}
+                </div>
+            </div>
+            <div className={styles.data}>
+                {groupedData?.map(f => (
+                    <NumberOutput
+                        value={f.value || 0}
+                        label={f.indicator}
+                        key={f.indicatorId}
+                        className={styles.numberOutput}
+                        onHideData={onHideIndicatorId}
+                        id={String(f.indicatorId)}
+                        printMode={printMode}
+                    />
+                ))}
+            </div>
+        </div>
     );
 }

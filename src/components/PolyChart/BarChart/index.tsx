@@ -113,11 +113,11 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                 return data;
             }
             return data
-                .filter(datum => {
+                .filter((datum) => {
                     const value = limit.valueSelector(datum);
                     const keyName = keySelector(datum);
                     const keyAllRegioned = keyName === 'All Province' || keyName === 'All District';
-                    return keyAllRegioned ? isDefined(value) && value > 0 : isDefined(value); 
+                    return keyAllRegioned ? isDefined(value) && value > 0 : isDefined(value);
                 })
                 .sort((foo, bar) => compareNumber(
                     limit.valueSelector(foo),

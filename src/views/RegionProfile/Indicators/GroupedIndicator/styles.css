@@ -19,14 +19,6 @@
         display: flex;
         flex-wrap: wrap;
     }
-
-    &.container-shown {
-        display: block;
-    }
-
-    &.container-hidden {
-        display: none;
-    }
 }
 
 .number-output {

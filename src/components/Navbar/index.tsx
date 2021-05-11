@@ -114,16 +114,6 @@ const Navbar = (props: Props) => {
                             </Link>
                         )}
                     </DropdownMenu>
-                    {/*
-                    <NavLink
-                        exact
-                        className={styles.link}
-                        activeClassName={styles.active}
-                        to="/output/"
-                    >
-                        Output
-                    </NavLink>
-                      */}
                     <NavLink
                         exact
                         className={styles.link}
@@ -135,16 +125,16 @@ const Navbar = (props: Props) => {
                 </div>
             </div>
             <div className={styles.userActions}>
-                    {!urlOptionsPending && urlOption && (
-                        <a
-                            className={styles.adminConsoleLink}
-                            href={urlOption.url}
-                            rel="noreferrer noopener"
-                            target="_blank"
-                        >
-                            {urlOption.title}
-                        </a>
-                    )}
+                {!urlOptionsPending && urlOption && (
+                    <a
+                        className={styles.adminConsoleLink}
+                        href={urlOption.url}
+                        rel="noreferrer noopener"
+                        target="_blank"
+                    >
+                        {urlOption.title}
+                    </a>
+                )}
                 {administrator && (
                     <a
                         className={styles.adminConsoleLink}

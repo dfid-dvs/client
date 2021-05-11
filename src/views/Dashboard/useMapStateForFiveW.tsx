@@ -24,7 +24,7 @@ function useMapStateForFiveW(
     partnerIdList: string[] | undefined,
     sectorIdList: string[] | undefined,
     subsectorIdList: string[] | undefined,
-    selectedStatus: "ongoing" | "completed" | undefined = undefined,
+    selectedStatus: 'ongoing' | 'completed' | undefined = undefined,
     selectedFiveWOption?: FiveWOptionKey,
     preserveResponse = false,
 ): [boolean, MapStateItem[], FiveW[]] {
