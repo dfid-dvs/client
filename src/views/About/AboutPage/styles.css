@@ -67,6 +67,28 @@
                     }
                 }
             }
+
+            .manual-link {
+                display: flex;
+                align-items: center;
+                margin-top: var(--spacing-extra-large);
+                width: fit-content;
+                border: var(--width-separator-thin) solid var(--color-secondary);
+                background-color: transparent;
+                padding: var(--spacing-medium);
+                text-decoration: none;
+                color: var(--color-secondary);
+                font-weight: var(--font-weight-bold);
+                font-size: var(--font-size-medium);
+
+                &:hover {
+                    filter: brightness(90%)
+                }
+
+                .manual-icon {
+                    margin-right: var(--spacing-medium);
+                }
+            }
         }
         
         .right {
@@ -121,7 +143,6 @@
                         font-weight: var(--bold);
                     }
                 }
-
             }
         }
     }

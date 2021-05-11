@@ -833,6 +833,25 @@ const userDefinedSchemas: Schema[] = [
             },
         },
     },
+    {
+        name: 'manual-data',
+        description: 'Get manual link',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'manual',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        file: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
 ];
 
 const warning = !isProduction;
