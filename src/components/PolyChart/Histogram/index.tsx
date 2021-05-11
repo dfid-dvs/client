@@ -7,17 +7,19 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
+    LabelList,
 } from 'recharts';
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
-import { IoMdClose, IoMdDownload } from 'react-icons/io';
+import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import { HistogramSettings } from '#types';
+import handleChartDownload from '#utils/downloadChart';
+import useBasicToggle from '#hooks/useBasicToggle';
 
 import styles from './styles.css';
-import handleChartDownload from '#utils/downloadChart';
 
 const valueTickFormatter = (value: number | string | undefined) => {
     if (isNotDefined(value)) {
@@ -104,6 +106,8 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         [data, valueSelector, binCount],
     );
 
+    const [labelShown, , , toggleLabelShown] = useBasicToggle();
+
     const handleDownload = useCallback(
         () => {
             handleChartDownload(newRef, title, styles.actions);
@@ -155,6 +159,19 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                                 <IoMdClose className={styles.deleteIcon} />
                             </Button>
                         )}
+                        <Button
+                            onClick={toggleLabelShown}
+                            name={id}
+                            title="View Label"
+                            transparent
+                            variant="icon"
+                        >
+                            {labelShown ? (
+                                <IoMdEyeOff className={styles.expandIcon} />
+                            ) : (
+                                <IoMdEye className={styles.expandIcon} />
+                            )}
+                        </Button>
                         {!expandableIconHidden && (
                             <Button
                                 onClick={onExpand}
@@ -203,7 +220,15 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                                 name="Frequency"
                                 dataKey="value"
                                 fill={color}
-                            />
+                            >
+                                {labelShown && (
+                                    <LabelList
+                                        dataKey="value"
+                                        position="inside"
+                                        formatter={valueTickFormatter}
+                                    />
+                                )}
+                            </Bar>
                         </BarChart>
                     </ResponsiveContainer>
                 )}

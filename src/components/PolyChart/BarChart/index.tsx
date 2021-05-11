@@ -9,8 +9,9 @@ import {
     Legend,
     ResponsiveContainer,
     TickFormatterFunction,
+    LabelList,
 } from 'recharts';
-import { IoMdClose, IoMdDownload } from 'react-icons/io';
+import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
@@ -20,6 +21,7 @@ import Button from '#components/Button';
 import SegmentInput from '#components/SegmentInput';
 import { BarChartSettings } from '#types';
 import handleChartDownload from '#utils/downloadChart';
+import useBasicToggle from '#hooks/useBasicToggle';
 
 import styles from './styles.css';
 
@@ -153,6 +155,8 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         [layout],
     );
 
+    const [labelShown, , , toggleLabelShown] = useBasicToggle();
+
     const handleDownload = useCallback(
         () => {
             handleChartDownload(newRef, title, styles.actions);
@@ -204,6 +208,19 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                 <IoMdClose className={styles.deleteIcon} />
                             </Button>
                         )}
+                        <Button
+                            onClick={toggleLabelShown}
+                            name={id}
+                            title="View Label"
+                            transparent
+                            variant="icon"
+                        >
+                            {labelShown ? (
+                                <IoMdEyeOff className={styles.expandIcon} />
+                            ) : (
+                                <IoMdEye className={styles.expandIcon} />
+                            )}
+                        </Button>
                         {!expandableIconHidden && (
                             <Button
                                 onClick={onExpand}
@@ -270,8 +287,15 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                     dataKey={bar.valueSelector}
                                     fill={bar.color}
                                     stackId={bar.stackId}
-                                    barSize={22}
-                                />
+                                >
+                                    {labelShown && (
+                                        <LabelList
+                                            dataKey={bar.key}
+                                            position="inside"
+                                            formatter={valueTickFormatter}
+                                        />
+                                    )}
+                                </Bar>
                             ))}
                         </BarChart>
                     </ResponsiveContainer>

@@ -10,7 +10,7 @@ import {
 import { MdPieChart, MdDonutLarge } from 'react-icons/md';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
-import { IoMdClose, IoMdDownload } from 'react-icons/io';
+import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff } from 'react-icons/io';
 
 import handleChartDownload from '#utils/downloadChart';
 
@@ -20,6 +20,7 @@ import SegmentInput from '#components/SegmentInput';
 import { tableauColors } from '#utils/constants';
 
 import { PieChartSettings } from '#types';
+import useBasicToggle from '#hooks/useBasicToggle';
 
 import styles from './styles.css';
 
@@ -45,8 +46,46 @@ function truncateString(value: string, maxLen = 12) {
     if (value.length < maxLen) {
         return value;
     }
-    return `${value.slice(0, maxLen)}…`;
+    return `${value.slice(0, maxLen)} …`;
 }
+
+interface CustomizedLabel {
+    cx: number;
+    cy: number;
+    midAngle: number;
+    innerRadius: number;
+    outerRadius: number;
+    value: number; 
+}
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = (donut: boolean) => (props: CustomizedLabel) => {
+    const {
+        cx,
+        cy,
+        midAngle,
+        innerRadius,
+        outerRadius,
+        value,
+    } = props;
+    const factor = donut ? 0.35 : 0.5;
+    const radius = innerRadius + (outerRadius - innerRadius) * factor;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    return (
+        <g>
+            <text
+                x={x}
+                y={y}
+                textAnchor={x > cx ? "start" : "end"}
+                dominantBaseline="central"
+                fill="#212121"
+                fontSize="0.75em"
+            >
+                {formatNumeral(value)}
+            </text>
+        </g>
+    );
+};
 
 interface PieChartUnitProps<T> {
     settings: PieChartSettings<T>;
@@ -115,7 +154,13 @@ const createActiveShape = (center: boolean) => (props: ActiveShapeProps) => {
                     {key}
                 </text>
             ) : (
-                <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
+                <text
+                    x={cx}
+                    y={cy}
+                    dy={8}
+                    textAnchor="middle"
+                    fill={fill}
+                >
                     {truncateString(key)}
                 </text>
             )}
@@ -150,6 +195,11 @@ const createActiveShape = (center: boolean) => (props: ActiveShapeProps) => {
 };
 const ActiveShape = createActiveShape(false);
 const CenteredActiveShape = createActiveShape(true);
+
+const renderLegendText = (value: string, entry: any) => {
+    const { payload } = entry;
+    return <span>{value} {`(${(payload.percent * 100).toFixed(2)}%)`}</span>;
+};
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
@@ -191,7 +241,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                     bar.value,
                     -1,
                 ));
-            const limit = 6;
+            const limit = 7;
             if (mappedData.length <= limit) {
                 return mappedData;
             }
@@ -208,6 +258,8 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         setActiveIndex(index);
     };
 
+    const [labelShown, , , toggleLabelShown] = useBasicToggle();
+
     const handleDownload = useCallback(
         () => {
             handleChartDownload(newRef, title, styles.actions);
@@ -215,6 +267,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         [title],
     );
 
+    const CustomizedLabel = renderCustomizedLabel(type==='donut');
 
     return (
         <div
@@ -260,6 +313,19 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                                 <IoMdClose className={styles.deleteIcon} />
                             </Button>
                         )}
+                        <Button
+                            onClick={toggleLabelShown}
+                            name={id}
+                            title="View Label"
+                            transparent
+                            variant="icon"
+                        >
+                            {labelShown ? (
+                                <IoMdEyeOff className={styles.expandIcon} />
+                            ) : (
+                                <IoMdEye className={styles.expandIcon} />
+                            )}
+                        </Button>
                         {!expandableIconHidden && (
                             <Button
                                 onClick={onExpand}
@@ -292,8 +358,8 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                         >
                             <Pie
                                 data={finalData}
-                                innerRadius={type === 'donut' ? '40%' : undefined}
-                                outerRadius="60%"
+                                innerRadius={type === 'donut' ? '45%' : undefined}
+                                outerRadius="65%"
                                 fill="#8884d8"
                                 isAnimationActive={false}
                                 nameKey="key"
@@ -301,6 +367,8 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                                 onMouseEnter={handlePieEnter}
                                 activeIndex={activeIndex}
                                 activeShape={type === 'donut' ? CenteredActiveShape : ActiveShape}
+                                labelLine={false}
+                                label={labelShown ? <CustomizedLabel /> : false}
                             >
                                 {finalData?.map((entry, index) => (
                                     <Cell
@@ -310,9 +378,10 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                                 ))}
                             </Pie>
                             <Legend
-                                layout="vertical"
-                                align="right"
-                                verticalAlign="middle"
+                                layout="horizontal"
+                                align="center"
+                                verticalAlign="bottom"
+                                formatter={renderLegendText}
                             />
                         </PieChart>
                     </ResponsiveContainer>
