@@ -216,7 +216,7 @@ function BiAxialChartConfig<T>(props: Props<T>) {
     }, [editableChartData, options]);
     const [biAxialData, setBiAxialData] = useState<BiAxialData[]>(biAxialChartData);
     const [limitValue, setLimitValue] = useState<string>(
-        editableChartData ? String(editableChartData.limit?.count) : '7',
+        editableChartData ? String(editableChartData.limit?.count) : '8',
     );
     const [order, setOrder] = useState<OrderOptionKey | undefined>('asc');
     const [orderField, setOrderField] = useState<string | undefined>();

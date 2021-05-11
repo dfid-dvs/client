@@ -43,10 +43,10 @@ function formatNumeral(value: number) {
 }
 
 function truncateString(value: string, maxLen = 12) {
-    if (value.length < maxLen) {
+    if (value.length <= maxLen) {
         return value;
     }
-    return `${value.slice(0, maxLen)} …`;
+    return `${value.slice(0, maxLen)}…`;
 }
 
 interface CustomizedLabel {
@@ -79,7 +79,7 @@ const renderCustomizedLabel = (donut: boolean) => (props: CustomizedLabel) => {
                 textAnchor={x > cx ? "start" : "end"}
                 dominantBaseline="central"
                 fill="#212121"
-                fontSize="0.75em"
+                fontSize="80%"
             >
                 {formatNumeral(value)}
             </text>
@@ -184,10 +184,10 @@ const createActiveShape = (center: boolean) => (props: ActiveShapeProps) => {
             />
             <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
             <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-            <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">
+            <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333" fontSize='0.9em'>
                 {`${(percent * 100).toFixed(2)}%`}
             </text>
-            <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
+            <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999" fontSize='0.8em'>
                 {formatNumeral(value)}
             </text>
         </g>
@@ -235,13 +235,13 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                     key: keySelector(datum),
                     value: valueSelector(datum),
                 }))
-                .filter(datum => isDefined(datum.value))
+                .filter(datum => isDefined(datum.value) && datum.value > 0)
                 .sort((foo, bar) => compareNumber(
                     foo.value,
                     bar.value,
                     -1,
                 ));
-            const limit = 7;
+            const limit = 8;
             if (mappedData.length <= limit) {
                 return mappedData;
             }
