@@ -309,7 +309,7 @@ function RegionProfile(props: Props) {
     );
 
     const onResetFiveW = useCallback(
-        () =>  setHiddenFiveWDataKeys(undefined),
+        () => setHiddenFiveWDataKeys(undefined),
         [setHiddenFiveWDataKeys],
     );
 
@@ -455,7 +455,7 @@ function RegionProfile(props: Props) {
         [hiddenFiveWDataKeys, fiveWData],
     );
 
-    const resetFiveWShown = hiddenFiveWDataKeys && hiddenFiveWDataKeys?.length > 0; 
+    const resetFiveWShown = hiddenFiveWDataKeys && hiddenFiveWDataKeys?.length > 0;
 
     const filteredIndicatorsData = useMemo(
         () => {
@@ -475,9 +475,10 @@ function RegionProfile(props: Props) {
 
     const onResetCategory = useCallback(
         (category: string) => {
-            const categoryIndicatorsData = indicatorsData?.filter(data => data.category === category)
+            const categoryIndicatorsData = indicatorsData
+                ?.filter(data => data.category === category)
                 .map(item => String(item.indicatorId));
-            
+
             if (!categoryIndicatorsData) {
                 return;
             }
@@ -491,7 +492,7 @@ function RegionProfile(props: Props) {
             });
 
             setResettableIndicatorCategories(
-                (prevCategories) => prevCategories?.filter(cat => cat !== category),
+                prevCategories => prevCategories?.filter(cat => cat !== category),
             );
         },
         [indicatorsData, setHiddenIndicatorsIds, setResettableIndicatorCategories],

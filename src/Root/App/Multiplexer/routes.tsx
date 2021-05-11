@@ -49,6 +49,12 @@ const routeSettings: SomeRoute[] = [
         load: lazy(() => import('../../../views/About/FaqPage')),
     },
     {
+        path: '/metadata/',
+        name: 'metadata',
+        title: 'Meta Data',
+        load: lazy(() => import('../../../views/About/MetadataPage')),
+    },
+    {
         path: '/termsandconditions/',
         name: 'termsandconditions',
         title: 'Terms & Conditions',

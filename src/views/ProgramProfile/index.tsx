@@ -151,7 +151,7 @@ function ProgramProfile(props: Props) {
             foo.countChild,
             bar.countChild,
             1,
-        ));;
+        ));
     }, [partnersTreeDendogramResponse]);
 
     const partnersTreeDataShown = useMemo(

@@ -55,7 +55,7 @@ interface CustomizedLabel {
     midAngle: number;
     innerRadius: number;
     outerRadius: number;
-    value: number; 
+    value: number;
 }
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = (donut: boolean) => (props: CustomizedLabel) => {
@@ -76,7 +76,7 @@ const renderCustomizedLabel = (donut: boolean) => (props: CustomizedLabel) => {
             <text
                 x={x}
                 y={y}
-                textAnchor={x > cx ? "start" : "end"}
+                textAnchor={x > cx ? 'start' : 'end'}
                 dominantBaseline="central"
                 fill="#212121"
                 fontSize="80%"
@@ -122,7 +122,6 @@ interface ActiveShapeProps {
     value: number;
 }
 const createActiveShape = (center: boolean) => (props: ActiveShapeProps) => {
-    const RADIAN = Math.PI / 180;
     const {
         cx,
         cy,
@@ -184,10 +183,10 @@ const createActiveShape = (center: boolean) => (props: ActiveShapeProps) => {
             />
             <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
             <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-            <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333" fontSize='0.9em'>
+            <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333" fontSize="0.9em">
                 {`${(percent * 100).toFixed(2)}%`}
             </text>
-            <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999" fontSize='0.8em'>
+            <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999" fontSize="0.8em">
                 {formatNumeral(value)}
             </text>
         </g>
@@ -198,7 +197,12 @@ const CenteredActiveShape = createActiveShape(true);
 
 const renderLegendText = (value: string, entry: any) => {
     const { payload } = entry;
-    return <span>{value} {`(${(payload.percent * 100).toFixed(2)}%)`}</span>;
+    return (
+        <span>
+            {value}
+            {`(${(payload.percent * 100).toFixed(2)}%)`}
+        </span>
+    );
 };
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -267,7 +271,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         [title],
     );
 
-    const CustomizedLabel = renderCustomizedLabel(type==='donut');
+    const CustomizedLabel = renderCustomizedLabel(type === 'donut');
 
     return (
         <div

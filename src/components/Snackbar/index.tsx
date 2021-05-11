@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { IoMdClose } from 'react-icons/io';
 

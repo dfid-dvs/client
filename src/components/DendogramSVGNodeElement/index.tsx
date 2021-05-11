@@ -40,7 +40,7 @@ function DendogramSVGNodeElement(props: DendogramInterface) {
 
             return nameLength < nodeHeight ? nodeHeight : nameLength;
         },
-        [nodeDatum.name.length, nodeHeight],
+        [nodeDatum.name, nodeHeight],
     );
 
     return (

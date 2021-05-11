@@ -17,6 +17,7 @@ interface AboutOption {
 const aboutOptionList: AboutOption[] = [
     { key: 'about', label: 'About' },
     { key: 'faqs', label: 'FAQs' },
+    { key: 'metadata', label: 'Meta Data' },
     { key: 'termsandconditions', label: 'Terms & Conditions' },
     { key: 'feedback', label: 'Feedback' },
 ];
