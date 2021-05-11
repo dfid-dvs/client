@@ -74,7 +74,7 @@ function useExtendedFiveW(
     );
 
     const fiveWList: FiveW[] | undefined = regionFiveWListResponse?.results
-        .filter(item => item.code !== '-1')
+        // .filter(item => item.code !== '-1')
         .map(item => ({
             ...item,
             programCount: item.program.length,
