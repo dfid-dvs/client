@@ -1,5 +1,5 @@
 import React from 'react';
-import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
+import { IoMdCheckmarkCircleOutline, IoMdDocument } from 'react-icons/io';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -51,6 +51,16 @@ interface Summary {
     sector: number;
 }
 
+interface Manual {
+    count: number;
+    next?: number;
+    previous?: number;
+    results: {
+        id: number;
+        file: string;
+    }[]
+}
+
 export default function AboutPage() {
     const summaryUrl = `${apiEndPoint}/core/summary/`;
 
@@ -58,6 +68,16 @@ export default function AboutPage() {
         summaryPending,
         summary,
     ] = useRequest<Summary>(summaryUrl, 'fivew-summary');
+
+    const manualUrl = `${apiEndPoint}/core/manual/`;
+    const [
+        manualPending,
+        manual,
+    ] = useRequest<Manual>(manualUrl, 'manual-data');
+
+    const loading = summaryPending || manualPending;
+
+    const manualLink = manual?.results[0].file;
     return (
         <AboutPageContainer>
             <div className={styles.container}>
@@ -70,7 +90,7 @@ export default function AboutPage() {
                     </div>
                 </div>
                 <div className={styles.stats}>
-                    {summaryPending && (
+                    {loading && (
                         <Backdrop>
                             <LoadingAnimation />
                         </Backdrop>
@@ -117,6 +137,15 @@ export default function AboutPage() {
                                 </div>
                             ))}
                         </div>
+                        <a
+                            className={styles.manualLink}
+                            href={manualLink}
+                            rel="noreferrer noopener"
+                            target="_blank"
+                        >
+                            <IoMdDocument className={styles.manualIcon} />
+                            View Manual
+                        </a>
                     </div>
                     <div className={styles.right}>
                         <img
