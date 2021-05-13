@@ -115,8 +115,11 @@ function ProgramProfileCharts(props: Props) {
         indicatorListResponse,
     ] = useRequest<MultiResponse<Indicator>>(indicatorListGetUrl, 'indicator-list');
 
-    const indicatorList = indicatorListResponse?.results.filter(
-        indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regionLevel,
+    const indicatorList = useMemo(
+        () => indicatorListResponse?.results.filter(
+            indicator => indicator.federalLevel === 'all' || indicator.federalLevel === regionLevel,
+        ),
+        [indicatorListResponse?.results, regionLevel],
     );
 
     const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedProgram>[]>();
@@ -142,12 +145,15 @@ function ProgramProfileCharts(props: Props) {
         [hiddenChartIds],
     );
 
-    const [editableChartId, setEditableChartId] = useState<string>();
+    const [editableChartId, setEditableChartId] = useState<string | undefined>();
 
-    const handleModalClose = useCallback(() => {
-        onAddModalVisibilityChange(false);
-        setEditableChartId(undefined);
-    }, [onAddModalVisibilityChange, setEditableChartId]);
+    const handleModalClose = useCallback(
+        () => {
+            onAddModalVisibilityChange(false);
+            setEditableChartId(undefined);
+        },
+        [onAddModalVisibilityChange],
+    );
 
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedProgram>) => {
@@ -213,22 +219,21 @@ function ProgramProfileCharts(props: Props) {
         validSelectedIndicators,
     );
 
-    const filteredFiveWData = extendedFiveWList
-        .filter(data => data.allocatedBudget > 0)
-        .sort((foo, bar) => compareNumber(
-            foo.allocatedBudget,
-            bar.allocatedBudget,
-            1,
-        ))
-        .slice(0, 10);
+    const filteredFiveWData = useMemo(
+        () => extendedFiveWList
+            .filter(data => data.allocatedBudget > 0)
+            .sort((foo, bar) => compareNumber(
+                foo.allocatedBudget,
+                bar.allocatedBudget,
+                1,
+            ))
+            .slice(0, 10),
+        [extendedFiveWList],
+    );
 
     const editableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
         () => {
             const chartSetting = chartSettings?.find(c => c.id === editableChartId);
-            if (!chartSetting) {
-                return undefined;
-            }
-
             return chartSetting;
         },
         [chartSettings, editableChartId],
@@ -259,26 +264,16 @@ function ProgramProfileCharts(props: Props) {
 
     const [expandableChart, setExpandableChart] = useState<string>();
 
-    const handleChartExpand = useCallback(
-        (id: string | undefined) => {
-            setExpandableChart(id);
-        },
-        [setExpandableChart],
-    );
-
     const handleChartCollapse = useCallback(
         () => {
             setExpandableChart(undefined);
         },
-        [setExpandableChart],
+        [],
     );
 
     const expandableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
         () => {
             const chartSetting = chartSettings?.find(c => c.id === expandableChart);
-            if (!chartSetting) {
-                return undefined;
-            }
             return chartSetting;
         },
         [chartSettings, expandableChart],
@@ -289,8 +284,9 @@ function ProgramProfileCharts(props: Props) {
             setEditableChartId(id);
             onAddModalVisibilityChange(true);
         },
-        [setEditableChartId, onAddModalVisibilityChange],
+        [onAddModalVisibilityChange],
     );
+
     const [programsPending, extendedPrograms] = useExtendedProgram([]);
     const loading = indicatorListPending || extendedFiveWPending || programsPending;
     return (
@@ -323,7 +319,7 @@ function ProgramProfileCharts(props: Props) {
                     data={extendedPrograms}
                     settings={item}
                     onDelete={handleAddHideableChartIds}
-                    onExpand={handleChartExpand}
+                    onExpand={setExpandableChart}
                     chartExpanded={expandableChart}
                     onSetEditableChartId={onSetEditableChartId}
                     longTilesShown
@@ -370,7 +366,7 @@ function ProgramProfileCharts(props: Props) {
                         settings={expandableChartSettings}
                         onDelete={handleAddHideableChartIds}
                         className={styles.polyChart}
-                        onExpand={handleChartExpand}
+                        onExpand={setExpandableChart}
                         chartExpanded={expandableChart}
                         longTilesShown
                     />

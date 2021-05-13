@@ -59,19 +59,17 @@ function DateRangeSelector(props: DateRangeProps) {
         },
         [defaultStartDate, defaultEndDate],
     );
+
     const selectedSliderDateRange = useMemo(() => {
-        const convStartDate = new Date(defaultStartDate).getFullYear();
-        const convEndDate = new Date(defaultEndDate).getFullYear();
-        const defYear = [convStartDate, convEndDate];
+        const defYear = [...defaultYears];
         if (startDate) {
             defYear[0] = new Date(startDate).getFullYear();
             if (endDate) {
-                defYear[0] = new Date(startDate).getFullYear();
                 defYear[1] = new Date(endDate).getFullYear();
             }
         }
         return defYear;
-    }, [startDate, endDate, defaultStartDate, defaultEndDate]);
+    }, [startDate, endDate, defaultYears]);
 
     const [sliderDateRange, setSliderDateRange] = useState(selectedSliderDateRange);
 

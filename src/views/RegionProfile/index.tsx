@@ -127,16 +127,19 @@ function RegionProfile(props: Props) {
     const [showAddModal, setAddModalVisibility] = useState(false);
     const [description, setDescription] = useState('');
 
-    const handleDescriptionChange = useCallback(
-        (value: string) => {
-            setDescription(value);
-        },
-        [setDescription],
-    );
+    // eslint-disable-next-line max-len
     const regionProfileUrl = selectedRegionData?.id ? `${apiEndPoint}/core/profile?region=${regionLevel}&${regionLevel}_code=${+selectedRegionData.code}` : undefined;
-    const [regionProfilePending, regionProfileResponse] = useRequest<RegionProfileResponse>(regionProfileUrl, 'region-profile');
+    const [
+        regionProfilePending,
+        regionProfileResponse,
+    ] = useRequest<RegionProfileResponse>(regionProfileUrl, 'region-profile');
+
+    // eslint-disable-next-line max-len
     const dendogramUrl = selectedRegionData?.id ? `${apiEndPoint}/core/regionaldendrogram?region=${regionLevel}&${regionLevel}_code=${selectedRegionData.code}` : undefined;
-    const [dendogramUrlPending, dendogramUrlResponse] = useRequest<DendogramResponse>(dendogramUrl, 'region-dendogram');
+    const [
+        dendogramUrlPending,
+        dendogramUrlResponse,
+    ] = useRequest<DendogramResponse>(dendogramUrl, 'region-dendogram');
 
     const mappedDendogramData = useMemo(() => {
         if (!dendogramUrlResponse) {
@@ -655,7 +658,7 @@ function RegionProfile(props: Props) {
                                     placeholder="Write your description..."
                                     autoFocus
                                     value={description}
-                                    onChange={handleDescriptionChange}
+                                    onChange={setDescription}
                                     className={styles.textInput}
                                     inputClassName={styles.textAreaInput}
                                     disabled={printMode}

@@ -18,15 +18,7 @@ function DendogramSVGNodeElement(props: DendogramInterface) {
         nodeDatum,
     } = props;
 
-    const endNodeHidden: boolean = useMemo(
-        () => {
-            if (nodeDatum.children) {
-                return nodeDatum.children.length <= 0;
-            }
-            return true;
-        },
-        [nodeDatum.children],
-    );
+    const endNodeHidden = (nodeDatum?.children && nodeDatum.children.length <= 0) ?? true;
 
     // eslint-disable-next-line no-underscore-dangle
     const nodeDepth = nodeDatum.__rd3t.depth;

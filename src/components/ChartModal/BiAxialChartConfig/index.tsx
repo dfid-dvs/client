@@ -81,10 +81,9 @@ function BiAxialChartItem<T>(props: BiAxialChartItemProps<T>) {
         onToggleChartType,
     } = props;
 
-    // FIXME: memoize
-    const keySelector = (item: NumericOption<T>) => item.key;
-    const labelSelector = (item: NumericOption<T>) => item.title;
-    const groupSelector = (item: NumericOption<T>) => item.category;
+    const keySelector = useMemo(() => (item: NumericOption<T>) => item.key, []);
+    const labelSelector = useMemo(() => (item: NumericOption<T>) => item.title, []);
+    const groupSelector = useMemo(() => (item: NumericOption<T>) => item.category, []);
 
     const handleOptionNameChange = useCallback(
         (optionName: string | undefined) => {
@@ -168,10 +167,9 @@ function BiAxialChartConfig<T>(props: Props<T>) {
         editableChartData,
     } = props;
 
-    // FIXME: memoize
-    const keySelector = (item: NumericOption<T>) => item.key;
-    const labelSelector = (item: NumericOption<T>) => item.title;
-    const groupSelector = (item: NumericOption<T>) => item.category;
+    const keySelector = useMemo(() => (item: NumericOption<T>) => item.key, []);
+    const labelSelector = useMemo(() => (item: NumericOption<T>) => item.title, []);
+    const groupSelector = useMemo(() => (item: NumericOption<T>) => item.category, []);
 
     const [error, setError] = useState<string | undefined>(undefined);
 
@@ -216,7 +214,7 @@ function BiAxialChartConfig<T>(props: Props<T>) {
     }, [editableChartData, options]);
     const [biAxialData, setBiAxialData] = useState<BiAxialData[]>(biAxialChartData);
     const [limitValue, setLimitValue] = useState<string>(
-        editableChartData ? String(editableChartData.limit?.count) : '8',
+        String(editableChartData?.limit?.count ?? 8),
     );
     const [order, setOrder] = useState<OrderOptionKey | undefined>('asc');
     const [orderField, setOrderField] = useState<string | undefined>();

@@ -72,11 +72,16 @@
         .hidden {
             display: none;
         }
-    
-        &:hover {
-            .hide-icon {
-                opacity: 1;
+    }
+
+    &:hover {
+        .button-group {
+            .button {
+                .hide-icon {
+                    opacity: 1;
+                }
             }
         }
     }
 }
+

@@ -35,9 +35,9 @@ interface MapOptionsProps {
     vectorLayers: VectorLayer[] | undefined;
     setSelectedVectorLayers: React.Dispatch<React.SetStateAction<number[] | undefined>>;
     selectedVectorLayers: number[] | undefined;
-    rasterLayers: RasterLayer[] | undefined;
-    setSelectedRasterLayer: React.Dispatch<React.SetStateAction<number | undefined>>;
-    selectedRasterLayer: number | undefined;
+    // rasterLayers?: RasterLayer[] | undefined;
+    // setSelectedRasterLayer?: React.Dispatch<React.SetStateAction<number | undefined>>;
+    // selectedRasterLayer?: number | undefined;
 }
 
 export default function MapOptions(props: MapOptionsProps) {
@@ -57,9 +57,6 @@ export default function MapOptions(props: MapOptionsProps) {
         vectorLayers,
         setSelectedVectorLayers,
         selectedVectorLayers,
-        rasterLayers,
-        setSelectedRasterLayer,
-        selectedRasterLayer,
     } = props;
     return (
         <div className={_cs(styles.mapSelectorContainer, className)}>
@@ -145,7 +142,7 @@ export default function MapOptions(props: MapOptionsProps) {
                 optionKeySelector={layerKeySelector}
                 optionLabelSelector={layerLabelSelector}
             />
-            {/* NOTE: Hidden as per clients's request. */}
+            {/* NOTE: Hidden for now as per clients's request. */}
             {/* <SelectInput
                 placeholder="Background Layer"
                 className={styles.inputItem}

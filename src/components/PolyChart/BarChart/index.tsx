@@ -126,7 +126,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                 ))
                 .slice(0, limit.count);
         },
-        [data, limit],
+        [data, limit, keySelector],
     );
 
     const averageLength: number = finalData
@@ -146,7 +146,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
             }
             return hasLongTitles ? categoryTickFormatter : undefined;
         },
-        [layout, longTilesShown, hasLongTitles, categoryTickFormatter],
+        [layout, longTilesShown, hasLongTitles],
     );
 
     const xCompWidth = useMemo(
@@ -156,7 +156,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
             }
             return hasLongTitles ? 140 : 86;
         },
-        [layout],
+        [layout, hasLongTitles],
     );
 
     const [labelShown, , , toggleLabelShown] = useBasicToggle();
@@ -294,7 +294,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                 >
                                     {labelShown && (
                                         <LabelList
-                                            dataKey={bar.key}
+                                            dataKey={bar.valueSelector}
                                             position="inside"
                                             formatter={valueTickFormatter}
                                         />

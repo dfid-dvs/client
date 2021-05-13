@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import {
     ChartSettings,
@@ -43,10 +43,7 @@ function PolyChart<T extends object>(props: Props<T>) {
         longTilesShown = false,
     } = props;
 
-    const expandableIconHidden = useMemo(
-        () => chartExpanded === settings.id,
-        [chartExpanded, settings.id],
-    );
+    const expandableIconHidden = chartExpanded === settings.id;
 
     if (isBarChart(settings)) {
         return (

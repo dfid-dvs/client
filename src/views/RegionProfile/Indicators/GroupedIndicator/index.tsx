@@ -33,20 +33,18 @@ export default function GroupedIndicator(props: Props) {
 
     const handleHideCategory = useCallback(
         () => {
-            if (!onHideCategory) {
-                return;
+            if (onHideCategory) {
+                onHideCategory(category);
             }
-            onHideCategory(category);
         },
         [category, onHideCategory],
     );
 
     const handleResetCategory = useCallback(
         () => {
-            if (!onResetCategory) {
-                return;
+            if (onResetCategory) {
+                onResetCategory(category);
             }
-            onResetCategory(category);
         },
         [category, onResetCategory],
     );
@@ -58,10 +56,9 @@ export default function GroupedIndicator(props: Props) {
 
     const onHideIndicatorId = useCallback(
         (id: string) => {
-            if (!handleHideIndicatorId) {
-                return;
+            if (handleHideIndicatorId) {
+                handleHideIndicatorId(category, id);
             }
-            handleHideIndicatorId(category, id);
         },
         [handleHideIndicatorId, category],
     );

@@ -12,11 +12,13 @@ export default async function handleChartDownload(
         if (actions) {
             actions.style.display = 'none';
         }
-        const png = await html2canvas(
+        const canvas = await html2canvas(
             divRef.current, {
                 scale: 3,
             },
-        ).then(canvas => canvas.toDataURL('image/png', 1.0));
+        );
+
+        const png = await canvas.toDataURL('image/png', 1.0);
 
         await FileSaver.saveAs(png, `${title}.png`);
 

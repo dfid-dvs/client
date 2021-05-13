@@ -180,11 +180,15 @@ function RegionalProfileCharts(props: Props) {
         [chartSettings, hiddenChartIds],
     );
 
-    const [editableChartId, setEditableChartId] = useState<string>();
-    const handleModalClose = useCallback(() => {
-        onAddModalVisibilityChange(false);
-        setEditableChartId(undefined);
-    }, [onAddModalVisibilityChange, setEditableChartId]);
+    const [editableChartId, setEditableChartId] = useState<string | undefined>();
+
+    const handleModalClose = useCallback(
+        () => {
+            onAddModalVisibilityChange(false);
+            setEditableChartId(undefined);
+        },
+        [onAddModalVisibilityChange],
+    );
 
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedFiveW>) => {
@@ -264,14 +268,17 @@ function RegionalProfileCharts(props: Props) {
         validSelectedIndicators,
     );
 
-    const filteredFiveWData = extendedFiveWList
-        .filter(data => data.allocatedBudget > 0)
-        .sort((foo, bar) => compareNumber(
-            foo.allocatedBudget,
-            bar.allocatedBudget,
-            1,
-        ))
-        .slice(0, 10);
+    const filteredFiveWData = useMemo(
+        () => extendedFiveWList
+            .filter(data => data.allocatedBudget > 0)
+            .sort((foo, bar) => compareNumber(
+                foo.allocatedBudget,
+                bar.allocatedBudget,
+                1,
+            ))
+            .slice(0, 10),
+        [extendedFiveWList],
+    );
 
     const options: NumericOption<ExtendedFiveW>[] = useMemo(
         () => {
@@ -295,13 +302,9 @@ function RegionalProfileCharts(props: Props) {
         [indicatorList],
     );
 
-    const editableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
+    const editableChartSettings = useMemo(
         () => {
             const chartSetting = chartSettings?.find(c => c.id === editableChartId);
-            if (!chartSetting) {
-                return undefined;
-            }
-
             return chartSetting;
         },
         [chartSettings, editableChartId],
@@ -324,26 +327,17 @@ function RegionalProfileCharts(props: Props) {
 
     const [expandableChart, setExpandableChart] = useState<string>();
 
-    const handleChartExpand = useCallback(
-        (id: string | undefined) => {
-            setExpandableChart(id);
-        },
-        [setExpandableChart],
-    );
-
     const onSetEditableChartId = useCallback(
         (id: string | undefined) => {
             setEditableChartId(id);
             onAddModalVisibilityChange(true);
         },
-        [setEditableChartId, onAddModalVisibilityChange],
+        [onAddModalVisibilityChange],
     );
 
     const handleChartCollapse = useCallback(
-        () => {
-            setExpandableChart(undefined);
-        },
-        [setExpandableChart],
+        () => setExpandableChart(undefined),
+        [],
     );
 
     const defaultChartData = {
@@ -356,9 +350,6 @@ function RegionalProfileCharts(props: Props) {
     const expandableChartSettings = useMemo(
         () => {
             const chartSetting = chartSettings?.find(c => c.id === expandableChart);
-            if (!chartSetting) {
-                return undefined;
-            }
             return chartSetting;
         },
         [chartSettings, expandableChart],
@@ -407,7 +398,7 @@ function RegionalProfileCharts(props: Props) {
                     data={filteredFiveWData}
                     settings={item}
                     onDelete={handleAddHideableChartIds}
-                    onExpand={handleChartExpand}
+                    onExpand={setExpandableChart}
                     chartExpanded={expandableChart}
                     onSetEditableChartId={onSetEditableChartId}
                     longTilesShown
@@ -454,7 +445,7 @@ function RegionalProfileCharts(props: Props) {
                         settings={expandableChartSettings}
                         onDelete={handleAddHideableChartIds}
                         className={styles.polyChart}
-                        onExpand={handleChartExpand}
+                        onExpand={setExpandableChart}
                         chartExpanded={expandableChart}
                         longTilesShown
                     />
