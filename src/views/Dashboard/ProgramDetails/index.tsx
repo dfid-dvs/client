@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { unique, _cs } from '@togglecorp/fujs';
 
@@ -38,8 +38,13 @@ function ProgramDetails(props: Props) {
     } = useContext<DomainContextProps>(DomainContext);
 
     const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('charts');
-    const programIdList = unique(
-        programs.filter(item => item.startsWith('program')).map(item => Number(item.split('-')[1])),
+
+    const programIdList = useMemo(
+        () => unique(
+            programs.filter(item => item.startsWith('program'))
+                .map(item => Number(item.split('-')[1])),
+        ),
+        [programs],
     );
 
     return (

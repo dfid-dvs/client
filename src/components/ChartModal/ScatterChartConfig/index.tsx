@@ -46,10 +46,9 @@ function ScatterChartItem<T>(props: BiAxialChartItemProps<T>) {
         options,
     } = props;
 
-    // FIXME: memoize
-    const keySelector = (item: NumericOption<T>) => item.key;
-    const labelSelector = (item: NumericOption<T>) => item.title;
-    const groupSelector = (item: NumericOption<T>) => item.category;
+    const keySelector = useMemo(() => (item: NumericOption<T>) => item.key, []);
+    const labelSelector = useMemo(() => (item: NumericOption<T>) => item.title, []);
+    const groupSelector = useMemo(() => (item: NumericOption<T>) => item.category, []);
 
     const handleOptionNameChange = useCallback(
         (optionName: string | undefined) => {
@@ -95,9 +94,9 @@ function ScatterChartConfig<T>(props: Props<T>) {
 
     const [error, setError] = useState<string | undefined>(undefined);
 
-    const [title, setTitle] = useState(editableChartData ? editableChartData.title : '');
+    const [title, setTitle] = useState(editableChartData?.title ?? '');
     const [color, setColor] = useState(
-        editableChartData?.color ? editableChartData.color : () => getRandomFromList(tableauColors),
+        editableChartData?.color ?? (() => getRandomFromList(tableauColors)),
     );
 
     const scatterChartData: ScatterData[] = useMemo(

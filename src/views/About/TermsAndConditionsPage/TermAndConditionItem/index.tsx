@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import useHash from '#hooks/useHash';
@@ -24,12 +24,7 @@ export default function TermAndConditionItem(props: TermAndConditionItemProps) {
 
     const hash = useHash();
 
-    const isSelectedItem: boolean = useMemo(() => {
-        if (!hash) {
-            return false;
-        }
-        return tc.id === +hash;
-    }, [tc.id, hash]);
+    const isSelectedItem = !hash ? false : tc.id === +hash;
 
     return (
         <div

@@ -102,30 +102,17 @@ function ProgramProfile(props: Props) {
     const [showAddModal, setAddModalVisibility] = useState(false);
     const [selectedProgram, setSelectedProgram] = useState<number>();
 
-    const programProfileUrl = useMemo(
-        () => {
-            if (!selectedProgram) {
-                return undefined;
-            }
-            return `${apiEndPoint}/core/programprofile?program_id=${selectedProgram}&region=${regionLevel}`;
-        },
-        [selectedProgram, regionLevel],
-    );
+    // eslint-disable-next-line max-len
+    const programProfileUrl = selectedProgram ? `${apiEndPoint}/core/programprofile?program_id=${selectedProgram}&region=${regionLevel}` : undefined;
 
     const [
         programProfilePending,
         programProfileResponse,
     ] = useRequest<ProgramProfileResponse>(programProfileUrl, 'program-profile');
 
-    const partnersTreeDendogramUrl = useMemo(
-        () => {
-            if (!selectedProgram) {
-                return undefined;
-            }
-            return `${apiEndPoint}/core/programupperdendrogram?program_id=${selectedProgram}&region=${regionLevel}`;
-        },
-        [selectedProgram, regionLevel],
-    );
+    // eslint-disable-next-line max-len
+    const partnersTreeDendogramUrl = selectedProgram ? `${apiEndPoint}/core/programupperdendrogram?program_id=${selectedProgram}&region=${regionLevel}` : undefined;
+
 
     const [
         partnersTreeDendogramPending,
@@ -159,15 +146,8 @@ function ProgramProfile(props: Props) {
         [partnersTreeData],
     );
 
-    const regionTreeDendogramUrl = useMemo(
-        () => {
-            if (!selectedProgram) {
-                return undefined;
-            }
-            return `${apiEndPoint}/core/programlowerdendrogram?program_id=${selectedProgram}`;
-        },
-        [selectedProgram],
-    );
+    // eslint-disable-next-line max-len
+    const regionTreeDendogramUrl = selectedProgram ? `${apiEndPoint}/core/programlowerdendrogram?program_id=${selectedProgram}` : undefined;
 
     const [
         regionTreeDendogramPending,
@@ -217,26 +197,29 @@ function ProgramProfile(props: Props) {
         programListResponse,
     ] = useRequest<MultiResponse<Program>>(programListGetUrl, 'program-list');
 
-    const federalLevelComponents: string[] | undefined = useMemo(
-        () => programProfileResponse?.federalLevelComponents,
-        [programProfileResponse?.federalLevelComponents],
+    const federalLevelComponents = programProfileResponse?.federalLevelComponents;
+
+    const handleAddChartModalClick = useCallback(
+        () => {
+            setAddModalVisibility(true);
+        },
+        [],
     );
 
-    const handleAddChartModalClick = useCallback(() => {
-        setAddModalVisibility(true);
-    }, [setAddModalVisibility]);
+    const currentBounds = useMemo(
+        () => {
+            const bounds = selectedRegionData
+                ?.bbox
+                ?.split(',')
+                .slice(0, 4)
+                .map(b => +b);
 
-    const currentBounds: Bbox | undefined = useMemo(() => {
-        const bounds = selectedRegionData
-            ?.bbox
-            ?.split(',')
-            .slice(0, 4)
-            .map(b => +b);
-
-        return bounds?.length === 4
-            ? bounds as Bbox
-            : undefined;
-    }, [selectedRegionData]);
+            return bounds?.length === 4
+                ? bounds as Bbox
+                : undefined;
+        },
+        [selectedRegionData],
+    );
 
     const currentDate = new Date().toDateString();
 
@@ -256,12 +239,6 @@ function ProgramProfile(props: Props) {
     ] = useBasicToggle();
 
     const [description, setDescription] = useState('');
-    const handleDescriptionChange = useCallback(
-        (value: string) => {
-            setDescription(value);
-        },
-        [setDescription],
-    );
 
     const [
         descriptionHidden,
@@ -410,7 +387,7 @@ function ProgramProfile(props: Props) {
                 onResetProfile();
             }
         },
-        [setSelectedProgram, resetProfileShown, onResetProfile],
+        [resetProfileShown, onResetProfile],
     );
 
     const handleRegionLevelChange = useCallback(
@@ -421,7 +398,7 @@ function ProgramProfile(props: Props) {
                 onResetProfile();
             }
         },
-        [setSelectedRegionData, setRegionLevel, resetProfileShown, onResetProfile],
+        [resetProfileShown, onResetProfile, setRegionLevel],
     );
 
     return (
@@ -590,7 +567,7 @@ function ProgramProfile(props: Props) {
                                     placeholder="Write your description..."
                                     autoFocus
                                     value={description}
-                                    onChange={handleDescriptionChange}
+                                    onChange={setDescription}
                                     className={styles.textInput}
                                     inputClassName={styles.textAreaInput}
                                     labelClassName={styles.label}

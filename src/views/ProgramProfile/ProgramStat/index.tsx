@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import Numeral from '#components/Numeral';
 import styles from './styles.css';
 
-export default function ProgramStat(p: {
+export default function ProgramStat(props: {
     label: string;
     value: number | string;
     className?: string;
@@ -15,17 +15,9 @@ export default function ProgramStat(p: {
         value,
         className,
         isDate = false,
-    } = p;
+    } = props;
 
-    const statValue = useMemo(
-        () => {
-            if (!isDate) {
-                return value;
-            }
-            return (new Date(value).toLocaleDateString());
-        },
-        [isDate, value],
-    );
+    const statValue = !isDate ? value : new Date(value).toLocaleDateString();
 
     return (
         <div className={_cs(styles.statOutput, className)}>

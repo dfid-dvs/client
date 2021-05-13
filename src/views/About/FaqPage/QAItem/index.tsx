@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { MdArrowDropDown, MdArrowDropUp } from 'react-icons/md';
 
@@ -27,7 +27,7 @@ export default function QAItem(props: QAItemProps) {
         onHideAnswer,
     } = props;
 
-    const answerShown = useMemo(() => qa.id === qaId, [qa.id, qaId]);
+    const answerShown = qa.id === qaId;
 
     const onToggleAnswer = useCallback(
         () => {

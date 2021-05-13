@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo, useContext } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 
 import TextInput from '#components/TextInput';
 import InputLabel from '#components/InputLabel';
@@ -90,17 +90,9 @@ function FeedbackPage() {
         [setFeedback],
     );
 
-    const disabled = useMemo(
-        () => !name && !email && !type && !subject && !feedback && !selectedAttachment,
-        [
-            name,
-            email,
-            type,
-            subject,
-            feedback,
-            selectedAttachment,
-        ],
-    );
+    // eslint-disable-next-line max-len
+    const disabled = !name && !email && !type && !subject && !feedback && !selectedAttachment;
+
     const handleFileInput = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
             if (!e?.target.files) {

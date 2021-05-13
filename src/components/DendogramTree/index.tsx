@@ -1,6 +1,7 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Tree from 'react-d3-tree';
 import { CustomNodeElementProps, RawNodeDatum } from 'react-d3-tree/lib/types/common';
+import { sum } from '@togglecorp/fujs';
 
 import { IoMdClose } from 'react-icons/io';
 import DendogramSVGNodeElement from '#components/DendogramSVGNodeElement';
@@ -47,15 +48,15 @@ const renderCustomNodeElement = (nodeDatum: CustomNodeElementProps) => (
 function DendogramTree(props: DendogramTreeInterface) {
     const { treeData, onHideDendrogram } = props;
     const secondLevelChildrens = treeData?.children?.length || 0;
-    const thirdLevelChildrens = React.useMemo(() => {
-        let n = 0;
-
-        treeData?.children?.forEach((t) => {
-            n += (t.children?.length || 0);
-        });
-
-        return n;
-    }, [treeData]);
+    const thirdLevelChildrens = useMemo(
+        () => {
+            if (!treeData.children) {
+                return 0;
+            }
+            return sum(treeData.children?.map(t => t.children?.length ?? 0));
+        },
+        [treeData.children],
+    );
 
     if (thirdLevelChildrens > 0) {
         NODE_WIDTH = 160;
@@ -71,10 +72,9 @@ function DendogramTree(props: DendogramTreeInterface) {
 
     const handleHideDendrogram = useCallback(
         () => {
-            if (!onHideDendrogram) {
-                return;
+            if (onHideDendrogram) {
+                onHideDendrogram(treeData.name);
             }
-            onHideDendrogram(treeData.name);
         },
         [onHideDendrogram, treeData.name],
     );

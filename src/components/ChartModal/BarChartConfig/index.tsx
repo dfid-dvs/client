@@ -78,10 +78,9 @@ function BarItem<T>(props: BarItemProps<T>) {
         options,
     } = props;
 
-    // FIXME: memoize
-    const keySelector = (item: NumericOption<T>) => item.key;
-    const labelSelector = (item: NumericOption<T>) => item.title;
-    const groupSelector = (item: NumericOption<T>) => item.category;
+    const keySelector = useMemo(() => (item: NumericOption<T>) => item.key, []);
+    const labelSelector = useMemo(() => (item: NumericOption<T>) => item.title, []);
+    const groupSelector = useMemo(() => (item: NumericOption<T>) => item.category, []);
 
     const handleOptionNameChange = useCallback(
         (optionName: string | undefined) => {
@@ -159,7 +158,6 @@ function BarItem<T>(props: BarItemProps<T>) {
 
 interface Props<T> {
     onSave: (settings: BarChartSettings<T>) => void;
-    // indicatorList: Indicator[] | undefined;
     maxRow?: number;
     className?: string;
     options: NumericOption<T>[];
@@ -178,12 +176,11 @@ function BarChartConfig<T>(props: Props<T>) {
         editableChartData,
     } = props;
 
-    // FIXME: memoize
-    const keySelector = (item: NumericOption<T>) => item.key;
-    const labelSelector = (item: NumericOption<T>) => item.title;
-    const groupSelector = (item: NumericOption<T>) => item.category;
+    const keySelector = useMemo(() => (item: NumericOption<T>) => item.key, []);
+    const labelSelector = useMemo(() => (item: NumericOption<T>) => item.title, []);
+    const groupSelector = useMemo(() => (item: NumericOption<T>) => item.category, []);
 
-    const [error, setError] = useState<string | undefined>(undefined);
+    const [error, setError] = useState<string | undefined>();
 
     const [title, setTitle] = useState(editableChartData ? editableChartData.title : '');
 
@@ -192,18 +189,20 @@ function BarChartConfig<T>(props: Props<T>) {
         setBarType,
     ] = useState<BarTypeKeys>(
         editableChartData?.bars?.find(f => !!f.stackId) ? 'stacked' : 'normal',
-    );
-    const barData: Bar[] = useMemo(() => {
-        const defaultBar: Bar[] = [{
-            id: randomString(),
-            color: getRandomFromList(tableauColors),
-        }];
+    ); // set bartype to stack if any bar has stackId
+    const barData: Bar[] = useMemo(
+        () => {
+            const defaultBar: Bar[] = [{
+                id: randomString(),
+                color: getRandomFromList(tableauColors),
+            }];
 
-        if (editableChartData) {
-            const editableBars = editableChartData.bars;
-            if (!editableBars) {
+            if (!editableChartData) {
                 return defaultBar;
             }
+
+            const { bars: editableBars } = editableChartData;
+
             const mappedBars = editableBars.map((e) => {
                 const opt = options.find(o => o.key === e.key);
                 if (!opt) {
@@ -215,14 +214,11 @@ function BarChartConfig<T>(props: Props<T>) {
                     optionName: opt.key,
                 };
             }).filter(isDefined);
-            if (mappedBars.length <= 0) {
-                return defaultBar;
-            }
 
-            return mappedBars;
-        }
-        return defaultBar;
-    }, [editableChartData, options]);
+            return mappedBars.length <= 0 ? defaultBar : mappedBars;
+        },
+        [editableChartData, options],
+    );
 
     const [bars, setBars] = useState<(Bar)[]>(barData);
 
@@ -230,39 +226,13 @@ function BarChartConfig<T>(props: Props<T>) {
         limitValue,
         setLimitValue,
     ] = useState<string>(
-        editableChartData?.limit?.count ? String(editableChartData.limit.count) : '8',
+        (String(editableChartData?.limit?.count ?? 8)),
     );
     const [order, setOrder] = useState<OrderOptionKey | undefined>('asc');
     const [orderField, setOrderField] = useState<string | undefined>();
 
     // NOTE: there is always at least one bar
-    const autoOrderField = isDefined(orderField)
-        ? orderField
-        : bars[0].optionName;
-
-    /*
-    const options: NumericOption[] = useMemo(
-        () => {
-            if (!indicatorList) {
-                return numericOptions;
-            }
-            return [
-                ...numericOptions,
-                ...indicatorList.map(indicator => ({
-                    key: `indicator_${indicator.id}`,
-                    title: indicator.fullTitle,
-                    // FIXME: we should have certain thing for this
-                    valueSelector: (item: T) => item.indicators[indicator.id] || 0,
-
-                    category: indicator.category,
-
-                    dependency: indicator.id,
-                })),
-            ];
-        },
-        [indicatorList],
-    );
-    */
+    const autoOrderField = isDefined(orderField) ? orderField : bars[0].optionName;
 
     const handleSave = useCallback(
         () => {

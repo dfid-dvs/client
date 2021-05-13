@@ -24,10 +24,9 @@ export default function NumberOutput(props: {
 
     const handleHideData = useCallback(
         () => {
-            if (!onHideData) {
-                return;
+            if (onHideData) {
+                onHideData(id);
             }
-            onHideData(id);
         },
         [id, onHideData],
     );

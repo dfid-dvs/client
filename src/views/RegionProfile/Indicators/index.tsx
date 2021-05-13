@@ -61,18 +61,35 @@ export default function Indicators(props: IndicatorProps) {
         resettableIndicatorCategories,
     } = props;
 
-    const groupedIndicatorsData = useMemo(() => listToGroupList(
-        indicatorsData?.sort(
-            (a, b) => compareString(
-                a.indicator,
-                b.indicator,
-            ),
-        ),
-        item => item.category,
-    ), [indicatorsData]);
+    const groupedIndicatorsData = useMemo(
+        () => {
+            if (!indicatorsData) {
+                return undefined;
+            }
+            const indicators = [...indicatorsData];
+            return listToGroupList(
+                indicators.sort(
+                    (a, b) => compareString(
+                        a.indicator,
+                        b.indicator,
+                    ),
+                ),
+                item => item.category,
+            );
+        },
+        [indicatorsData],
+    );
 
-    const categories = Object.keys(groupedIndicatorsData)
-        .sort((a, b) => compareString(a, b));
+    const categories = useMemo(
+        () => {
+            if (!groupedIndicatorsData) {
+                return undefined;
+            }
+            return Object.keys(groupedIndicatorsData)
+                .sort((a, b) => compareString(a, b));
+        },
+        [groupedIndicatorsData],
+    );
 
     return (
         <div className={_cs(styles.indicators, className)}>
@@ -91,11 +108,8 @@ export default function Indicators(props: IndicatorProps) {
                         styles.button,
                         printMode && styles.hidden,
                     )}
-                >
-                    <IoMdClose
-                        className={styles.hideIcon}
-                    />
-                </Button>
+                    icons={<IoMdClose className={styles.hideIcon} />}
+                />
                 {resetIndicatorsShown && onResetIndicators && (
                     <Button
                         onClick={onResetIndicators}
@@ -115,7 +129,7 @@ export default function Indicators(props: IndicatorProps) {
                     <div
                         className={_cs(
                             styles.categoryContainer,
-                            !bekDataHidden && styles.containerShown,
+                            styles.containerShown,
                             fiveWData && fiveWData.length === 0 && styles.containerHidden,
                         )}
                     >
@@ -165,7 +179,7 @@ export default function Indicators(props: IndicatorProps) {
                         </div>
                     </div>
                 )}
-                {categories.map(cat => (
+                {groupedIndicatorsData && categories?.map(cat => (
                     <GroupedIndicator
                         key={cat}
                         className={styles.categoryContainer}

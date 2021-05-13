@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
     randomString,
     isFalsyString,
@@ -37,15 +37,15 @@ function HistogramConfig<T>(props: Props<T>) {
     const [error, setError] = useState<string | undefined>(undefined);
 
     const [title, setTitle] = useState(editableChartData ? editableChartData.title : '');
-    const [orderField, setOrderField] = useState<string | undefined>(editableChartData ? editableChartData.key : '');
+    const [orderField, setOrderField] = useState<string | undefined>(editableChartData?.key ?? '');
     const [color, setColor] = useState(
-        editableChartData ? editableChartData.color : () => getRandomFromList(tableauColors),
+        editableChartData?.color ?? (() => getRandomFromList(tableauColors)),
     );
-    const [binCount, setBinCount] = useState(editableChartData ? editableChartData.binCount : '10');
+    const [binCount, setBinCount] = useState(editableChartData?.binCount ?? '10');
 
-    const keySelector = (item: NumericOption<T>) => item.key;
-    const labelSelector = (item: NumericOption<T>) => item.title;
-    const groupSelector = (item: NumericOption<T>) => item.category;
+    const keySelector = useMemo(() => (item: NumericOption<T>) => item.key, []);
+    const labelSelector = useMemo(() => (item: NumericOption<T>) => item.title, []);
+    const groupSelector = useMemo(() => (item: NumericOption<T>) => item.category, []);
 
     const handleSave = useCallback(
         () => {

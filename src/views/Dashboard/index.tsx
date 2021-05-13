@@ -238,13 +238,6 @@ const Dashboard = (props: Props) => {
     const [filterButtonHidden, hideFilterButton, showFilterButton] = useBasicToggle();
     const [selectedStatus, setSelectedStatus] = useState<StatusTabOptionKeys>('all');
 
-    const onSelectStatus = useCallback(
-        (statusTabKey: StatusTabOptionKeys) => {
-            setSelectedStatus(statusTabKey);
-        },
-        [setSelectedStatus],
-    );
-
     const selectedFilterStatus = selectedStatus === 'all' ? undefined : selectedStatus;
 
     const mapLayerGetUrl = `${apiEndPoint}/core/map-layer/`;
@@ -374,7 +367,7 @@ const Dashboard = (props: Props) => {
                 choroplethMapState: indicatorMapState,
                 choroplethPending: indicatorMapStatePending,
                 choroplethTitle: selectedIndicatorDetails?.fullTitle,
-                choroplethInteger: selectedIndicatorDetails?.datatype === 'integer',
+                choroplethInteger: selectedIndicatorDetails?.dataType === 'integer',
                 choroplethUnit: selectedIndicatorDetails?.unit,
                 choroplethSelected: isDefined(selectedIndicator),
                 // FIXME: should get data from backend in proper format
@@ -401,7 +394,7 @@ const Dashboard = (props: Props) => {
             bubbleMapState: indicatorMapState.map(({ id, value }) => ({ id, value: +value })),
             bubblePending: indicatorMapStatePending,
             bubbleTitle: selectedIndicatorDetails?.fullTitle,
-            bubbleInteger: selectedIndicatorDetails?.datatype === 'integer',
+            bubbleInteger: selectedIndicatorDetails?.dataType === 'integer',
             bubbleUnit: selectedIndicatorDetails?.unit,
 
             titleForPrintBar: title,
@@ -553,7 +546,7 @@ const Dashboard = (props: Props) => {
             setRegion(undefined);
             setHoveredRegion(undefined);
         },
-        [setRegion, setRegionLevel, setHoveredRegion],
+        [setRegionLevel],
     );
 
     const dataExplored = hash === 'regions' || hash === 'programs';
@@ -721,7 +714,7 @@ const Dashboard = (props: Props) => {
                                         optionKeySelector={statusKeySelector}
                                         optionLabelSelector={statusLabelSelector}
                                         value={selectedStatus}
-                                        onChange={onSelectStatus}
+                                        onChange={setSelectedStatus}
                                         className={styles.statusFilter}
                                     />
                                 </div>

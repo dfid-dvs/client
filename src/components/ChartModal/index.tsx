@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from 'react';
+import React, { useState, useCallback } from 'react';
 import { GiHistogram } from 'react-icons/gi';
 import { FcBarChart, FcPieChart, FcComboChart, FcScatterPlot } from 'react-icons/fc';
 

@@ -184,150 +184,215 @@ function ProgramSelector(props: Props) {
         setMarkerSearchText,
     ] = useState('');
 
-    const selectedSectorOriginal = unique(
-        selectedSector.filter(item => item.startsWith('sector')).map(item => Number(item.split('-')[1])),
+    const selectedSectorOriginal = useMemo(
+        () => unique(
+            selectedSector.filter(item => item.startsWith('sector'))
+                .map(item => Number(item.split('-')[1])),
+        ),
+        [selectedSector],
     );
-    const selectedSubSectorOriginal = unique(
-        selectedSector.filter(item => item.startsWith('subsector')).map(item => Number(item.split('-')[1])),
+    const selectedSubSectorOriginal = useMemo(
+        () => unique(
+            selectedSector.filter(item => item.startsWith('subsector'))
+                .map(item => Number(item.split('-')[1])),
+        ),
+        [selectedSector],
     );
-    const selectedMarkerOriginal = unique(
-        selectedMarker.filter(item => item.startsWith('marker')).map(item => Number(item.split('-')[1])),
+
+    const selectedMarkerOriginal = useMemo(
+        () => unique(
+            selectedMarker.filter(item => item.startsWith('marker'))
+                .map(item => Number(item.split('-')[1])),
+        ),
+        [selectedMarker],
     );
-    const selectedSubMarkerOriginal = unique(
-        selectedMarker.filter(item => item.startsWith('submarker')).map(item => Number(item.split('-')[1])),
+    const selectedSubMarkerOriginal = useMemo(
+        () => unique(
+            selectedMarker.filter(item => item.startsWith('submarker'))
+                .map(item => Number(item.split('-')[1])),
+        ),
+        [selectedMarker],
     );
+
     const selectedPartnerOriginal = selectedPartner.map(Number);
 
-    const selectedProgramOriginal = unique(
-        selectedProgram.filter(item => item.startsWith('program')).map(item => Number(item.split('-')[1])),
+    const selectedProgramOriginal = useMemo(
+        () => unique(
+            selectedProgram.filter(item => item.startsWith('program'))
+                .map(item => Number(item.split('-')[1])),
+        ),
+        [selectedProgram],
     );
 
-    const selectedComponentOriginal = unique(
-        selectedProgram.filter(item => item.startsWith('subprogram')).map(item => item.replace('subprogram-', '')),
-    );
-    const rawPartnerOptions = partnerListResponse?.results.sort(
-        (a, b) => compareString(
-            a.name,
-            b.name,
+    const selectedComponentOriginal = useMemo(
+        () => unique(
+            selectedProgram.filter(item => item.startsWith('subprogram'))
+                .map(item => item.replace('subprogram-', '')),
         ),
+        [selectedProgram],
     );
-    const rawSectorOptions = sectorListResponse?.results.sort(
-        (a, b) => compareString(
-            a.name,
-            b.name,
-        ),
-    );
-    const rawSubSectorOptions = subSectorListResponse?.results.sort(
-        (a, b) => compareString(
-            a.name,
-            b.name,
-        ),
-    );
-    const rawMarkerOptions = markerListResponse?.results.sort(
-        (a, b) => compareString(
-            a.name,
-            b.name,
-        ),
-    );
-    const rawSubMarkerOptions = subMarkerListResponse?.results.sort(
-        (a, b) => compareString(
-            a.markerCategory,
-            b.markerCategory,
-        ),
-    );
-    const rawProgramOptionsWithoutComponentSectors = programListResponse?.results.sort(
-        (a, b) => compareString(
-            a.name,
-            b.name,
-        ),
-    );
-    const rawComponentOptions = componentListResponse?.results.sort(
-        (a, b) => compareString(
-            a.name,
-            b.name,
-        ),
-    );
-    const rawProgramOptions = useMemo(() => {
-        if (!rawComponentOptions || !rawProgramOptionsWithoutComponentSectors) {
-            return undefined;
-        }
-        const programs = rawProgramOptionsWithoutComponentSectors.map((prog) => {
-            const progCompIds = prog.component.map(pc => pc.id);
-            const comp = rawComponentOptions.filter(rc => progCompIds.includes(rc.id));
-            return {
-                ...prog,
-                component: comp,
-            };
-        });
-        return programs;
-    }, [rawComponentOptions, rawProgramOptionsWithoutComponentSectors]);
 
-    const applicableProgramOptions = rawProgramOptions?.filter((item) => {
-        if (selectedComponentOriginal.length > 0) {
-            const common = intersection(
-                new Set(item.component.map(comp => comp.code)),
-                new Set(selectedComponentOriginal),
-            );
-            if (common.size !== selectedComponentOriginal.length) {
-                return false;
+    const rawPartnerOptions = useMemo(
+        () => partnerListResponse?.results.sort(
+            (a, b) => compareString(
+                a.name,
+                b.name,
+            ),
+        ),
+        [partnerListResponse?.results],
+    );
+    const rawSectorOptions = useMemo(
+        () => sectorListResponse?.results.sort(
+            (a, b) => compareString(
+                a.name,
+                b.name,
+            ),
+        ),
+        [sectorListResponse?.results],
+    );
+    const rawSubSectorOptions = useMemo(
+        () => subSectorListResponse?.results.sort(
+            (a, b) => compareString(
+                a.name,
+                b.name,
+            ),
+        ),
+        [subSectorListResponse?.results],
+    );
+    const rawMarkerOptions = useMemo(
+        () => markerListResponse?.results.sort(
+            (a, b) => compareString(
+                a.name,
+                b.name,
+            ),
+        ),
+        [markerListResponse?.results],
+    );
+    const rawSubMarkerOptions = useMemo(
+        () => subMarkerListResponse?.results.sort(
+            (a, b) => compareString(
+                a.markerCategory,
+                b.markerCategory,
+            ),
+        ),
+        [subMarkerListResponse?.results],
+    );
+    const rawProgramOptionsWithoutComponentSectors = useMemo(
+        () => programListResponse?.results.sort(
+            (a, b) => compareString(
+                a.name,
+                b.name,
+            ),
+        ),
+        [programListResponse?.results],
+    );
+    const rawComponentOptions = useMemo(
+        () => componentListResponse?.results.sort(
+            (a, b) => compareString(
+                a.name,
+                b.name,
+            ),
+        ),
+        [componentListResponse?.results],
+    );
+    const rawProgramOptions = useMemo(
+        () => {
+            if (!rawComponentOptions || !rawProgramOptionsWithoutComponentSectors) {
+                return undefined;
             }
-        }
+            const programs = rawProgramOptionsWithoutComponentSectors.map((prog) => {
+                const progCompIds = prog.component.map(pc => pc.id);
+                const comp = rawComponentOptions.filter(rc => progCompIds.includes(rc.id));
+                return {
+                    ...prog,
+                    component: comp,
+                };
+            });
+            return programs;
+        },
+        [rawComponentOptions, rawProgramOptionsWithoutComponentSectors],
+    );
 
-        if (selectedSectorOriginal.length > 0) {
-            const common = intersection(
-                new Set(item.sector.map(sec => sec.id)),
-                new Set(selectedSectorOriginal),
-            );
-            if (common.size !== selectedSectorOriginal.length) {
-                return false;
+    const applicableProgramOptions = useMemo(
+        () => rawProgramOptions?.filter((item) => {
+            if (selectedComponentOriginal.length > 0) {
+                const common = intersection(
+                    new Set(item.component.map(comp => comp.code)),
+                    new Set(selectedComponentOriginal),
+                );
+                if (common.size !== selectedComponentOriginal.length) {
+                    return false;
+                }
             }
-        }
-        if (selectedSubSectorOriginal.length > 0) {
-            const common = intersection(
-                new Set(item.subSector.map(sec => sec.id)),
-                new Set(selectedSubSectorOriginal),
-            );
-            if (common.size !== selectedSubSectorOriginal.length) {
-                return false;
-            }
-        }
-        if (selectedMarkerOriginal.length > 0) {
-            const common = intersection(
-                new Set(item.markerCategory.map(sec => sec.id)),
-                new Set(selectedMarkerOriginal),
-            );
-            if (common.size !== selectedMarkerOriginal.length) {
-                return false;
-            }
-        }
-        if (selectedSubMarkerOriginal.length > 0) {
-            const common = intersection(
-                new Set(item.markerValue.map(sec => sec.id)),
-                new Set(selectedSubMarkerOriginal),
-            );
-            if (common.size !== selectedSubMarkerOriginal.length) {
-                return false;
-            }
-        }
-        if (selectedPartnerOriginal.length > 0) {
-            const common = intersection(
-                new Set(item.partner.map(sec => sec.id)),
-                new Set(selectedPartnerOriginal),
-            );
-            if (common.size !== selectedPartnerOriginal.length) {
-                return false;
-            }
-        }
-        return true;
-    });
 
-    const appliedProgramOptions = applicableProgramOptions?.filter((item) => {
-        if (selectedProgramOriginal.length > 0) {
-            const selections = new Set(selectedProgramOriginal);
-            return selections.has(item.id);
-        }
-        return true;
-    });
+            if (selectedSectorOriginal.length > 0) {
+                const common = intersection(
+                    new Set(item.sector.map(sec => sec.id)),
+                    new Set(selectedSectorOriginal),
+                );
+                if (common.size !== selectedSectorOriginal.length) {
+                    return false;
+                }
+            }
+            if (selectedSubSectorOriginal.length > 0) {
+                const common = intersection(
+                    new Set(item.subSector.map(sec => sec.id)),
+                    new Set(selectedSubSectorOriginal),
+                );
+                if (common.size !== selectedSubSectorOriginal.length) {
+                    return false;
+                }
+            }
+            if (selectedMarkerOriginal.length > 0) {
+                const common = intersection(
+                    new Set(item.markerCategory.map(sec => sec.id)),
+                    new Set(selectedMarkerOriginal),
+                );
+                if (common.size !== selectedMarkerOriginal.length) {
+                    return false;
+                }
+            }
+            if (selectedSubMarkerOriginal.length > 0) {
+                const common = intersection(
+                    new Set(item.markerValue.map(sec => sec.id)),
+                    new Set(selectedSubMarkerOriginal),
+                );
+                if (common.size !== selectedSubMarkerOriginal.length) {
+                    return false;
+                }
+            }
+            if (selectedPartnerOriginal.length > 0) {
+                const common = intersection(
+                    new Set(item.partner.map(sec => sec.id)),
+                    new Set(selectedPartnerOriginal),
+                );
+                if (common.size !== selectedPartnerOriginal.length) {
+                    return false;
+                }
+            }
+            return true;
+        }),
+        [
+            rawProgramOptions,
+            selectedComponentOriginal,
+            selectedMarkerOriginal,
+            selectedPartnerOriginal,
+            selectedSectorOriginal,
+            selectedSubMarkerOriginal,
+            selectedSubSectorOriginal,
+        ],
+    );
+
+    const appliedProgramOptions = useMemo(
+        () => applicableProgramOptions?.filter((item) => {
+            if (selectedProgramOriginal.length > 0) {
+                const selections = new Set(selectedProgramOriginal);
+                return selections.has(item.id);
+            }
+            return true;
+        }),
+        [applicableProgramOptions, selectedProgramOriginal],
+    );
 
     const partnerOptions: TreeItem[] | undefined = useMemo(
         () => {

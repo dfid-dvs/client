@@ -403,7 +403,7 @@ const Tooltip = (props: Props) => {
                         </div>
                     </div>
                 ))}
-                {details?.programs && details?.programs?.length <= 0 && (
+                {details?.programs && details.programs.length <= 0 && (
                     <h3 className={styles.noDetail}>
                         No detail to show
                     </h3>
