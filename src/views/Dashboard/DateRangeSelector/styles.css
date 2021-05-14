@@ -290,6 +290,7 @@
             align-self: flex-end;
             padding: calc(var(--spacing-medium) - var(--spacing-super-small));
             border: var(--width-separator-thin) solid var(--color-secondary);
+            color: var(--color-secondary);
         }
     }
 

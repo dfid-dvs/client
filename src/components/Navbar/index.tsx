@@ -146,7 +146,10 @@ const Navbar = (props: Props) => {
                         Admin Panel
                     </a>
                 )}
-                <Button onClick={onLogout}>
+                <Button
+                    onClick={onLogout}
+                    className={styles.logout}
+                >
                     Logout
                 </Button>
             </div>
