@@ -10,7 +10,7 @@ import {
 import { MdPieChart, MdDonutLarge } from 'react-icons/md';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
-import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff } from 'react-icons/io';
+import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff, IoMdSwap } from 'react-icons/io';
 
 import handleChartDownload from '#utils/downloadChart';
 
@@ -256,6 +256,26 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         [data, valueSelector, keySelector],
     );
 
+    const [allRegionHidden, , , toggleAllRegionHidden] = useBasicToggle();
+    const filteredFinalData = useMemo(
+        () => {
+            if (!allRegionHidden) {
+                return finalData;
+            }
+            return finalData?.filter(
+                item => !(item.key === 'All Province' || item.key === 'All District'),
+            );
+        },
+        [allRegionHidden, finalData],
+    );
+
+    const hasAllRegion = useMemo(
+        () => !!finalData?.find(
+            d => d.key === 'All Province' || d.key === 'All District',
+        ),
+        [finalData],
+    );
+
     const [activeIndex, setActiveIndex] = useState(0);
 
     const handlePieEnter = (d: unknown, index: number) => {
@@ -330,6 +350,17 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                                 <IoMdEye className={styles.expandIcon} />
                             )}
                         </Button>
+                        {hasAllRegion && (
+                            <Button
+                                onClick={toggleAllRegionHidden}
+                                name={id}
+                                title={allRegionHidden ? 'Show All Data' : 'Hide All Data'}
+                                transparent
+                                variant="icon"
+                            >
+                                <IoMdSwap className={styles.expandIcon} />
+                            </Button>
+                        )}
                         {!expandableIconHidden && (
                             <Button
                                 onClick={onExpand}
@@ -354,14 +385,14 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                 )}
             </header>
             <div className={_cs(styles.responsiveContainer, chartClassName)}>
-                {(finalData?.length || 0) > 0 && (
+                {(filteredFinalData?.length || 0) > 0 && (
                     <ResponsiveContainer>
                         <PieChart
                             className={styles.chart}
                             margin={chartMargin}
                         >
                             <Pie
-                                data={finalData}
+                                data={filteredFinalData}
                                 innerRadius={type === 'donut' ? '45%' : undefined}
                                 outerRadius="65%"
                                 fill="#8884d8"
