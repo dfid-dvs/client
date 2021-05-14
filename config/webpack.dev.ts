@@ -34,8 +34,9 @@ const PUBLIC_PATH = '/';
 
 const localConfig = (env): webpack.Configuration => {
     const ENV_VARS = {
-        ...getEnvVariables(env),
-        ...dotenv.parsed,
+        NODE_ENV: JSON.stringify(env.NODE_ENV ? env.NODE_ENV : 'development'),
+        ...getEnvVariables(process.env),
+        ...getEnvVariables(dotenv.parsed),
         REACT_APP_VERSION: JSON.stringify(gitRevisionPlugin.version()),
         REACT_APP_COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
         REACT_APP_BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
@@ -168,7 +169,7 @@ const localConfig = (env): webpack.Configuration => {
             // NOTE: could try using react-hot-loader
             // https://github.com/gaearon/react-hot-loader
             new webpack.DefinePlugin({
-                'process.env': JSON.stringify(ENV_VARS),
+                'process.env': ENV_VARS,
             }),
             new CircularDependencyPlugin({
                 exclude: /node_modules/,
