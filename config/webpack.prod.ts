@@ -37,8 +37,8 @@ const PUBLIC_PATH = '/';
 
 const localConfig = (env): webpack.Configuration => {
     const ENV_VARS = {
-        ...dotenv.parsed,
         ...getEnvVariables(env),
+        ...dotenv.parsed,
         REACT_APP_VERSION: JSON.stringify(gitRevisionPlugin.version()),
         REACT_APP_COMMITHASH: JSON.stringify(gitRevisionPlugin.commithash()),
         REACT_APP_BRANCH: JSON.stringify(gitRevisionPlugin.branch()),
@@ -177,7 +177,7 @@ const localConfig = (env): webpack.Configuration => {
         },
         plugins: [
             new webpack.DefinePlugin({
-                'process.env': ENV_VARS,
+                'process.env': JSON.stringify(ENV_VARS),
             }),
             new CircularDependencyPlugin({
                 exclude: /node_modules/,
