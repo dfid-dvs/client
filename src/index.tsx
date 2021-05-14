@@ -4,7 +4,10 @@ import { init } from '@sentry/react';
 
 import Root from './Root';
 
-if (process.env.NODE_ENV === 'production') {
+const sentryEnabled = process.env.REACT_APP_DISABLE_SENTRY !== 'true';
+// console.log('Sentry', sentryEnabled, process.env.REACT_APP_DISABLE_SENTRY);
+
+if (sentryEnabled) {
     console.info('Sentry initialized');
     init({
         dsn: 'https://fc0785ad0fdc455bbb0cf22bbf057f81@o414061.ingest.sentry.io/5302893',
