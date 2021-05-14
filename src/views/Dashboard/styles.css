@@ -191,6 +191,9 @@
             top: var(--spacing-medium);
             left: var(--spacing-extra-large);
             font-weight: var(--font-weight-medium);
+            background-color: var(--color-white);
+            color: var(--color-text);
+            border-color: var(--color-separator-dark);
         }
 
         --width-max-legend-container: 496px;
