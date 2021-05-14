@@ -726,7 +726,7 @@ function RegionProfile(props: Props) {
                         {regionSectorGraphPending && (
                             <LoadingAnimation />
                         )}
-                        {!regionSectorGraphPending && regionLevel !== 'municipality' && (
+                        {!regionSectorGraphPending && (
                             <RegionProfileCharts
                                 className={styles.charts}
                                 printMode={printMode}

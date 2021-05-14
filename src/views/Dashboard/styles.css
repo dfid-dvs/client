@@ -119,6 +119,7 @@
 
             .filters {
                 display: flex;
+                align-items: center;
 
                 .segment-input {
                     display: flex;

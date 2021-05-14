@@ -90,8 +90,7 @@ function FeedbackPage() {
         [setFeedback],
     );
 
-    // eslint-disable-next-line max-len
-    const disabled = !name && !email && !type && !subject && !feedback && !selectedAttachment;
+    const disabled = !feedback;
 
     const handleFileInput = useCallback(
         (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,6 +106,10 @@ function FeedbackPage() {
     const handleSubmit = useCallback(
         async (e) => {
             e.preventDefault();
+            if (feedback.length <= 0) {
+                setError('Please write some feedback');
+                return;
+            }
             const formData = new FormData();
             if (selectedAttachment) {
                 formData.append('attachment', selectedAttachment);

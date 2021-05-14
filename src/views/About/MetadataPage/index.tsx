@@ -187,7 +187,7 @@ function MetadataPage() {
         'Indicators',
         getCsvValue,
     );
-    const title = 'Meta Data';
+    const title = 'Metadata';
     const subTitle = 'Please find the indicators enlisted.';
 
     return (
