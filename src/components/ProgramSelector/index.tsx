@@ -259,24 +259,9 @@ function ProgramSelector(props: Props) {
         ),
         [subSectorListResponse?.results],
     );
-    const rawMarkerOptions = useMemo(
-        () => markerListResponse?.results.sort(
-            (a, b) => compareString(
-                a.name,
-                b.name,
-            ),
-        ),
-        [markerListResponse?.results],
-    );
-    const rawSubMarkerOptions = useMemo(
-        () => subMarkerListResponse?.results.sort(
-            (a, b) => compareString(
-                a.markerCategory,
-                b.markerCategory,
-            ),
-        ),
-        [subMarkerListResponse?.results],
-    );
+    const rawMarkerOptions = markerListResponse?.results;
+    const rawSubMarkerOptions = subMarkerListResponse?.results;
+
     const rawProgramOptionsWithoutComponentSectors = useMemo(
         () => programListResponse?.results.sort(
             (a, b) => compareString(

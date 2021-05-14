@@ -11,7 +11,7 @@ import {
     TickFormatterFunction,
     LabelList,
 } from 'recharts';
-import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff } from 'react-icons/io';
+import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff, IoMdSwap } from 'react-icons/io';
 import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
@@ -49,6 +49,37 @@ const valueTickFormatter: TickFormatterFunction = (value) => {
     const numberValue = +value;
     const str = formatNumber(numberValue, true, true, getPrecision(numberValue));
     return str;
+};
+
+interface CustomizedLabel {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    value?: number | string;
+}
+const renderCustomizedLabel = (verticalLayout: boolean) => (props: CustomizedLabel) => {
+    const { x = 0, y = 0, width = 0, height = 0, value = 0 } = props;
+    const factor = verticalLayout ? height : width;
+    const fontSize = verticalLayout ? factor / 2 : factor / 4;
+
+    const xValue = (verticalLayout ? x + width + factor - 5 : x + factor / 2) + 1;
+    const yValue = (verticalLayout ? y + factor / 2 : y - fontSize) + 1;
+
+    return (
+        <g>
+            <text
+                x={xValue}
+                y={yValue}
+                fill="#212121"
+                dominantBaseline="middle"
+                textAnchor="middle"
+                fontSize={fontSize}
+            >
+                {valueTickFormatter(value)}
+            </text>
+        </g>
+    );
 };
 
 interface BarChartUnitProps<T> {
@@ -107,6 +138,8 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     const isVertical = layout === 'vertical';
     const isHorizontal = layout === 'horizontal';
 
+    const [allRegionHidden, , , toggleAllRegionHidden] = useBasicToggle();
+
     const finalData = useMemo(
         () => {
             if (!limit || !data) {
@@ -119,6 +152,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                     const keyAllRegioned = keyName === 'All Province' || keyName === 'All District';
                     return keyAllRegioned ? isDefined(value) && value > 0 : isDefined(value);
                 })
+                .filter(isDefined)
                 .sort((foo, bar) => compareNumber(
                     limit.valueSelector(foo),
                     limit.valueSelector(bar),
@@ -127,6 +161,25 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                 .slice(0, limit.count);
         },
         [data, limit, keySelector],
+    );
+
+    const filteredFinalData = useMemo(
+        () => {
+            if (!allRegionHidden) {
+                return finalData;
+            }
+            return finalData?.filter(
+                item => !(keySelector(item) === 'All Province' || keySelector(item) === 'All District'),
+            );
+        },
+        [allRegionHidden, finalData, keySelector],
+    );
+
+    const hasAllRegion = useMemo(
+        () => !!finalData?.find(
+            d => keySelector(d) === 'All Province' || keySelector(d) === 'All District',
+        ),
+        [finalData, keySelector],
     );
 
     const averageLength: number = finalData
@@ -167,6 +220,8 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         },
         [title],
     );
+
+    const labelContent = renderCustomizedLabel(layout === 'vertical');
 
     return (
         <div
@@ -225,6 +280,17 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                 <IoMdEye className={styles.expandIcon} />
                             )}
                         </Button>
+                        {hasAllRegion && (
+                            <Button
+                                onClick={toggleAllRegionHidden}
+                                name={id}
+                                title={allRegionHidden ? 'Show All Data' : 'Hide All Data'}
+                                transparent
+                                variant="icon"
+                            >
+                                <IoMdSwap className={styles.expandIcon} />
+                            </Button>
+                        )}
                         {!expandableIconHidden && (
                             <Button
                                 onClick={onExpand}
@@ -249,11 +315,11 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                 )}
             </header>
             <div className={_cs(styles.responsiveContainer, chartClassName)}>
-                {(finalData?.length || 0) > 0 && (
+                {(filteredFinalData?.length || 0) > 0 && (
                     <ResponsiveContainer>
                         <BarChart
                             className={styles.chart}
-                            data={finalData}
+                            data={filteredFinalData}
                             layout={layout}
                             margin={chartMargin}
                             barGap={0}
@@ -275,8 +341,8 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                             <Ycomp
                                 type="number"
                                 tickFormatter={valueTickFormatter}
-                                interval={layout === 'vertical' ? 0 : undefined}
                                 width={layout === 'horizontal' ? 36 : undefined}
+                                tickCount={6}
                             />
                             <Tooltip
                                 allowEscapeViewBox={{ x: false, y: false }}
@@ -295,8 +361,9 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                     {labelShown && (
                                         <LabelList
                                             dataKey={bar.valueSelector}
-                                            position="inside"
+                                            position={layout === 'vertical' ? 'right' : 'top'}
                                             formatter={valueTickFormatter}
+                                            content={labelContent}
                                         />
                                     )}
                                 </Bar>

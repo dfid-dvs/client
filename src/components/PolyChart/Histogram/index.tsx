@@ -30,6 +30,36 @@ const valueTickFormatter = (value: number | string | undefined) => {
     return str;
 };
 
+interface CustomizedLabel {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    value?: number | string;
+}
+
+const renderCustomizedLabel = (props: CustomizedLabel) => {
+    const { x = 0, y = 0, width = 0, height = 0, value = 0 } = props;
+    const fontSize = width / 4;
+    const xValue = x + width / 2 + 1;
+    const yValue = y - width / 4 + 6;
+
+    return (
+        <g>
+            <text
+                x={xValue}
+                y={yValue}
+                fill="#212121"
+                dominantBaseline="middle"
+                textAnchor="middle"
+                fontSize={fontSize}
+            >
+                {valueTickFormatter(value)}
+            </text>
+        </g>
+    );
+};
+
 interface HistogramUnitProps<T> {
     settings: HistogramSettings<T>;
     data: T[] | undefined;
@@ -224,8 +254,8 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                                 {labelShown && (
                                     <LabelList
                                         dataKey="value"
-                                        position="inside"
                                         formatter={valueTickFormatter}
+                                        content={renderCustomizedLabel}
                                     />
                                 )}
                             </Bar>

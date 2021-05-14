@@ -27,7 +27,7 @@ const routeSettings: SomeRoute[] = [
     {
         path: '/',
         name: 'dashboard',
-        title: 'Dashboard',
+        title: 'Overview',
         load: lazy(() => import('../../../views/Dashboard')),
     },
     {
@@ -51,7 +51,7 @@ const routeSettings: SomeRoute[] = [
     {
         path: '/metadata/',
         name: 'metadata',
-        title: 'Meta Data',
+        title: 'Metadata',
         load: lazy(() => import('../../../views/About/MetadataPage')),
     },
     {

@@ -112,6 +112,10 @@ const walkthroughContent = [
         content: 'Use this panel to toggle between province, district and municipality view and select the region of your interest.',
     },
     {
+        selector: '[data-tut="status"]',
+        content: 'Use this section to filter activities by status.',
+    },
+    {
         selector: '[data-tut="map__options"]',
         content: 'Use this space to select different indicators to view in the map. BEK specific indicators include Budget allocated, programs, components, partners and sectors. There are also more than 30 external contextual indicators relevant to Nepal to select and visualise on the map.',
         position: 'left',
@@ -694,29 +698,34 @@ const Dashboard = (props: Props) => {
                         <>
                             <header
                                 className={styles.header}
-                                data-tut="view__by"
                             >
                                 <div className={styles.filters}>
-                                    <SingleRegionSelect
-                                        onRegionLevelChange={handleRegionLevelChange}
-                                        regionLevel={regionLevel}
-                                        region={region?.id}
-                                        onRegionChange={handleRegionChange}
-                                        disabled={printMode}
-                                        showDropDownIcon
-                                        selectInputClassName={styles.demoModeRegionSelect}
-                                        segmentLabel="View by"
-                                        segmentInputClassName={styles.segmentInput}
-                                        segmentLabelClassName={styles.label}
-                                    />
-                                    <SegmentInput
-                                        options={statusTabOptions}
-                                        optionKeySelector={statusKeySelector}
-                                        optionLabelSelector={statusLabelSelector}
-                                        value={selectedStatus}
-                                        onChange={setSelectedStatus}
-                                        className={styles.statusFilter}
-                                    />
+                                    <div data-tut="view__by">
+                                        <SingleRegionSelect
+                                            onRegionLevelChange={handleRegionLevelChange}
+                                            regionLevel={regionLevel}
+                                            region={region?.id}
+                                            onRegionChange={handleRegionChange}
+                                            disabled={printMode}
+                                            showDropDownIcon
+                                            selectInputClassName={styles.demoModeRegionSelect}
+                                            segmentLabel="View by"
+                                            segmentInputClassName={styles.segmentInput}
+                                            segmentLabelClassName={styles.label}
+                                        />
+                                    </div>
+                                    <div data-tut="status">
+                                        <SegmentInput
+                                            options={statusTabOptions}
+                                            optionKeySelector={statusKeySelector}
+                                            optionLabelSelector={statusLabelSelector}
+                                            value={selectedStatus}
+                                            onChange={setSelectedStatus}
+                                            className={styles.statusFilter}
+                                            label="Status"
+                                            labelClassName={styles.label}
+                                        />
+                                    </div>
                                 </div>
                                 {demoHidden && (
                                     <Button
@@ -724,7 +733,7 @@ const Dashboard = (props: Props) => {
                                         variant="secondary-outline"
                                         className={styles.demoButton}
                                     >
-                                        View Demo
+                                        User Guide
                                     </Button>
                                 )}
                             </header>
