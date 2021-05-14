@@ -8,6 +8,9 @@ import useStoredState from '#hooks/useStoredState';
 import Multiplexer from './Multiplexer';
 import styles from './styles.css';
 
+const authEnabled = process.env.REACT_APP_DISABLE_LOGIN !== 'true';
+// console.log('auth', authEnabled, process.env.REACT_APP_DISABLE_LOGIN);
+
 async function digestMessage(message: string) {
     const msgUint8 = new TextEncoder().encode(message);
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
@@ -63,7 +66,7 @@ function App() {
         [setLoggedIn],
     );
 
-    if (process.env.NODE_ENV !== 'development' && loggedIn !== 'true') {
+    if (authEnabled && loggedIn !== 'true') {
         return (
             <div className={styles.passwordPrompt}>
                 <div className={styles.navbar}>
