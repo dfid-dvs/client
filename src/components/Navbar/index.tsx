@@ -12,9 +12,10 @@ import { apiEndPoint } from '#utils/constants';
 import useBasicToggle from '#hooks/useBasicToggle';
 
 import navBarLogo from '#resources/ukaid-navbar-logo.jpg';
-import styles from './styles.css';
 import useRequest from '#hooks/useRequest';
 import { MultiResponse } from '#types';
+
+import styles from './styles.css';
 
 interface Props {
     className?: string;
@@ -128,7 +129,7 @@ const Navbar = (props: Props) => {
                 {!urlOptionsPending && urlOption && (
                     <a
                         className={styles.adminConsoleLink}
-                        href={urlOption.url}
+                        href="/national-statistics/"
                         rel="noreferrer noopener"
                         target="_blank"
                     >

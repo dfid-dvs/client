@@ -23,11 +23,14 @@ async function digestMessage(message: string) {
 
 function App() {
     const [loggedIn, setLoggedIn] = useStoredState<string>(
-        'dfid-login',
+        'bek-login',
         'false',
     );
     const [password, setPassword] = useState('');
-    const [administrator, setAdministrator] = useState(false);
+    const [administrator, setAdministrator] = useStoredState<boolean>(
+        'bek-admin',
+        false,
+    );
     const [error, setError] = useState('');
 
     const handlePasswordChange = useCallback(
@@ -46,7 +49,7 @@ function App() {
             const hash = await digestMessage(password);
 
             const isAdminUser = hash === 'f950d2713fde71188f307f8e7c5b454d4e98eed6f9880c8579c8333cfc8a9c82';
-            const isNormalUser = hash === 'cdfbc2f2ef35a6e7a717e28c916ba861f0c1c9cafb1a3dd6934000c722c2a083';
+            const isNormalUser = hash === '576a560ad73e072c544f08a2f45575d851f48fd80ffd04272d151374b024a6ee';
 
             const success = isAdminUser || isNormalUser;
             if (success) {
@@ -57,13 +60,14 @@ function App() {
                 setError('Password is not valid!');
             }
         },
-        [password, setLoggedIn],
+        [password, setLoggedIn, setAdministrator],
     );
     const handleLogout = useCallback(
         () => {
             setLoggedIn('false');
+            setAdministrator('false');
         },
-        [setLoggedIn],
+        [setLoggedIn, setAdministrator],
     );
 
     if (authEnabled && loggedIn !== 'true') {
