@@ -79,6 +79,12 @@ const routeSettings: SomeRoute[] = [
         load: lazy(() => import('../../../views/ProgramProfile')),
     },
     {
+        path: '/national-statistics/',
+        name: 'nationalStatistics',
+        title: 'National Statistics',
+        load: lazy(() => import('../../../views/NationalStatistics')),
+    },
+    {
         path: '/403/',
         name: 'fourHundredThree',
         title: '403',
