@@ -31,13 +31,14 @@ const NationalStatistics = () => {
                     <LoadingAnimation />
                 </Backdrop>
             ) : (
-            <iframe
-                frameBorder="0"
-                height="820"
-                width="100%"
-                src={vizUrl}
-                title={urlOption?.title}
-            />)}
+                <iframe
+                    frameBorder="0"
+                    height="820"
+                    width="100%"
+                    src={vizUrl}
+                    title={urlOption?.title}
+                />
+            )}
         </div>
     );
 };

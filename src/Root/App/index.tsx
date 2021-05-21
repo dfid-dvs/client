@@ -65,7 +65,7 @@ function App() {
     const handleLogout = useCallback(
         () => {
             setLoggedIn('false');
-            setAdministrator('false');
+            setAdministrator(false);
         },
         [setLoggedIn, setAdministrator],
     );
