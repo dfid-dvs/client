@@ -45,7 +45,7 @@ const Navbar = (props: Props) => {
         urlOptionsResponse,
     ] = useRequest<MultiResponse<UrlOptions>>(urlOptionsUrl, 'navbar-url-options');
 
-    const urlOption = urlOptionsResponse?.results[0];
+    const urlOption = urlOptionsResponse?.results?.[0];
 
     const [
         dropdownShown, , , toggleDropdownShown,

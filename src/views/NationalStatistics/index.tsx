@@ -3,9 +3,10 @@ import useRequest from '#hooks/useRequest';
 import { MultiResponse } from '#types';
 import { apiEndPoint } from '#utils/constants';
 
-import styles from './styles.css';
 import Backdrop from '#components/Backdrop';
 import LoadingAnimation from '#components/LoadingAnimation';
+
+import styles from './styles.css';
 
 interface UrlOptions {
     id: number;
@@ -21,7 +22,7 @@ const NationalStatistics = () => {
         urlOptionsResponse,
     ] = useRequest<MultiResponse<UrlOptions>>(urlOptionsUrl, 'navbar-url-options');
 
-    const urlOption = urlOptionsResponse?.results[0];
+    const urlOption = urlOptionsResponse?.results?.[0];
     const vizUrl = urlOption ? `${urlOption.url}&:showVizHome=no` : undefined;
 
     return (
