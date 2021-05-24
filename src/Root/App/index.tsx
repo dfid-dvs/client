@@ -27,9 +27,9 @@ function App() {
         'false',
     );
     const [password, setPassword] = useState('');
-    const [administrator, setAdministrator] = useStoredState<boolean>(
+    const [administrator, setAdministrator] = useStoredState<string>(
         'bek-admin',
-        false,
+        'false',
     );
     const [error, setError] = useState('');
 
@@ -54,7 +54,7 @@ function App() {
             const success = isAdminUser || isNormalUser;
             if (success) {
                 setLoggedIn('true');
-                setAdministrator(isAdminUser);
+                setAdministrator(String(isAdminUser));
                 setPassword('');
             } else {
                 setError('Password is not valid!');
@@ -65,10 +65,12 @@ function App() {
     const handleLogout = useCallback(
         () => {
             setLoggedIn('false');
-            setAdministrator(false);
+            setAdministrator('false');
         },
         [setLoggedIn, setAdministrator],
     );
+
+    const administratorTrued = administrator === 'true';
 
     if (authEnabled && loggedIn !== 'true') {
         return (
@@ -117,7 +119,7 @@ function App() {
     return (
         <Multiplexer
             onLogout={handleLogout}
-            administrator={administrator}
+            administrator={administratorTrued}
         />
     );
 }
