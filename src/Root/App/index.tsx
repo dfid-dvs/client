@@ -70,7 +70,7 @@ function App() {
         [setLoggedIn, setAdministrator],
     );
 
-    const administratorTrued = administrator === 'true';
+    const isAdministrator = administrator === 'true';
 
     if (authEnabled && loggedIn !== 'true') {
         return (
@@ -119,7 +119,7 @@ function App() {
     return (
         <Multiplexer
             onLogout={handleLogout}
-            administrator={administratorTrued}
+            administrator={isAdministrator}
         />
     );
 }
