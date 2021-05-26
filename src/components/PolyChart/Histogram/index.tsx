@@ -39,7 +39,7 @@ interface CustomizedLabel {
 }
 
 const renderCustomizedLabel = (props: CustomizedLabel) => {
-    const { x = 0, y = 0, width = 0, height = 0, value = 0 } = props;
+    const { x = 0, y = 0, width = 0, value = 0 } = props;
     const fontSize = width / 4;
     const xValue = x + width / 2 + 1;
     const yValue = y - width / 4 + 6;
