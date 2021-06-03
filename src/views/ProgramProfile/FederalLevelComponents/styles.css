@@ -1,0 +1,58 @@
+.federal-level-components {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    background: var(--color-grey-shade-2);
+    padding: var(--spacing-medium);
+
+    .heading {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 var(--spacing-small);
+
+        .header {
+            padding: var(--spacing-small-medium);
+            font-size: var(--font-size-extra-large);
+            font-weight: var(--font-weight-bold);
+        }
+        .button {
+            display: flex;
+            width: 36px;
+            height: 36px;
+    
+            .hide-icon {
+                opacity: 0;
+                color: var(--color-text);
+                font-size: var(--font-size-large-medium);
+            }
+        }
+    
+        &:hover {
+            .hide-icon {
+                opacity: 1;
+            }
+        }
+    }
+
+    .component-list {
+        display: flex;
+        flex-wrap: wrap;
+
+        .component {
+            display: flex;
+            align-items: center;
+
+            .icon {
+                flex-shrink: 0;
+                margin: var(--spacing-small-medium);
+                color: var(--color-secondary-light-1);
+                font-size: var(--font-size-large);
+            }
+
+            .value {
+                font-size: var(--font-size-medium);
+                font-weight: var(--font-weight-bold);
+            }
+        }
+    }
+}

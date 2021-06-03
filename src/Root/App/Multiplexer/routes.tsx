@@ -27,7 +27,7 @@ const routeSettings: SomeRoute[] = [
     {
         path: '/',
         name: 'dashboard',
-        title: 'Dashboard',
+        title: 'Overview',
         load: lazy(() => import('../../../views/Dashboard')),
     },
     {
@@ -40,13 +40,49 @@ const routeSettings: SomeRoute[] = [
         path: '/about/',
         name: 'about',
         title: 'About',
-        load: lazy(() => import('../../../views/About')),
+        load: lazy(() => import('../../../views/About/AboutPage')),
     },
     {
-        path: '/infographics/',
-        name: 'infographics',
-        title: 'Infographics',
-        load: lazy(() => import('../../../views/Infographics')),
+        path: '/faqs/',
+        name: 'faq',
+        title: 'FAQs',
+        load: lazy(() => import('../../../views/About/FaqPage')),
+    },
+    {
+        path: '/metadata/',
+        name: 'metadata',
+        title: 'Metadata',
+        load: lazy(() => import('../../../views/About/MetadataPage')),
+    },
+    {
+        path: '/termsandconditions/',
+        name: 'termsandconditions',
+        title: 'Terms & Conditions',
+        load: lazy(() => import('../../../views/About/TermsAndConditionsPage')),
+    },
+    {
+        path: '/feedback/',
+        name: 'feedback',
+        title: 'Feedback Form',
+        load: lazy(() => import('../../../views/About/FeedbackPage')),
+    },
+    {
+        path: '/region-profile/',
+        name: 'regionProfile',
+        title: 'Region Profile',
+        load: lazy(() => import('../../../views/RegionProfile')),
+    },
+    {
+        path: '/program-profile/',
+        name: 'programProfile',
+        title: 'Program Profile',
+        load: lazy(() => import('../../../views/ProgramProfile')),
+    },
+    {
+        path: '/national-statistics/',
+        name: 'nationalStatistics',
+        title: 'National Statistics',
+        load: lazy(() => import('../../../views/NationalStatistics')),
     },
     {
         path: '/403/',

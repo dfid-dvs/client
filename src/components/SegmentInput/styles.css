@@ -1,11 +1,15 @@
 .segment-input {
     display: flex;
-    flex-direction: column;
+    align-items: center;
 
+    .input-label {
+        white-space: nowrap;
+    }
     .input-container {
         display: flex;
-        align-self: flex-start;
-        border: var(--width-separator-thin) solid var(--color-separator-light);
-        border-radius: calc(4 * var(--radius-input));
+        border: var(--width-separator-medium) solid var(--color-separator-dark);
+        border-radius: calc(1em + 2 * var(--spacing-small));
+        background: var(--color-grey-shade-3);
+        width: 100%;
     }
 }

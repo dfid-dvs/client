@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
     BarChart,
     Bar,
@@ -7,13 +7,17 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
+    LabelList,
 } from 'recharts';
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
-import { IoMdTrash } from 'react-icons/io';
+import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff } from 'react-icons/io';
+import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
 import { HistogramSettings } from '#types';
+import handleChartDownload from '#utils/downloadChart';
+import useBasicToggle from '#hooks/useBasicToggle';
 
 import styles from './styles.css';
 
@@ -26,6 +30,36 @@ const valueTickFormatter = (value: number | string | undefined) => {
     return str;
 };
 
+interface CustomizedLabel {
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    value?: number | string;
+}
+
+const renderCustomizedLabel = (props: CustomizedLabel) => {
+    const { x = 0, y = 0, width = 0, value = 0 } = props;
+    const fontSize = width / 4;
+    const xValue = x + width / 2 + 1;
+    const yValue = y - width / 4 + 6;
+
+    return (
+        <g>
+            <text
+                x={xValue}
+                y={yValue}
+                fill="#212121"
+                dominantBaseline="middle"
+                textAnchor="middle"
+                fontSize={fontSize}
+            >
+                {valueTickFormatter(value)}
+            </text>
+        </g>
+    );
+};
+
 interface HistogramUnitProps<T> {
     settings: HistogramSettings<T>;
     data: T[] | undefined;
@@ -33,6 +67,9 @@ interface HistogramUnitProps<T> {
     onDelete: (name: string | undefined) => void;
     chartClassName?: string;
     hideActions?: boolean;
+    onExpand: (name: string | undefined) => void;
+    expandableIconHidden: boolean;
+    onSetEditableChartId?: (name: string | undefined) => void;
 }
 
 const chartMargin = {
@@ -42,6 +79,7 @@ const chartMargin = {
     left: 10,
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
     const {
         settings,
@@ -50,7 +88,11 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         onDelete,
         chartClassName,
         hideActions,
+        onExpand,
+        expandableIconHidden,
+        onSetEditableChartId,
     } = props;
+    const newRef = React.useRef<HTMLDivElement>(null);
 
     const {
         title,
@@ -94,64 +136,132 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
         [data, valueSelector, binCount],
     );
 
+    const [labelShown, , , toggleLabelShown] = useBasicToggle();
+
+    const handleDownload = useCallback(
+        () => {
+            handleChartDownload(newRef, title, styles.actions);
+        },
+        [title],
+    );
+
     return (
-        <div className={_cs(styles.chartContainer, className)}>
+        <div
+            className={_cs(styles.chartContainer, className)}
+            ref={newRef}
+        >
             <header className={styles.header}>
                 <h3 className={styles.heading}>
                     {title}
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
+                        {!expandableIconHidden && (
+                            <Button
+                                onClick={handleDownload}
+                                name={id}
+                                title="Download"
+                                transparent
+                                variant="icon"
+                            >
+                                <IoMdDownload className={styles.deleteIcon} />
+                            </Button>
+                        )}
+                        {onSetEditableChartId && (
+                            <Button
+                                onClick={onSetEditableChartId}
+                                name={id}
+                                title="Edit"
+                                transparent
+                                variant="icon"
+                            >
+                                <AiOutlineEdit className={styles.expandIcon} />
+                            </Button>
+                        )}
+                        {!expandableIconHidden && (
+                            <Button
+                                onClick={onDelete}
+                                name={id}
+                                title="Delete"
+                                transparent
+                                variant="icon"
+                            >
+                                <IoMdClose className={styles.deleteIcon} />
+                            </Button>
+                        )}
                         <Button
-                            onClick={onDelete}
+                            onClick={toggleLabelShown}
                             name={id}
-                            title="Delete chart"
+                            title="View Label"
                             transparent
-                            variant="danger"
+                            variant="icon"
                         >
-                            <IoMdTrash />
+                            {labelShown ? (
+                                <IoMdEyeOff className={styles.expandIcon} />
+                            ) : (
+                                <IoMdEye className={styles.expandIcon} />
+                            )}
                         </Button>
+                        {!expandableIconHidden && (
+                            <Button
+                                onClick={onExpand}
+                                name={id}
+                                title="Expand"
+                                transparent
+                                variant="icon"
+                            >
+                                <AiOutlineExpandAlt className={styles.expandIcon} />
+                            </Button>
+                        )}
                     </div>
                 )}
             </header>
             <div className={_cs(styles.responsiveContainer, chartClassName)}>
-                <ResponsiveContainer>
-                    <BarChart
-                        className={styles.chart}
-                        width={400}
-                        height={300}
-                        data={finalData}
-                        margin={chartMargin}
-                        barCategoryGap={0}
-                    >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis
-                            dataKey="key"
-                            type="category"
-                            interval={0}
-                            angle={-45}
-                            textAnchor="end"
-                            height={80}
-                        />
-                        <YAxis
-                            type="number"
-                            label={{
-                                value: 'Frequency',
-                                angle: -90,
-                                position: 'insideLeft',
-                            }}
-                        />
-                        <Tooltip
-                            allowEscapeViewBox={{ x: false, y: true }}
-                            offset={20}
-                        />
-                        <Bar
-                            name="Frequency"
-                            dataKey="value"
-                            fill={color}
-                        />
-                    </BarChart>
-                </ResponsiveContainer>
+                {(finalData?.length || 0) > 0 && (
+                    <ResponsiveContainer>
+                        <BarChart
+                            className={styles.chart}
+                            data={finalData}
+                            margin={chartMargin}
+                            barCategoryGap={0}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                                dataKey="key"
+                                type="category"
+                                interval={0}
+                                angle={-45}
+                                textAnchor="end"
+                                height={80}
+                            />
+                            <YAxis
+                                type="number"
+                                label={{
+                                    value: 'Frequency',
+                                    angle: -90,
+                                    position: 'insideLeft',
+                                }}
+                            />
+                            <Tooltip
+                                allowEscapeViewBox={{ x: false, y: false }}
+                                offset={20}
+                            />
+                            <Bar
+                                name="Frequency"
+                                dataKey="value"
+                                fill={color}
+                            >
+                                {labelShown && (
+                                    <LabelList
+                                        dataKey="value"
+                                        formatter={valueTickFormatter}
+                                        content={renderCustomizedLabel}
+                                    />
+                                )}
+                            </Bar>
+                        </BarChart>
+                    </ResponsiveContainer>
+                )}
             </div>
         </div>
     );

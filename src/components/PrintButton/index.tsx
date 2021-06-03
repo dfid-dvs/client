@@ -56,7 +56,7 @@ function PrintButton(props: Props) {
                         className={styles.print}
                         onClick={handlePrintClick}
                         icons={<AiOutlinePrinter />}
-                        variant="primary"
+                        variant="secondary-outline"
                     >
                         Print
                     </Button>
@@ -68,10 +68,12 @@ function PrintButton(props: Props) {
                 <Button
                     className={styles.printPreview}
                     onClick={handlePrintPreviewClick}
-                    icons={<AiOutlinePrinter />}
                     disabled={disabled}
-                    title="Print"
-                />
+                    title="Print Preview"
+                    variant="secondary-outline"
+                >
+                    <AiOutlinePrinter />
+                </Button>
             )}
         </div>
     );

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
     randomString,
     isFalsyString,
@@ -18,6 +18,7 @@ interface Props<T> {
     onSave: (settings: PieChartSettings<T>) => void;
     options: NumericOption<T>[];
     keySelector: (item: T) => string;
+    editableChartData: PieChartSettings<T> | undefined;
 }
 
 function PieChartConfig<T>(props: Props<T>) {
@@ -26,17 +27,16 @@ function PieChartConfig<T>(props: Props<T>) {
         onSave,
         options,
         keySelector: primaryKeySelector,
+        editableChartData,
     } = props;
-
     const [error, setError] = useState<string | undefined>(undefined);
 
-    const [title, setTitle] = useState('');
-    const [orderField, setOrderField] = useState<string | undefined>();
+    const [title, setTitle] = useState(editableChartData?.title ?? '');
+    const [orderField, setOrderField] = useState<string | undefined>(editableChartData?.key ?? '');
 
-    // FIXME: memoize
-    const keySelector = (item: NumericOption<T>) => item.key;
-    const labelSelector = (item: NumericOption<T>) => item.title;
-    const groupSelector = (item: NumericOption<T>) => item.category;
+    const keySelector = useMemo(() => (item: NumericOption<T>) => item.key, []);
+    const labelSelector = useMemo(() => (item: NumericOption<T>) => item.title, []);
+    const groupSelector = useMemo(() => (item: NumericOption<T>) => item.category, []);
 
     const handleSave = useCallback(
         () => {
@@ -66,6 +66,7 @@ function PieChartConfig<T>(props: Props<T>) {
                 id: chartId,
                 type: 'pie-chart',
                 title,
+                key: orderField,
 
                 keySelector: primaryKeySelector,
                 valueSelector: option.valueSelector,
@@ -85,6 +86,7 @@ function PieChartConfig<T>(props: Props<T>) {
                     value={title}
                     onChange={setTitle}
                     autoFocus
+                    labelClassName={styles.label}
                 />
                 <SelectInput
                     label="Data"
@@ -96,6 +98,7 @@ function PieChartConfig<T>(props: Props<T>) {
                     optionKeySelector={keySelector}
                     groupKeySelector={groupSelector}
                     nonClearable
+                    labelClassName={styles.label}
                 />
             </div>
             <div className={styles.footer}>
@@ -107,7 +110,7 @@ function PieChartConfig<T>(props: Props<T>) {
                 <Button
                     className={styles.submitButton}
                     onClick={handleSave}
-                    variant="primary"
+                    variant="secondary"
                 >
                     Save
                 </Button>

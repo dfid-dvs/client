@@ -7,7 +7,7 @@ import ToggleButton from '#components/ToggleButton';
 
 import styles from './styles.css';
 import { FiveWOption } from '../types';
-import { Indicator, Layer, RasterLayer, VectorLayer } from '#types';
+import { Indicator, Layer, VectorLayer } from '#types';
 
 const fiveWKeySelector = (option: FiveWOption) => option.key;
 const fiveWLabelSelector = (option: FiveWOption) => option.label;
@@ -17,6 +17,7 @@ const layerLabelSelector = (d: Layer) => d.name;
 
 const indicatorKeySelector = (indicator: Indicator) => indicator.id;
 const indicatorLabelSelector = (indicator: Indicator) => indicator.fullTitle;
+const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 
 interface MapOptionsProps {
     className?: string;
@@ -34,9 +35,9 @@ interface MapOptionsProps {
     vectorLayers: VectorLayer[] | undefined;
     setSelectedVectorLayers: React.Dispatch<React.SetStateAction<number[] | undefined>>;
     selectedVectorLayers: number[] | undefined;
-    rasterLayers: RasterLayer[] | undefined;
-    setSelectedRasterLayer: React.Dispatch<React.SetStateAction<number | undefined>>;
-    selectedRasterLayer: number | undefined;
+    // rasterLayers?: RasterLayer[] | undefined;
+    // setSelectedRasterLayer?: React.Dispatch<React.SetStateAction<number | undefined>>;
+    // selectedRasterLayer?: number | undefined;
 }
 
 export default function MapOptions(props: MapOptionsProps) {
@@ -56,15 +57,11 @@ export default function MapOptions(props: MapOptionsProps) {
         vectorLayers,
         setSelectedVectorLayers,
         selectedVectorLayers,
-        rasterLayers,
-        setSelectedRasterLayer,
-        selectedRasterLayer,
     } = props;
-
     return (
         <div className={_cs(styles.mapSelectorContainer, className)}>
             <SelectInput
-                placeholder="DFID Data"
+                placeholder="Data type"
                 className={styles.inputItem}
                 options={fiveWOptions}
                 onChange={handleFiveWOptionChange}
@@ -81,12 +78,51 @@ export default function MapOptions(props: MapOptionsProps) {
                 value={validSelectedIndicator}
                 optionLabelSelector={indicatorLabelSelector}
                 optionKeySelector={indicatorKeySelector}
-                // groupKeySelector={indicatorGroupKeySelector}
+                groupKeySelector={indicatorGroupKeySelector}
                 pending={indicatorListPending}
             />
-            {selectedIndicatorDetails && selectedIndicatorDetails.abstract && (
-                <div className={styles.abstract}>
-                    { selectedIndicatorDetails.abstract}
+            {selectedIndicatorDetails && (
+                <div className={styles.indicatorInfo}>
+                    {selectedIndicatorDetails.abstract && (
+                        <div className={styles.abstract}>
+                            {selectedIndicatorDetails.abstract}
+                        </div>
+                    )}
+                    {selectedIndicatorDetails.source && (
+                        <div className={styles.titleValue}>
+                            <div className={styles.title}>
+                                Source:
+                            </div>
+                            <div className={styles.value}>
+                                {selectedIndicatorDetails.source}
+                            </div>
+                        </div>
+                    )}
+                    {selectedIndicatorDetails.unit && (
+                        <div
+                            className={_cs(
+                                styles.titleValue,
+                                styles.flex,
+                            )}
+                        >
+                            <div className={styles.title}>
+                                Unit:
+                            </div>
+                            <div className={styles.value}>
+                                {selectedIndicatorDetails.unit}
+                            </div>
+                        </div>
+                    )}
+                    {selectedIndicatorDetails.url && (
+                        <a
+                            className={styles.url}
+                            href={selectedIndicatorDetails.url}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            View Link
+                        </a>
+                    )}
                 </div>
             )}
             <ToggleButton
@@ -106,7 +142,8 @@ export default function MapOptions(props: MapOptionsProps) {
                 optionKeySelector={layerKeySelector}
                 optionLabelSelector={layerLabelSelector}
             />
-            <SelectInput
+            {/* NOTE: Hidden for now as per clients's request. */}
+            {/* <SelectInput
                 placeholder="Background Layer"
                 className={styles.inputItem}
                 disabled={mapLayerListPending}
@@ -115,7 +152,7 @@ export default function MapOptions(props: MapOptionsProps) {
                 value={selectedRasterLayer}
                 optionKeySelector={layerKeySelector}
                 optionLabelSelector={layerLabelSelector}
-            />
+            /> */}
         </div>
     );
 }

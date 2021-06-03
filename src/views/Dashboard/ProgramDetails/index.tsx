@@ -1,4 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { unique, _cs } from '@togglecorp/fujs';
 
 import DomainContext from '#components/DomainContext';
 import SegmentInput from '#components/SegmentInput';
@@ -37,14 +39,23 @@ function ProgramDetails(props: Props) {
 
     const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('charts');
 
+    const programIdList = useMemo(
+        () => unique(
+            programs.filter(item => item.startsWith('program'))
+                .map(item => Number(item.split('-')[1])),
+        ),
+        [programs],
+    );
+
     return (
         <PopupPage
-            className={className}
-            title="Programs"
-            parentLink="/dashboard/"
+            className={_cs(styles.programDetails, className)}
+            parentLink="/"
             parentName="dashboard"
+            hideArrow
             actions={(
-                <div className={styles.tabActions}>
+                <div className={styles.actionContainer}>
+                    <div className={styles.dummy} />
                     <SegmentInput
                         options={tabOptions}
                         optionKeySelector={item => item.key}
@@ -52,20 +63,27 @@ function ProgramDetails(props: Props) {
                         value={selectedTab}
                         onChange={setSelectedTab}
                     />
+                    <Link
+                        className={styles.programProfileLink}
+                        to="/program-profile/"
+                    >
+                        Create Program Profile
+                    </Link>
                 </div>
             )}
+            headerClassName={styles.header}
         >
             {selectedTab === 'table' && (
-                <Table programs={programs} />
+                <Table programs={programIdList} />
             )}
             {selectedTab === 'charts' && (
                 <Charts
-                    programs={programs}
+                    programs={programIdList}
                 />
             )}
             {selectedTab === 'sankey' && (
                 <Sankey
-                    programs={programs}
+                    programs={programIdList}
                 />
             )}
         </PopupPage>

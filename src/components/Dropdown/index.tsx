@@ -8,30 +8,28 @@ import styles from './styles.css';
 interface Props {
     className?: string;
     parentRef: React.RefObject<HTMLElement>;
-    // forwardedRef: React.RefObject<HTMLDivElement>;
+    elementRef: React.RefObject<HTMLDivElement>;
     children: React.ReactNode;
 }
 
-const Dropdown = React.forwardRef<HTMLDivElement, Props>(
-    (props, ref) => {
-        const {
-            parentRef,
-            children,
-            // forwardedRef,
-            className,
-        } = props;
+function Dropdown(props: Props) {
+    const {
+        parentRef,
+        children,
+        elementRef,
+        className,
+    } = props;
 
-        const style = getFloatPlacement(parentRef);
+    const style = getFloatPlacement(parentRef);
 
-        return (
-            <div
-                ref={ref}
-                style={style}
-                className={_cs(styles.dropdownContainer, className)}
-            >
-                { children }
-            </div>
-        );
-    },
-);
+    return (
+        <div
+            ref={elementRef}
+            style={style}
+            className={_cs(styles.dropdownContainer, className)}
+        >
+            { children }
+        </div>
+    );
+}
 export default Dropdown;

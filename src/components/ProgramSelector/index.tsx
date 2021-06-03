@@ -1,7 +1,7 @@
-import React, { useMemo, useContext, useState } from 'react';
-import { IoIosDocument, IoMdPeople } from 'react-icons/io';
-import { FaRegBuilding, FaShapes } from 'react-icons/fa';
-import { isDefined, _cs, unique } from '@togglecorp/fujs';
+import React, { useMemo, useState, useContext, useCallback } from 'react';
+import { _cs, isDefined, intersection, unique, caseInsensitiveSubmatch, compareString } from '@togglecorp/fujs';
+import { MdAssignment, MdBusiness, MdPeople, MdRefresh } from 'react-icons/md';
+import { FaShapes } from 'react-icons/fa';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
@@ -11,6 +11,7 @@ import {
     Partner,
     DomainContextProps,
 } from '#types';
+import { prepareUrlParams as p } from '#utils/common';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
@@ -18,6 +19,7 @@ import DomainContext from '#components/DomainContext';
 import SelectorItem from './SelectorItem';
 
 import styles from './styles.css';
+import Button from '#components/Button';
 
 // TODO: move this to utils
 // NOTE: join two array together
@@ -62,10 +64,19 @@ interface SubMarker {
 
 interface TreeItem<T = string> {
     key: T;
-    id: number;
+    id: number | string;
     parentKey: T | undefined;
     parentId: number | undefined;
     name: string;
+}
+
+interface ProgramComponent {
+    id: number;
+    name: string;
+    sector: number[];
+    subSector: number[];
+    code: string;
+    partners: number[];
 }
 
 type ExpanedFilter = 'programs' | 'partners' | 'sectors' | 'markers';
@@ -73,13 +84,18 @@ type ExpanedFilter = 'programs' | 'partners' | 'sectors' | 'markers';
 interface Props {
     className?: string;
     isMinimized?: boolean;
+    startDate?: string;
+    endDate?: string;
+    dataExplored?: boolean;
 }
 function ProgramSelector(props: Props) {
     const {
         className,
         isMinimized,
+        startDate,
+        endDate,
+        dataExplored,
     } = props;
-
     const {
         markers: selectedMarker,
         setMarkers: setSelectedMarker,
@@ -91,27 +107,32 @@ function ProgramSelector(props: Props) {
         setSectors: setSelectedSector,
     } = useContext<DomainContextProps>(DomainContext);
 
-    const optionsSelected = useMemo(
-        // eslint-disable-next-line max-len
-        () => [...selectedMarker, ...selectedProgram, ...selectedPartner, ...selectedSector].length > 0,
-        [
-            selectedMarker,
-            selectedProgram,
-            selectedPartner,
-            selectedSector,
-        ],
-    );
-
     const [
         expandedFilters,
         setExpanedFilters,
-    ] = useState<ExpanedFilter[]>(['markers']);
+    ] = useState<ExpanedFilter[]>(['markers', 'programs', 'partners', 'sectors']);
 
-    const programListGetUrl = `${apiEndPoint}/core/program/`;
+    const programUrlParams = p({
+        // eslint-disable-next-line camelcase
+        start_date: dataExplored ? undefined : startDate,
+        // eslint-disable-next-line camelcase
+        end_date: dataExplored ? undefined : endDate,
+    });
+
+    const programListGetUrl = programUrlParams
+        ? `${apiEndPoint}/core/program/?${programUrlParams}`
+        : `${apiEndPoint}/core/program/`;
+
     const [
         programListPending,
         programListResponse,
     ] = useRequest<MultiResponse<Program>>(programListGetUrl, 'program-list');
+
+    const componentListGetUrl = `${apiEndPoint}/core/component/`;
+    const [
+        componentListPending,
+        componentListResponse,
+    ] = useRequest<MultiResponse<ProgramComponent>>(componentListGetUrl, 'component-list');
 
     const partnerListGetUrl = `${apiEndPoint}/core/partner/`;
     const [
@@ -163,58 +184,366 @@ function ProgramSelector(props: Props) {
         setMarkerSearchText,
     ] = useState('');
 
+    const selectedSectorOriginal = useMemo(
+        () => unique(
+            selectedSector.filter(item => item.startsWith('sector'))
+                .map(item => Number(item.split('-')[1])),
+        ),
+        [selectedSector],
+    );
+    const selectedSubSectorOriginal = useMemo(
+        () => unique(
+            selectedSector.filter(item => item.startsWith('subsector'))
+                .map(item => Number(item.split('-')[1])),
+        ),
+        [selectedSector],
+    );
+
+    const selectedMarkerOriginal = useMemo(
+        () => unique(
+            selectedMarker.filter(item => item.startsWith('marker'))
+                .map(item => Number(item.split('-')[1])),
+        ),
+        [selectedMarker],
+    );
+    const selectedSubMarkerOriginal = useMemo(
+        () => unique(
+            selectedMarker.filter(item => item.startsWith('submarker'))
+                .map(item => Number(item.split('-')[1])),
+        ),
+        [selectedMarker],
+    );
+
+    const selectedPartnerOriginal = selectedPartner.map(Number);
+
+    const selectedProgramOriginal = useMemo(
+        () => unique(
+            selectedProgram.filter(item => item.startsWith('program'))
+                .map(item => Number(item.split('-')[1])),
+        ),
+        [selectedProgram],
+    );
+
+    const selectedComponentOriginal = useMemo(
+        () => unique(
+            selectedProgram.filter(item => item.startsWith('subprogram'))
+                .map(item => item.replace('subprogram-', '')),
+        ),
+        [selectedProgram],
+    );
+
+    const rawPartnerOptions = useMemo(
+        () => partnerListResponse?.results.sort(
+            (a, b) => compareString(
+                a.name,
+                b.name,
+            ),
+        ),
+        [partnerListResponse?.results],
+    );
+    const rawSectorOptions = useMemo(
+        () => sectorListResponse?.results.sort(
+            (a, b) => compareString(
+                a.name,
+                b.name,
+            ),
+        ),
+        [sectorListResponse?.results],
+    );
+    const rawSubSectorOptions = useMemo(
+        () => subSectorListResponse?.results.sort(
+            (a, b) => compareString(
+                a.name,
+                b.name,
+            ),
+        ),
+        [subSectorListResponse?.results],
+    );
+    const rawMarkerOptions = markerListResponse?.results;
+    const rawSubMarkerOptions = subMarkerListResponse?.results;
+
+    const rawProgramOptionsWithoutComponentSectors = useMemo(
+        () => programListResponse?.results.sort(
+            (a, b) => compareString(
+                a.name,
+                b.name,
+            ),
+        ),
+        [programListResponse?.results],
+    );
+    const rawComponentOptions = useMemo(
+        () => componentListResponse?.results.sort(
+            (a, b) => compareString(
+                a.name,
+                b.name,
+            ),
+        ),
+        [componentListResponse?.results],
+    );
+    const rawProgramOptions = useMemo(
+        () => {
+            if (!rawComponentOptions || !rawProgramOptionsWithoutComponentSectors) {
+                return undefined;
+            }
+            const programs = rawProgramOptionsWithoutComponentSectors.map((prog) => {
+                const progCompIds = prog.component.map(pc => pc.id);
+                const comp = rawComponentOptions.filter(rc => progCompIds.includes(rc.id));
+                return {
+                    ...prog,
+                    component: comp,
+                };
+            });
+            return programs;
+        },
+        [rawComponentOptions, rawProgramOptionsWithoutComponentSectors],
+    );
+
+    const applicableProgramOptions = useMemo(
+        () => rawProgramOptions?.filter((item) => {
+            if (selectedComponentOriginal.length > 0) {
+                const common = intersection(
+                    new Set(item.component.map(comp => comp.code)),
+                    new Set(selectedComponentOriginal),
+                );
+                if (common.size !== selectedComponentOriginal.length) {
+                    return false;
+                }
+            }
+
+            if (selectedSectorOriginal.length > 0) {
+                const common = intersection(
+                    new Set(item.sector.map(sec => sec.id)),
+                    new Set(selectedSectorOriginal),
+                );
+                if (common.size !== selectedSectorOriginal.length) {
+                    return false;
+                }
+            }
+            if (selectedSubSectorOriginal.length > 0) {
+                const common = intersection(
+                    new Set(item.subSector.map(sec => sec.id)),
+                    new Set(selectedSubSectorOriginal),
+                );
+                if (common.size !== selectedSubSectorOriginal.length) {
+                    return false;
+                }
+            }
+            if (selectedMarkerOriginal.length > 0) {
+                const common = intersection(
+                    new Set(item.markerCategory.map(sec => sec.id)),
+                    new Set(selectedMarkerOriginal),
+                );
+                if (common.size !== selectedMarkerOriginal.length) {
+                    return false;
+                }
+            }
+            if (selectedSubMarkerOriginal.length > 0) {
+                const common = intersection(
+                    new Set(item.markerValue.map(sec => sec.id)),
+                    new Set(selectedSubMarkerOriginal),
+                );
+                if (common.size !== selectedSubMarkerOriginal.length) {
+                    return false;
+                }
+            }
+            if (selectedPartnerOriginal.length > 0) {
+                const common = intersection(
+                    new Set(item.partner.map(sec => sec.id)),
+                    new Set(selectedPartnerOriginal),
+                );
+                if (common.size !== selectedPartnerOriginal.length) {
+                    return false;
+                }
+            }
+            return true;
+        }),
+        [
+            rawProgramOptions,
+            selectedComponentOriginal,
+            selectedMarkerOriginal,
+            selectedPartnerOriginal,
+            selectedSectorOriginal,
+            selectedSubMarkerOriginal,
+            selectedSubSectorOriginal,
+        ],
+    );
+
+    const appliedProgramOptions = useMemo(
+        () => applicableProgramOptions?.filter((item) => {
+            if (selectedProgramOriginal.length > 0) {
+                const selections = new Set(selectedProgramOriginal);
+                return selections.has(item.id);
+            }
+            return true;
+        }),
+        [applicableProgramOptions, selectedProgramOriginal],
+    );
+
     const partnerOptions: TreeItem[] | undefined = useMemo(
         () => {
-            const partnerList = programListResponse?.results
-                .map(item => item.partner)
-                .flat()
-                .map(item => item?.id);
-            const partnerSet = new Set(partnerList);
+            let partnerSet = new Set<number>();
+            if (selectedComponentOriginal.length > 0) {
+                const componentPartners = rawComponentOptions?.filter(
+                    rc => selectedComponentOriginal.includes(rc.code),
+                ).map(c => c.partners).flat();
+                partnerSet = new Set(componentPartners);
+            } else {
+                partnerSet = new Set(
+                    appliedProgramOptions
+                        ?.map(item => item.partner)
+                        .flat()
+                        .map(item => item?.id),
+                );
+            }
 
-            const mappedPartnerList = partnerListResponse?.results
-                .map(({ id, name }) => ({
+            const mappedPartnerList = rawPartnerOptions
+                ?.map(({ id, name }) => ({
                     key: String(id),
                     parentKey: undefined,
                     parentId: undefined,
                     name,
                     id,
                 }))
-                // Just remove partners which are not active in any program
                 .filter(item => partnerSet.has(item.id));
 
             if (!partnerSearchText) {
                 return mappedPartnerList;
             }
 
-            const searchText = partnerSearchText.toLowerCase();
-            return mappedPartnerList?.filter(item => item.name.toLowerCase().includes(searchText));
+            return mappedPartnerList?.filter(
+                item => caseInsensitiveSubmatch(item.name, partnerSearchText),
+            );
         },
-        [partnerListResponse?.results, programListResponse?.results, partnerSearchText],
+        [
+            rawPartnerOptions,
+            appliedProgramOptions,
+            partnerSearchText,
+            rawComponentOptions,
+            selectedComponentOriginal,
+        ],
     );
 
     const sectorOptions: TreeItem[] | undefined = useMemo(
         () => {
-            const mappedSectorList = sectorListResponse?.results
-                .map(({ id, name }) => ({
+            if (selectedComponentOriginal.length > 0) {
+                if (!appliedProgramOptions) {
+                    return undefined;
+                }
+                const componentAssociatedProgram = appliedProgramOptions[0];
+                if (!componentAssociatedProgram) {
+                    return undefined;
+                }
+                const { component } = componentAssociatedProgram;
+                const selectedComponents = component.filter(
+                    c => selectedComponentOriginal.includes(c.code),
+                );
+
+                const componentSectorIds = selectedComponents.map(comp => comp.sector).flat();
+                const componentSectors = rawSectorOptions?.filter(
+                    rso => componentSectorIds.includes(rso.id),
+                );
+                if (!componentSectors) {
+                    return undefined;
+                }
+                const associatedComponentSectors = componentSectors.map(({ id, name }) => ({
                     key: `sector-${id}`,
                     parentKey: undefined,
                     parentId: undefined,
                     name,
                     id,
                 }));
+                const searchedSectors = associatedComponentSectors?.filter(
+                    item => caseInsensitiveSubmatch(item.name, sectorSearchText),
+                );
+                return searchedSectors;
+            }
+
+            const sectorSet = new Set(
+                appliedProgramOptions
+                    ?.map(item => item.sector)
+                    .flat()
+                    .map(item => item?.id),
+            );
+
+            const mappedSectorList = rawSectorOptions
+                ?.map(({ id, name }) => ({
+                    key: `sector-${id}`,
+                    parentKey: undefined,
+                    parentId: undefined,
+                    name,
+                    id,
+                }))
+                .filter(item => sectorSet.has(item.id));
 
             if (!sectorSearchText) {
                 return mappedSectorList;
             }
-
-            const searchText = sectorSearchText.toLowerCase();
-            return mappedSectorList?.filter(item => item.name.toLowerCase().includes(searchText));
+            const searchedSectors = mappedSectorList?.filter(
+                item => caseInsensitiveSubmatch(item.name, sectorSearchText),
+            );
+            return searchedSectors;
         },
-        [sectorListResponse?.results, sectorSearchText],
+        [
+            rawSectorOptions,
+            sectorSearchText,
+            appliedProgramOptions,
+            selectedComponentOriginal,
+        ],
     );
     const subSectorOptions: TreeItem[] | undefined = useMemo(
-        () => (
-            subSectorListResponse?.results.map(
+        () => {
+            if (selectedComponentOriginal.length > 0) {
+                if (!appliedProgramOptions) {
+                    return undefined;
+                }
+                const componentAssociatedProgram = appliedProgramOptions[0];
+                if (!componentAssociatedProgram) {
+                    return undefined;
+                }
+                const { component } = componentAssociatedProgram;
+                const selectedComponents = component.filter(
+                    c => selectedComponentOriginal.includes(c.code),
+                );
+
+                const componentSubSectorIds = selectedComponents.map(comp => comp.subSector).flat();
+                const componentSubSectors = rawSubSectorOptions?.filter(
+                    rso => componentSubSectorIds.includes(rso.id),
+                );
+                if (!componentSubSectors) {
+                    return undefined;
+                }
+                const associatedComponentSubSectors = componentSubSectors.map(
+                    ({ id, sectorId, name }) => ({
+                        key: `subsector-${id}`,
+                        parentKey: `sector-${sectorId}`,
+                        parentId: undefined,
+                        name,
+                        id,
+                    }),
+                );
+                return associatedComponentSubSectors;
+            }
+
+            const textFilteredSectors = rawSectorOptions?.filter(
+                r => caseInsensitiveSubmatch(r.name, sectorSearchText),
+            ).filter(isDefined);
+
+            if (!textFilteredSectors) {
+                return undefined;
+            }
+
+            if (textFilteredSectors.length <= 0) {
+                return undefined;
+            }
+
+            const subSectorSet = new Set(
+                appliedProgramOptions
+                    ?.map(item => item.subSector)
+                    .flat()
+                    .map(item => item?.id),
+            );
+
+            return rawSubSectorOptions?.map(
                 ({ id, sectorId, name }) => ({
                     key: `subsector-${id}`,
                     parentKey: `sector-${sectorId}`,
@@ -222,10 +551,17 @@ function ProgramSelector(props: Props) {
                     name,
                     id,
                 }),
-            )
-        ),
-        [subSectorListResponse?.results],
+            ).filter(item => subSectorSet.has(item.id));
+        },
+        [
+            rawSubSectorOptions,
+            appliedProgramOptions,
+            sectorSearchText,
+            selectedComponentOriginal,
+            rawSectorOptions,
+        ],
     );
+
     const combinedSectorOptions = useMemo(
         () => join(sectorOptions, subSectorOptions),
         [sectorOptions, subSectorOptions],
@@ -233,194 +569,229 @@ function ProgramSelector(props: Props) {
 
     const markerOptions: TreeItem[] | undefined = useMemo(
         () => {
-            const mappedMarkerList = markerListResponse?.results
-                .map(({ id, name }) => ({
+            const markerSet = new Set(
+                appliedProgramOptions
+                    ?.map(item => item.markerCategory)
+                    .flat()
+                    .map(item => item?.id),
+            );
+            const mappedMarkerList = rawMarkerOptions
+                ?.map(({ id, name }) => ({
                     key: `marker-${id}`,
                     parentKey: undefined,
                     parentId: undefined,
                     name,
                     id,
-                }));
+                }))
+                .filter(item => markerSet.has(item.id));
 
             if (!markerSearchText) {
                 return mappedMarkerList;
             }
-            const searchText = markerSearchText.toLowerCase();
-            return mappedMarkerList?.filter(item => item.name.toLowerCase().includes(searchText));
+            return mappedMarkerList?.filter(
+                item => caseInsensitiveSubmatch(item.name, markerSearchText),
+            );
         },
-        [markerListResponse?.results, markerSearchText],
+        [rawMarkerOptions, markerSearchText, appliedProgramOptions],
     );
     const subMarkerOptions: TreeItem[] | undefined = useMemo(
-        () => (
-            subMarkerListResponse?.results
-                .map(({ id, markerCategoryId, value }) => ({
+        () => {
+            const subMarkerSet = new Set(
+                appliedProgramOptions
+                    ?.map(item => item.markerValue)
+                    .flat()
+                    .map(item => item?.id),
+            );
+            return rawSubMarkerOptions
+                ?.map(({ id, markerCategoryId, value }) => ({
                     key: `submarker-${id}`,
                     parentKey: `marker-${markerCategoryId}`,
                     parentId: markerCategoryId,
                     name: value,
                     id,
                 }))
-        ),
-        [subMarkerListResponse?.results],
+                .filter(item => subMarkerSet.has(item.id))
+                .filter(item => caseInsensitiveSubmatch(item.name, markerSearchText));
+        },
+        [rawSubMarkerOptions, appliedProgramOptions, markerSearchText],
     );
     const combinedMarkerOptions = useMemo(
         () => join(markerOptions, subMarkerOptions),
         [markerOptions, subMarkerOptions],
     );
 
-    const programOptions: TreeItem<number>[] | undefined = useMemo(
+    const programOptions: TreeItem<string>[] | undefined = useMemo(
         () => {
-            const programList = programListResponse?.results.map(p => ({
-                ...p,
-                key: p.id,
+            const programList = applicableProgramOptions?.map(program => ({
+                key: `program-${program.id}`,
                 parentKey: undefined,
                 parentId: undefined,
+                name: program.name,
+                id: program.id,
             }));
 
             if (!programSearchText) {
                 return programList;
             }
 
-            const searchText = programSearchText.toLowerCase();
-            return programList?.filter(item => item.name.toLowerCase().includes(searchText));
+            return programList?.filter(
+                item => caseInsensitiveSubmatch(item.name, programSearchText),
+            );
         },
-        [programListResponse?.results, programSearchText],
+        [
+            applicableProgramOptions,
+            programSearchText,
+        ],
     );
-
-    const enabledProgramOptionIdList: number[] | undefined = useMemo(
+    const subProgramOptions: TreeItem[] | undefined = useMemo(
         () => {
-            const programList = programListResponse?.results;
-            if (!programList) {
+            if (!applicableProgramOptions) {
                 return undefined;
             }
-            const markerCategory: string[] = [];
-            const markerValue: string[] = [];
+            const textFilteredPrograms = applicableProgramOptions.filter(
+                item => caseInsensitiveSubmatch(item.name, programSearchText),
+            );
+            // eslint-disable-next-line max-len
+            if (selectedSectorOriginal.length <= 0 && selectedSubSectorOriginal.length <= 0 && selectedPartnerOriginal.length <= 0) {
+                const programList = textFilteredPrograms?.map(program => (
+                    program.component.map((item => ({
+                        key: `subprogram-${item.code}`,
+                        parentKey: `program-${program.id}`,
+                        parentId: program.id,
+                        name: item.name,
+                        id: item.id,
+                    })))))
+                    .flat()
+                    .filter(isDefined);
+                return programList;
+            }
 
-            const selectedMarkerList = [...selectedMarker];
-            selectedMarkerList.forEach((val) => {
-                if (val.includes('submarker-')) {
-                    const id = val.replace('submarker-', '');
-                    markerCategory.push(id);
-                } else if (val.includes('marker-')) {
-                    const id = val.replace('marker-', '');
-                    markerValue.push(id);
+            const combinedProgramListWithComponents = textFilteredPrograms.map((prog) => {
+                const compWithSectors = prog.component.map((comp) => {
+                    const commonSectIds = Array.from(intersection(
+                        new Set(comp.sector),
+                        new Set(selectedSectorOriginal),
+                    ));
+                    if (commonSectIds.length > 0) {
+                        return comp;
+                    }
+                    return undefined;
+                }).filter(isDefined);
+
+                const compWithSubSectors = prog.component.map((comp) => {
+                    const commonSubSectIds = Array.from(intersection(
+                        new Set(comp.subSector),
+                        new Set(selectedSubSectorOriginal),
+                    ));
+                    if (commonSubSectIds.length > 0) {
+                        return comp;
+                    }
+                    return undefined;
+                }).filter(isDefined);
+
+                const selectedSubSectors = prog.component.filter(
+                    c => selectedComponentOriginal.includes(c.code),
+                );
+                const combinedComps = unique(
+                    [...compWithSectors, ...compWithSubSectors, ...selectedSubSectors],
+                    comp => comp.code,
+                );
+
+                if (selectedPartnerOriginal.length <= 0) {
+                    return {
+                        ...prog,
+                        component: combinedComps,
+                    };
                 }
+                const compWithPartners = prog.component.map((comp) => {
+                    const commonPartnerIds = Array.from(intersection(
+                        new Set(comp.partners),
+                        new Set(selectedPartnerOriginal),
+                    ));
+                    if (commonPartnerIds.length > 0) {
+                        return comp;
+                    }
+                    return undefined;
+                }).filter(isDefined);
+                const selectedPartners = prog.component.filter(
+                    c => selectedPartnerOriginal.includes(c.id),
+                );
+                const combinedPartnerComps = unique(
+                    [...compWithPartners, ...selectedPartners],
+                    comp => comp.code,
+                );
+                return {
+                    ...prog,
+                    component: combinedPartnerComps,
+                };
             });
 
-            const programIdByCategory = programList.map(
-                (program) => {
-                    const category = program.markerCategory;
-                    const cat = category.find(c => markerCategory.includes(String(c.id)));
-                    if (!cat) {
-                        return undefined;
-                    }
-                    return program.id;
-                },
-            ).filter(isDefined);
-
-            const programIdByValue = programList.map(
-                (program) => {
-                    const value = program.markerValue;
-                    const val = value.find(c => markerValue.includes(String(c.id)));
-                    if (!val) {
-                        return undefined;
-                    }
-                    return program.id;
-                },
-            ).filter(isDefined);
-
-            const combinedProgramIds = unique([...programIdByCategory, ...programIdByValue]);
-
-            if (combinedProgramIds.length <= 0) {
-                return undefined;
-            }
-            return combinedProgramIds;
-        },
-        [programListResponse?.results, selectedMarker],
-    );
-
-    const enabledPartnerOptionsKeysList: string[] | undefined = useMemo(
-        () => {
-            const programList = programListResponse?.results;
-            if (!programList) {
-                return undefined;
-            }
-
-            let programOptionsList: number[];
-            if (enabledProgramOptionIdList && selectedProgram.length <= 0) {
-                programOptionsList = enabledProgramOptionIdList;
-            } else if (selectedProgram.length > 0) {
-                programOptionsList = selectedProgram;
-            }
-
-            // eslint-disable-next-line max-len
-            const partnerIds = programList.filter(program => programOptionsList?.includes(program.id))
-                .map(item => item.partner)
-                .flat()
-                .map(item => String(item.id));
-
-            if (partnerIds.length <= 0) {
-                if (optionsSelected) {
-                    return [];
-                }
-                return undefined;
-            }
-            return partnerIds;
+            return combinedProgramListWithComponents.map(program => (
+                program.component.map((item => ({
+                    key: `subprogram-${item.code}`,
+                    parentKey: `program-${program.id}`,
+                    parentId: program.id,
+                    name: item.name,
+                    id: item.id,
+                })))
+            )).flat().filter(isDefined);
         },
         [
-            programListResponse?.results,
-            enabledProgramOptionIdList,
-            selectedProgram,
-            optionsSelected,
+            applicableProgramOptions,
+            programSearchText,
+            selectedSectorOriginal,
+            selectedSubSectorOriginal,
+            selectedComponentOriginal,
+            selectedPartnerOriginal,
         ],
     );
 
-    const enabledSectorOptionKeysList: string[] | undefined = useMemo(
-        () => {
-            const programList = programListResponse?.results;
-            if (!programList) {
-                return undefined;
-            }
-
-            let programOptionsList: number[];
-            if (enabledProgramOptionIdList && selectedProgram.length <= 0) {
-                programOptionsList = enabledProgramOptionIdList;
-            } else if (selectedProgram.length > 0) {
-                programOptionsList = selectedProgram;
-            }
-            // eslint-disable-next-line max-len
-            const sectorKeys = programList.filter(program => programOptionsList?.includes(program.id))
-                .map(item => item.sector)
-                .flat()
-                .map(item => `sector-${item.id}`);
-
-            // eslint-disable-next-line max-len
-            const subSectorKeys = programList.filter(program => programOptionsList?.includes(program.id))
-                .map(item => item.subSector)
-                .flat()
-                .map(item => `subsector-${item.id}`);
-
-            const combinedSectorKeys = unique([...sectorKeys, ...subSectorKeys]);
-            if (combinedSectorKeys.length <= 0) {
-                if (optionsSelected) {
-                    return [];
-                }
-                return undefined;
-            }
-            return combinedSectorKeys;
-        },
-        [
-            programListResponse?.results,
-            enabledProgramOptionIdList,
-            selectedProgram,
-            optionsSelected,
-        ],
+    const combinedProgramOptions = useMemo(
+        () => join(programOptions, subProgramOptions),
+        [programOptions, subProgramOptions],
     );
 
     // eslint-disable-next-line max-len
-    const loading = programListPending || partnerListPending || markerListPending || subMarkerListPending || sectorListPending || subSectorListPending;
+    const loading = (
+        programListPending
+        || componentListPending
+        || partnerListPending
+        || markerListPending
+        || subMarkerListPending
+        || sectorListPending
+        || subSectorListPending
+    );
 
-    // TODO: Show componets of programs
+    const clearButtonHidden = useMemo(
+        () => {
+            const selectedItems = [
+                ...selectedProgram,
+                ...selectedPartner,
+                ...selectedSector,
+                ...selectedMarker,
+            ];
+            return selectedItems.length <= 0;
+        },
+        [
+            selectedProgram,
+            selectedPartner,
+            selectedSector,
+            selectedMarker,
+        ],
+    );
+
+    const handleClearFilters = useCallback(() => {
+        setSelectedMarker([]);
+        setSelectedPrograms([]);
+        setSelectedPartner([]);
+        setSelectedSector([]);
+    }, [
+        setSelectedMarker,
+        setSelectedPrograms,
+        setSelectedPartner,
+        setSelectedSector,
+    ]);
+
     return (
         <div className={_cs(className, styles.programSelector)}>
             {loading && (
@@ -428,62 +799,82 @@ function ProgramSelector(props: Props) {
                     <LoadingAnimation />
                 </Backdrop>
             )}
-            <SelectorItem
-                name="markers"
-                className={styles.markerTree}
-                options={combinedMarkerOptions}
-                value={selectedMarker}
-                setSelectedValue={setSelectedMarker}
-                expandedFilters={expandedFilters}
-                setExpandedFilters={setExpanedFilters}
-                isMinimized={isMinimized}
-                collapseLevel={1}
-                icon={<IoMdPeople />}
-                searchText={markerSearchText}
-                setSearchText={setMarkerSearchText}
-            />
-            <SelectorItem
-                name="programs"
-                className={styles.programTree}
-                options={programOptions}
-                value={selectedProgram}
-                setSelectedValue={setSelectedPrograms}
-                expandedFilters={expandedFilters}
-                setExpandedFilters={setExpanedFilters}
-                isMinimized={isMinimized}
-                icon={<IoIosDocument />}
-                searchText={programSearchText}
-                setSearchText={setProgramSearchText}
-                enabledIds={enabledProgramOptionIdList}
-            />
-            <SelectorItem
-                name="partners"
-                className={styles.partnerTree}
-                options={partnerOptions}
-                value={selectedPartner}
-                setSelectedValue={setSelectedPartner}
-                expandedFilters={expandedFilters}
-                setExpandedFilters={setExpanedFilters}
-                isMinimized={isMinimized}
-                icon={<FaRegBuilding />}
-                searchText={partnerSearchText}
-                setSearchText={setPartnerSearchText}
-                enabledIds={enabledPartnerOptionsKeysList}
-            />
-            <SelectorItem
-                name="sectors"
-                className={styles.sectorTree}
-                options={combinedSectorOptions}
-                value={selectedSector}
-                setSelectedValue={setSelectedSector}
-                expandedFilters={expandedFilters}
-                setExpandedFilters={setExpanedFilters}
-                isMinimized={isMinimized}
-                icon={<FaShapes />}
-                searchText={sectorSearchText}
-                setSearchText={setSectorSearchText}
-                enabledIds={enabledSectorOptionKeysList}
-            />
+            <div className={styles.selectorContainer}>
+                <SelectorItem
+                    name="programs"
+                    className={styles.program}
+                    options={combinedProgramOptions}
+                    value={selectedProgram}
+                    setSelectedValue={setSelectedPrograms}
+                    expandedFilters={expandedFilters}
+                    setExpandedFilters={setExpanedFilters}
+                    isMinimized={isMinimized}
+                    icon={<MdAssignment />}
+                    searchText={programSearchText}
+                    setSearchText={setProgramSearchText}
+                />
+                <SelectorItem
+                    name="partners"
+                    className={styles.partner}
+                    options={partnerOptions}
+                    value={selectedPartner}
+                    setSelectedValue={setSelectedPartner}
+                    expandedFilters={expandedFilters}
+                    setExpandedFilters={setExpanedFilters}
+                    isMinimized={isMinimized}
+                    icon={<MdBusiness />}
+                    searchText={partnerSearchText}
+                    setSearchText={setPartnerSearchText}
+                />
+                <SelectorItem
+                    name="sectors"
+                    className={styles.sector}
+                    options={combinedSectorOptions}
+                    value={selectedSector}
+                    setSelectedValue={setSelectedSector}
+                    expandedFilters={expandedFilters}
+                    setExpandedFilters={setExpanedFilters}
+                    isMinimized={isMinimized}
+                    icon={<FaShapes />}
+                    searchText={sectorSearchText}
+                    setSearchText={setSectorSearchText}
+                />
+                <SelectorItem
+                    name="markers"
+                    className={styles.marker}
+                    options={combinedMarkerOptions}
+                    value={selectedMarker}
+                    setSelectedValue={setSelectedMarker}
+                    expandedFilters={expandedFilters}
+                    setExpandedFilters={setExpanedFilters}
+                    isMinimized={isMinimized}
+                    icon={<MdPeople />}
+                    searchText={markerSearchText}
+                    setSearchText={setMarkerSearchText}
+                />
+            </div>
+            {!clearButtonHidden && (
+                <div className={styles.actions}>
+                    {isMinimized ? (
+                        <Button
+                            className={styles.clearButton}
+                            onClick={handleClearFilters}
+                            variant="secondary-outline"
+                            icons={<MdRefresh />}
+                            title="Clear All"
+                        />
+                    ) : (
+                        <Button
+                            className={styles.clearButton}
+                            onClick={handleClearFilters}
+                            variant="secondary-outline"
+                            icons={<MdRefresh />}
+                        >
+                            Clear All
+                        </Button>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

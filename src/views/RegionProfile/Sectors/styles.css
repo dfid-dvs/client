@@ -1,0 +1,66 @@
+.active-sectors {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    background: var(--color-grey-shade-2);
+    padding: var(--spacing-medium);
+
+    .heading {
+        display: flex;
+        justify-content: space-between;
+        padding: 0 var(--spacing-small);
+
+        .header {
+            padding: var(--spacing-small-medium);
+            font-size: var(--font-size-extra-large);
+            font-weight: var(--font-weight-bold);
+        }
+        .button {
+            display: flex;
+            width: 36px;
+            height: 36px;
+    
+            .hide-icon {
+                opacity: 0;
+                color: var(--color-text);
+                font-size: var(--font-size-large-medium);
+            }
+
+            &.hidden {
+                visibility: hidden;
+            }
+        }
+    
+        &:hover {
+            .hide-icon {
+                opacity: 1;
+            }
+        }
+    }
+
+    .sectors-list {
+        display: flex;
+        flex-direction: column;
+
+        .sector {
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-small-medium) var(--spacing-large-medium);
+            .title {
+                font-size: var(--font-size-medium);
+                font-weight: var(--font-weight-bold);
+            }
+
+            .sub-sector-list {
+                display: flex;
+                flex-direction: column;
+    
+                .item {
+                    margin-left: var(--spacing-large-medium);
+                    padding: var(--spacing-small);
+                    font-size: var(--font-size-body-2);
+                }
+            }
+        }
+    }
+}

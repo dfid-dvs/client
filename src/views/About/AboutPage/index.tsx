@@ -1,14 +1,16 @@
 import React from 'react';
-import { IoMdCheckmarkCircleOutline } from 'react-icons/io';
+import { IoMdCheckmarkCircleOutline, IoMdDocument } from 'react-icons/io';
 
 import useRequest from '#hooks/useRequest';
 import { apiEndPoint } from '#utils/constants';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
+import aboutUsImage from '#resources/about-us.jpg';
 
 import StatItem from './StatItem';
 import styles from './styles.css';
+import AboutPageContainer from '../AboutPageContainer';
 
 const listedData = [
     'Development Tracker to explore international development projects funded by the UK government by country and sector',
@@ -30,7 +32,7 @@ const contactDetails = [
         value: '+977 1 4411789',
     },
 ];
-const name = 'DFID Nepal';
+const name = 'British Embassy Kathmandu';
 const address = 'British Embassy\nPO Box 106\nKathmandu, Nepal';
 // eslint-disable-next-line max-len
 const firstSectionTitle = 'Find out how the UK will respond to opportunities and challenges, what is being achieved for the UK and who we are working with.';
@@ -49,6 +51,16 @@ interface Summary {
     sector: number;
 }
 
+interface Manual {
+    count: number;
+    next?: number;
+    previous?: number;
+    results: {
+        id: number;
+        file: string;
+    }[];
+}
+
 export default function AboutPage() {
     const summaryUrl = `${apiEndPoint}/core/summary/`;
 
@@ -56,101 +68,122 @@ export default function AboutPage() {
         summaryPending,
         summary,
     ] = useRequest<Summary>(summaryUrl, 'fivew-summary');
+
+    const manualUrl = `${apiEndPoint}/core/manual/`;
+    const [
+        manualPending,
+        manual,
+    ] = useRequest<Manual>(manualUrl, 'manual-data');
+
+    const loading = summaryPending || manualPending;
+
+    const manualLink = manual?.results[0].file;
     return (
-        <div className={styles.container}>
-            <div className={styles.firstSection}>
-                <div className={styles.title}>
-                    {firstSectionTitle}
-                </div>
-                <div className={styles.subTitle}>
-                    {firstSectionSubTitle}
-                </div>
-            </div>
-            <div className={styles.stats}>
-                {summaryPending && (
-                    <Backdrop>
-                        <LoadingAnimation />
-                    </Backdrop>
-                )}
-                <StatItem
-                    value={summary?.allocatedBudget}
-                    label="Allocated Budget (£)"
-                />
-                <StatItem
-                    value={summary?.program}
-                    label="Programs"
-                />
-                <StatItem
-                    value={summary?.component}
-                    label="Components"
-                />
-                <StatItem
-                    value={summary?.partner}
-                    label="Partners (1st tier)"
-                />
-                <StatItem
-                    value={summary?.sector}
-                    label="Sectors"
-                />
-            </div>
-            <div className={styles.details}>
-                <div className={styles.left}>
+        <AboutPageContainer>
+            <div className={styles.container}>
+                <div className={styles.firstSection}>
                     <div className={styles.title}>
-                        {articleTitle}
+                        {firstSectionTitle}
                     </div>
-                    <div className={styles.description}>
-                        {articleDescription}
-                    </div>
-                    <div className={styles.list}>
-                        {listedData.map(data => (
-                            <div
-                                key={data}
-                                className={styles.listItem}
-                            >
-                                <IoMdCheckmarkCircleOutline className={styles.checkBox} />
-                                <div className={styles.description}>
-                                    {data}
-                                </div>
-                            </div>
-                        ))}
+                    <div className={styles.subTitle}>
+                        {firstSectionSubTitle}
                     </div>
                 </div>
-                <div className={styles.right}>
-                    <img
-                        src="http://adranepal.org/wp-content/uploads/2020/02/DSC_0506-980x652.jpg"
-                        alt="Dfid"
-                        className={styles.image}
+                <div className={styles.stats}>
+                    {loading && (
+                        <Backdrop>
+                            <LoadingAnimation />
+                        </Backdrop>
+                    )}
+                    <StatItem
+                        value={summary?.allocatedBudget}
+                        label="Budget Spend (£)"
+                    />
+                    <StatItem
+                        value={summary?.program}
+                        label="Programs"
+                    />
+                    <StatItem
+                        value={summary?.component}
+                        label="Components"
+                    />
+                    <StatItem
+                        value={summary?.partner}
+                        label="Partners (1st tier)"
+                    />
+                    <StatItem
+                        value={summary?.sector}
+                        label="Sectors"
                     />
                 </div>
-            </div>
-            <div className={styles.contact}>
-                <div className={styles.left}>
-                    Contact us
+                <div className={styles.details}>
+                    <div className={styles.left}>
+                        <div className={styles.title}>
+                            {articleTitle}
+                        </div>
+                        <div className={styles.description}>
+                            {articleDescription}
+                        </div>
+                        <div className={styles.list}>
+                            {listedData.map(data => (
+                                <div
+                                    key={data}
+                                    className={styles.listItem}
+                                >
+                                    <IoMdCheckmarkCircleOutline className={styles.checkBox} />
+                                    <div className={styles.description}>
+                                        {data}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <a
+                            className={styles.manualLink}
+                            href={manualLink}
+                            rel="noreferrer noopener"
+                            target="_blank"
+                        >
+                            <IoMdDocument className={styles.manualIcon} />
+                            View Manual
+                        </a>
+                    </div>
+                    <div className={styles.right}>
+                        <img
+                            src={aboutUsImage}
+                            alt="British Embassy Kathmandu"
+                            className={styles.image}
+                        />
+                    </div>
                 </div>
-                <div className={styles.right}>
-                    <div className={styles.contactDetails}>
-                        <div className={styles.name}>
-                            {name}
-                        </div>
-                        <div className={styles.address}>
-                            {address}
-                        </div>
-                        {contactDetails.map(data => (
-                            <div
-                                key={data.title}
-                                className={styles.contactItem}
-                            >
-                                <div className={styles.contactTitle}>
-                                    {data.title}
-                                </div>
-                                <div>
-                                    {data.value}
-                                </div>
+                <div className={styles.contact}>
+                    <div className={styles.left}>
+                        Contact us
+                    </div>
+                    <div className={styles.right}>
+                        <div className={styles.contactDetails}>
+                            <div className={styles.name}>
+                                {name}
                             </div>
-                        ))}
+                            <div className={styles.address}>
+                                {address}
+                            </div>
+                            {contactDetails.map(data => (
+                                <div
+                                    key={data.title}
+                                    className={styles.contactItem}
+                                >
+                                    <div className={styles.contactTitle}>
+                                        {data.title}
+                                    </div>
+                                    <div>
+                                        {data.value}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </AboutPageContainer>
     );
 }

@@ -1,15 +1,20 @@
+.explore-data-button {
+    cursor: pointer;
+    padding: 0;
+}
+
 .title {
     display: flex;
     align-items: center;
     flex-direction: row;
     justify-content: flex-end;
-    padding: var(--spacing-small-medium) 0;
-    color: var(--color-danger);
+    padding: var(--spacing-small) var(--spacing-medium);
+    color: var(--color-highlight);
     font-size: var(--font-size-large-medium);
     font-weight: var(--font-weight-bold);
 }
 
-.explore-data {
+.explore-data-container {
     .actions {
         display: flex;
         flex-direction: column;
@@ -26,6 +31,12 @@
             &:hover {
                 background-color: var(--color-separator-light);
             }
+
+            &.disabled {
+                pointer-events: none;
+                opacity: 0.3;
+            }
         }
     }
 }
+

@@ -1,0 +1,65 @@
+.header {
+    margin-left: var(--spacing-large);
+    color: var(--color-text);
+    font-size: var(--font-size-large);
+    font-weight: var(--font-weight-bold);
+}
+
+.charts {
+    position: relative;
+    margin-top: var(--spacing-large);
+
+    .backdrop {
+        z-index: 1;
+    }
+
+    .chart-container {
+        display: inline-block;
+        margin: var(--spacing-small);
+        border: var(--width-separator-thin) solid var(--color-button-background);
+        width: calc(100% - var(--spacing-medium));
+        vertical-align: top;
+    }
+
+    .chart {
+        padding: var(--spacing-medium);
+        height: 88mm!important;
+
+        :global {
+            text {
+                font-size: 2.3mm!important;
+            }
+        }
+    }
+
+    .header {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+    }
+
+    .action {
+        display: flex;
+        justify-content: space-between;
+    }
+}
+
+.modal-chart {
+    padding: var(--spacing-large);
+    min-width: 900px;
+    min-height: 700px;
+
+    .chart {
+        padding: var(--spacing-large);
+        width: 800px;
+        height: 600px;
+    }
+}
+
+@media print {
+    .charts {
+        .chart {
+            page-break-inside: avoid;
+        }
+    }
+}

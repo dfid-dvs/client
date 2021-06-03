@@ -2,6 +2,7 @@ import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
 import Numeral from '#components/Numeral';
+import Label from '#components/Label';
 
 import styles from './styles.css';
 
@@ -22,9 +23,9 @@ function StatItem({
                 normalize
                 placeholder="-"
             />
-            <div className={styles.label}>
+            <Label>
                 { label }
-            </div>
+            </Label>
         </div>
     );
 }

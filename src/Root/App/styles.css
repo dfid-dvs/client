@@ -1,161 +1,3 @@
-:global {
-    #dfid-root {
-        position: relative;
-        z-index: 0;
-    }
-
-    .mapboxgl-popup {
-        transition-duration: 50ms;
-        transition-property: transform;
-    }
-}
-
-.no-spinners {
-    -moz-appearance:textfield;
-}
-
-.no-spinners::-webkit-outer-spin-button,
-.no-spinners::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-}
-
-::-webkit-scrollbar-track {
-    background-color: #eee;
-}
-
-::-webkit-scrollbar {
-    background-color: #eee;
-    width: var(--width-scrollbar);
-    height: var(--width-scrollbar);
-}
-
-::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-}
-
-/*
-light-blue: #e7f1fd
-blue: #1575f3
-
-unchecked-box: #cdd4dd
-text-placeholder: #7a8898
-*/
-
-
-:root {
-    /* SPACING */
-    --spacing-super-small: 1px;
-    --spacing-extra-small: 3px;
-    --spacing-small: 6px;
-    --spacing-small-medium: 8px;
-    --spacing-medium: 10px;
-    --spacing-large-medium: 13px;
-    --spacing-large: 16px;
-    --spacing-extra-large: 24px;
-
-    /* RADIUS */
-
-    --radius-button: 4px;
-    --radius-input: 4px;
-    --radius-modal: 8px;
-
-    /* DIMENSIONS */
-    --height-print-bar: 64px;
-
-    --width-separator-thin: 1px;
-    --width-separator-medium: 2px;
-
-    --width-sidepanel: 420px;
-    --width-scrollbar: 7px;
-
-    /* FONT SIZE */
-    --font-size-extra-small: 11px;
-    --font-size-small: 12px;
-    --font-size-small-medium: 13px;
-    --font-size-medium: 14px;
-    --font-size-large-medium: 16px;
-    --font-size-large: 18px;
-    --font-size-extra-large: 24px;
-    --font-size-super-large: 32px;
-    --font-size-ultra-large: 48px;
-
-    /* FONT WEIGHT */
-    --font-weight-light: 400;
-    --font-weight-medium: 400;
-    --font-weight-bold: 700;
-
-    /* COLOR PALETTE */
-    --color-primary: #05367d;
-    --color-accent: #289f8c;
-    --color-danger: firebrick;
-    --color-success: forestgreen;
-    --color-warning: tomato;
-
-    /* COLOR GENERAL */
-    --color-foreground: #fff;
-    --color-foreground-dark: #f3f5f7;
-
-    --color-background: #f0f3f7;
-    --color-background-light: #e5eaf0;
-
-    --color-background-accent-hint: #18cc9c55;
-
-    /* COLOR BACKDROP */
-
-    --color-backdrop-light: rgba(255, 255, 255, .8);
-    --color-backdrop-dark: rgba(0, 0, 0, .5);
-
-    /* COLOR INPUT */
-    --color-input-background: #eff0f7;
-    --color-input-background-errored: #f1e1e3;
-    --color-input-background-disabled: #e4e9ef;
-    --color-input-actions: #6d798a;
-
-    --color-button-background: #dae0e7;
-    --color-button-background-disabled: #e4e9ef;
-
-    /* COLOR SHADOW */
-
-    --color-shadow: rgba(0, 0, 0, .3);
-
-    /* COLOR TEXT */
-    --color-text: #243244;
-
-    --color-text-on-primary: rgba(255, 255, 255, .9);
-    --color-text-on-accent: rgba(255, 255, 255, .9);
-    --color-text-on-danger: rgba(255, 255, 255, .9);
-    --color-text-on-success: rgba(255, 255, 255, .9);
-    --color-text-on-warning: rgba(255, 255, 255, .9);
-
-    --color-text-light-on-primary: rgba(255, 255, 255, .5);
-    --color-text-light-on-accent: rgba(255, 255, 255, .5);
-    --color-text-light-on-primary: rgba(255, 255, 255, .5);
-    --color-text-light-on-accent: rgba(255, 255, 255, .5);
-    --color-text-light-on-danger: rgba(255, 255, 255, .5);
-    --color-text-light-on-success: rgba(255, 255, 255, .5);
-    --color-text-light-on-warning: rgba(255, 255, 255, .5);
-
-    --color-text-label: #576374;
-    --color-text-disabled: #b8c2cd;
-    --color-text-red: #e63548;
-
-    /* COLOR LINK */
-    --color-link: #3182bd;
-
-    /* COLOR SEPARATOR */
-    --color-separator: #b8c2cd;
-
-    --color-separator-light: rgba(160, 180, 190, 0.3);
-
-    /* OTHER COLORS */
-    --color-light-pink: #ffc0cbaa;
-}
-
-body {
-    color: var(--color-text);
-    font-size: var(--font-size-medium);
-}
-
 .password-prompt {
     display: flex;
     flex-direction: column;
@@ -167,7 +9,7 @@ body {
         padding: var(--spacing-large);
 
         .logo {
-            height: 96px;
+            height: 120px;
         }
     }
 
@@ -202,10 +44,6 @@ body {
             .login-button {
                 align-self: flex-end;
                 margin-top: var(--spacing-extra-large);
-
-                &:disabled {
-                    color: var(--color-text-disabled)!important;
-                }
             }
         }
     }

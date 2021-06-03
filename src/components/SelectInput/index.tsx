@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useCallback, useEffect } from 'react';
 import { GrCheckmark } from 'react-icons/gr';
 // import { IoIosSearch } from 'react-icons/io';
-import { IoMdClose } from 'react-icons/io';
+import { IoMdArrowDropdown, IoMdArrowDropup, IoMdClose } from 'react-icons/io';
 import {
     _cs,
     caseInsensitiveSubmatch,
@@ -58,7 +58,7 @@ function Option(props: RawButtonProps & { selected: boolean }) {
 
     return (
         <RawButton
-            ref={ref}
+            elementRef={ref}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             {...otherProps}
@@ -87,6 +87,8 @@ interface Props<T, K> {
     className?: string;
     dropdownContainerClassName?: string;
     label?: string;
+    labelClassName?: string;
+    inputClassName?: string;
     options: T[] | undefined;
     optionLabelSelector: (d: T) => string;
     optionKeySelector: (d: T) => K;
@@ -95,11 +97,10 @@ interface Props<T, K> {
     disabled?: boolean;
     pending?: boolean;
     placeholder?: string;
-    hideLabel?: boolean;
-    error?: string;
     groupKeySelector?: (d: T) => string;
     nonClearable?: boolean;
     autoFocus?: boolean;
+    showDropDownIcon?: boolean;
 }
 
 function SelectInput<T, K extends string | number>(props: Props<T, K>) {
@@ -116,8 +117,11 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         placeholder = 'Select an option',
         groupKeySelector,
         label,
+        labelClassName,
         nonClearable,
         autoFocus,
+        inputClassName,
+        showDropDownIcon,
     } = props;
 
     const inputContainerRef = React.useRef<HTMLDivElement>(null);
@@ -205,6 +209,13 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
         [],
     );
 
+    const handleDropdownIconToggle = React.useCallback(
+        () => {
+            setShowDropdown(prevState => !prevState);
+        },
+        [setShowDropdown],
+    );
+
     const handleInputValueChange = React.useCallback(
         (newInputValue: string) => {
             setSearchValue(newInputValue);
@@ -252,13 +263,12 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
     );
 
     return (
-        <div
-            className={_cs(className, styles.selectInput)}
-            title={label}
-        >
+        <>
             <TextInput
                 label={label}
-                className={styles.textInput}
+                className={_cs(className, styles.textInput)}
+                labelClassName={labelClassName}
+                inputClassName={inputClassName}
                 elementRef={inputContainerRef}
                 inputRef={inputElementRef}
                 onClick={handleInputClick}
@@ -279,9 +289,21 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 name="close"
                                 onClick={handleClearClick}
                                 disabled={disabled}
-                                icons={(
-                                    <IoMdClose />
-                                )}
+                                variant="icon"
+                                childrenContainerClassName={styles.iconContainer}
+                            >
+                                <IoMdClose className={styles.icon} />
+                            </Button>
+
+                        )}
+                        {showDropDownIcon && showDropdown && (
+                            <IoMdArrowDropup
+                                onClick={handleDropdownIconToggle}
+                            />
+                        )}
+                        {showDropDownIcon && !showDropdown && !pending && (
+                            <IoMdArrowDropdown
+                                onClick={handleDropdownIconToggle}
                             />
                         )}
                     </>
@@ -290,7 +312,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
             { showDropdown && (
                 <Portal>
                     <Dropdown
-                        ref={dropdownRef}
+                        elementRef={dropdownRef}
                         className={_cs(dropdownContainerClassName, styles.dropdownContainer)}
                         parentRef={inputContainerRef}
                     >
@@ -321,7 +343,7 @@ function SelectInput<T, K extends string | number>(props: Props<T, K>) {
                     </Dropdown>
                 </Portal>
             )}
-        </div>
+        </>
     );
 }
 

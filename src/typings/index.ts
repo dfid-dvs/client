@@ -10,8 +10,8 @@ export interface DomainContextProps {
     setRegionLevel: (v: RegionLevelOption) => void;
     markers: string[];
     setMarkers: (markers: string[] | ((p: string[]) => string[])) => void;
-    programs: number[];
-    setPrograms: (programs: number[] | ((p: number[]) => number[])) => void;
+    programs: string[];
+    setPrograms: (programs: string[] | ((p: string[]) => string[])) => void;
     partners: string[];
     setPartners: (partners: string[] | ((p: string[]) => string[])) => void;
     sectors: string[];
@@ -102,14 +102,20 @@ export function isVectorLayer(layer: Layer): layer is VectorLayer {
 export interface Indicator {
     id: number;
     fullTitle: string;
-    abstract: string | undefined;
+    abstract?: string;
     category: string;
 
     unit?: string;
-    datatype?: 'float' | 'integer';
+    dataType?: 'float' | 'integer';
     federalLevel: 'all' | 'province' | 'district' | 'municipality';
+    url?: string;
+    source?: string;
 }
 
+
+interface ProgramComponent extends BaseEntity {
+    code: string;
+}
 export interface Program {
     id: number;
     name: string;
@@ -118,7 +124,7 @@ export interface Program {
     iati?: string;
     totalBudget: number;
 
-    component: BaseEntity[];
+    component: ProgramComponent[];
     sector: BaseEntity[];
     subSector: BaseEntity[];
     markerCategory: BaseEntity[];
@@ -172,6 +178,7 @@ export interface BarChartSettings<T> {
         valueSelector: (value: T) => number | null;
         color: string;
         stackId?: string;
+        key: string;
     }[];
 
     limit?: {
@@ -186,6 +193,7 @@ export interface PieChartSettings<T> {
     id: string;
     type: 'pie-chart';
     title: string;
+    key: string;
 
     keySelector: (value: T) => string;
     valueSelector: (value: T) => number;
@@ -198,6 +206,7 @@ export interface PieChartSettings<T> {
 export interface HistogramSettings<T> {
     id: string;
     type: 'histogram';
+    key: string;
     title: string;
     valueSelector: (value: T) => number;
     color: string;
@@ -205,7 +214,47 @@ export interface HistogramSettings<T> {
     binCount: number;
 }
 
-export type ChartSettings<T> = BarChartSettings<T> | PieChartSettings<T> | HistogramSettings<T>;
+type BiAxialComponent = 'line' | 'bar';
+
+export interface BiAxialData<T> {
+    title: string;
+    valueSelector: (value: T) => number | null;
+    key: string;
+    color: string;
+    stackId?: string;
+    type?: BiAxialComponent;
+}
+export interface BiAxialChartSettings<T> {
+    id: string;
+    type: 'bi-axial-chart';
+    title: string;
+    keySelector: (value: T) => string;
+    chartData: BiAxialData<T>[];
+    limit?: {
+        count: number;
+        method: 'min' | 'max';
+        valueSelector: (value: T) => number | null;
+    };
+
+    dependencies?: number[];
+}
+
+export interface ScatterChartSettings<T> {
+    id: string;
+    type: 'scatter-chart';
+    title: string;
+    keySelector: (value: T) => string;
+    color: string;
+    dependencies?: number[];
+    data: {
+        title: string;
+        valueSelector: (value: T) => number | null;
+        key: string;
+    }[];
+}
+
+// eslint-disable-next-line max-len
+export type ChartSettings<T> = BarChartSettings<T> | PieChartSettings<T> | HistogramSettings<T> | BiAxialChartSettings<T> | ScatterChartSettings<T>;
 
 export function isBarChart<T>(settings: ChartSettings<T>): settings is BarChartSettings<T> {
     return settings.type === 'bar-chart';
@@ -216,11 +265,18 @@ export function isPieChart<T>(settings: ChartSettings<T>): settings is PieChartS
 export function isHistogram<T>(settings: ChartSettings<T>): settings is HistogramSettings<T> {
     return settings.type === 'histogram';
 }
-
+export function isBiAxialChart<T>(settings: ChartSettings<T>): settings is BiAxialChartSettings<T> {
+    return settings.type === 'bi-axial-chart';
+}
+export function isScatterChart<T>(settings: ChartSettings<T>): settings is ScatterChartSettings<T> {
+    return settings.type === 'scatter-chart';
+}
 export interface IndicatorValue {
     code: string;
     value: number;
     indicatorId: number;
+    indicator: string;
+    category: string;
 }
 
 export type Bbox = [number, number, number, number];

@@ -7,7 +7,6 @@ import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
 import MultiSelectInput from '#components/MultiSelectInput';
 import Numeral from '#components/Numeral';
-import RegionSelector from '#components/RegionSelector';
 import Table, { createColumn } from '#components/Table';
 import Cell from '#components/Table/Cell';
 import HeaderCell from '#components/Table/HeaderCell';
@@ -63,22 +62,33 @@ const indicatorKeySelector = (indicator: Indicator) => indicator.id;
 const indicatorGroupKeySelector = (indicator: Indicator) => indicator.category;
 
 interface Props {
-    programs: number[];
-
     indicators: number[];
     onIndicatorsChange: (value: number[] | ((v: number[]) => number[])) => void;
 
     regionLevel: RegionLevelOption;
-    onRegionLevelChange: (v: RegionLevelOption) => void;
 
     indicatorList: Indicator[] | undefined;
     indicatorListPending: boolean | undefined;
+
+    markerIdList?: string[];
+    submarkerIdList?: string[];
+    programIdList?: string[];
+    componentIdList?: string[];
+    partnerIdList?: string[];
+    sectorIdList?: string[];
+    subsectorIdList?: string[];
 }
 function RegionTable(props: Props) {
     const {
-        programs,
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        sectorIdList,
+        subsectorIdList,
+
         regionLevel,
-        onRegionLevelChange,
         indicators,
         onIndicatorsChange,
 
@@ -102,7 +112,13 @@ function RegionTable(props: Props) {
 
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
         regionLevel,
-        programs,
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        sectorIdList,
+        subsectorIdList,
         validSelectedIndicators,
     );
 
@@ -282,7 +298,7 @@ function RegionTable(props: Props) {
 
             const staticColumns = [
                 createColumn(stringColumn, 'name', 'Name', true),
-                createColumn(numberColumn, 'allocatedBudget', 'Allocated Budget (£)'),
+                createColumn(numberColumn, 'allocatedBudget', 'Budget Spend (£)'),
                 createColumn(numberColumn, 'componentCount', 'Components (count)'),
                 createColumn(numberColumn, 'programCount', 'Programs (count)'),
                 createColumn(numberColumn, 'partnerCount', 'Partners (count)'),
@@ -372,13 +388,8 @@ function RegionTable(props: Props) {
     return (
         <>
             <div className={styles.tableActions}>
-                <RegionSelector
-                    onRegionLevelChange={onRegionLevelChange}
-                    regionLevel={regionLevel}
-                    searchHidden
-                />
                 <MultiSelectInput
-                    label="Indicators"
+                    className={styles.indicatorSelect}
                     placeholder={`Select from ${indicatorList?.length || 0} indicators`}
                     options={indicatorList}
                     onChange={onIndicatorsChange}
@@ -386,15 +397,18 @@ function RegionTable(props: Props) {
                     optionLabelSelector={indicatorTitleSelector}
                     optionKeySelector={indicatorKeySelector}
                     groupKeySelector={indicatorGroupKeySelector}
-                    dropdownContainerClassName={styles.dropdown}
                     pending={indicatorListPending}
+                    allSelectable
                 />
                 <Button
                     onClick={handleDownload}
                     icons={(
-                        <IoMdDownload />
+                        <IoMdDownload className={styles.icon} />
                     )}
                     disabled={!sortedFiveW || !orderedColumns}
+                    transparent
+                    className={styles.downloadButton}
+                    variant="secondary-outline"
                 >
                     Download as csv
                 </Button>

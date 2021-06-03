@@ -80,7 +80,7 @@ function Sidepanel(props: Props) {
     const [isHidden, setIsHidden] = React.useState(false);
 
     const summaryParams = p({
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // eslint-disable-next-line camelcase
         program_id: programs,
     });
 
@@ -152,7 +152,7 @@ function Sidepanel(props: Props) {
                             )}
                             <SummaryOutput
                                 className={styles.summaryOutput}
-                                label="Allocated Budget (£)"
+                                label="Budget Spend (£)"
                                 value={summary?.allocatedBudget}
                             />
                             <SummaryOutput

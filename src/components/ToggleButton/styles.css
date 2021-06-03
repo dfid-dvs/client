@@ -1,24 +1,26 @@
 .switch {
-    --gap: .1rem;
+    --gap: .12em;
+    --height: 1em;
 
     display: flex;
     align-items: center;
     transition: .2s background-color ease-in-out;
     border: var(--width-separator-thin) solid var(--color-separator-light);
-    border-radius: .5rem;
+    border-radius: calc(var(--height) / 2);
     background-color: var(--color-text-disabled);
     padding: var(--gap);
-    width: calc(2rem - 2 * var(--gap));
-    height: 1rem;
+    width: calc(var(--height) * 2 - 2 * var(--gap));
+    height: var(--height);
 
     .knob {
+        --knob-height: calc(var(--height) - var(--gap) * 2);
         transition: .2s transform ease-in-out, .2s background-color ease-in-out;
         border: var(--width-separator-thin) solid var(--color-separator-light);
-        border-radius: calc(calc(1rem - var(--gap) * 2) / 2);
+        border-radius: calc(var(--knob-height) / 2);
         background-color: var(--color-accent);
         background-color: var(--color-foreground);
-        width: calc(1rem - var(--gap) * 2);
-        height: calc(1rem - var(--gap) * 2);
+        width: var(--knob-height);
+        height: var(--knob-height);
     }
 
     &.on {
@@ -37,13 +39,17 @@
 .toggle-button {
     display: flex;
     align-items: center;
+    cursor: pointer;
+    padding: var(--spacing-small) calc(var(--spacing-medium) - var(--spacing-small));
 
     &:disabled {
         color: var(--color-text-disabled);
     }
 
     .switch {
-        font-size: 1.4rem;
+        margin: 0 var(--spacing-small);
+        width: calc( 2 * var(--spacing-large) + var(--spacing-super-small));
+        font-size: 1.2rem;
     }
 
     .label {

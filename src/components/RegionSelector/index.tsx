@@ -110,7 +110,7 @@ function RegionSelector(props: Props) {
             {!selectionHidden && (
                 <SegmentInput
                     className={styles.regionLevelSelection}
-                    label="View by"
+                    // label="View by"
                     options={regionLevelOptionList}
                     optionKeySelector={regionLevelOptionListKeySelector}
                     optionLabelSelector={regionLevelOptionListLabelSelector}
@@ -122,7 +122,7 @@ function RegionSelector(props: Props) {
             {!searchHidden && setSelectedRegions && (
                 <MultiSelectInput
                     pending={regionListPending}
-                    label={regionLevelLabel}
+                    // label={regionLevelLabel}
                     placeholder={`Select ${regionLevelLabel}`}
                     className={styles.regionSelectInput}
                     disabled={regionListPending}

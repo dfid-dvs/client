@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { isDefined, _cs } from '@togglecorp/fujs';
 
 import Numeral from '#components/Numeral';
+import Label from '#components/Label';
 
 import styles from './styles.css';
 
@@ -20,16 +21,16 @@ function SummaryItem({
         if (!value || !total) {
             return 0;
         }
-        return value / total * 100;
+        return Math.floor(value / total * 100);
     }, [value, total]);
 
     const remWidth = 100 - valueWidth;
 
     return (
         <div className={_cs(styles.summaryItem, className)}>
-            <div className={styles.label}>
+            <Label className={styles.label}>
                 {label}
-            </div>
+            </Label>
             <div className={styles.dataLine}>
                 <div className={styles.valueRow}>
                     { isDefined(value) && (
@@ -38,26 +39,30 @@ function SummaryItem({
                                 className={styles.value}
                                 value={value}
                                 normalize
-                                suffix=" / "
                             />
+                            <div className={styles.separator}>
+                                /
+                            </div>
                         </>
                     )}
                     <Numeral
-                        className={styles.value}
+                        className={styles.total}
                         value={total}
                         normalize
                     />
                 </div>
-                <div className={styles.line}>
-                    <div
-                        className={styles.valueLine}
-                        style={{ width: `${valueWidth}%` }}
-                    />
-                    <div
-                        className={styles.remLine}
-                        style={{ width: `${remWidth}%` }}
-                    />
-                </div>
+                { isDefined(value) && (
+                    <div className={styles.line}>
+                        <div
+                            className={styles.valueLine}
+                            style={{ width: `${valueWidth}%` }}
+                        />
+                        <div
+                            className={styles.remLine}
+                            style={{ width: `${remWidth}%` }}
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

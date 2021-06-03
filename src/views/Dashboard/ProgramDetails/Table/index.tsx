@@ -180,7 +180,7 @@ function ProgramTable(props: Props) {
             return [
                 createColumn(stringColumn, 'name', 'Name', true),
                 createColumn(stringColumn, 'code', 'Code'),
-                createColumn(numberColumn, 'totalBudget', 'Allocated Budget (£)'),
+                createColumn(numberColumn, 'totalBudget', 'Budget Spend (£)'),
                 createColumn(numberColumn, 'componentCount', 'Components (count)'),
                 createColumn(numberColumn, 'partnerCount', 'Partners (count)'),
                 createColumn(numberColumn, 'sectorCount', 'Sectors (count)'),
@@ -233,6 +233,9 @@ function ProgramTable(props: Props) {
                         <IoMdDownload />
                     )}
                     disabled={!sortedPrograms || !orderedColumns}
+                    className={styles.downloadButton}
+                    variant="outline"
+                    transparent
                 >
                     Download as csv
                 </Button>

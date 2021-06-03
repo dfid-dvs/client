@@ -1,0 +1,77 @@
+.container {
+    --bold: var(--font-weight-bold);
+
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-bottom: var(--spacing-medium);
+    padding: var(--spacing-medium);
+
+    .first-section {
+        padding: 4em var(--spacing-large);
+
+        .title {
+            margin-bottom: calc(2 * var(--spacing-medium));
+            text-align: center;
+            font-size: calc(var(--font-size-extra-large) + var(--font-size-large));
+            font-weight: var(--bold);
+        }
+    
+        .sub-title {
+            text-align: center;
+            font-size: var(--font-size-large);
+        } 
+    }
+
+    .form-section {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        padding: var(--spacing-medium);
+        width: 100%;
+        max-width: 500px;
+
+        .text-input,
+        .select-input {
+            margin: var(--spacing-medium) 0;
+        }
+
+        .error {
+            flex-grow: 1;
+            color: var(--color-danger);
+        }
+
+        .attachment {
+            align-self: stretch;
+            margin: var(--spacing-medium) 0;
+
+            .input-container {
+                display: flex;
+
+                .select-button {
+                    flex-shrink: 0;
+                }
+
+                .file-input {
+                    flex-grow: 1;
+                    padding: var(--spacing-small) var(--spacing-medium);
+                    font-family: inherit;
+                    font-size: inherit;
+
+                    &::-webkit-file-upload-button {
+                        display: none;
+                    }
+                }
+            }
+        }
+
+        .actions {
+            padding: 2em;
+
+            .button {
+                width: fit-content;
+            }
+        }
+    }
+}

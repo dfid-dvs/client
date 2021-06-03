@@ -1,5 +1,6 @@
 .bubble-legend {
     position: relative;
+    width: min-content;
     min-height: 150px;
 
     .heading {
@@ -61,5 +62,13 @@
         .negative {
             margin-bottom: var(--spacing-small);
         }
+    }
+
+    &.no-data {
+        min-height: 100px;
+    }
+
+    .no-data-text {
+        font-size: var(--spacing-medium);
     }
 }

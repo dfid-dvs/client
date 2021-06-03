@@ -18,7 +18,7 @@ import List from '#components/List';
 import Button from '#components/Button';
 import Portal from '#components/Portal';
 import TextInput from '#components/TextInput';
-import Label from '#components/Label';
+import InputLabel from '#components/InputLabel';
 import CheckboxButton from '#components/CheckboxButton';
 
 import styles from './styles.css';
@@ -84,13 +84,7 @@ interface Props<T, K> {
     disabled?: boolean;
     pending?: boolean;
     placeholder?: string;
-    hideLabel?: boolean;
-    error?: string;
-    // labelRightComponent?: React.ReactNode;
-    // labelRightComponentClassName?: string;
-
     groupKeySelector?: (d: T) => string;
-
     allSelectable?: boolean;
 }
 
@@ -107,12 +101,8 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
         pending,
         placeholder = 'Select options',
         groupKeySelector,
-        hideLabel,
         label,
-        error,
         allSelectable,
-        // labelRightComponent,
-        // labelRightComponentClassName,
     } = props;
 
     const inputContainerRef = React.useRef<HTMLDivElement>(null);
@@ -259,7 +249,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                 className: _cs(styles.option, selected && styles.selected),
                 name: String(key),
                 onClick: handleOptionClick,
-                disabled: disabled || selected,
+                disabled,
                 children: optionLabelSelector(datum),
             };
         },
@@ -270,23 +260,10 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
     const optionsLength = options ? options.length : 0;
 
     return (
-        <div
-            className={_cs(className, styles.selectInput)}
-            title={label}
-        >
-            {!hideLabel && (
-                <Label
-                    className={styles.label}
-                    disabled={disabled}
-                    error={!!error}
-                    // rightComponent={labelRightComponent}
-                    // rightComponentClassName={labelRightComponentClassName}
-                >
-                    {label}
-                </Label>
-            )}
+        <>
             <TextInput
-                className={styles.textInput}
+                label={label}
+                className={_cs(className, styles.textInput)}
                 elementRef={inputContainerRef}
                 inputRef={inputElementRef}
                 onClick={handleInputClick}
@@ -315,10 +292,11 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 title="Select all"
                                 onClick={handleSelectAll}
                                 disabled={disabled || !options}
-                                icons={(
-                                    <IoMdDoneAll />
-                                )}
-                            />
+                                variant="icon"
+                                childrenContainerClassName={styles.iconContainer}
+                            >
+                                <IoMdDoneAll className={styles.icon} />
+                            </Button>
                         )}
                         {value && value.length > 0 && (
                             <Button
@@ -328,10 +306,11 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                                 onClick={handleClearClick}
                                 title="Clear all"
                                 disabled={disabled}
-                                icons={(
-                                    <IoMdClose />
-                                )}
-                            />
+                                variant="icon"
+                                childrenContainerClassName={styles.iconContainer}
+                            >
+                                <IoMdClose className={styles.icon} />
+                            </Button>
                         )}
                     </>
                 )}
@@ -339,7 +318,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
             { showDropdown && (
                 <Portal>
                     <Dropdown
-                        ref={dropdownRef}
+                        elementRef={dropdownRef}
                         className={_cs(dropdownContainerClassName, styles.dropdownContainer)}
                         parentRef={inputContainerRef}
                     >
@@ -370,7 +349,7 @@ function MultiSelectInput<T, K extends string | number>(props: Props<T, K>) {
                     </Dropdown>
                 </Portal>
             )}
-        </div>
+        </>
     );
 }
 

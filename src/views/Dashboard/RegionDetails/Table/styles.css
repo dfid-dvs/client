@@ -1,13 +1,19 @@
 .table-actions {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     flex-shrink: 0;
-    margin: var(--spacing-small) var(--spacing-medium);
+    justify-content: flex-end;
+    padding: var(--spacing-small-medium) 0 0 0;
 
-    >* {
-        &:not(:last-child) {
-            margin-right: var(--spacing-medium);
-        }
+    .download-button {
+        margin: 0 var(--spacing-mega-large);
+        border: var(--width-separator-medium) solid var(--color-secondary-light-1);
+        border-radius: 0;
+        height: 100%;
+    }
+
+    .indicator-select {
+        width: 300px;
     }
 }
 

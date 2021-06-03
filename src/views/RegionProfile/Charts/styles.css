@@ -1,0 +1,54 @@
+.charts {
+    position: relative;
+    margin-top: var(--spacing-large);
+
+    .backdrop {
+        z-index: 1;
+    }
+
+    .chart-container {
+        display: inline-block;
+        margin: var(--spacing-medium);
+        border: var(--width-separator-thin) solid var(--color-button-background);
+        width: calc(100% - 2 * var(--spacing-medium));
+        vertical-align: top;
+    }
+
+    .chart {
+        padding: var(--spacing-medium);
+        height: 110mm!important;
+
+        :global {
+            text {
+                font-size: 2.3mm!important;
+            }
+        }
+    }
+}
+
+.modal-chart {
+    padding: var(--spacing-large);
+    min-width: 900px;
+    min-height: 700px;
+
+    .chart {
+        padding: var(--spacing-large);
+        width: 800px;
+        height: 600px;
+    }
+}
+
+.header {
+    margin-left: var(--spacing-large);
+    color: var(--color-text);
+    font-size: var(--font-size-large);
+    font-weight: var(--font-weight-bold);
+}
+
+@media print {
+    .charts {
+        .chart {
+            page-break-inside: avoid;
+        }
+    }
+}

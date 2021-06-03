@@ -1,10 +1,19 @@
 import React from 'react';
 
-import { ChartSettings, isBarChart, isPieChart, isHistogram } from '#types';
+import {
+    ChartSettings,
+    isBarChart,
+    isPieChart,
+    isHistogram,
+    isBiAxialChart,
+    isScatterChart,
+} from '#types';
 
 import BarChart from './BarChart';
 import PieChart from './PieChart';
 import Histogram from './Histogram';
+import BiAxialChart from './BiAxialChart';
+import ScatterChart from './ScatterChart';
 
 interface Props<T> {
     settings: ChartSettings<T>;
@@ -13,8 +22,13 @@ interface Props<T> {
     onDelete: (name: string | undefined) => void;
     chartClassName?: string;
     hideActions?: boolean;
+    onExpand: (name: string | undefined) => void;
+    chartExpanded: string | undefined;
+    onSetEditableChartId?: (name: string | undefined) => void;
+    longTilesShown?: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 function PolyChart<T extends object>(props: Props<T>) {
     const {
         settings,
@@ -23,7 +37,13 @@ function PolyChart<T extends object>(props: Props<T>) {
         onDelete,
         chartClassName,
         hideActions,
+        onExpand,
+        chartExpanded,
+        onSetEditableChartId,
+        longTilesShown = false,
     } = props;
+
+    const expandableIconHidden = chartExpanded === settings.id;
 
     if (isBarChart(settings)) {
         return (
@@ -34,6 +54,10 @@ function PolyChart<T extends object>(props: Props<T>) {
                 settings={settings}
                 className={className}
                 chartClassName={chartClassName}
+                onExpand={onExpand}
+                expandableIconHidden={expandableIconHidden}
+                onSetEditableChartId={onSetEditableChartId}
+                longTilesShown={longTilesShown}
             />
         );
     }
@@ -46,6 +70,9 @@ function PolyChart<T extends object>(props: Props<T>) {
                 hideActions={hideActions}
                 className={className}
                 chartClassName={chartClassName}
+                onExpand={onExpand}
+                expandableIconHidden={expandableIconHidden}
+                onSetEditableChartId={onSetEditableChartId}
             />
         );
     }
@@ -58,6 +85,42 @@ function PolyChart<T extends object>(props: Props<T>) {
                 hideActions={hideActions}
                 className={className}
                 chartClassName={chartClassName}
+                onExpand={onExpand}
+                expandableIconHidden={expandableIconHidden}
+                onSetEditableChartId={onSetEditableChartId}
+            />
+        );
+    }
+
+    if (isBiAxialChart(settings)) {
+        return (
+            <BiAxialChart
+                onDelete={onDelete}
+                data={data}
+                settings={settings}
+                hideActions={hideActions}
+                className={className}
+                chartClassName={chartClassName}
+                onExpand={onExpand}
+                expandableIconHidden={expandableIconHidden}
+                onSetEditableChartId={onSetEditableChartId}
+                longTilesShown={longTilesShown}
+            />
+        );
+    }
+
+    if (isScatterChart(settings)) {
+        return (
+            <ScatterChart
+                onDelete={onDelete}
+                data={data}
+                settings={settings}
+                hideActions={hideActions}
+                className={className}
+                chartClassName={chartClassName}
+                onExpand={onExpand}
+                expandableIconHidden={expandableIconHidden}
+                onSetEditableChartId={onSetEditableChartId}
             />
         );
     }

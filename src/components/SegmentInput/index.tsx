@@ -1,7 +1,7 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
-import Label from '#components/Label';
+import InputLabel from '#components/InputLabel';
 
 import Option from './Option';
 import styles from './styles.css';
@@ -22,6 +22,7 @@ interface Props<T, V> {
     hideLabel?: boolean;
     error?: string;
     labelClassName?: string;
+    segmentClassName?: string;
 }
 
 
@@ -41,20 +42,21 @@ function SegmentInput<T, V extends string | number>(props: Props<T, V>) {
         disabled,
         error,
         labelClassName,
+        segmentClassName,
     } = props;
 
     return (
         <div className={_cs(className, styles.segmentInput)}>
-            {!hideLabel && (
-                <Label
+            {!hideLabel && label && (
+                <InputLabel
                     disabled={disabled}
                     error={!!error}
-                    className={_cs(styles.className, labelClassName)}
+                    className={_cs(styles.inputLabel, labelClassName)}
                 >
                     {label}
-                </Label>
+                </InputLabel>
             )}
-            <div className={styles.inputContainer}>
+            <div className={_cs(styles.inputContainer, segmentClassName)}>
                 { options.map((option) => {
                     const key = optionKeySelector(option);
                     const isActive = key === value;

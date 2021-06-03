@@ -17,13 +17,33 @@ import {
 
 function useMapStateForFiveW(
     regionLevel: RegionLevelOption,
-    programs: number[],
+    markerIdList: string[] | undefined,
+    submarkerIdList: string[] | undefined,
+    programIdList: string[] | undefined,
+    componentIdList: string[] | undefined,
+    partnerIdList: string[] | undefined,
+    sectorIdList: string[] | undefined,
+    subsectorIdList: string[] | undefined,
+    selectedStatus: 'ongoing' | 'completed' | undefined = undefined,
     selectedFiveWOption?: FiveWOptionKey,
     preserveResponse = false,
 ): [boolean, MapStateItem[], FiveW[]] {
     const params: UrlParams = {
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        program_id: programs,
+        // eslint-disable-next-line camelcase
+        marker_category_id: markerIdList,
+        // eslint-disable-next-line camelcase
+        marker_value_id: submarkerIdList,
+        // eslint-disable-next-line camelcase
+        program_id: programIdList,
+        // eslint-disable-next-line camelcase
+        component_code: componentIdList,
+        // eslint-disable-next-line camelcase
+        supplier_id: partnerIdList,
+        // eslint-disable-next-line camelcase
+        sector_id: sectorIdList,
+        // eslint-disable-next-line camelcase
+        sub_sector_id: subsectorIdList,
+        status: selectedStatus,
     };
     const regionUrlParams = p(params);
     const regionFiveWGetUrl = regionUrlParams

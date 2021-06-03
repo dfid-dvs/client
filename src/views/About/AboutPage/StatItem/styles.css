@@ -7,8 +7,4 @@
         font-size: var(--font-size-ultra-large);
         font-weight: var(--bold);
     }
-
-    .label {
-        font-size: var(--font-size-large);
-    }
 }

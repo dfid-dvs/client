@@ -1,17 +1,18 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { isFalsyString } from '@togglecorp/fujs';
+import { IoMdAddCircleOutline } from 'react-icons/io';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
 import PolyChart from '#components/PolyChart';
 import ChartModal from '#components/ChartModal';
+import Modal from '#components/Modal';
 import { tableauColors } from '#utils/constants';
 import {
     ChartSettings,
     NumericOption,
 } from '#types';
-import { prepareUrlParams as p } from '#utils/common';
 
 import useExtendedPrograms, { ExtendedProgram } from '../../useExtendedPrograms';
 
@@ -22,9 +23,27 @@ const keySelector = (item: ExtendedProgram) => item.name;
 
 const staticOptions: NumericOption<ExtendedProgram>[] = [
     {
-        key: 'allocatedBudget',
-        title: 'Allocated Budget',
+        key: 'totalBudget',
+        title: 'Total Budget',
         valueSelector: item => item.totalBudget,
+        category: 'DFID Data',
+    },
+    {
+        key: 'componentCount',
+        title: 'Component Count',
+        valueSelector: item => item.componentCount,
+        category: 'DFID Data',
+    },
+    {
+        key: 'partnerCount',
+        title: 'Partners',
+        valueSelector: item => item.partnerCount,
+        category: 'DFID Data',
+    },
+    {
+        key: 'sectorCount',
+        title: 'Sectors',
+        valueSelector: item => item.sectorCount,
         category: 'DFID Data',
     },
 ];
@@ -44,7 +63,8 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
 
         bars: [
             {
-                title: 'Allocated Budget',
+                key: 'totalBudget',
+                title: 'Budget Spend',
                 color: tableauColors[1],
                 valueSelector: item => item.totalBudget,
             },
@@ -64,6 +84,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
 
         bars: [
             {
+                key: 'componentCount',
                 title: 'Components',
                 color: tableauColors[5],
                 valueSelector: item => item.componentCount,
@@ -76,6 +97,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
         title: 'Budget distribution',
         color: tableauColors[0],
         binCount: 10,
+        key: 'totalBudget',
         valueSelector: item => item.totalBudget,
     },
 ];
@@ -96,23 +118,34 @@ function Charts(props: Props) {
     );
 
     const [showModal, setModalVisibility] = useState(false);
+    const [editableChartId, setEditableChartId] = useState<string>();
 
     const handleModalShow = useCallback(() => {
         setModalVisibility(true);
-    }, [setModalVisibility]);
+    }, []);
 
     const handleModalClose = useCallback(() => {
         setModalVisibility(false);
-    }, [setModalVisibility]);
+        setEditableChartId(undefined);
+    }, []);
 
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedProgram>) => {
-            setChartSettings(currentChartSettings => [
-                ...currentChartSettings,
-                settings,
-            ]);
+            if (!editableChartId) {
+                setChartSettings(currentChartSettings => [
+                    ...currentChartSettings,
+                    settings,
+                ]);
+            }
+            const tmpChartSettings = [...chartSettings];
+            const chartIndex = tmpChartSettings.findIndex(c => c.id === editableChartId);
+            if (chartIndex <= -1) {
+                return;
+            }
+            tmpChartSettings.splice(chartIndex, 1, settings);
+            setChartSettings(tmpChartSettings);
         },
-        [],
+        [editableChartId, chartSettings, setChartSettings],
     );
 
     const handleChartDelete = useCallback(
@@ -125,16 +158,65 @@ function Charts(props: Props) {
                 currentChartSettings.filter(item => item.id !== name)
             ));
         },
+        [setChartSettings],
+    );
+
+    const [expandableChart, setExpandableChart] = useState<string>();
+
+    const handleChartExpand = useCallback(
+        (id: string | undefined) => {
+            setExpandableChart(id);
+        },
         [],
     );
 
+    const handleChartCollapse = useCallback(
+        () => {
+            setExpandableChart(undefined);
+        },
+        [],
+    );
+
+    const onSetEditableChartId = useCallback(
+        (id: string | undefined) => {
+            setEditableChartId(id);
+            setModalVisibility(true);
+        },
+        [],
+    );
+
+    const expandableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
+        () => {
+            const chartSetting = chartSettings.find(c => c.id === expandableChart);
+            if (!chartSetting) {
+                return undefined;
+            }
+            return chartSetting;
+        },
+        [chartSettings, expandableChart],
+    );
+
+    const editableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(
+        () => {
+            const chartSetting = chartSettings.find(c => c.id === editableChartId);
+            if (!chartSetting) {
+                return undefined;
+            }
+
+            return chartSetting;
+        },
+        [chartSettings, editableChartId],
+    );
     return (
         <>
             <div className={styles.tableActions}>
                 <Button
                     onClick={handleModalShow}
+                    className={styles.addChartButton}
+                    icons={<IoMdAddCircleOutline className={styles.icon} />}
+                    transparent
                 >
-                    Add chart
+                    Add Chart
                 </Button>
             </div>
             <div className={styles.charts}>
@@ -143,13 +225,17 @@ function Charts(props: Props) {
                         <LoadingAnimation />
                     </Backdrop>
                 )}
-                {chartSettings.map(item => (
+                {!programsPending && chartSettings.map(item => (
                     <PolyChart
                         key={item.id}
                         chartClassName={styles.chart}
                         data={extendedPrograms}
                         settings={item}
                         onDelete={handleChartDelete}
+                        className={styles.polyChart}
+                        onExpand={handleChartExpand}
+                        chartExpanded={expandableChart}
+                        onSetEditableChartId={onSetEditableChartId}
                     />
                 ))}
             </div>
@@ -159,7 +245,26 @@ function Charts(props: Props) {
                     onSave={handleChartAdd}
                     options={staticOptions}
                     keySelector={keySelector}
+                    editableChartSettings={editableChartSettings}
                 />
+            )}
+            {expandableChart && expandableChartSettings && (
+                <Modal
+                    onClose={handleChartCollapse}
+                    className={styles.modalChart}
+                    header={expandableChartSettings.title}
+                    headerClassName={styles.header}
+                >
+                    <PolyChart
+                        chartClassName={styles.chart}
+                        data={extendedPrograms}
+                        settings={expandableChartSettings}
+                        onDelete={handleChartDelete}
+                        className={styles.polyChart}
+                        onExpand={handleChartExpand}
+                        chartExpanded={expandableChart}
+                    />
+                </Modal>
             )}
         </>
     );

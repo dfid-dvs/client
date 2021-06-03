@@ -1,4 +1,5 @@
 .color-input {
+    width: fit-content;
     color: inherit;
 
     .input {

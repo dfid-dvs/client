@@ -1,11 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { _cs } from '@togglecorp/fujs';
 import { Link } from 'react-router-dom';
 
 import SegmentInput from '#components/SegmentInput';
-import DomainContext from '#components/DomainContext';
 import PopupPage from '#components/PopupPage';
-
-import { Indicator } from '#types';
+import Label from '#components/Label';
+import SingleRegionSelect from '#components/SingleRegionSelect';
+import { Indicator, RegionLevelOption } from '#types';
 
 import Table from './Table';
 import Charts from './Charts';
@@ -28,6 +29,20 @@ interface Props {
     className?: string;
     indicatorList: Indicator[] | undefined;
     indicatorListPending: boolean | undefined;
+    regionLevel: RegionLevelOption;
+    onHideFilterButton?: () => void;
+    onShowFilterButton?: () => void;
+    filterButtonHidden?: boolean;
+
+    markerIdList?: string[];
+    submarkerIdList?: string[];
+    programIdList?: string[];
+    componentIdList?: string[];
+    partnerIdList?: string[];
+    sectorIdList?: string[];
+    subsectorIdList?: string[];
+
+    handleRegionLevelChange?: (regionLvl: RegionLevelOption) => void;
 }
 
 const optionKeySelector = (item: TabOption) => item.key;
@@ -38,12 +53,33 @@ function RegionDetails(props: Props) {
         className,
         indicatorList,
         indicatorListPending,
+        regionLevel,
+        onHideFilterButton,
+        onShowFilterButton,
+        filterButtonHidden,
+
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        sectorIdList,
+        subsectorIdList,
+        handleRegionLevelChange,
     } = props;
 
-    const { regionLevel: regionLevelFromContext, programs } = useContext(DomainContext);
 
-    const [regionLevel, setRegionLevel] = useState(regionLevelFromContext);
     const [selectedTab, setSelectedTab] = useState<TabOptionKeys>('charts');
+
+    const onSelectTab = useCallback((tabKey: TabOptionKeys) => {
+        setSelectedTab(tabKey);
+        if (onHideFilterButton && tabKey === 'sankey') {
+            onHideFilterButton();
+        }
+        if (filterButtonHidden && onShowFilterButton && tabKey !== 'sankey') {
+            onShowFilterButton();
+        }
+    }, [setSelectedTab, onHideFilterButton, filterButtonHidden, onShowFilterButton]);
 
     const [
         selectedRegions,
@@ -51,61 +87,96 @@ function RegionDetails(props: Props) {
     ] = useState<number[]>([]);
 
     const [selectedIndicators, setSelectedIndicators] = useState<number[]>([]);
+    const hideRegionSelect = selectedTab === 'sankey';
 
     return (
         <PopupPage
-            className={className}
-            title="Regions"
-            parentLink="/dashboard/"
+            className={_cs(styles.regionDetails, className)}
+            parentLink="/"
             parentName="dashboard"
+            hideArrow
             actions={(
-                <div className={styles.rightContainer}>
-                    <Link
-                        className={styles.link}
-                        to="/infographics/"
-                        exact
+                <div className={styles.actionContainer}>
+                    <header
+                        className={_cs(
+                            styles.regionSelect,
+                            hideRegionSelect && styles.hidden,
+                        )}
                     >
-                        Create Custom Infographic
-                    </Link>
-                    <div className={styles.tabActions}>
+                        <Label className={styles.label}>
+                            View by
+                        </Label>
+                        <SingleRegionSelect
+                            onRegionLevelChange={handleRegionLevelChange}
+                            regionLevel={regionLevel}
+                            region={undefined}
+                        />
+                    </header>
+                    <div className={styles.midSection}>
+                        <div className={styles.dummy} />
                         <SegmentInput
                             options={tabOptions}
                             optionKeySelector={optionKeySelector}
                             optionLabelSelector={optionLabelSelector}
                             value={selectedTab}
-                            onChange={setSelectedTab}
+                            onChange={onSelectTab}
                         />
+                        <Link
+                            className={styles.regionProfileLink}
+                            to="/region-profile/"
+                        >
+                            Create Regional Profile
+                        </Link>
                     </div>
                 </div>
             )}
+            headerClassName={styles.header}
+            actionsClassName={styles.header}
         >
             {selectedTab === 'table' && (
                 <Table
-                    programs={programs}
-
                     regionLevel={regionLevel}
-                    onRegionLevelChange={setRegionLevel}
 
                     indicators={selectedIndicators}
                     onIndicatorsChange={setSelectedIndicators}
 
                     indicatorList={indicatorList}
                     indicatorListPending={indicatorListPending}
+
+                    markerIdList={markerIdList}
+                    submarkerIdList={submarkerIdList}
+                    programIdList={programIdList}
+                    componentIdList={componentIdList}
+                    partnerIdList={partnerIdList}
+                    sectorIdList={sectorIdList}
+                    subsectorIdList={subsectorIdList}
                 />
             )}
             {selectedTab === 'charts' && (
                 <Charts
-                    programs={programs}
                     regionLevel={regionLevel}
-                    onRegionLevelChange={setRegionLevel}
 
                     indicatorList={indicatorList}
                     indicatorListPending={indicatorListPending}
+
+                    markerIdList={markerIdList}
+                    submarkerIdList={submarkerIdList}
+                    programIdList={programIdList}
+                    componentIdList={componentIdList}
+                    partnerIdList={partnerIdList}
+                    sectorIdList={sectorIdList}
+                    subsectorIdList={subsectorIdList}
                 />
             )}
             {selectedTab === 'sankey' && (
                 <Sankey
-                    programs={programs}
+                    markerIdList={markerIdList}
+                    submarkerIdList={submarkerIdList}
+                    programIdList={programIdList}
+                    componentIdList={componentIdList}
+                    partnerIdList={partnerIdList}
+                    sectorIdList={sectorIdList}
+                    subsectorIdList={subsectorIdList}
                     regions={selectedRegions}
                     onRegionsChange={setSelectedRegions}
                 />

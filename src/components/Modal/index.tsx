@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 import { IoMdClose } from 'react-icons/io';
 
@@ -32,7 +32,6 @@ function Modal(props: Props) {
 
         onClose,
     } = props;
-
     return (
         <Portal>
             <Backdrop dark>
@@ -49,7 +48,7 @@ function Modal(props: Props) {
                         <Button
                             className={styles.closeButton}
                             onClick={onClose}
-                            transparent
+                            variant="transparent"
                             title="Close"
                         >
                             <IoMdClose />

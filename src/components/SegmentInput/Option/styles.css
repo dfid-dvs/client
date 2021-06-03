@@ -1,33 +1,20 @@
 .option {
     display: flex;
     align-items: center;
+    flex-grow: 1;
+    justify-content: center;
+    border-radius: calc(1em + 2 * var(--spacing-small));
     background-color: transparent;
     cursor: pointer;
     padding: var(--spacing-small) var(--spacing-medium);
+    text-align: center;
     color: var(--color-text-label);
 
-    &:last-child {
-        border-top-right-radius: calc(4 * var(--radius-input));
-        border-bottom-right-radius: calc(4 * var(--radius-input));
-    }
-
-    &:first-child {
-        border-top-left-radius: calc(4 * var(--radius-input));
-        border-bottom-left-radius: calc(4 * var(--radius-input));
-    }
-
     &.disabled {
-        background-color: var(--color-input-background-disabled);
-        color: var(--color-text-disabled);
+        pointer-events: none;
     }
 
     &.active {
-        border-radius: calc(4 * var(--radius-input));
-        background-color: var(--color-light-pink);
-        font-weight: var(--font-weight-bold);
-    }
-
-    &:hover {
-        filter: brightness(90%)
+        background-color: var(--color-foreground);
     }
 }

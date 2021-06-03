@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
     randomString,
     isFalsyString,
@@ -22,6 +22,7 @@ interface Props<T> {
     className?: string;
     options: NumericOption<T>[];
     // keySelector: (item: T) => string;
+    editableChartData: HistogramSettings<T> | undefined;
 }
 
 function HistogramConfig<T>(props: Props<T>) {
@@ -30,18 +31,21 @@ function HistogramConfig<T>(props: Props<T>) {
         className,
         options,
         // keySelector: primaryKeySelector,
+        editableChartData,
     } = props;
 
     const [error, setError] = useState<string | undefined>(undefined);
 
-    const [title, setTitle] = useState('');
-    const [orderField, setOrderField] = useState<string | undefined>();
-    const [color, setColor] = useState(() => getRandomFromList(tableauColors));
-    const [binCount, setBinCount] = useState('10');
+    const [title, setTitle] = useState(editableChartData?.title ?? '');
+    const [orderField, setOrderField] = useState<string | undefined>(editableChartData?.key ?? '');
+    const [color, setColor] = useState(
+        editableChartData?.color ?? (() => getRandomFromList(tableauColors)),
+    );
+    const [binCount, setBinCount] = useState(editableChartData?.binCount ?? '10');
 
-    const keySelector = (item: NumericOption<T>) => item.key;
-    const labelSelector = (item: NumericOption<T>) => item.title;
-    const groupSelector = (item: NumericOption<T>) => item.category;
+    const keySelector = useMemo(() => (item: NumericOption<T>) => item.key, []);
+    const labelSelector = useMemo(() => (item: NumericOption<T>) => item.title, []);
+    const groupSelector = useMemo(() => (item: NumericOption<T>) => item.category, []);
 
     const handleSave = useCallback(
         () => {
@@ -87,6 +91,7 @@ function HistogramConfig<T>(props: Props<T>) {
                 id: chartId,
                 type: 'histogram',
                 title,
+                key: orderField,
 
                 binCount: bins,
                 color,
@@ -108,6 +113,7 @@ function HistogramConfig<T>(props: Props<T>) {
                     value={title}
                     onChange={setTitle}
                     autoFocus
+                    labelClassName={styles.label}
                 />
                 <SelectInput
                     label="Data"
@@ -119,17 +125,20 @@ function HistogramConfig<T>(props: Props<T>) {
                     optionKeySelector={keySelector}
                     groupKeySelector={groupSelector}
                     nonClearable
+                    labelClassName={styles.label}
                 />
                 <div className={styles.group}>
                     <NumberInput
                         label="Total bins"
                         value={binCount}
                         onChange={setBinCount}
+                        labelClassName={styles.label}
                     />
                     <ColorInput
                         label="Color"
                         value={color}
                         onChange={setColor}
+                        labelClassName={styles.label}
                     />
                 </div>
             </div>
@@ -142,7 +151,7 @@ function HistogramConfig<T>(props: Props<T>) {
                 <Button
                     className={styles.submitButton}
                     onClick={handleSave}
-                    variant="primary"
+                    variant="secondary"
                 >
                     Save
                 </Button>

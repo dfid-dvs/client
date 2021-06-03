@@ -1,12 +1,13 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { isDefined, unique, listToMap, isFalsyString } from '@togglecorp/fujs';
+import { IoMdAddCircleOutline } from 'react-icons/io';
 
 import LoadingAnimation from '#components/LoadingAnimation';
 import Backdrop from '#components/Backdrop';
 import Button from '#components/Button';
-import RegionSelector from '#components/RegionSelector';
 import PolyChart from '#components/PolyChart';
 import ChartModal from '#components/ChartModal';
+import Modal from '#components/Modal';
 
 import { tableauColors } from '#utils/constants';
 import {
@@ -19,13 +20,12 @@ import {
 import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
 import styles from './styles.css';
 
-
 const keySelector = (item: ExtendedFiveW) => item.name;
 
 const staticOptions: NumericOption<ExtendedFiveW>[] = [
     {
         key: 'allocatedBudget',
-        title: 'Allocated Budget',
+        title: 'Budget Spend',
         valueSelector: item => item.allocatedBudget,
         category: 'DFID Data',
     },
@@ -70,7 +70,8 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
-                title: 'Allocated Budget',
+                title: 'Budget Spend',
+                key: 'allocatedBudget',
                 color: tableauColors[1],
                 valueSelector: item => item.allocatedBudget,
             },
@@ -90,6 +91,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'programCount',
                 title: 'Program count',
                 color: tableauColors[2],
                 valueSelector: item => item.programCount,
@@ -110,6 +112,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'partnerCount',
                 title: 'Partner count',
                 color: tableauColors[3],
                 valueSelector: item => item.partnerCount,
@@ -130,13 +133,14 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
 
         bars: [
             {
+                key: 'sectorCount',
                 title: 'Sector count',
                 color: tableauColors[4],
                 valueSelector: item => item.sectorCount,
             },
         ],
     },
-    {
+    /* {
         id: '2',
         type: 'bar-chart',
         title: 'Top 10 by population',
@@ -177,81 +181,104 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
             },
         ],
         dependencies: [132],
-    },
-
-    /*
+    }, */
     {
         id: '2',
         type: 'pie-chart',
+        key: 'allocatedBudget',
         title: 'Total Budget',
         keySelector: item => item.name,
         valueSelector: item => item.allocatedBudget,
     },
     {
+        id: '4',
+        type: 'histogram',
+        key: 'componentCount',
+        title: 'Component Count',
+        color: tableauColors[0],
+        binCount: 10,
+        valueSelector: item => item.componentCount,
+        // dependencies: [118],
+    },
+    {
         id: '3',
-        type: 'bar-chart',
+        type: 'bi-axial-chart',
         title: 'Health and Finance for top 10 by budget',
         keySelector: item => item.name,
-        bars: [
+        chartData: [
             {
-                title: 'Health Facilities',
+                type: 'bar',
+                title: 'Program count',
+                key: 'programCount',
                 color: tableauColors[2],
-                valueSelector: item => item.indicators[119] || null,
+                valueSelector: item => item.programCount,
             },
             {
-                title: 'Financial Institutions',
-                color: tableauColors[3],
-                valueSelector: item => item.indicators[118] || null,
+                type: 'line',
+                title: 'Budget Spend',
+                key: 'allocatedBudget',
+                color: tableauColors[4],
+                valueSelector: item => item.allocatedBudget,
             },
         ],
 
         limit: {
             count: 10,
             method: 'max',
-            valueSelector: item => item.allocatedBudget,
+            valueSelector: item => item.programCount,
         },
-
         // meta
         dependencies: [119, 118],
     },
     {
-        id: '4',
-        type: 'histogram',
-        title: 'Financial Institutions distribution',
-        color: tableauColors[0],
-        binCount: 10,
-        valueSelector: item => item.indicators[118] || 0,
-        dependencies: [118],
-    },
-    {
         id: '5',
-        type: 'histogram',
-        title: 'Health Facilities distribution',
-        color: tableauColors[3],
-        binCount: 10,
-        valueSelector: item => item.indicators[119] || 0,
-        dependencies: [119],
+        type: 'scatter-chart',
+        title: 'Health and Finance for top 10 by budget',
+        keySelector: item => item.name,
+        data: [
+            {
+                title: 'Program count',
+                key: 'programCount',
+                valueSelector: item => item.programCount,
+            },
+            {
+                title: 'Budget Spend',
+                key: 'allocatedBudget',
+                valueSelector: item => item.allocatedBudget,
+            },
+        ],
+        color: tableauColors[0],
     },
-     */
 ];
 
 interface Props {
-    programs: number[];
-
     regionLevel: RegionLevelOption;
-    onRegionLevelChange: (v: RegionLevelOption) => void;
 
     indicatorList: Indicator[] | undefined;
     indicatorListPending: boolean | undefined;
+
+    markerIdList?: string[];
+    submarkerIdList?: string[];
+    programIdList?: string[];
+    componentIdList?: string[];
+    partnerIdList?: string[];
+    sectorIdList?: string[];
+    subsectorIdList?: string[];
 }
 
 function Charts(props: Props) {
     const {
-        programs,
         regionLevel,
-        onRegionLevelChange,
         indicatorList,
         indicatorListPending,
+
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        sectorIdList,
+        subsectorIdList,
     } = props;
 
     const [chartSettings, setChartSettings] = useState<ChartSettings<ExtendedFiveW>[]>(
@@ -259,7 +286,7 @@ function Charts(props: Props) {
     );
 
     const [showModal, setModalVisibility] = useState(false);
-
+    const [editableChartId, setEditableChartId] = useState<string>();
     const indicatorMapping = useMemo(
         () => listToMap(
             indicatorList,
@@ -310,16 +337,37 @@ function Charts(props: Props) {
 
     const handleModalClose = useCallback(() => {
         setModalVisibility(false);
-    }, [setModalVisibility]);
+        setEditableChartId(undefined);
+    }, [setModalVisibility, setEditableChartId]);
 
+    const editableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
+        () => {
+            const chartSetting = chartSettings.find(c => c.id === editableChartId);
+            if (!chartSetting) {
+                return undefined;
+            }
+
+            return chartSetting;
+        },
+        [chartSettings, editableChartId],
+    );
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedFiveW>) => {
-            setChartSettings(currentChartSettings => [
-                ...currentChartSettings,
-                settings,
-            ]);
+            if (!editableChartId) {
+                setChartSettings(currentChartSettings => [
+                    ...currentChartSettings,
+                    settings,
+                ]);
+            }
+            const tmpChartSettings = [...chartSettings];
+            const chartIndex = tmpChartSettings.findIndex(c => c.id === editableChartId);
+            if (chartIndex <= -1) {
+                return;
+            }
+            tmpChartSettings.splice(chartIndex, 1, settings);
+            setChartSettings(tmpChartSettings);
         },
-        [],
+        [editableChartId, setChartSettings, chartSettings],
     );
 
     const handleChartDelete = useCallback(
@@ -332,42 +380,88 @@ function Charts(props: Props) {
                 currentChartSettings.filter(item => item.id !== name)
             ));
         },
-        [],
+        [setChartSettings],
     );
 
     const [extendedFiveWPending, extendedFiveWList] = useExtendedFiveW(
         regionLevel,
-        programs,
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        sectorIdList,
+        subsectorIdList,
         validSelectedIndicators,
     );
+
+    const [expandableChart, setExpandableChart] = useState<string>();
+
+    const handleChartExpand = useCallback(
+        (id: string | undefined) => {
+            setExpandableChart(id);
+        },
+        [setExpandableChart],
+    );
+
+    const onSetEditableChartId = useCallback(
+        (id: string | undefined) => {
+            setEditableChartId(id);
+            setModalVisibility(true);
+        },
+        [setEditableChartId, setModalVisibility],
+    );
+
+    const handleChartCollapse = useCallback(
+        () => {
+            setExpandableChart(undefined);
+        },
+        [setExpandableChart],
+    );
+
+    const expandableChartSettings: ChartSettings<ExtendedFiveW> | undefined = useMemo(
+        () => {
+            const chartSetting = chartSettings.find(c => c.id === expandableChart);
+            if (!chartSetting) {
+                return undefined;
+            }
+            return chartSetting;
+        },
+        [chartSettings, expandableChart],
+    );
+
+    const loading = extendedFiveWPending || indicatorListPending;
 
     return (
         <>
             <div className={styles.tableActions}>
-                <RegionSelector
-                    onRegionLevelChange={onRegionLevelChange}
-                    regionLevel={regionLevel}
-                    searchHidden
-                />
                 <Button
                     onClick={handleModalShow}
+                    className={styles.addChartButton}
+                    icons={<IoMdAddCircleOutline className={styles.icon} />}
+                    transparent
+                    variant="outline"
                 >
-                    Add chart
+                    Add Chart
                 </Button>
             </div>
             <div className={styles.charts}>
-                {(extendedFiveWPending || indicatorListPending) && (
+                {loading && (
                     <Backdrop className={styles.backdrop}>
                         <LoadingAnimation />
                     </Backdrop>
                 )}
-                {chartSettings.map(item => (
+                {!loading && chartSettings.map(item => (
                     <PolyChart
                         key={item.id}
                         chartClassName={styles.chart}
                         data={extendedFiveWList}
                         settings={item}
                         onDelete={handleChartDelete}
+                        className={styles.polyChart}
+                        onExpand={handleChartExpand}
+                        chartExpanded={expandableChart}
+                        onSetEditableChartId={onSetEditableChartId}
                     />
                 ))}
             </div>
@@ -377,7 +471,26 @@ function Charts(props: Props) {
                     onSave={handleChartAdd}
                     options={options}
                     keySelector={keySelector}
+                    editableChartSettings={editableChartSettings}
                 />
+            )}
+            {expandableChart && expandableChartSettings && (
+                <Modal
+                    onClose={handleChartCollapse}
+                    className={styles.modalChart}
+                    header={expandableChartSettings.title}
+                    headerClassName={styles.header}
+                >
+                    <PolyChart
+                        chartClassName={styles.chart}
+                        data={extendedFiveWList}
+                        settings={expandableChartSettings}
+                        onDelete={handleChartDelete}
+                        className={styles.polyChart}
+                        onExpand={handleChartExpand}
+                        chartExpanded={expandableChart}
+                    />
+                </Modal>
             )}
         </>
     );

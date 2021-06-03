@@ -52,34 +52,82 @@ const municipalityLabelLayout: mapboxgl.SymbolLayout = {
 };
 
 const provinceOutlinePaint: mapboxgl.LinePaint = {
-    'line-color': '#000000',
-    'line-width': 1.4,
+    'line-color': [
+        'case',
+        ['==', ['feature-state', 'selected'], 1],
+        '#0a387b',
+        ['==', ['feature-state', 'hovered'], 1],
+        '#a90011',
+        '#000000',
+    ],
+    'line-width': [
+        'case',
+        ['==', ['feature-state', 'selected'], 1],
+        2,
+        ['==', ['feature-state', 'hovered'], 1],
+        1.6,
+        1.3,
+    ],
     'line-opacity': [
         'case',
-        ['==', ['feature-state', 'hovered'], true],
+        ['==', ['feature-state', 'selected'], 1],
         1,
+        ['==', ['feature-state', 'hovered'], 1],
+        0.8,
         0.3,
     ],
 };
 
 const districtOutlinePaint: mapboxgl.LinePaint = {
-    'line-color': '#000000',
-    'line-width': 1.2,
+    'line-color': [
+        'case',
+        ['==', ['feature-state', 'selected'], 1],
+        '#0a387b',
+        ['==', ['feature-state', 'hovered'], 1],
+        '#a90011',
+        '#000000',
+    ],
+    'line-width': [
+        'case',
+        ['==', ['feature-state', 'selected'], 1],
+        1.8,
+        ['==', ['feature-state', 'hovered'], 1],
+        1.4,
+        1.2,
+    ],
     'line-opacity': [
         'case',
-        ['==', ['feature-state', 'hovered'], true],
+        ['==', ['feature-state', 'selected'], 1],
         0.8,
+        ['==', ['feature-state', 'hovered'], 1],
+        0.6,
         0.2,
     ],
 };
 
 const municipalityOutlinePaint: mapboxgl.LinePaint = {
-    'line-color': '#000000',
-    'line-width': 1,
+    'line-color': [
+        'case',
+        ['==', ['feature-state', 'selected'], 1],
+        '#0a387b',
+        ['==', ['feature-state', 'hovered'], 1],
+        '#a90011',
+        '#000000',
+    ],
+    'line-width': [
+        'case',
+        ['==', ['feature-state', 'selected'], 1],
+        1.5,
+        ['==', ['feature-state', 'hovered'], 1],
+        1.2,
+        1,
+    ],
     'line-opacity': [
         'case',
-        ['==', ['feature-state', 'hovered'], true],
+        ['==', ['feature-state', 'selected'], 1],
         0.8,
+        ['==', ['feature-state', 'hovered'], 1],
+        0.6,
         0.1,
     ],
 };

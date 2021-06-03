@@ -1,0 +1,6 @@
+.subtitle {
+    text-transform: uppercase;
+    letter-spacing: 3.4px;
+    font-size: var(--font-size-subtitle-1);
+    font-weight: var(--font-weight-bold);
+}

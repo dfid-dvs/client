@@ -30,14 +30,32 @@ interface IndicatorValue {
 
 function useExtendedFiveW(
     regionLevel: RegionLevelOption | undefined,
-    programs: number[],
+    markerIdList: string[] | undefined,
+    submarkerIdList: string[] | undefined,
+    programIdList: string[] | undefined,
+    componentIdList: string[] | undefined,
+    partnerIdList: string[] | undefined,
+    sectorIdList: string[] | undefined,
+    subsectorIdList: string[] | undefined,
     indicators: number[],
     preserveResponse = true,
     extraUrlParams: UrlParams = {},
 ): [boolean, ExtendedFiveW[]] {
     const regionUrlParams = p({
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        program_id: programs,
+        // eslint-disable-next-line camelcase
+        marker_category_id: markerIdList,
+        // eslint-disable-next-line camelcase
+        marker_value_id: submarkerIdList,
+        // eslint-disable-next-line camelcase
+        program_id: programIdList,
+        // eslint-disable-next-line camelcase
+        component_code: componentIdList,
+        // eslint-disable-next-line camelcase
+        supplier_id: partnerIdList,
+        // eslint-disable-next-line camelcase
+        sector_id: sectorIdList,
+        // eslint-disable-next-line camelcase
+        sub_sector_id: subsectorIdList,
         ...extraUrlParams,
     });
     const regionFiveWGetUrl = regionUrlParams
@@ -56,7 +74,7 @@ function useExtendedFiveW(
     );
 
     const fiveWList: FiveW[] | undefined = regionFiveWListResponse?.results
-        .filter(item => item.code !== '-1')
+        // .filter(item => item.code !== '-1')
         .map(item => ({
             ...item,
             programCount: item.program.length,
@@ -67,7 +85,7 @@ function useExtendedFiveW(
 
     const regionIndicatorParams = indicators.length > 0
         ? p({
-            // eslint-disable-next-line @typescript-eslint/camelcase
+            // eslint-disable-next-line camelcase
             indicator_id: indicators,
             offset: 0,
             limit: 774 * 20,

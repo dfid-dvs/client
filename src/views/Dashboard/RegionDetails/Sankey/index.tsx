@@ -21,21 +21,39 @@ const sankeyColorSelector = (item: { depth: number }) => tableauColors[item.dept
 const sankeyNameSelector = (item: { name: string }) => item.name;
 
 interface Props {
-    programs: number[];
     regions: number[];
     onRegionsChange: (value: number[]) => void;
+
+    markerIdList?: string[];
+    submarkerIdList?: string[];
+    programIdList?: string[];
+    componentIdList?: string[];
+    partnerIdList?: string[];
+    sectorIdList?: string[];
+    subsectorIdList?: string[];
 }
 
 function RegionSankey(props: Props) {
     const {
-        programs,
         regions,
         onRegionsChange,
+        markerIdList,
+        submarkerIdList,
+        programIdList,
+        componentIdList,
+        partnerIdList,
+        sectorIdList,
+        subsectorIdList,
     } = props;
-
     const params = p({
-        program: programs,
         province: regions,
+        program: programIdList,
+        component_code: componentIdList,
+        sector_id: sectorIdList,
+        sub_sector_id: subsectorIdList,
+        marker_category_id: markerIdList,
+        marker_value_id: submarkerIdList,
+        supplier_id: partnerIdList,
         threshold: 0.8,
     });
 
@@ -53,27 +71,28 @@ function RegionSankey(props: Props) {
     return (
         <>
             <div className={styles.tableActions}>
-                <div className={styles.info}>
+                <div className={styles.infoBar}>
                     <RegionSelector
+                        className={styles.regionSelector}
                         regionLevel="province"
                         selectionHidden
                         regions={regions}
                         onRegionsChange={onRegionsChange}
                     />
                     {sankeyResponse && isDefined(sankeyResponse.minThreshold) && (
-                        <span className={styles.text}>
-                            <span>
+                        <div className={styles.info}>
+                            <div className={styles.label}>
                                 Only showing budget flow greater than
-                            </span>
+                            </div>
                             <Numeral
                                 className={styles.numeral}
                                 value={sankeyResponse.minThreshold}
                                 prefix="£"
                             />
-                        </span>
+                        </div>
                     )}
                 </div>
-                <span className={styles.legend}>
+                <div className={styles.legend}>
                     <LegendItem
                         title="Province"
                         color={tableauColors[0]}
@@ -86,7 +105,7 @@ function RegionSankey(props: Props) {
                         title="Municipality"
                         color={tableauColors[2]}
                     />
-                </span>
+                </div>
             </div>
             <div className={styles.sankey}>
                 {sankeyPending && (

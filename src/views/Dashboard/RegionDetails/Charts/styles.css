@@ -2,7 +2,23 @@
     display: flex;
     align-items: flex-end;
     flex-shrink: 0;
-    padding: var(--spacing-large) var(--spacing-medium);
+    justify-content: flex-end;
+    background: var(--color-grey-shade-2);
+    padding: var(--spacing-medium);
+
+    .add-chart-button {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        margin-right: var(--spacing-extra-large);
+        border: var(--width-separator-medium) solid var(--color-text-red);
+        border-radius: 0;
+        color: var(--color-secondary-light-1);
+
+        .icon {
+            font-size: calc(2 * var(--font-size-small));
+        }
+    }
 
     >* {
         &:not(:last-child) {
@@ -17,17 +33,44 @@
     align-items: flex-start;
     flex-grow: 1;
     flex-wrap: wrap;
-    justify-content: space-around;
-    border-top: var(--width-separator-thin) solid var(--color-separator-light);
+    justify-content: flex-start;
+    background: var(--color-grey-shade-2);
+    padding: var(--spacing-large);
     overflow-y: auto;
 
+    .poly-chart {
+        margin: var(--spacing-medium);
+        background: var(--color-foreground);
+        width: 480px;
+    }
+
     .chart {
-        padding: var(--spacing-large) var(--spacing-medium);
-        width: 360px;
-        height: 400px;
+        padding: var(--spacing-medium);
+        width: 480px;
+        height: 300px;
     }
 
     .backdrop {
         z-index: 1;
+        background: var(--color-foreground);
     }
+}
+
+.modal-chart {
+    padding: var(--spacing-large);
+    min-width: 900px;
+    min-height: 700px;
+
+    .chart {
+        padding: var(--spacing-large);
+        width: 800px;
+        height: 600px;
+    }
+}
+
+.header {
+    margin-left: var(--spacing-large);
+    color: var(--color-text);
+    font-size: var(--font-size-large);
+    font-weight: var(--font-weight-bold);
 }

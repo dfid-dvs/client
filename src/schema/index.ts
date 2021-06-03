@@ -1,7 +1,7 @@
 import Dict, { basicTypes, Schema } from '@togglecorp/ravl';
 import { isProduction } from '#config/env';
 
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable camelcase */
 
 const userDefinedSchemas: Schema[] = [
     {
@@ -9,6 +9,14 @@ const userDefinedSchemas: Schema[] = [
         fields: {
             id: { type: 'number', required: true },
             name: { type: 'string', required: true },
+        },
+    },
+    {
+        name: 'base-entity-with-code',
+        fields: {
+            id: { type: 'number', required: true },
+            name: { type: 'string', required: true },
+            code: { type: 'string', required: true },
         },
     },
     {
@@ -46,6 +54,11 @@ const userDefinedSchemas: Schema[] = [
             partner: { type: 'uint', required: true },
             component: { type: 'uint', required: true },
             sector: { type: 'uint', required: true },
+            totalAllocatedBudget: { type: 'number', required: true },
+            totalProgram: { type: 'uint', required: true },
+            totalPartner: { type: 'uint', required: true },
+            totalComponent: { type: 'uint', required: true },
+            totalSector: { type: 'uint', required: true },
         },
     },
     {
@@ -81,6 +94,26 @@ const userDefinedSchemas: Schema[] = [
                         id: { type: 'uint', required: true },
                         name: { type: 'string', required: true },
                         value: { type: 'number', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'navbar-url-options',
+        description: 'Get url options for navbar',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'option-item',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        title: { type: 'string', required: true },
+                        url: { type: 'string', required: true },
                     },
                 },
                 required: true,
@@ -227,6 +260,29 @@ const userDefinedSchemas: Schema[] = [
         },
     },
     {
+        name: 'component-list',
+        description: 'Get components',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'component',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        name: { type: 'string', required: true },
+                        code: { type: 'string', required: true },
+                        sector: { type: 'array.number', required: true },
+                        subSector: { type: 'array.number', required: true },
+                        partners: { type: 'array.number', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
         name: 'program-list',
         description: 'Get programs',
         fields: {
@@ -249,9 +305,11 @@ const userDefinedSchemas: Schema[] = [
                         markerCategory: { type: 'array.base-entity', required: true },
                         markerValue: { type: 'array.base-entity', required: true },
 
-                        component: { type: 'array.base-entity', required: true },
+                        component: { type: 'array.base-entity-with-code', required: true },
 
                         partner: { type: 'array.base-entity', required: true },
+                        startDate: { type: 'string' },
+                        endDate: { type: 'string' },
                     },
                 },
                 required: true,
@@ -271,7 +329,7 @@ const userDefinedSchemas: Schema[] = [
                     fields: {
                         id: { type: 'uint', required: true },
                         name: { type: 'string', required: true },
-                        code: { type: 'string', required: true },
+                        code: { type: 'number', required: true },
 
                         description: { type: 'string' },
                         typeOfInstitution: { type: 'string' },
@@ -308,6 +366,7 @@ const userDefinedSchemas: Schema[] = [
                         dataType: { type: 'string' }, // only 'float' for now
                         federalLevel: { type: 'string' }, // only 'district', 'municipality', 'province', 'all' for now
                         filter: { type: 'unknown' }, // not used
+                        url: { type: 'string' },
                     },
                 },
                 required: true,
@@ -355,8 +414,8 @@ const userDefinedSchemas: Schema[] = [
             partner: { type: 'array.string', required: true },
             sector: { type: 'array.string', required: true },
             subSector: { type: 'array.string', required: true },
-            // markerCategory: { type: 'array.string', required: true },
-            // markerValue: { type: 'array.string', required: true },
+            markerCategory: { type: 'array.string', required: true },
+            markerValue: { type: 'array.string', required: true },
         },
     },
     {
@@ -472,6 +531,321 @@ const userDefinedSchemas: Schema[] = [
                         name: { type: 'string', required: true },
                         // TODO: Fix this
                         bbox: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'program-profile',
+        description: 'Get data of program profile',
+        fields: {
+            programName: { type: 'string', required: true },
+            startDate: { type: 'string', required: true },
+            endDate: { type: 'string', required: true },
+            description: { type: 'string' },
+            totalBudget: { type: 'number', required: true },
+            provinceCount: { type: 'number', required: true },
+            districtCount: { type: 'number', required: true },
+            municiaplityCount: { type: 'number', required: true },
+            federalLevelComponents: { type: 'array.string', required: true },
+            activemap: {
+                arrayType: {
+                    name: 'active-map',
+                    fields: {
+                        code: { type: 'string', required: true },
+                        name: { type: 'string', required: true },
+                    },
+                },
+            },
+        },
+    },
+    {
+        name: 'region-profile',
+        description: 'Get data of region profile',
+        fields: {
+            fivewdata: {
+                arrayType: {
+                    name: 'fivew-data',
+                    fields: {
+                        componentCount: { type: 'number' },
+                        programCount: { type: 'number' },
+                        sectorCount: { type: 'number' },
+                        supplierCount: { type: 'number' },
+                        totalBudget: { type: 'number' },
+                    },
+                },
+            },
+            indicatordata: {
+                arrayType: {
+                    name: 'indicator-data',
+                    fields: {
+                        code: { type: 'number', required: true },
+                        indicator: { type: 'string', required: true },
+                        indicatorId: { type: 'number', required: true },
+                        value: { type: 'number', required: true },
+                        category: { type: 'string', required: true },
+                    },
+                },
+            },
+            topProgramByBudget: {
+                arrayType: {
+                    name: 'top-program-by-budget',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        name: { type: 'string', required: true },
+                        key: { type: 'string', required: true },
+                        value: { type: 'number', required: true },
+                    },
+                },
+            },
+            topPartnerByBudget: {
+                arrayType: {
+                    name: 'top-program-by-budget',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        name: { type: 'string', required: true },
+                        key: { type: 'string', required: true },
+                        value: { type: 'number', required: true },
+                    },
+                },
+            },
+        },
+    },
+    {
+        name: 'region-sector-graph',
+        description: 'Get sector related graph data of region profile',
+        fields: {
+            activeSectors: {
+                arrayType: {
+                    name: 'active-sectors',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        name: { type: 'string', required: true },
+                        key: { type: 'string', required: true },
+                        value: { type: 'number', required: true },
+                        subSector: { type: 'array.string', required: true },
+                    },
+                },
+            },
+            topSectorByNoOfPartner: {
+                arrayType: {
+                    name: 'top-sector-by-number-of-partner',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        name: { type: 'string', required: true },
+                        key: { type: 'string', required: true },
+                        value: { type: 'number', required: true },
+                    },
+                },
+            },
+        },
+    },
+    {
+        name: 'region-dendogram',
+        description: 'Get data of region dendogram',
+        fields: {
+            results: {
+                arrayType: {
+                    name: 'dendogram-data',
+                    fields: {
+                        name: { type: 'string', required: true },
+                        children: {
+                            arrayType: {
+                                name: 'dendogram-children',
+                                fields: {
+                                    name: { type: 'string', required: true },
+                                    children: {
+                                        arrayType: {
+                                            name: 'child',
+                                            fields: {
+                                                name: { type: 'string', required: true },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+    {
+        name: 'pop-up',
+        description: 'Get pop up data',
+        fields: {
+            totalBudget: { type: 'number', required: true },
+            programs: {
+                arrayType: {
+                    name: 'program',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        program: { type: 'string', required: true },
+                        programBudget: { type: 'number', required: true },
+                        sector: {
+                            arrayType: {
+                                name: 'sector',
+                                fields: {
+                                    id: { type: 'number', required: true },
+                                    sector: { type: 'string', required: true },
+                                    subSector: { type: 'string', required: true },
+                                },
+                            },
+                        },
+                        markers: {
+                            arrayType: {
+                                name: 'marker',
+                                fields: {
+                                    markerCategory: { type: 'string', required: true },
+                                    markerValue: { type: 'string', required: true },
+                                },
+                            },
+                        },
+                        components: {
+                            arrayType: {
+                                name: 'component',
+                                fields: {
+                                    id: { type: 'number', required: true },
+                                    name: { type: 'string', required: true },
+                                    componentBudget: { type: 'number', required: true },
+                                    partners: {
+                                        arrayType: {
+                                            name: 'partner',
+                                            fields: {
+                                                id: { type: 'number', required: true },
+                                                name: { type: 'string', required: true },
+                                                partnerBudget: { type: 'number', required: true },
+                                            },
+                                        },
+                                    },
+                                    sectors: {
+                                        arrayType: {
+                                            name: 'partner',
+                                            fields: {
+                                                id: { type: 'number', required: true },
+                                                sector: { type: 'string', required: true },
+                                                subSector: { type: 'string', required: true },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+    {
+        name: 'faq',
+        description: 'Get faq data in about page',
+        fields: {
+            count: { type: 'number' },
+            next: { type: 'number' },
+            previous: { type: 'number' },
+            results: {
+                arrayType: {
+                    name: 'question-answers',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        question: { type: 'string', required: true },
+                        answer: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'terms-conditions',
+        description: 'Get terms and conditions data in about page',
+        fields: {
+            count: { type: 'number' },
+            next: { type: 'number' },
+            previous: { type: 'number' },
+            results: {
+                arrayType: {
+                    name: 'question-answers',
+                    fields: {
+                        id: { type: 'number', required: true },
+                        title: { type: 'string', required: true },
+                        subTitle: { type: 'string', required: true },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'partner-tree-dendogram',
+        description: 'Get data for upper dendrogram in program profile',
+        fields: {
+            results: {
+                arrayType: {
+                    name: 'data',
+                    fields: {
+                        name: { type: 'string', required: true },
+                        children: {
+                            arrayType: {
+                                name: 'child',
+                                fields: {
+                                    name: { type: 'string', required: true },
+                                },
+                            },
+                        },
+                    },
+                },
+                required: true,
+            },
+        },
+    },
+    {
+        name: 'region-tree-dendogram',
+        description: 'Get data of lower dendogram in program profile',
+        fields: {
+            results: {
+                arrayType: {
+                    name: 'data',
+                    fields: {
+                        name: { type: 'string', required: true },
+                        children: {
+                            arrayType: {
+                                name: 'dendogram-child',
+                                fields: {
+                                    name: { type: 'string', required: true },
+                                    code: { type: 'string', required: true },
+                                    children: {
+                                        arrayType: {
+                                            name: 'child',
+                                            fields: {
+                                                name: { type: 'string', required: true },
+                                                code: { type: 'string', required: true },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+    {
+        name: 'manual-data',
+        description: 'Get manual link',
+        fields: {
+            count: { type: 'number', required: true },
+            next: { type: 'unknown' },
+            previous: { type: 'unknown' },
+            results: {
+                arrayType: {
+                    name: 'manual',
+                    fields: {
+                        id: { type: 'uint', required: true },
+                        file: { type: 'string', required: true },
                     },
                 },
                 required: true,

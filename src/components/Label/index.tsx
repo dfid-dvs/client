@@ -1,40 +1,25 @@
 import React from 'react';
-import {
-    _cs,
-    isDefined,
-} from '@togglecorp/fujs';
+import { _cs } from '@togglecorp/fujs';
 
 import styles from './styles.css';
 
-interface Props {
-    children?: React.ReactNode;
+export interface LabelProps {
     className?: string;
-    disabled?: boolean;
-    error?: boolean;
+    children?: React.ReactNode;
 }
 
-function Label(props: Props) {
+function Label(props: LabelProps) {
     const {
         className,
         children,
-        disabled,
-        error,
-        ...otherProps
     } = props;
 
-    if (!isDefined(children)) {
-        return null;
-    }
-
     return (
-        <div
-            className={_cs(
+        <div className={
+            _cs(
                 className,
                 styles.label,
-                disabled && styles.disabled,
-                error && styles.error,
             )}
-            {...otherProps}
         >
             { children }
         </div>

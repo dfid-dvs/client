@@ -1,0 +1,15 @@
+.label {
+    padding: var(--spacing-extra-small) 0;
+    text-transform: uppercase;
+    letter-spacing: var(--spacing-letter-medium);
+    color: var(--color-primary-light-2);
+    font-size: var(--font-size-subtitle-2);
+
+    &.disabled {
+        color: var(--color-text-disabled);
+    }
+
+    &.error {
+        color: var(--color-danger);
+    }
+}

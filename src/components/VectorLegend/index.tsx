@@ -13,7 +13,6 @@ interface LegendItemProps {
     className?: string;
     title: string;
     color?: string;
-    radius?: number;
 }
 
 export function LegendItem(props: LegendItemProps) {
@@ -21,18 +20,13 @@ export function LegendItem(props: LegendItemProps) {
         className,
         title,
         color = 'black',
-        radius = 5,
     } = props;
 
     return (
         <div className={_cs(className, styles.legendItem)}>
             <div
                 className={styles.color}
-                style={{
-                    backgroundColor: color,
-                    width: `${2 * radius}px`,
-                    height: `${2 * radius}px`,
-                }}
+                style={{ backgroundColor: color }}
             />
             <div className={styles.value}>
                 {title}

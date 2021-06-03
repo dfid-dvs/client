@@ -5,6 +5,8 @@ import { _cs } from '@togglecorp/fujs';
 
 import Navbar from '#components/Navbar';
 import DomainContext from '#components/DomainContext';
+import SnackBarContextProvider from '#components/SnackContext';
+
 import {
     RegionLevelOption,
     DomainContextProps,
@@ -51,7 +53,7 @@ function Multiplexer(props: Props) {
 
     const [regionLevel, setRegionLevel] = useState<RegionLevelOption>('province');
     const [markers, setMarkers] = useState<string[]>([]);
-    const [programs, setPrograms] = useState<number[]>([]);
+    const [programs, setPrograms] = useState<string[]>([]);
     const [partners, setPartners] = useState<string[]>([]);
     const [sectors, setSectors] = useState<string[]>([]);
 
@@ -83,40 +85,42 @@ function Multiplexer(props: Props) {
                 )}
                 showDialog
             >
-                <DomainContext.Provider value={domainContextProvider}>
-                    <Suspense
-                        fallback={(
-                            <Loading message="Please wait..." />
-                        )}
-                    >
-                        <Switch>
-                            {routes.map((route) => {
-                                const {
-                                    path,
-                                    name,
-                                    title,
-                                    // hideNavbar,
-                                    load: Loader,
-                                } = route;
+                <SnackBarContextProvider>
+                    <DomainContext.Provider value={domainContextProvider}>
+                        <Suspense
+                            fallback={(
+                                <Loading message="Please wait..." />
+                            )}
+                        >
+                            <Switch>
+                                {routes.map((route) => {
+                                    const {
+                                        path,
+                                        name,
+                                        title,
+                                        // hideNavbar,
+                                        load: Loader,
+                                    } = route;
 
-                                return (
-                                    <Route
-                                        exact
-                                        className={styles.route}
-                                        key={name}
-                                        path={path}
-                                        render={() => (
-                                            <>
-                                                <Title value={title} />
-                                                <Loader className={styles.view} />
-                                            </>
-                                        )}
-                                    />
-                                );
-                            })}
-                        </Switch>
-                    </Suspense>
-                </DomainContext.Provider>
+                                    return (
+                                        <Route
+                                            exact
+                                            className={styles.route}
+                                            key={name}
+                                            path={path}
+                                            render={() => (
+                                                <>
+                                                    <Title value={title} />
+                                                    <Loader className={styles.view} />
+                                                </>
+                                            )}
+                                        />
+                                    );
+                                })}
+                            </Switch>
+                        </Suspense>
+                    </DomainContext.Provider>
+                </SnackBarContextProvider>
             </ErrorBoundary>
         </div>
     );

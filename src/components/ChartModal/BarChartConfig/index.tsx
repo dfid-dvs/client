@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
     randomString,
     isFalsyString,
@@ -8,7 +8,7 @@ import {
     getRandomFromList,
     _cs,
 } from '@togglecorp/fujs';
-import { IoMdTrash, IoMdAdd } from 'react-icons/io';
+import { IoMdAddCircleOutline, IoMdClose } from 'react-icons/io';
 
 import SelectInput from '#components/SelectInput';
 import SegmentInput from '#components/SegmentInput';
@@ -78,10 +78,9 @@ function BarItem<T>(props: BarItemProps<T>) {
         options,
     } = props;
 
-    // FIXME: memoize
-    const keySelector = (item: NumericOption<T>) => item.key;
-    const labelSelector = (item: NumericOption<T>) => item.title;
-    const groupSelector = (item: NumericOption<T>) => item.category;
+    const keySelector = useMemo(() => (item: NumericOption<T>) => item.key, []);
+    const labelSelector = useMemo(() => (item: NumericOption<T>) => item.title, []);
+    const groupSelector = useMemo(() => (item: NumericOption<T>) => item.category, []);
 
     const handleOptionNameChange = useCallback(
         (optionName: string | undefined) => {
@@ -134,12 +133,14 @@ function BarItem<T>(props: BarItemProps<T>) {
                 optionKeySelector={keySelector}
                 groupKeySelector={groupSelector}
                 nonClearable
+                labelClassName={styles.label}
             />
             <ColorInput
                 className={styles.colorSelect}
                 label="Color"
                 onChange={handleColorChange}
                 value={value.color}
+                labelClassName={styles.label}
             />
             <Button
                 className={styles.trashButton}
@@ -147,9 +148,9 @@ function BarItem<T>(props: BarItemProps<T>) {
                 title="Delete bar"
                 disabled={index <= 0}
                 transparent
-                variant="danger"
+                variant="icon"
             >
-                <IoMdTrash />
+                <IoMdClose fontSize={18} />
             </Button>
         </div>
     );
@@ -157,11 +158,11 @@ function BarItem<T>(props: BarItemProps<T>) {
 
 interface Props<T> {
     onSave: (settings: BarChartSettings<T>) => void;
-    // indicatorList: Indicator[] | undefined;
     maxRow?: number;
     className?: string;
     options: NumericOption<T>[];
     keySelector: (item: T) => string;
+    editableChartData: BarChartSettings<T> | undefined;
 }
 
 function BarChartConfig<T>(props: Props<T>) {
@@ -172,55 +173,66 @@ function BarChartConfig<T>(props: Props<T>) {
         maxRow = 4,
         options,
         keySelector: primaryKeySelector,
+        editableChartData,
     } = props;
 
-    // FIXME: memoize
-    const keySelector = (item: NumericOption<T>) => item.key;
-    const labelSelector = (item: NumericOption<T>) => item.title;
-    const groupSelector = (item: NumericOption<T>) => item.category;
+    const keySelector = useMemo(() => (item: NumericOption<T>) => item.key, []);
+    const labelSelector = useMemo(() => (item: NumericOption<T>) => item.title, []);
+    const groupSelector = useMemo(() => (item: NumericOption<T>) => item.category, []);
 
-    const [error, setError] = useState<string | undefined>(undefined);
+    const [error, setError] = useState<string | undefined>();
 
-    const [title, setTitle] = useState('');
-    const [barType, setBarType] = useState<BarTypeKeys>('normal');
-    const [bars, setBars] = useState<Bar[]>([
-        {
-            id: randomString(),
-            color: getRandomFromList(tableauColors),
+    const [title, setTitle] = useState(editableChartData ? editableChartData.title : '');
+
+    const [
+        barType,
+        setBarType,
+    ] = useState<BarTypeKeys>(
+        editableChartData?.bars?.find(f => !!f.stackId) ? 'stacked' : 'normal',
+    ); // set bartype to stack if any bar has stackId
+    const barData: Bar[] = useMemo(
+        () => {
+            const defaultBar: Bar[] = [{
+                id: randomString(),
+                color: getRandomFromList(tableauColors),
+            }];
+
+            if (!editableChartData) {
+                return defaultBar;
+            }
+
+            const { bars: editableBars } = editableChartData;
+
+            const mappedBars = editableBars.map((e) => {
+                const opt = options.find(o => o.key === e.key);
+                if (!opt) {
+                    return undefined;
+                }
+                return {
+                    color: e.color,
+                    id: randomString(),
+                    optionName: opt.key,
+                };
+            }).filter(isDefined);
+
+            return mappedBars.length <= 0 ? defaultBar : mappedBars;
         },
-    ]);
-    const [limitValue, setLimitValue] = useState<string>('7');
+        [editableChartData, options],
+    );
+
+    const [bars, setBars] = useState<(Bar)[]>(barData);
+
+    const [
+        limitValue,
+        setLimitValue,
+    ] = useState<string>(
+        (String(editableChartData?.limit?.count ?? 8)),
+    );
     const [order, setOrder] = useState<OrderOptionKey | undefined>('asc');
     const [orderField, setOrderField] = useState<string | undefined>();
 
     // NOTE: there is always at least one bar
-    const autoOrderField = isDefined(orderField)
-        ? orderField
-        : bars[0].optionName;
-
-    /*
-    const options: NumericOption[] = useMemo(
-        () => {
-            if (!indicatorList) {
-                return numericOptions;
-            }
-            return [
-                ...numericOptions,
-                ...indicatorList.map(indicator => ({
-                    key: `indicator_${indicator.id}`,
-                    title: indicator.fullTitle,
-                    // FIXME: we should have certain thing for this
-                    valueSelector: (item: T) => item.indicators[indicator.id] || 0,
-
-                    category: indicator.category,
-
-                    dependency: indicator.id,
-                })),
-            ];
-        },
-        [indicatorList],
-    );
-    */
+    const autoOrderField = isDefined(orderField) ? orderField : bars[0].optionName;
 
     const handleSave = useCallback(
         () => {
@@ -229,7 +241,7 @@ function BarChartConfig<T>(props: Props<T>) {
                 return;
             }
 
-            const chartId = randomString();
+            const chartId = editableChartData ? editableChartData.id : randomString();
 
             const properBars = bars.map((bar) => {
                 const option = options.find(item => item.key === bar.optionName);
@@ -243,7 +255,8 @@ function BarChartConfig<T>(props: Props<T>) {
                     valueSelector: option.valueSelector,
                     color: bar.color,
                     dependency: option.dependency,
-                    stackId: barType === 'stacked' ? chartId : undefined,
+                    stackId: barType === 'stacked' ? editableChartData?.id : undefined,
+                    key: bar.optionName,
                 };
             }).filter(isDefined);
 
@@ -304,7 +317,7 @@ function BarChartConfig<T>(props: Props<T>) {
             onSave(settings);
         },
         [
-            onSave, bars, title, options, barType, limitValue,
+            editableChartData, onSave, bars, title, options, barType, limitValue,
             order, autoOrderField, primaryKeySelector,
         ],
     );
@@ -338,6 +351,7 @@ function BarChartConfig<T>(props: Props<T>) {
                         value={title}
                         onChange={setTitle}
                         autoFocus
+                        labelClassName={styles.label}
                     />
                     <SegmentInput
                         label="Type"
@@ -346,6 +360,9 @@ function BarChartConfig<T>(props: Props<T>) {
                         value={barType}
                         optionLabelSelector={barTypeLabelSelector}
                         optionKeySelector={barTypeKeySelector}
+                        labelClassName={styles.label}
+                        className={styles.typeInput}
+                        segmentClassName={styles.segment}
                     />
                 </section>
                 <section className={styles.barSection}>
@@ -358,10 +375,12 @@ function BarChartConfig<T>(props: Props<T>) {
                             disabled={bars.length > maxRow}
                             onClick={handleBarAdd}
                             transparent
-                            variant="accent"
-                            icons={<IoMdAdd />}
+                            variant="icon"
+                            icons={<IoMdAddCircleOutline className={styles.icon} />}
                         >
-                            Add data
+                            <div className={styles.text}>
+                                Add Data
+                            </div>
                         </Button>
                     </div>
                     <div className={styles.bars}>
@@ -386,6 +405,7 @@ function BarChartConfig<T>(props: Props<T>) {
                             onChange={setLimitValue}
                             value={limitValue}
                             placeholder="N"
+                            className={styles.limitInput}
                         />
                         <span>
                             data points in
@@ -398,6 +418,7 @@ function BarChartConfig<T>(props: Props<T>) {
                             optionLabelSelector={orderLabelSelector}
                             optionKeySelector={orderKeySelector}
                             nonClearable
+                            showDropDownIcon
                         />
                         <span>
                             order by
@@ -411,6 +432,7 @@ function BarChartConfig<T>(props: Props<T>) {
                             optionKeySelector={keySelector}
                             groupKeySelector={groupSelector}
                             nonClearable
+                            showDropDownIcon
                         />
                     </div>
                 </section>
@@ -424,7 +446,7 @@ function BarChartConfig<T>(props: Props<T>) {
                 <Button
                     className={styles.submitButton}
                     onClick={handleSave}
-                    variant="primary"
+                    variant="secondary"
                 >
                     Save
                 </Button>

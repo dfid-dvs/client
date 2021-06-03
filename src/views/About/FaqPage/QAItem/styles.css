@@ -15,12 +15,17 @@
 
         .question {
             width: 92%;
-            font-size: var(--font-size-large-medium);
+            color: var(--color-grey-shade-7);
+            font-size: var(--font-size-large);
             font-weight: var(--font-weight-bold);
+
+            &:hover {
+                cursor: pointer;
+            }
         }
         .icon {
             width: 8%;
-            font-size: var(--font-size-large-medium);
+            font-size: var(--font-size-extra-large);
 
             &:hover {
                 cursor: pointer;
@@ -30,6 +35,12 @@
 
     .answer {
         padding-bottom: calc(var(--spacing-small-medium) + var(--spacing-medium));
+        width: 92%;
+        color: var(--color-grey-shade-7);
         font-size: var(--font-size-large-medium);
+
+        p {
+            line-height: 1.5em;
+        }
     }
 }

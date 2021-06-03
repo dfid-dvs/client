@@ -1,9 +1,3 @@
-const fourSequential = [
-    '#f1eef6',
-    '#bdc9e1',
-    '#74a9cf',
-    '#0570b0',
-];
 const fiveSequential = [
     '#e7f2ff',
     '#b2c8e6',
@@ -12,7 +6,7 @@ const fiveSequential = [
     '#08519c',
 ];
 
-export const colorDomain: string[] = fourSequential;
+export const colorDomain: string[] = fiveSequential;
 
 export const tableauColors: string[] = [
     '#4e79a7',

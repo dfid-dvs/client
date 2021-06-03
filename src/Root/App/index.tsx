@@ -1,37 +1,15 @@
 import React, { useState, useCallback } from 'react';
-import { isNotDefined } from '@togglecorp/fujs';
 
-import dfidLogo from '#resources/dfid-logo.png';
+import britishEmbassyKathmanduLogo from '#resources/dfid-off-logo.jpg';
 import TextInput from '#components/TextInput';
 import Button from '#components/Button';
+import useStoredState from '#hooks/useStoredState';
 
 import Multiplexer from './Multiplexer';
-
-import '../../../node_modules/mapbox-gl/dist/mapbox-gl.css';
 import styles from './styles.css';
 
-// eslint-disable-next-line import/prefer-default-export
-export function useStoredState<T>(key: string, defaultValue: T): [
-    T,
-    (v: T) => void,
-] {
-    const [value, setValue] = useState<T>((): T => {
-        const val = localStorage.getItem(key);
-        return val === null || value === undefined
-            ? defaultValue
-            : JSON.parse(val) as T;
-    });
-
-    const setValueAndStore = useCallback(
-        (v: T) => {
-            setValue(v);
-            localStorage.setItem(key, JSON.stringify(v));
-        },
-        [key],
-    );
-
-    return [value, setValueAndStore];
-}
+const authEnabled = process.env.REACT_APP_DISABLE_LOGIN !== 'true';
+// console.log('auth', authEnabled, process.env.REACT_APP_DISABLE_LOGIN);
 
 async function digestMessage(message: string) {
     const msgUint8 = new TextEncoder().encode(message);
@@ -45,11 +23,14 @@ async function digestMessage(message: string) {
 
 function App() {
     const [loggedIn, setLoggedIn] = useStoredState<string>(
-        'dfid-login',
+        'bek-login',
         'false',
     );
     const [password, setPassword] = useState('');
-    const [administrator, setAdministrator] = useState(false);
+    const [administrator, setAdministrator] = useStoredState<string>(
+        'bek-admin',
+        'false',
+    );
     const [error, setError] = useState('');
 
     const handlePasswordChange = useCallback(
@@ -68,34 +49,37 @@ function App() {
             const hash = await digestMessage(password);
 
             const isAdminUser = hash === 'f950d2713fde71188f307f8e7c5b454d4e98eed6f9880c8579c8333cfc8a9c82';
-            const isNormalUser = hash === 'cdfbc2f2ef35a6e7a717e28c916ba861f0c1c9cafb1a3dd6934000c722c2a083';
+            const isNormalUser = hash === '576a560ad73e072c544f08a2f45575d851f48fd80ffd04272d151374b024a6ee';
 
             const success = isAdminUser || isNormalUser;
             if (success) {
                 setLoggedIn('true');
-                setAdministrator(isAdminUser);
+                setAdministrator(String(isAdminUser));
                 setPassword('');
             } else {
                 setError('Password is not valid!');
             }
         },
-        [password, setLoggedIn],
+        [password, setLoggedIn, setAdministrator],
     );
     const handleLogout = useCallback(
         () => {
             setLoggedIn('false');
+            setAdministrator('false');
         },
-        [setLoggedIn],
+        [setLoggedIn, setAdministrator],
     );
 
-    if (process.env.NODE_ENV !== 'development' && loggedIn !== 'true') {
+    const isAdministrator = administrator === 'true';
+
+    if (authEnabled && loggedIn !== 'true') {
         return (
             <div className={styles.passwordPrompt}>
                 <div className={styles.navbar}>
                     <img
                         className={styles.logo}
-                        src={dfidLogo}
-                        alt="DFID"
+                        src={britishEmbassyKathmanduLogo}
+                        alt="British-Embassy-Kathmandu"
                     />
                 </div>
                 <div className={styles.content}>
@@ -121,7 +105,7 @@ function App() {
                         <Button
                             className={styles.loginButton}
                             disabled={!password}
-                            variant="primary"
+                            variant="secondary"
                             type="submit"
                         >
                             Submit
@@ -135,7 +119,7 @@ function App() {
     return (
         <Multiplexer
             onLogout={handleLogout}
-            administrator={administrator}
+            administrator={isAdministrator}
         />
     );
 }

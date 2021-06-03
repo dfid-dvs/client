@@ -1,11 +1,14 @@
 import React from 'react';
 import { _cs } from '@togglecorp/fujs';
 
+import useHash from '#hooks/useHash';
+
 import styles from './styles.css';
 
 interface TC {
+    id: number;
     title: string;
-    description: string;
+    subTitle: string;
 }
 
 interface TermAndConditionItemProps {
@@ -19,14 +22,29 @@ export default function TermAndConditionItem(props: TermAndConditionItemProps) {
         className,
     } = props;
 
+    const hash = useHash();
+
+    const isSelectedItem = !hash ? false : tc.id === +hash;
+
     return (
-        <div className={_cs(styles.tcItem, className)}>
-            <div className={styles.title}>
-                { tc.title }
-            </div>
-            <div className={styles.description}>
-                { tc.description }
-            </div>
+        <div
+            className={_cs(
+                styles.tcItem,
+                className,
+            )}
+            id={String(tc.id)}
+        >
+            <div
+                className={_cs(
+                    styles.title,
+                    isSelectedItem && styles.selected,
+                )}
+                dangerouslySetInnerHTML={{ __html: tc.title }}
+            />
+            <div
+                className={styles.subTitle}
+                dangerouslySetInnerHTML={{ __html: tc.subTitle }}
+            />
         </div>
     );
 }

@@ -1,13 +1,15 @@
 .single-region-select {
     display: flex;
-    padding: calc(var(--spacing-medium) - var(--spacing-small));
+    align-items: center;
 
     .region-level-selection {
         display: flex;
-        padding: var(--spacing-small);
+        align-items: flex-start;
+        flex-direction: column;
+        padding: var(--spacing-small) var(--spacing-medium);
     }
 
     .region-select-input {
-        padding: var(--spacing-small);
+        min-width: 300px;
     }
 }

@@ -4,6 +4,7 @@
         "stylelint-config-recommended",
         "stylelint-config-concentric"
     ],
+    "defaultSeverity": "warning",
     "rules": {
         "indentation": 4,
         "selector-pseudo-class-no-unknown": [

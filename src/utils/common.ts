@@ -70,7 +70,7 @@ export function prepareUrlParams(params: UrlParams, encode = true) {
         .join('&');
 }
 
-const forEach = (obj: object, func: (key: string, val: unknown) => void) => {
+const forEach = (obj: Record<string, unknown>, func: (key: string, val: unknown) => void) => {
     Object.keys(obj).forEach((key) => {
         const val = (obj as any)[key];
         func(key, val);
@@ -243,6 +243,7 @@ export const generateChoroplethMapPaintAndLegend = (
     // NOTE: handle overflow/underflow
     const fillOpacityForNoData = 0.4;
     const fillColorForNoData = '#78909c';
+    const fillColorForZeroValuedData = '#ffffff';
 
     let minValue = minVal;
     if (minVal === maxValue) {
@@ -292,6 +293,8 @@ export const generateChoroplethMapPaintAndLegend = (
         'case',
         ['==', ['feature-state', 'value'], null],
         fillColorForNoData,
+        ['==', ['feature-state', 'value'], 0],
+        fillColorForZeroValuedData,
         [
             'step',
             ['feature-state', 'value'],

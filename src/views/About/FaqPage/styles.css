@@ -4,6 +4,8 @@
     display: flex;
     align-items: center;
     flex-direction: column;
+    flex-grow: 1;
+    width: 100%;
 
     .first-section {
         padding: calc(6 * var(--spacing-medium)) var(--spacing-medium);
@@ -22,8 +24,15 @@
     }
 
     .qa-section {
-        background: var(--color-background);
-        padding: calc(4 * var(--spacing-medium)) 25%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: calc(2 * var(--spacing-extra-large)) calc(10 * var(--spacing-ultra-large));
         width: 100%;
+
+        .coming-soon {
+            align-self: center;
+            font-size: var(--font-size-large);
+        }
     }
 }

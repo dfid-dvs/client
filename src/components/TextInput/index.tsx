@@ -8,6 +8,7 @@ import styles from './styles.css';
 export interface Props<T> extends Omit<RawInputProps<T>, 'label' | 'elementRef'>, Omit<InputProps, 'children'> {
     inputClassName?: string;
     inputRef?: React.RefObject<HTMLInputElement>;
+    labelClassName?: string;
 }
 
 function TextInput<T>(props: Props<T>) {
@@ -24,6 +25,7 @@ function TextInput<T>(props: Props<T>) {
         error,
         inputClassName,
         inputRef,
+        labelClassName,
         ...otherProps
     } = props;
 
@@ -37,6 +39,7 @@ function TextInput<T>(props: Props<T>) {
             inputContainerClassName={inputContainerClassName}
             iconContainerClassName={iconContainerClassName}
             actionContainerClassName={actionContainerClassName}
+            labelClassName={labelClassName}
 
             disabled={disabled}
             error={error}
