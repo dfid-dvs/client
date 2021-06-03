@@ -20,7 +20,6 @@ import VectorLegend from '#components/VectorLegend';
 import SingleRegionSelect from '#components/SingleRegionSelect';
 import Portal from '#components/Portal';
 import DropdownMenu from '#components/DropdownMenu';
-import PrintButton from '#components/PrintButton';
 
 import useRequest from '#hooks/useRequest';
 import useHash from '#hooks/useHash';
@@ -358,13 +357,9 @@ const Dashboard = (props: Props) => {
         bubbleTitle,
         bubbleInteger,
         bubbleUnit,
-
-        titleForPrintBar,
     } = useMemo(() => {
         const fiveW = fiveWOptions.find(i => fiveWKeySelector(i) === selectedFiveWOption);
         const fiveWTitle = fiveW && fiveWLabelSelector(fiveW);
-
-        const title = [fiveWTitle, selectedIndicatorDetails?.fullTitle].filter(isDefined).join(' & ');
 
         if (mapStyleInverted) {
             return {
@@ -381,8 +376,6 @@ const Dashboard = (props: Props) => {
                 bubbleInteger: fiveW?.datatype === 'integer',
                 bubbleUnit: fiveW?.unit,
                 bubbleSelected: isDefined(selectedFiveWOption),
-
-                titleForPrintBar: title,
             };
         }
         return {
@@ -400,8 +393,6 @@ const Dashboard = (props: Props) => {
             bubbleTitle: selectedIndicatorDetails?.fullTitle,
             bubbleInteger: selectedIndicatorDetails?.dataType === 'integer',
             bubbleUnit: selectedIndicatorDetails?.unit,
-
-            titleForPrintBar: title,
         };
     }, [
         mapStyleInverted,
@@ -884,7 +875,6 @@ const Dashboard = (props: Props) => {
                                 >
                                     <DateRangeSelector
                                         className={_cs(
-                                            styles.timeSlideContainer,
                                             regionDetailShown && styles.shiftLeft,
                                         )}
                                         startDate={startDate}

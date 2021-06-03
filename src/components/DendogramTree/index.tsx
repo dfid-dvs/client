@@ -1,5 +1,6 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useContext, useCallback, useMemo } from 'react';
 import Tree from 'react-d3-tree';
+import ReactDOMServer from 'react-dom/server';
 import { CustomNodeElementProps, RawNodeDatum } from 'react-d3-tree/lib/types/common';
 import { sum } from '@togglecorp/fujs';
 
@@ -7,6 +8,30 @@ import { IoMdClose } from 'react-icons/io';
 import DendogramSVGNodeElement from '#components/DendogramSVGNodeElement';
 import Button from '#components/Button';
 import styles from './styles.css';
+
+interface DendrogramContextProps {
+    nodeWidth: number;
+    nodeGapX: number;
+    nodeGapY: number;
+    nodeHeight: number;
+    nodeCircleRadius: number;
+    setNodeWidth: (data: number) => void;
+    setNodeGapX: (data: number) => void;
+}
+
+export const DendogramContext = React.createContext<DendrogramContextProps>({
+    nodeWidth: 164,
+    nodeGapX: 96,
+    nodeGapY: 12,
+    nodeHeight: 24,
+    nodeCircleRadius: 4,
+    setNodeWidth: (data: number) => {
+        console.warn('Trying to set node width', data);
+    },
+    setNodeGapX: (data: number) => {
+        console.warn('Trying to set node width', data);
+    },
+});
 
 interface TreeData extends RawNodeDatum {
     countChild?: number;
@@ -16,13 +41,7 @@ interface DendogramTreeInterface {
     onHideDendrogram?: (id: string | undefined) => void
 }
 
-let NODE_WIDTH = 260;
-const NODE_HEIGHT = 24;
-const NODE_CIRCLE_RADIUS = 4;
-const NODE_GAP_Y = 12;
-let NODE_GAP_X = 120;
-
-const customPathFunction = (linkDatum: {
+interface LinkDatum {
     source: {
         x: number;
         y: number;
@@ -31,24 +50,64 @@ const customPathFunction = (linkDatum: {
         x: number;
         y: number;
     };
-}) => {
+}
+
+interface PathProps extends LinkDatum {
+}
+
+function Path(props: PathProps) {
+    const {
+        source,
+        target,
+    } = props;
+
+    const {
+        nodeWidth,
+        nodeCircleRadius,
+    } = useContext(DendogramContext);
+
+    return (
+        <>
+            {`M ${source.y + nodeWidth + nodeCircleRadius} ${source.x} C ${source.y + nodeWidth + nodeCircleRadius} ${source.x} ${target.y - nodeWidth / 3} ${target.x} ${target.y - nodeCircleRadius} ${target.x}`}
+        </>
+    );
+}
+
+const customPathFunction = (linkDatum: LinkDatum) => {
     const { source, target } = linkDatum;
-    return `M ${source.y + NODE_WIDTH + NODE_CIRCLE_RADIUS} ${source.x} C ${source.y + NODE_WIDTH + NODE_CIRCLE_RADIUS} ${source.x} ${target.y - NODE_WIDTH / 3} ${target.x} ${target.y - NODE_CIRCLE_RADIUS} ${target.x}`;
+    const path = (
+        <Path
+            source={source}
+            target={target}
+        />
+    );
+
+    return ReactDOMServer.renderToString(path);
 };
 
 const renderCustomNodeElement = (nodeDatum: CustomNodeElementProps) => (
     <DendogramSVGNodeElement
-        nodeWidth={NODE_WIDTH}
-        nodeHeight={NODE_HEIGHT + NODE_GAP_Y / 2}
-        nodeCircleRadius={NODE_CIRCLE_RADIUS}
         nodeDatum={nodeDatum.nodeDatum}
     />
 );
 
 function DendogramTree(props: DendogramTreeInterface) {
     const { treeData, onHideDendrogram } = props;
-    const secondLevelChildrens = treeData?.children?.length || 0;
-    const thirdLevelChildrens = useMemo(
+    const [nodeWidth, setNodeWidth] = useState(260);
+    const [nodeGapX, setNodeGapX] = useState(120);
+
+    const dendogramContextInstance: DendrogramContextProps = {
+        nodeWidth,
+        nodeHeight: 24,
+        nodeGapY: 12,
+        nodeGapX,
+        nodeCircleRadius: 4,
+        setNodeWidth,
+        setNodeGapX,
+    };
+
+    const secondLevelChildren = treeData?.children?.length || 0;
+    const thirdLevelChildren = useMemo(
         () => {
             if (!treeData.children) {
                 return 0;
@@ -58,17 +117,21 @@ function DendogramTree(props: DendogramTreeInterface) {
         [treeData.children],
     );
 
-    if (thirdLevelChildrens > 0) {
-        NODE_WIDTH = 160;
-        NODE_GAP_X = 90;
-    }
+    useEffect(() => {
+        if (thirdLevelChildren > 0) {
+            setNodeWidth(160);
+            setNodeGapX(90);
+        }
+    }, [thirdLevelChildren]);
 
     const nodeSize = {
-        x: NODE_WIDTH + NODE_GAP_X,
-        y: (treeData.name.length > NODE_HEIGHT ? treeData.name.length : NODE_HEIGHT) + NODE_GAP_Y,
+        x: nodeWidth + nodeGapX,
+        y: (treeData.name.length > dendogramContextInstance.nodeHeight
+            ? treeData.name.length
+            : dendogramContextInstance.nodeHeight) + dendogramContextInstance.nodeGapY,
     };
 
-    const childCount = secondLevelChildrens + thirdLevelChildrens;
+    const childCount = secondLevelChildren + thirdLevelChildren;
 
     const handleHideDendrogram = useCallback(
         () => {

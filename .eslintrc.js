@@ -54,7 +54,6 @@ module.exports = {
     rules: {
         strict: 0,
         indent: ['error', 4, { SwitchCase: 1 }],
-        'no-unused-vars': [1, { vars: 'all', args: 'after-used', ignoreRestSiblings: false }],
         'no-console': 0,
 
         'react/jsx-indent': [2, 4],
@@ -106,7 +105,6 @@ module.exports = {
 
         // note you must disable the base rule as it can report incorrect errors
         'no-unused-vars': 'off',
-        '@typescript-eslint/no-unused-vars': ['error'],
 
         // NOTE: https://github.com/typescript-eslint/typescript-eslint/issues/2077
         camelcase: 0,

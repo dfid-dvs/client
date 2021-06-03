@@ -58,7 +58,7 @@ interface Manual {
     results: {
         id: number;
         file: string;
-    }[]
+    }[];
 }
 
 export default function AboutPage() {

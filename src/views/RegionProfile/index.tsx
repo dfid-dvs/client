@@ -458,7 +458,7 @@ function RegionProfile(props: Props) {
         [hiddenFiveWDataKeys, fiveWData],
     );
 
-    const resetFiveWShown = hiddenFiveWDataKeys && hiddenFiveWDataKeys?.length > 0;
+    const resetFiveWShown = hiddenFiveWDataKeys && hiddenFiveWDataKeys.length > 0;
 
     const filteredIndicatorsData = useMemo(
         () => {

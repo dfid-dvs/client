@@ -1,22 +1,26 @@
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { TreeNodeDatum } from 'react-d3-tree/lib/types/common';
+
+import { DendogramContext } from '#components/DendogramTree';
 import styles from './styles.css';
 
 interface DendogramInterface {
     nodeDatum: TreeNodeDatum;
-    nodeWidth: number;
-    nodeHeight: number;
-    nodeCircleRadius: number;
 }
-
 
 function DendogramSVGNodeElement(props: DendogramInterface) {
     const {
-        nodeWidth,
-        nodeHeight,
-        nodeCircleRadius,
         nodeDatum,
     } = props;
+
+    const {
+        nodeWidth,
+        nodeHeight: nodeHeightFromProps,
+        nodeCircleRadius,
+        nodeGapY,
+    } = useContext(DendogramContext);
+
+    const nodeHeight = nodeHeightFromProps + nodeGapY / 2;
 
     const endNodeHidden = (nodeDatum?.children && nodeDatum.children.length <= 0) ?? true;
 
