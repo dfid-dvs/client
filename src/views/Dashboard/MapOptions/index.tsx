@@ -7,7 +7,7 @@ import ToggleButton from '#components/ToggleButton';
 
 import styles from './styles.css';
 import { FiveWOption } from '../types';
-import { Indicator, Layer, RasterLayer, VectorLayer } from '#types';
+import { Indicator, Layer, VectorLayer } from '#types';
 
 const fiveWKeySelector = (option: FiveWOption) => option.key;
 const fiveWLabelSelector = (option: FiveWOption) => option.label;

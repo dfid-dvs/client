@@ -1,9 +1,3 @@
-const fourSequential = [
-    '#f1eef6',
-    '#bdc9e1',
-    '#74a9cf',
-    '#0570b0',
-];
 const fiveSequential = [
     '#e7f2ff',
     '#b2c8e6',

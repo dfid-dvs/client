@@ -140,7 +140,7 @@ function ProgramProfileCharts(props: Props) {
             if (!hiddenChartIds) {
                 return defaultChartSettings;
             }
-            return defaultChartSettings?.filter(c => !hiddenChartIds.includes(c.id));
+            return defaultChartSettings.filter(c => !hiddenChartIds.includes(c.id));
         },
         [hiddenChartIds],
     );

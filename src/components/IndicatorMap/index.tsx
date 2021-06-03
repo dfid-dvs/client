@@ -118,7 +118,7 @@ interface Props {
     rasterLayer?: RasterLayer;
     vectorLayers?: VectorLayer[];
     printMode?: boolean;
-    indicatorMapState?: MapStateItem[],
+    indicatorMapState?: MapStateItem[];
     // hideTooltipOnHover?: boolean;
     onClick?: (
         feature: mapboxgl.MapboxGeoJSONFeature,
@@ -244,7 +244,7 @@ function IndicatorMap(props: Props) {
             if (!fiveWMapDataForHover) {
                 return undefined;
             }
-            const hoveredMapRegion = fiveWMapDataForHover?.find(
+            const hoveredMapRegion = fiveWMapDataForHover.find(
                 c => hoveredRegion?.code === +c.code,
             );
             if (!hoveredMapRegion) {

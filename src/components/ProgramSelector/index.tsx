@@ -648,7 +648,7 @@ function ProgramSelector(props: Props) {
             if (!applicableProgramOptions) {
                 return undefined;
             }
-            const textFilteredPrograms = applicableProgramOptions?.filter(
+            const textFilteredPrograms = applicableProgramOptions.filter(
                 item => caseInsensitiveSubmatch(item.name, programSearchText),
             );
             // eslint-disable-next-line max-len
