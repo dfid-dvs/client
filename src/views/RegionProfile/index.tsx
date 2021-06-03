@@ -207,7 +207,7 @@ function RegionProfile(props: Props) {
 
     const handleAddChartModalClick = useCallback(() => {
         setAddModalVisibility(true);
-    }, [setAddModalVisibility]);
+    }, []);
 
     const currentBounds: Bbox | undefined = useMemo(() => {
         const bounds = selectedRegionData

@@ -36,7 +36,7 @@ function HistogramConfig<T>(props: Props<T>) {
 
     const [error, setError] = useState<string | undefined>(undefined);
 
-    const [title, setTitle] = useState(editableChartData ? editableChartData.title : '');
+    const [title, setTitle] = useState(editableChartData?.title ?? '');
     const [orderField, setOrderField] = useState<string | undefined>(editableChartData?.key ?? '');
     const [color, setColor] = useState(
         editableChartData?.color ?? (() => getRandomFromList(tableauColors)),

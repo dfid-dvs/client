@@ -214,7 +214,7 @@ function RegionalProfileCharts(props: Props) {
             tmpChartSettings.splice(chartIndex, 1, settings);
             setChartSettings(tmpChartSettings);
         },
-        [editableChartId, chartSettings, setChartSettings],
+        [editableChartId, chartSettings],
     );
 
     const {
@@ -315,14 +315,14 @@ function RegionalProfileCharts(props: Props) {
         (id: string | undefined) => {
             setExpandableDefaultChart(id);
         },
-        [setExpandableDefaultChart],
+        [],
     );
 
     const handleDefaultChartCollapse = useCallback(
         () => {
             setExpandableDefaultChart(undefined);
         },
-        [setExpandableDefaultChart],
+        [],
     );
 
     const [expandableChart, setExpandableChart] = useState<string>();
@@ -356,13 +356,9 @@ function RegionalProfileCharts(props: Props) {
     );
 
     const expandableDefaultChartSettings = useMemo(
-        () => {
-            const chartSetting = defaultChartSettings.find(c => c.id === expandableDefaultChart);
-            if (!chartSetting) {
-                return undefined;
-            }
-            return chartSetting;
-        },
+        () => (
+            defaultChartSettings.find(c => c.id === expandableDefaultChart)
+        ),
         [expandableDefaultChart],
     );
 

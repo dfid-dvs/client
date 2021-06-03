@@ -489,7 +489,7 @@ const Dashboard = (props: Props) => {
 
             return true;
         },
-        [setRegion],
+        [],
     );
 
     const handleMapRegionHover = useCallback(
@@ -505,12 +505,12 @@ const Dashboard = (props: Props) => {
             });
             return true;
         },
-        [setHoveredRegion],
+        [],
     );
 
     const handleMapRegionLeave = useCallback(
         () => setHoveredRegion(undefined),
-        [setHoveredRegion],
+        [],
     );
 
     const handleRegionChange = useCallback(
@@ -532,7 +532,7 @@ const Dashboard = (props: Props) => {
 
             setRegion(reg);
         },
-        [setRegion],
+        [],
     );
 
     const handleRegionLevelChange = useCallback(
@@ -550,7 +550,7 @@ const Dashboard = (props: Props) => {
         if (dataExplored) {
             setPrintMode(false);
         }
-    }, [dataExplored, setPrintMode]);
+    }, [dataExplored]);
 
     useEffect(() => {
         const controls = document

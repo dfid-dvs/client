@@ -122,12 +122,12 @@ function Charts(props: Props) {
 
     const handleModalShow = useCallback(() => {
         setModalVisibility(true);
-    }, [setModalVisibility]);
+    }, []);
 
     const handleModalClose = useCallback(() => {
         setModalVisibility(false);
         setEditableChartId(undefined);
-    }, [setModalVisibility, setEditableChartId]);
+    }, []);
 
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedProgram>) => {
@@ -167,14 +167,14 @@ function Charts(props: Props) {
         (id: string | undefined) => {
             setExpandableChart(id);
         },
-        [setExpandableChart],
+        [],
     );
 
     const handleChartCollapse = useCallback(
         () => {
             setExpandableChart(undefined);
         },
-        [setExpandableChart],
+        [],
     );
 
     const onSetEditableChartId = useCallback(
@@ -182,7 +182,7 @@ function Charts(props: Props) {
             setEditableChartId(id);
             setModalVisibility(true);
         },
-        [setEditableChartId, setModalVisibility],
+        [],
     );
 
     const expandableChartSettings: ChartSettings<ExtendedProgram> | undefined = useMemo(

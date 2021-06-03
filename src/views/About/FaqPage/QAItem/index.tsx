@@ -30,13 +30,7 @@ export default function QAItem(props: QAItemProps) {
     const answerShown = qa.id === qaId;
 
     const onToggleAnswer = useCallback(
-        () => {
-            if (answerShown) {
-                onHideAnswer();
-            } else {
-                onShowAnswer(qa.id);
-            }
-        },
+        () => (answerShown ? onHideAnswer() : onShowAnswer(qa.id)),
         [qa.id, answerShown, onHideAnswer, onShowAnswer],
     );
 

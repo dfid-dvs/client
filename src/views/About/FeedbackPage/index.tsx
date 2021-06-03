@@ -55,7 +55,7 @@ function FeedbackPage() {
             setError('');
             setName(value);
         },
-        [setName],
+        [],
     );
 
     const handleEmailChange = useCallback(
@@ -63,7 +63,7 @@ function FeedbackPage() {
             setError('');
             setEmail(value);
         },
-        [setEmail],
+        [],
     );
 
     const handleTypeChange = useCallback(
@@ -71,7 +71,7 @@ function FeedbackPage() {
             setError('');
             setType(value);
         },
-        [setType],
+        [],
     );
 
     const handleSubjectChange = useCallback(
@@ -79,7 +79,7 @@ function FeedbackPage() {
             setError('');
             setSubject(value);
         },
-        [setSubject],
+        [],
     );
 
     const handleFeedbackChange = useCallback(
@@ -87,7 +87,7 @@ function FeedbackPage() {
             setError('');
             setFeedback(value);
         },
-        [setFeedback],
+        [],
     );
 
     const disabled = !feedback;
@@ -162,13 +162,6 @@ function FeedbackPage() {
             name,
             subject,
             type,
-            setName,
-            setEmail,
-            setType,
-            setSubject,
-            setFeedback,
-            setSelectedAttachment,
-            setError,
             setSnackBarContents,
         ],
     );
@@ -266,7 +259,7 @@ function FeedbackPage() {
                         </Button>
                     </div>
                 </form>
-                <Snackbar className={styles.notify} />
+                <Snackbar />
             </div>
         </AboutPageContainer>
     );
