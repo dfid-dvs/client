@@ -284,7 +284,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                             <Button
                                 onClick={toggleAllRegionHidden}
                                 name={id}
-                                title={allRegionHidden ? 'Show All Data' : 'Hide All Data'}
+                                title={allRegionHidden ? 'Show Nation Wide Data' : 'Hide Nation Wide Data'}
                                 transparent
                                 variant="icon"
                             >

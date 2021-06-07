@@ -354,7 +354,7 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                             <Button
                                 onClick={toggleAllRegionHidden}
                                 name={id}
-                                title={allRegionHidden ? 'Show All Data' : 'Hide All Data'}
+                                title={allRegionHidden ? 'Show Nation Wide Data' : 'Hide Nation Wide Data'}
                                 transparent
                                 variant="icon"
                             >
