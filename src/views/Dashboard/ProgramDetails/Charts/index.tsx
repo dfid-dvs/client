@@ -8,6 +8,7 @@ import Button from '#components/Button';
 import PolyChart from '#components/PolyChart';
 import ChartModal from '#components/ChartModal';
 import Modal from '#components/Modal';
+
 import { tableauColors } from '#utils/constants';
 import {
     ChartSettings,
@@ -132,13 +133,15 @@ function Charts(props: Props) {
 
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedProgram>) => {
+            const settingsWithAcronym = {
+                ...settings,
+                acronymSelector: (item: ExtendedProgram) => item.programAcronym,
+            };
+
             if (!editableChartId) {
                 setChartSettings(currentChartSettings => [
                     ...currentChartSettings,
-                    {
-                        ...settings,
-                        acronymSelector: (item) => item.programAcronym,
-                    },
+                    settingsWithAcronym,
                 ]);
             }
             const tmpChartSettings = [...chartSettings];
@@ -146,7 +149,7 @@ function Charts(props: Props) {
             if (chartIndex <= -1) {
                 return;
             }
-            tmpChartSettings.splice(chartIndex, 1, settings);
+            tmpChartSettings.splice(chartIndex, 1, settingsWithAcronym);
             setChartSettings(tmpChartSettings);
         },
         [editableChartId, chartSettings, setChartSettings],

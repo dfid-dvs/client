@@ -11,11 +11,12 @@ import {
     TickFormatterFunction,
     LabelList,
     TooltipProps,
+    LabelProps,
 } from 'recharts';
 import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff, IoMdSwap } from 'react-icons/io';
 import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
-import { compareNumber, isNotDefined, isDefined, _cs, sum, caseInsensitiveSubmatch } from '@togglecorp/fujs';
+import { compareNumber, isNotDefined, isDefined, _cs, caseInsensitiveSubmatch } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
@@ -38,9 +39,9 @@ const orientations: {
 const categoryTickFormatter = (value: string) => {
     const words = value.trim().split(/\s+/);
     const indexOfAdmin = words.findIndex(
-        i => caseInsensitiveSubmatch(i, 'District') || caseInsensitiveSubmatch(i, 'Province')
+        i => caseInsensitiveSubmatch(i, 'District') || caseInsensitiveSubmatch(i, 'Province'),
     );
-    if (indexOfAdmin <= 0 ) return words.join(' ');
+    if (indexOfAdmin <= 0) return words.join(' ');
     return words.slice(0, indexOfAdmin).join(' ');
 };
 
@@ -53,21 +54,11 @@ const valueTickFormatter: TickFormatterFunction = (value) => {
     return str;
 };
 
-interface CustomizedLabel {
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    value?: number | string;
-}
-const renderCustomizedLabel = (verticalLayout: boolean) => (props: CustomizedLabel) => {
+const renderCustomizedLabel = (verticalLayout: boolean) => (props: LabelProps) => {
     const { x = 0, y = 0, width = 0, height = 0, value = 0 } = props;
     const factor = verticalLayout ? height : width;
-    const fontSize = verticalLayout ? factor / 2 : factor / 4;
-
-    const xValue = (verticalLayout ? x + width + factor - 5 : x + factor / 2) + 1;
-    const yValue = (verticalLayout ? y + factor / 2 : y - fontSize) + 1;
-
+    const xValue = (verticalLayout ? x + height + width - 5 : x + width / 2);
+    const yValue = (verticalLayout ? y + factor / 2 : y - factor / 4) + 1;
     return (
         <g>
             <text
@@ -76,7 +67,7 @@ const renderCustomizedLabel = (verticalLayout: boolean) => (props: CustomizedLab
                 fill="#212121"
                 dominantBaseline="middle"
                 textAnchor="middle"
-                fontSize={fontSize}
+                fontSize="0.8rem"
             >
                 {valueTickFormatter(value)}
             </text>
@@ -91,17 +82,17 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
         value,
         color,
     } = payload[0];
-	if (active) {
-		return (
-			<div className={styles.customTooltip}>
-				<div className={styles.label}>{label}</div>
-				<div style={{color: color}}>
+    if (active) {
+        return (
+            <div className={styles.customTooltip}>
+                <div className={styles.label}>{label}</div>
+                <div style={{ color }}>
                     {`${legendName} : ${valueTickFormatter(value)}`}
                 </div>
-			</div>
-		);
-	}
-	return null;
+            </div>
+        );
+    }
+    return null;
 };
 
 interface BarChartUnitProps<T> {
@@ -203,25 +194,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         [finalData, keySelector],
     );
 
-    const averageLength: number = finalData
-        ? sum(finalData.map(item => keySelector(item).length)) / finalData.length
-        : 0;
-
-    const acceptableLength = layout === 'horizontal'
-        ? 5
-        : 15;
-
-    const hasLongTitles = averageLength > acceptableLength;
-
-    const xCompWidth = useMemo(
-        () => {
-            if (layout === 'horizontal') {
-                return undefined;
-            }
-            return hasLongTitles ? 140 : 86;
-        },
-        [layout, hasLongTitles],
-    );
+    const xCompWidth = layout === 'horizontal' ? undefined : 86;
 
     const [labelShown, , , toggleLabelShown] = useBasicToggle();
 
@@ -233,7 +206,6 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     );
 
     const labelContent = renderCustomizedLabel(layout === 'vertical');
-
     const xCompDataKey = acronymSelector ?? keySelector;
 
     return (
