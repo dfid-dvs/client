@@ -27,31 +27,31 @@ const staticOptions: NumericOption<ExtendedFiveW>[] = [
         key: 'allocatedBudget',
         title: 'Budget Spend',
         valueSelector: item => item.allocatedBudget,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'programCount',
         title: 'Programs',
         valueSelector: item => item.programCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'componentCount',
         title: 'Components',
         valueSelector: item => item.componentCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'partnerCount',
         title: 'Partners',
         valueSelector: item => item.partnerCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'sectorCount',
         title: 'Sectors',
         valueSelector: item => item.sectorCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
 ];
 

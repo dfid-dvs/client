@@ -130,6 +130,7 @@ export interface Program {
     markerCategory: BaseEntity[];
     markerValue: BaseEntity[];
     partner: BaseEntity[];
+    programAcronym: string;
 }
 
 export interface Partner {
@@ -173,6 +174,7 @@ export interface BarChartSettings<T> {
 
     // layout: 'vertical' | 'horizontal';
     keySelector: (value: T) => string;
+    acronymSelector?: (value: T) => string;
     bars: {
         title: string;
         valueSelector: (value: T) => number | null;

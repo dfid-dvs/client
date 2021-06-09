@@ -162,6 +162,7 @@ interface Props<T> {
     className?: string;
     options: NumericOption<T>[];
     keySelector: (item: T) => string;
+    acronymSelector?: (item: T) => string;
     editableChartData: BarChartSettings<T> | undefined;
 }
 
@@ -173,6 +174,7 @@ function BarChartConfig<T>(props: Props<T>) {
         maxRow = 4,
         options,
         keySelector: primaryKeySelector,
+        acronymSelector: primaryAcronymSelector,
         editableChartData,
     } = props;
 
@@ -302,7 +304,7 @@ function BarChartConfig<T>(props: Props<T>) {
                 title,
 
                 keySelector: primaryKeySelector,
-
+                acronymSelector: primaryAcronymSelector,
                 limit: {
                     count: limit,
                     method: order === 'asc' ? 'min' : 'max',
@@ -318,7 +320,7 @@ function BarChartConfig<T>(props: Props<T>) {
         },
         [
             editableChartData, onSave, bars, title, options, barType, limitValue,
-            order, autoOrderField, primaryKeySelector,
+            order, autoOrderField, primaryKeySelector, primaryAcronymSelector,
         ],
     );
 

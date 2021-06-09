@@ -10,11 +10,12 @@ import {
     ResponsiveContainer,
     TickFormatterFunction,
     LabelList,
+    TooltipProps,
 } from 'recharts';
 import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff, IoMdSwap } from 'react-icons/io';
 import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
-import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
+import { compareNumber, isNotDefined, isDefined, _cs, sum, caseInsensitiveSubmatch } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
@@ -36,10 +37,11 @@ const orientations: {
 
 const categoryTickFormatter = (value: string) => {
     const words = value.trim().split(/\s+/);
-    if (words.length <= 1) {
-        return value.slice(0, 3).toUpperCase();
-    }
-    return words.map(item => item[0]).join('').toUpperCase();
+    const indexOfAdmin = words.findIndex(
+        i => caseInsensitiveSubmatch(i, 'District') || caseInsensitiveSubmatch(i, 'Province')
+    );
+    if (indexOfAdmin <= 0 ) return words.join(' ');
+    return words.slice(0, indexOfAdmin).join(' ');
 };
 
 const valueTickFormatter: TickFormatterFunction = (value) => {
@@ -82,6 +84,26 @@ const renderCustomizedLabel = (verticalLayout: boolean) => (props: CustomizedLab
     );
 };
 
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
+    if (!payload || payload?.length <= 0) { return null; }
+    const {
+        name: legendName,
+        value,
+        color,
+    } = payload[0];
+	if (active) {
+		return (
+			<div className={styles.customTooltip}>
+				<div className={styles.label}>{label}</div>
+				<div style={{color: color}}>
+                    {`${legendName} : ${valueTickFormatter(value)}`}
+                </div>
+			</div>
+		);
+	}
+	return null;
+};
+
 interface BarChartUnitProps<T> {
     settings: BarChartSettings<T>;
     data: T[] | undefined;
@@ -94,7 +116,6 @@ interface BarChartUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
-    longTilesShown?: boolean;
 }
 
 const chartMargin = {
@@ -118,7 +139,6 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
-        longTilesShown,
     } = props;
     const {
         title,
@@ -127,6 +147,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         limit,
         id,
         orientation,
+        acronymSelector,
     } = settings;
 
     const [layout, setLayout] = useState<'horizontal' | 'vertical'>(orientation || 'vertical');
@@ -192,16 +213,6 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
 
     const hasLongTitles = averageLength > acceptableLength;
 
-    const tickFormatter = useMemo(
-        () => {
-            if (layout === 'vertical' && longTilesShown) {
-                return undefined;
-            }
-            return hasLongTitles ? categoryTickFormatter : undefined;
-        },
-        [layout, longTilesShown, hasLongTitles],
-    );
-
     const xCompWidth = useMemo(
         () => {
             if (layout === 'horizontal') {
@@ -222,6 +233,8 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     );
 
     const labelContent = renderCustomizedLabel(layout === 'vertical');
+
+    const xCompDataKey = acronymSelector ?? keySelector;
 
     return (
         <div
@@ -330,13 +343,13 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                 vertical={isVertical}
                             />
                             <Xcomp
-                                dataKey={keySelector}
+                                dataKey={xCompDataKey}
                                 type="category"
                                 interval={0}
                                 width={xCompWidth}
-                                tickFormatter={tickFormatter}
-                                angle={layout === 'horizontal' ? -45 : undefined}
-                                textAnchor="end"
+                                tickFormatter={categoryTickFormatter}
+                                angle={layout === 'horizontal' ? -15 : undefined}
+                                position="outside"
                             />
                             <Ycomp
                                 type="number"
@@ -344,12 +357,19 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                 width={layout === 'horizontal' ? 36 : undefined}
                                 tickCount={6}
                             />
-                            <Tooltip
+                            {/* <Tooltip
                                 allowEscapeViewBox={{ x: false, y: false }}
                                 offset={20}
                                 formatter={valueTickFormatter}
+                            /> */}
+                            <Tooltip
+                                allowEscapeViewBox={{ x: false, y: false }}
+                                offset={20}
+                                content={<CustomTooltip />}
                             />
-                            <Legend />
+                            <Legend
+                                verticalAlign={layout === 'horizontal' ? 'top' : 'bottom'}
+                            />
                             {bars.map(bar => (
                                 <Bar
                                     key={bar.title}

@@ -18,7 +18,6 @@ import useExtendedPrograms, { ExtendedProgram } from '../../useExtendedPrograms'
 
 import styles from './styles.css';
 
-
 const keySelector = (item: ExtendedProgram) => item.name;
 
 const staticOptions: NumericOption<ExtendedProgram>[] = [
@@ -26,25 +25,25 @@ const staticOptions: NumericOption<ExtendedProgram>[] = [
         key: 'totalBudget',
         title: 'Total Budget',
         valueSelector: item => item.totalBudget,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'componentCount',
         title: 'Component Count',
         valueSelector: item => item.componentCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'partnerCount',
         title: 'Partners',
         valueSelector: item => item.partnerCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'sectorCount',
         title: 'Sectors',
         valueSelector: item => item.sectorCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
 ];
 
@@ -53,6 +52,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
         id: '1',
         type: 'bar-chart',
         title: 'Top 10 by budget',
+        acronymSelector: item => item.programAcronym,
         keySelector: item => item.name,
 
         limit: {
@@ -75,6 +75,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
         type: 'bar-chart',
         title: 'Top 10 by components count',
         keySelector: item => item.name,
+        acronymSelector: item => item.programAcronym,
 
         limit: {
             count: 10,
@@ -134,7 +135,10 @@ function Charts(props: Props) {
             if (!editableChartId) {
                 setChartSettings(currentChartSettings => [
                     ...currentChartSettings,
-                    settings,
+                    {
+                        ...settings,
+                        acronymSelector: (item) => item.programAcronym,
+                    },
                 ]);
             }
             const tmpChartSettings = [...chartSettings];

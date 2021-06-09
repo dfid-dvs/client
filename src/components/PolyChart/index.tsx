@@ -57,7 +57,6 @@ function PolyChart<T extends object>(props: Props<T>) {
                 onExpand={onExpand}
                 expandableIconHidden={expandableIconHidden}
                 onSetEditableChartId={onSetEditableChartId}
-                longTilesShown={longTilesShown}
             />
         );
     }
