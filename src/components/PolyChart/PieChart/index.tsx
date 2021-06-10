@@ -8,7 +8,7 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 import { MdPieChart, MdDonutLarge } from 'react-icons/md';
-import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
+import { AiOutlineEdit, AiOutlineExpandAlt, AiOutlineTag } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
 import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff, IoMdSwap } from 'react-icons/io';
 
@@ -304,17 +304,15 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
-                        {!expandableIconHidden && (
-                            <Button
-                                onClick={handleDownload}
-                                name={id}
-                                title="Download"
-                                transparent
-                                variant="icon"
-                            >
-                                <IoMdDownload className={styles.deleteIcon} />
-                            </Button>
-                        )}
+                        <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
                         {onSetEditableChartId && (
                             <Button
                                 onClick={onSetEditableChartId}
@@ -340,15 +338,13 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                         <Button
                             onClick={toggleLabelShown}
                             name={id}
-                            title="View Label"
+                            title={labelShown ? 'Hide Label' : 'View Label'}
                             transparent
                             variant="icon"
                         >
-                            {labelShown ? (
-                                <IoMdEyeOff className={styles.expandIcon} />
-                            ) : (
-                                <IoMdEye className={styles.expandIcon} />
-                            )}
+                            <AiOutlineTag
+                                className={styles.expandIcon}
+                            />
                         </Button>
                         {hasAllRegion && (
                             <Button
@@ -358,7 +354,11 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                                 transparent
                                 variant="icon"
                             >
-                                <IoMdSwap className={styles.expandIcon} />
+                                {allRegionHidden ? (
+                                    <IoMdEyeOff className={styles.expandIcon} />
+                                ) : (
+                                    <IoMdEye className={styles.expandIcon} />
+                                )}
                             </Button>
                         )}
                         {!expandableIconHidden && (

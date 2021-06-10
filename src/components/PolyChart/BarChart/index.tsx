@@ -76,7 +76,7 @@ const renderCustomizedLabel = (verticalLayout: boolean) => (props: LabelProps) =
 };
 
 const CustomTooltip = ({ active, payload }: TooltipProps) => {
-    if (!payload || payload?.length <= 0) { return null; }
+    if (!payload || payload.length <= 0) { return null; }
     const {
         name: legendName,
         payload: {

@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
 import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff } from 'react-icons/io';
-import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
+import { AiOutlineEdit, AiOutlineExpandAlt, AiOutlineTag } from 'react-icons/ai';
 
 import Button from '#components/Button';
 import { formatNumber, getPrecision } from '#components/Numeral';
@@ -156,17 +156,15 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
-                        {!expandableIconHidden && (
-                            <Button
-                                onClick={handleDownload}
-                                name={id}
-                                title="Download"
-                                transparent
-                                variant="icon"
-                            >
-                                <IoMdDownload className={styles.deleteIcon} />
-                            </Button>
-                        )}
+                        <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
                         {onSetEditableChartId && (
                             <Button
                                 onClick={onSetEditableChartId}
@@ -192,15 +190,13 @@ export function HistogramUnit<T extends object>(props: HistogramUnitProps<T>) {
                         <Button
                             onClick={toggleLabelShown}
                             name={id}
-                            title="View Label"
+                            title={labelShown ? 'Hide Label' : 'View Label'}
                             transparent
                             variant="icon"
                         >
-                            {labelShown ? (
-                                <IoMdEyeOff className={styles.expandIcon} />
-                            ) : (
-                                <IoMdEye className={styles.expandIcon} />
-                            )}
+                            <AiOutlineTag
+                                className={styles.expandIcon}
+                            />
                         </Button>
                         {!expandableIconHidden && (
                             <Button

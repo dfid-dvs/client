@@ -44,7 +44,7 @@ const valueTickFormatter: TickFormatterFunction = (value) => {
 };
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
-    if (!payload || payload?.length <= 0) { return null; }
+    if (!payload || payload.length <= 0) { return null; }
     const {
         name: firstName,
         value: firstValue,
