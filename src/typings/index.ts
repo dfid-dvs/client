@@ -231,6 +231,7 @@ export interface BiAxialChartSettings<T> {
     type: 'bi-axial-chart';
     title: string;
     keySelector: (value: T) => string;
+    acronymSelector?: (value: T) => string;
     chartData: BiAxialData<T>[];
     limit?: {
         count: number;

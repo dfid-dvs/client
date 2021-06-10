@@ -13,9 +13,9 @@ import {
     TooltipProps,
     LabelProps,
 } from 'recharts';
-import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff, IoMdSwap } from 'react-icons/io';
+import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
-import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
+import { AiOutlineEdit, AiOutlineExpandAlt, AiOutlineTag } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, caseInsensitiveSubmatch } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
@@ -75,10 +75,13 @@ const renderCustomizedLabel = (verticalLayout: boolean) => (props: LabelProps) =
     );
 };
 
-const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
+const CustomTooltip = ({ active, payload }: TooltipProps) => {
     if (!payload || payload?.length <= 0) { return null; }
     const {
         name: legendName,
+        payload: {
+            name: label,
+        },
         value,
         color,
     } = payload[0];
@@ -219,17 +222,15 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                 </h3>
                 {!hideActions && (
                     <div className={_cs(styles.actions, actionClassName)}>
-                        {!expandableIconHidden && (
-                            <Button
-                                onClick={handleDownload}
-                                name={id}
-                                title="Download"
-                                transparent
-                                variant="icon"
-                            >
-                                <IoMdDownload className={styles.deleteIcon} />
-                            </Button>
-                        )}
+                        <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
                         {onSetEditableChartId && (
                             <Button
                                 onClick={onSetEditableChartId}
@@ -255,15 +256,13 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                         <Button
                             onClick={toggleLabelShown}
                             name={id}
-                            title="View Label"
+                            title={labelShown ? 'Hide Label' : 'View Label'}
                             transparent
                             variant="icon"
                         >
-                            {labelShown ? (
-                                <IoMdEyeOff className={styles.expandIcon} />
-                            ) : (
-                                <IoMdEye className={styles.expandIcon} />
-                            )}
+                            <AiOutlineTag
+                                className={styles.expandIcon}
+                            />
                         </Button>
                         {hasAllRegion && (
                             <Button
@@ -273,7 +272,11 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                 transparent
                                 variant="icon"
                             >
-                                <IoMdSwap className={styles.expandIcon} />
+                                {allRegionHidden ? (
+                                    <IoMdEye className={styles.expandIcon} />
+                                ) : (
+                                    <IoMdEyeOff className={styles.expandIcon} />
+                                )}
                             </Button>
                         )}
                         {!expandableIconHidden && (
@@ -329,11 +332,6 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                 width={layout === 'horizontal' ? 36 : undefined}
                                 tickCount={6}
                             />
-                            {/* <Tooltip
-                                allowEscapeViewBox={{ x: false, y: false }}
-                                offset={20}
-                                formatter={valueTickFormatter}
-                            /> */}
                             <Tooltip
                                 allowEscapeViewBox={{ x: false, y: false }}
                                 offset={20}
