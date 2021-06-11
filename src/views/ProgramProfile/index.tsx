@@ -411,12 +411,12 @@ function ProgramProfile(props: Props) {
         >
             <div className={styles.sidebar}>
                 <div className={styles.heading}>
-                    Program Profile
+                    Programme Profile
                 </div>
                 <SelectInput
-                    label="Choose Program"
+                    label="Choose Programme"
                     pending={programListPending}
-                    placeholder="Program"
+                    placeholder="Programme"
                     className={styles.programSelectInput}
                     disabled={programListPending || printMode}
                     options={programListResponse?.results}
@@ -732,7 +732,7 @@ function ProgramProfile(props: Props) {
                 </div>
             ) : (
                 <div className={styles.noContent}>
-                    Select a Program
+                    Select a Programme
                 </div>
             )}
         </div>

@@ -79,7 +79,7 @@ interface ProgramComponent {
     partners: number[];
 }
 
-type ExpanedFilter = 'programs' | 'partners' | 'sectors' | 'markers';
+type ExpanedFilter = 'programmes' | 'partners' | 'sectors' | 'markers';
 
 interface Props {
     className?: string;
@@ -110,7 +110,7 @@ function ProgramSelector(props: Props) {
     const [
         expandedFilters,
         setExpanedFilters,
-    ] = useState<ExpanedFilter[]>(['markers', 'programs', 'partners', 'sectors']);
+    ] = useState<ExpanedFilter[]>(['markers', 'programmes', 'partners', 'sectors']);
 
     const programUrlParams = p({
         // eslint-disable-next-line camelcase
@@ -801,7 +801,7 @@ function ProgramSelector(props: Props) {
             )}
             <div className={styles.selectorContainer}>
                 <SelectorItem
-                    name="programs"
+                    name="programmes"
                     className={styles.program}
                     options={combinedProgramOptions}
                     value={selectedProgram}

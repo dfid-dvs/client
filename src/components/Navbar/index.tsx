@@ -107,11 +107,11 @@ const Navbar = (props: Props) => {
                         {dropdownShown && (
                             <Link
                                 className={styles.link}
-                                to="/#programs"
+                                to="/#programmes"
                                 replace
                                 onClick={toggleDropdownShown}
                             >
-                                By Programs
+                                By Programmes
                             </Link>
                         )}
                     </DropdownMenu>

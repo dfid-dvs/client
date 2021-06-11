@@ -257,7 +257,7 @@ function IndicatorMap(props: Props) {
                     value: hoveredMapRegion.allocatedBudget,
                 },
                 {
-                    label: 'Programs',
+                    label: 'Programmes',
                     value: hoveredMapRegion.programCount,
                 },
                 {

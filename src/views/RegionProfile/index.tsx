@@ -61,10 +61,10 @@ interface FiveWData {
 }
 
 const fiveWDataList: FiveWData[] = [
+    { key: 'programCount', label: 'Programmes', value: 0 },
     { key: 'componentCount', label: 'Components', value: 0 },
-    { key: 'programCount', label: 'Programs', value: 0 },
     { key: 'sectorCount', label: 'Sectors', value: 0 },
-    { key: 'supplierCount', label: 'Suppliers', value: 0 },
+    { key: 'supplierCount', label: 'Partners', value: 0 },
     { key: 'totalBudget', label: 'Total Budget', value: 0 },
 ];
 

@@ -65,9 +65,9 @@ function ProgramDetails(props: Props) {
                     />
                     <Link
                         className={styles.programProfileLink}
-                        to="/program-profile/"
+                        to="/programme-profile/"
                     >
-                        Create Program Profile
+                        Create Programme Profile
                     </Link>
                 </div>
             )}

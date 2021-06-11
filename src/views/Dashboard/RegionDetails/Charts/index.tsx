@@ -80,7 +80,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '1.1',
         type: 'bar-chart',
-        title: 'Top 10 by programs',
+        title: 'Top 10 by programmes',
         keySelector: item => item.name,
 
         limit: {

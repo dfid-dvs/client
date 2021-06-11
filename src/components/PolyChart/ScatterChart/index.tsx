@@ -70,7 +70,6 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
         data: scatterData,
         keySelector,
     } = settings;
-
     const [firstData, secondData] = scatterData ?? [undefined, undefined];
     const newRef = useRef<HTMLDivElement>(null);
 
@@ -92,6 +91,9 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
 
     const finalDataWithIndicators = useMemo(
         () => finalData?.map((f) => {
+            if (!f.indicators) {
+                return f;
+            }
             const indicatorKeys = Object.keys(f.indicators);
             if (indicatorKeys.length <= 0) {
                 return f;
@@ -127,17 +129,15 @@ export function ScatterChartUnit<T extends object>(props: ScatterChartUnitProps<
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
-                        {!expandableIconHidden && (
-                            <Button
-                                onClick={handleDownload}
-                                name={id}
-                                title="Download"
-                                transparent
-                                variant="icon"
-                            >
-                                <IoMdDownload className={styles.deleteIcon} />
-                            </Button>
-                        )}
+                        <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
                         {onSetEditableChartId && (
                             <Button
                                 onClick={onSetEditableChartId}

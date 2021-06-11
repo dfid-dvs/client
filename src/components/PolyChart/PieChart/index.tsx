@@ -10,7 +10,7 @@ import {
 import { MdPieChart, MdDonutLarge } from 'react-icons/md';
 import { AiOutlineEdit, AiOutlineExpandAlt, AiOutlineTag } from 'react-icons/ai';
 import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
-import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff, IoMdSwap } from 'react-icons/io';
+import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff } from 'react-icons/io';
 
 import handleChartDownload from '#utils/downloadChart';
 

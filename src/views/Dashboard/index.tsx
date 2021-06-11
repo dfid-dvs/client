@@ -544,7 +544,7 @@ const Dashboard = (props: Props) => {
         [setRegionLevel],
     );
 
-    const dataExplored = hash === 'regions' || hash === 'programs';
+    const dataExplored = hash === 'regions' || hash === 'programmes';
 
     React.useEffect(() => {
         if (dataExplored) {
@@ -676,7 +676,7 @@ const Dashboard = (props: Props) => {
                                     handleRegionLevelChange={handleRegionLevelChange}
                                 />
                             )}
-                            {hash === 'programs' && (
+                            {hash === 'programmes' && (
                                 <ProgramDetails
                                     className={_cs(
                                         styles.regionDetails,

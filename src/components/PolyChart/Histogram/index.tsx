@@ -10,7 +10,7 @@ import {
     LabelList,
 } from 'recharts';
 import { isNotDefined, isDefined, _cs, listToGroupList } from '@togglecorp/fujs';
-import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff } from 'react-icons/io';
+import { IoMdClose, IoMdDownload } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt, AiOutlineTag } from 'react-icons/ai';
 
 import Button from '#components/Button';
