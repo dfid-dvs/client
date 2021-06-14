@@ -38,11 +38,12 @@ const orientations: {
 
 const categoryTickFormatter = (value: string) => {
     const words = value.trim().split(/\s+/);
-    const indexOfAdmin = words.findIndex(
-        i => caseInsensitiveSubmatch(i, 'District') || caseInsensitiveSubmatch(i, 'Province'),
+    // NOTE: words "Province", "District", "Municipality" removed from tickformatter for better UI
+    const administrationIndex = words.findIndex(
+        i => caseInsensitiveSubmatch(i, 'Province') || caseInsensitiveSubmatch(i, 'District') || caseInsensitiveSubmatch(i, 'Municipality'),
     );
-    if (indexOfAdmin <= 0) return words.join(' ');
-    return words.slice(0, indexOfAdmin).join(' ');
+    if (administrationIndex <= 0) return words.join(' ');
+    return words.slice(0, administrationIndex).join(' ');
 };
 
 const valueTickFormatter: TickFormatterFunction = (value) => {

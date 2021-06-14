@@ -27,11 +27,11 @@ import styles from './styles.css';
 const categoryTickFormatter = (value: string) => {
     const words = value.trim().split(/\s+/);
     // NOTE: words "Province", "District", "Municipality" removed from tickformatter for better UI
-    const indexOfAdmin = words.findIndex(
+    const administrationIndex = words.findIndex(
         i => caseInsensitiveSubmatch(i, 'Province') || caseInsensitiveSubmatch(i, 'District') || caseInsensitiveSubmatch(i, 'Municipality'),
     );
-    if (indexOfAdmin <= 0) return words.join(' ');
-    return words.slice(0, indexOfAdmin).join(' ');
+    if (administrationIndex <= 0) return words.join(' ');
+    return words.slice(0, administrationIndex).join(' ');
 };
 
 const valueTickFormatter: TickFormatterFunction = (value) => {
