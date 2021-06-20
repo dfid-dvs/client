@@ -14,7 +14,7 @@ import {
 } from 'recharts';
 import { IoIosSwap, IoMdClose, IoMdDownload } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
-import { compareNumber, isNotDefined, isDefined, _cs, caseInsensitiveSubmatch } from '@togglecorp/fujs';
+import { compareNumber, isNotDefined, isDefined, _cs } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
@@ -26,12 +26,14 @@ import styles from './styles.css';
 
 const categoryTickFormatter = (value: string) => {
     const words = value.trim().split(/\s+/);
+    const [
+        firstWord,
+        ...remWords
+    ] = words;
+    const joinedRemWords = remWords.join(' ');
     // NOTE: words "Province", "District", "Municipality" removed from tickformatter for better UI
-    const administrationIndex = words.findIndex(
-        i => caseInsensitiveSubmatch(i, 'Province') || caseInsensitiveSubmatch(i, 'District') || caseInsensitiveSubmatch(i, 'Municipality'),
-    );
-    if (administrationIndex <= 0) return words.join(' ');
-    return words.slice(0, administrationIndex).join(' ');
+    const wordsWithoutAdministration = joinedRemWords.replace(/(province|district|municipality)/g, '');
+    return firstWord + wordsWithoutAdministration;
 };
 
 const valueTickFormatter: TickFormatterFunction = (value) => {
@@ -44,7 +46,9 @@ const valueTickFormatter: TickFormatterFunction = (value) => {
 };
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
-    if (!payload || payload.length <= 0) { return null; }
+    if (!payload || payload.length <= 0 || !active) {
+        return null;
+    }
     const {
         name: firstName,
         value: firstValue,
@@ -55,23 +59,20 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
         value: secondValue,
         color: secondColor,
     } = payload[1];
-    if (active) {
-        return (
-            <div className={styles.customTooltip}>
-                <div className={styles.label}>{label}</div>
-                <div
-                    className={styles.label}
-                    style={{ color: firstColor }}
-                >
-                    {`${firstName} : ${valueTickFormatter(firstValue)}`}
-                </div>
-                <div style={{ color: secondColor }}>
-                    {`${secondName} : ${valueTickFormatter(secondValue)}`}
-                </div>
+    return (
+        <div className={styles.customTooltip}>
+            <div className={styles.label}>{label}</div>
+            <div
+                className={styles.label}
+                style={{ color: firstColor }}
+            >
+                {`${firstName} : ${valueTickFormatter(firstValue)}`}
             </div>
-        );
-    }
-    return null;
+            <div style={{ color: secondColor }}>
+                {`${secondName} : ${valueTickFormatter(secondValue)}`}
+            </div>
+        </div>
+    );
 };
 
 interface BiAxialChartUnitProps<T> {

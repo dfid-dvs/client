@@ -174,7 +174,7 @@ function BarChartConfig<T>(props: Props<T>) {
         maxRow = 4,
         options,
         keySelector: primaryKeySelector,
-        acronymSelector: primaryAcronymSelector,
+        acronymSelector,
         editableChartData,
     } = props;
 
@@ -304,7 +304,7 @@ function BarChartConfig<T>(props: Props<T>) {
                 title,
 
                 keySelector: primaryKeySelector,
-                acronymSelector: primaryAcronymSelector,
+                acronymSelector,
                 limit: {
                     count: limit,
                     method: order === 'asc' ? 'min' : 'max',
@@ -320,7 +320,7 @@ function BarChartConfig<T>(props: Props<T>) {
         },
         [
             editableChartData, onSave, bars, title, options, barType, limitValue,
-            order, autoOrderField, primaryKeySelector, primaryAcronymSelector,
+            order, autoOrderField, primaryKeySelector, acronymSelector,
         ],
     );
 

@@ -21,6 +21,10 @@ import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
 import styles from './styles.css';
 
 const keySelector = (item: ExtendedFiveW) => item.name;
+const indicatorsIds = {
+    nepalPavedRoadNetwork: 156,
+    meanInternationalWealthIndex: 504,
+};
 
 const staticOptions: NumericOption<ExtendedFiveW>[] = [
     {
@@ -167,7 +171,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         limit: {
             count: 10,
             method: 'max',
-            valueSelector: item => item.indicators[504] || null,
+            valueSelector: item => item.indicators[indicatorsIds.meanInternationalWealthIndex] || null,
         },
 
         bars: [
@@ -175,10 +179,10 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
                 key: 'wealthIndex',
                 title: 'Wealth Index',
                 color: tableauColors[3],
-                valueSelector: item => item.indicators[504] || null,
+                valueSelector: item => item.indicators[indicatorsIds.meanInternationalWealthIndex] || null,
             },
         ],
-        dependencies: [504],
+        dependencies: [indicatorsIds.meanInternationalWealthIndex],
     },
     {
         id: '6',
@@ -189,7 +193,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         limit: {
             count: 10,
             method: 'max',
-            valueSelector: item => item.indicators[156] || null,
+            valueSelector: item => item.indicators[indicatorsIds.nepalPavedRoadNetwork] || null,
         },
 
         bars: [
@@ -197,10 +201,10 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
                 key: 'pavedRoadNetworn',
                 title: 'Paved Road Network',
                 color: tableauColors[0],
-                valueSelector: item => item.indicators[156] || null,
+                valueSelector: item => item.indicators[indicatorsIds.nepalPavedRoadNetwork] || null,
             },
         ],
-        dependencies: [156],
+        dependencies: [indicatorsIds.nepalPavedRoadNetwork],
     },
     /* {
         id: '3',
