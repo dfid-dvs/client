@@ -10,11 +10,13 @@ import {
     ResponsiveContainer,
     TickFormatterFunction,
     LabelList,
+    TooltipProps,
+    LabelProps,
 } from 'recharts';
-import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff, IoMdSwap } from 'react-icons/io';
+import { IoMdClose, IoMdDownload, IoMdEye, IoMdEyeOff } from 'react-icons/io';
 import { RiBarChartLine, RiBarChartHorizontalLine } from 'react-icons/ri';
-import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
-import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
+import { AiOutlineEdit, AiOutlineExpandAlt, AiOutlineTag } from 'react-icons/ai';
+import { compareNumber, isNotDefined, isDefined, _cs } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
@@ -36,10 +38,14 @@ const orientations: {
 
 const categoryTickFormatter = (value: string) => {
     const words = value.trim().split(/\s+/);
-    if (words.length <= 1) {
-        return value.slice(0, 3).toUpperCase();
-    }
-    return words.map(item => item[0]).join('').toUpperCase();
+    const [
+        firstWord,
+        ...remWords
+    ] = words;
+    const joinedRemWords = remWords.join(' ');
+    // NOTE: words "Province", "District", "Municipality" removed from tickformatter for better UI
+    const wordsWithoutAdministration = joinedRemWords.replace(/(province|district|municipality)/ig, '');
+    return firstWord + wordsWithoutAdministration;
 };
 
 const valueTickFormatter: TickFormatterFunction = (value) => {
@@ -51,21 +57,11 @@ const valueTickFormatter: TickFormatterFunction = (value) => {
     return str;
 };
 
-interface CustomizedLabel {
-    x?: number;
-    y?: number;
-    width?: number;
-    height?: number;
-    value?: number | string;
-}
-const renderCustomizedLabel = (verticalLayout: boolean) => (props: CustomizedLabel) => {
+const renderCustomizedLabel = (verticalLayout: boolean) => (props: LabelProps) => {
     const { x = 0, y = 0, width = 0, height = 0, value = 0 } = props;
     const factor = verticalLayout ? height : width;
-    const fontSize = verticalLayout ? factor / 2 : factor / 4;
-
-    const xValue = (verticalLayout ? x + width + factor - 5 : x + factor / 2) + 1;
-    const yValue = (verticalLayout ? y + factor / 2 : y - fontSize) + 1;
-
+    const xValue = (verticalLayout ? x + height + width - 5 : x + width / 2);
+    const yValue = (verticalLayout ? y + factor / 2 : y - factor / 4) + 1;
     return (
         <g>
             <text
@@ -74,11 +70,33 @@ const renderCustomizedLabel = (verticalLayout: boolean) => (props: CustomizedLab
                 fill="#212121"
                 dominantBaseline="middle"
                 textAnchor="middle"
-                fontSize={fontSize}
+                fontSize="0.8rem"
             >
                 {valueTickFormatter(value)}
             </text>
         </g>
+    );
+};
+
+const CustomTooltip = ({ active, payload }: TooltipProps) => {
+    if (!payload || payload.length <= 0 || !active) {
+        return null;
+    }
+    const {
+        name: legendName,
+        payload: {
+            name: label,
+        },
+        value,
+        color,
+    } = payload[0];
+    return (
+        <div className={styles.customTooltip}>
+            <div className={styles.label}>{label}</div>
+            <div style={{ color }}>
+                {`${legendName} : ${valueTickFormatter(value)}`}
+            </div>
+        </div>
     );
 };
 
@@ -94,7 +112,6 @@ interface BarChartUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
-    longTilesShown?: boolean;
 }
 
 const chartMargin = {
@@ -118,7 +135,6 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
-        longTilesShown,
     } = props;
     const {
         title,
@@ -127,6 +143,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         limit,
         id,
         orientation,
+        acronymSelector,
     } = settings;
 
     const [layout, setLayout] = useState<'horizontal' | 'vertical'>(orientation || 'vertical');
@@ -182,35 +199,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
         [finalData, keySelector],
     );
 
-    const averageLength: number = finalData
-        ? sum(finalData.map(item => keySelector(item).length)) / finalData.length
-        : 0;
-
-    const acceptableLength = layout === 'horizontal'
-        ? 5
-        : 15;
-
-    const hasLongTitles = averageLength > acceptableLength;
-
-    const tickFormatter = useMemo(
-        () => {
-            if (layout === 'vertical' && longTilesShown) {
-                return undefined;
-            }
-            return hasLongTitles ? categoryTickFormatter : undefined;
-        },
-        [layout, longTilesShown, hasLongTitles],
-    );
-
-    const xCompWidth = useMemo(
-        () => {
-            if (layout === 'horizontal') {
-                return undefined;
-            }
-            return hasLongTitles ? 140 : 86;
-        },
-        [layout, hasLongTitles],
-    );
+    const xCompWidth = layout === 'horizontal' ? undefined : 86;
 
     const [labelShown, , , toggleLabelShown] = useBasicToggle();
 
@@ -222,6 +211,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     );
 
     const labelContent = renderCustomizedLabel(layout === 'vertical');
+    const xCompDataKey = acronymSelector ?? keySelector;
 
     return (
         <div
@@ -234,17 +224,15 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                 </h3>
                 {!hideActions && (
                     <div className={_cs(styles.actions, actionClassName)}>
-                        {!expandableIconHidden && (
-                            <Button
-                                onClick={handleDownload}
-                                name={id}
-                                title="Download"
-                                transparent
-                                variant="icon"
-                            >
-                                <IoMdDownload className={styles.deleteIcon} />
-                            </Button>
-                        )}
+                        <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
                         {onSetEditableChartId && (
                             <Button
                                 onClick={onSetEditableChartId}
@@ -270,25 +258,27 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                         <Button
                             onClick={toggleLabelShown}
                             name={id}
-                            title="View Label"
+                            title={labelShown ? 'Hide Label' : 'View Label'}
                             transparent
                             variant="icon"
                         >
-                            {labelShown ? (
-                                <IoMdEyeOff className={styles.expandIcon} />
-                            ) : (
-                                <IoMdEye className={styles.expandIcon} />
-                            )}
+                            <AiOutlineTag
+                                className={styles.expandIcon}
+                            />
                         </Button>
                         {hasAllRegion && (
                             <Button
                                 onClick={toggleAllRegionHidden}
                                 name={id}
-                                title={allRegionHidden ? 'Show All Data' : 'Hide All Data'}
+                                title={allRegionHidden ? 'Show Nation Wide Data' : 'Hide Nation Wide Data'}
                                 transparent
                                 variant="icon"
                             >
-                                <IoMdSwap className={styles.expandIcon} />
+                                {allRegionHidden ? (
+                                    <IoMdEye className={styles.expandIcon} />
+                                ) : (
+                                    <IoMdEyeOff className={styles.expandIcon} />
+                                )}
                             </Button>
                         )}
                         {!expandableIconHidden && (
@@ -330,13 +320,13 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                                 vertical={isVertical}
                             />
                             <Xcomp
-                                dataKey={keySelector}
+                                dataKey={xCompDataKey}
                                 type="category"
                                 interval={0}
                                 width={xCompWidth}
-                                tickFormatter={tickFormatter}
-                                angle={layout === 'horizontal' ? -45 : undefined}
-                                textAnchor="end"
+                                tickFormatter={categoryTickFormatter}
+                                angle={layout === 'horizontal' ? -15 : undefined}
+                                position="outside"
                             />
                             <Ycomp
                                 type="number"
@@ -347,9 +337,11 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                             <Tooltip
                                 allowEscapeViewBox={{ x: false, y: false }}
                                 offset={20}
-                                formatter={valueTickFormatter}
+                                content={<CustomTooltip />}
                             />
-                            <Legend />
+                            <Legend
+                                verticalAlign={layout === 'horizontal' ? 'top' : 'bottom'}
+                            />
                             {bars.map(bar => (
                                 <Bar
                                     key={bar.title}

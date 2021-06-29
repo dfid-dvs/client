@@ -21,37 +21,41 @@ import useExtendedFiveW, { ExtendedFiveW } from '../../useExtendedFiveW';
 import styles from './styles.css';
 
 const keySelector = (item: ExtendedFiveW) => item.name;
+const indicatorsIds = {
+    nepalPavedRoadNetwork: 156,
+    meanInternationalWealthIndex: 504,
+};
 
 const staticOptions: NumericOption<ExtendedFiveW>[] = [
     {
         key: 'allocatedBudget',
         title: 'Budget Spend',
         valueSelector: item => item.allocatedBudget,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'programCount',
         title: 'Programs',
         valueSelector: item => item.programCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'componentCount',
         title: 'Components',
         valueSelector: item => item.componentCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'partnerCount',
         title: 'Partners',
         valueSelector: item => item.partnerCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'sectorCount',
         title: 'Sectors',
         valueSelector: item => item.sectorCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
 ];
 
@@ -80,7 +84,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
     {
         id: '1.1',
         type: 'bar-chart',
-        title: 'Top 10 by programs',
+        title: 'Top 10 by programmes',
         keySelector: item => item.name,
 
         limit: {
@@ -140,48 +144,6 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
             },
         ],
     },
-    /* {
-        id: '2',
-        type: 'bar-chart',
-        title: 'Top 10 by population',
-        keySelector: item => item.name,
-
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.indicators[25] || null,
-        },
-
-        bars: [
-            {
-                title: 'Population',
-                color: tableauColors[5],
-                valueSelector: item => item.indicators[25] || null,
-            },
-        ],
-        dependencies: [25],
-    },
-    {
-        id: '3',
-        type: 'bar-chart',
-        title: 'Top 10 by poverty incidence',
-        keySelector: item => item.name,
-
-        limit: {
-            count: 10,
-            method: 'max',
-            valueSelector: item => item.indicators[132] || null,
-        },
-
-        bars: [
-            {
-                title: 'Poverty Incidence',
-                color: tableauColors[6],
-                valueSelector: item => item.indicators[132] || null,
-            },
-        ],
-        dependencies: [132],
-    }, */
     {
         id: '2',
         type: 'pie-chart',
@@ -201,6 +163,54 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         // dependencies: [118],
     },
     {
+        id: '5',
+        type: 'bar-chart',
+        title: 'Top 10 by Mean International Wealth Index',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.indicators[
+                indicatorsIds.meanInternationalWealthIndex
+            ] || null,
+        },
+
+        bars: [
+            {
+                key: 'wealthIndex',
+                title: 'Wealth Index',
+                color: tableauColors[3],
+                valueSelector: item => item.indicators[
+                    indicatorsIds.meanInternationalWealthIndex
+                ] || null,
+            },
+        ],
+        dependencies: [indicatorsIds.meanInternationalWealthIndex],
+    },
+    {
+        id: '6',
+        type: 'bar-chart',
+        title: 'Top 10 Paved Road Network',
+        keySelector: item => item.name,
+
+        limit: {
+            count: 10,
+            method: 'max',
+            valueSelector: item => item.indicators[indicatorsIds.nepalPavedRoadNetwork] || null,
+        },
+
+        bars: [
+            {
+                key: 'pavedRoadNetworn',
+                title: 'Paved Road Network',
+                color: tableauColors[0],
+                valueSelector: item => item.indicators[indicatorsIds.nepalPavedRoadNetwork] || null,
+            },
+        ],
+        dependencies: [indicatorsIds.nepalPavedRoadNetwork],
+    },
+    /* {
         id: '3',
         type: 'bi-axial-chart',
         title: 'Health and Finance for top 10 by budget',
@@ -248,7 +258,7 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
             },
         ],
         color: tableauColors[0],
-    },
+    }, */
 ];
 
 interface Props {

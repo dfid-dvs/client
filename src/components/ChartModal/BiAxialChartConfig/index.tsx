@@ -245,7 +245,7 @@ function BiAxialChartConfig<T>(props: Props<T>) {
                     color: bar.color,
                     dependency: option.dependency,
                     type: bar.type,
-                    key: bar.optionName,
+                    key: option.key,
                 };
             }).filter(isDefined);
 

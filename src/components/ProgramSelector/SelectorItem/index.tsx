@@ -30,7 +30,7 @@ function treeLabelSelector<T extends string | number>(item: TreeItem<T>) {
     return item.name;
 }
 
-type ExpanedFilter = 'programs' | 'partners' | 'sectors' | 'markers';
+type ExpanedFilter = 'programmes' | 'partners' | 'sectors' | 'markers';
 
 interface SelectorItemProps<T extends string | number> {
     name: ExpanedFilter;

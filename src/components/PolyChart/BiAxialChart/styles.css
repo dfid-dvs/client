@@ -61,6 +61,11 @@
                 font-size: var(--font-size-large);
             }
 
+            .toggle-icon {
+                color: var(--color-text);
+                font-size: var(--font-size-extra-large);
+            }
+
             .segment-input {
                 margin: var(--spacing-extra-small);
             }
@@ -79,5 +84,15 @@
                 }
             }
         }
+    }
+}
+
+.custom-tooltip {
+    background-color: var(--color-foreground);
+    padding: var(--spacing-large-medium) var(--spacing-large);
+    border: var(--spacing-extra-small) solid var(--color-grey-shade-2);
+
+    .label {
+        margin-bottom: var(--spacing-small);
     }
 }

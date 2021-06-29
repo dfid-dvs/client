@@ -45,14 +45,6 @@
                     flex-grow: 1;
                 }
 
-                .data-type {
-                    display: flex;
-                    flex-direction: column;
-                    border: var(--width-separator-thin) solid var(--color-separator-light);
-                    background-color: var(--color-input-backgro]und);
-                    padding: var(--spacing-super-small);
-                }
-
                 .label {
                     text-transform: uppercase;
                     letter-spacing: var(--spacing-super-small);

@@ -10,10 +10,11 @@ import {
     Line,
     ComposedChart,
     TickFormatterFunction,
+    TooltipProps,
 } from 'recharts';
 import { IoIosSwap, IoMdClose, IoMdDownload } from 'react-icons/io';
 import { AiOutlineEdit, AiOutlineExpandAlt } from 'react-icons/ai';
-import { compareNumber, isNotDefined, isDefined, _cs, sum } from '@togglecorp/fujs';
+import { compareNumber, isNotDefined, isDefined, _cs } from '@togglecorp/fujs';
 
 import { formatNumber, getPrecision } from '#components/Numeral';
 import Button from '#components/Button';
@@ -25,10 +26,14 @@ import styles from './styles.css';
 
 const categoryTickFormatter = (value: string) => {
     const words = value.trim().split(/\s+/);
-    if (words.length <= 1) {
-        return value.slice(0, 3).toUpperCase();
-    }
-    return words.map(item => item[0]).join('').toUpperCase();
+    const [
+        firstWord,
+        ...remWords
+    ] = words;
+    const joinedRemWords = remWords.join(' ');
+    // NOTE: words "Province", "District", "Municipality" removed from tickformatter for better UI
+    const wordsWithoutAdministration = joinedRemWords.replace(/(province|district|municipality)/g, '');
+    return firstWord + wordsWithoutAdministration;
 };
 
 const valueTickFormatter: TickFormatterFunction = (value) => {
@@ -38,6 +43,36 @@ const valueTickFormatter: TickFormatterFunction = (value) => {
     const numberValue = +value;
     const str = formatNumber(numberValue, true, true, getPrecision(numberValue));
     return str;
+};
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
+    if (!payload || payload.length <= 0 || !active) {
+        return null;
+    }
+    const {
+        name: firstName,
+        value: firstValue,
+        color: firstColor,
+    } = payload[0];
+    const {
+        name: secondName,
+        value: secondValue,
+        color: secondColor,
+    } = payload[1];
+    return (
+        <div className={styles.customTooltip}>
+            <div className={styles.label}>{label}</div>
+            <div
+                className={styles.label}
+                style={{ color: firstColor }}
+            >
+                {`${firstName} : ${valueTickFormatter(firstValue)}`}
+            </div>
+            <div style={{ color: secondColor }}>
+                {`${secondName} : ${valueTickFormatter(secondValue)}`}
+            </div>
+        </div>
+    );
 };
 
 interface BiAxialChartUnitProps<T> {
@@ -51,7 +86,6 @@ interface BiAxialChartUnitProps<T> {
     onExpand: (name: string | undefined) => void;
     expandableIconHidden: boolean;
     onSetEditableChartId?: (name: string | undefined) => void;
-    longTilesShown?: boolean;
 }
 
 const chartMargin = {
@@ -74,7 +108,6 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         onExpand,
         expandableIconHidden,
         onSetEditableChartId,
-        longTilesShown,
     } = props;
 
     const newRef = React.useRef<HTMLDivElement>(null);
@@ -84,6 +117,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
     const {
         title,
         keySelector,
+        acronymSelector,
         chartData,
         limit,
         id,
@@ -116,15 +150,6 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
         [data, limit],
     );
 
-    const averageLength: number = useMemo(() => {
-        if (finalData) {
-            return sum(finalData.map(item => keySelector(item).length)) / finalData.length;
-        }
-        return 0;
-    }, [finalData, keySelector]);
-
-    const hasLongTitles = longTilesShown || averageLength > 5;
-
     const handleDownload = useCallback(
         () => {
             handleChartDownload(newRef, title, styles.actions);
@@ -143,17 +168,15 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                 </h3>
                 {!hideActions && (
                     <div className={styles.actions}>
-                        {!expandableIconHidden && (
-                            <Button
-                                onClick={handleDownload}
-                                name={id}
-                                title="Download"
-                                transparent
-                                variant="icon"
-                            >
-                                <IoMdDownload className={styles.deleteIcon} />
-                            </Button>
-                        )}
+                        <Button
+                            onClick={handleDownload}
+                            name={id}
+                            title="Download"
+                            transparent
+                            variant="icon"
+                        >
+                            <IoMdDownload className={styles.deleteIcon} />
+                        </Button>
                         {onSetEditableChartId && (
                             <Button
                                 onClick={onSetEditableChartId}
@@ -214,11 +237,12 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                                 vertical={false}
                             />
                             <XAxis
-                                dataKey={keySelector}
+                                dataKey={acronymSelector ?? keySelector}
                                 type="category"
                                 interval={0}
-                                textAnchor="end"
-                                tickFormatter={hasLongTitles ? categoryTickFormatter : undefined}
+                                // textAnchor="end"
+                                tickFormatter={categoryTickFormatter}
+                                angle={-15}
                             />
                             <YAxis
                                 type="number"
@@ -243,7 +267,7 @@ export function BiAxialChartUnit<T extends object>(props: BiAxialChartUnitProps<
                             <Tooltip
                                 allowEscapeViewBox={{ x: false, y: false }}
                                 offset={20}
-                                formatter={valueTickFormatter}
+                                content={<CustomTooltip />}
                             />
                             <Legend />
                             {[firstData, secondData].map(item => (

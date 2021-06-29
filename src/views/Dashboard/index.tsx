@@ -7,7 +7,7 @@ import {
     IoIosArrowForward,
     IoIosArrowBack,
 } from 'react-icons/io';
-import Tour from 'reactour';
+import Tour, { ReactourStep } from 'reactour';
 
 import BubbleLegend, { BubbleLegendType } from '#components/BubbleLegend';
 import Button, { useButtonStyling } from '#components/Button';
@@ -98,7 +98,7 @@ const statusTabOptions: StatusTabOption[] = [
 const statusKeySelector = (item: StatusTabOption) => item.key;
 const statusLabelSelector = (item: StatusTabOption) => item.label;
 
-const walkthroughContent = [
+const walkthroughContent: ReactourStep[] = [
     {
         content: 'Welcome to British Embassy Kathmandu’s Data Visualisation System. Let\'s get started.',
     },
@@ -544,7 +544,7 @@ const Dashboard = (props: Props) => {
         [setRegionLevel],
     );
 
-    const dataExplored = hash === 'regions' || hash === 'programs';
+    const dataExplored = hash === 'regions' || hash === 'programmes';
 
     React.useEffect(() => {
         if (dataExplored) {
@@ -676,7 +676,7 @@ const Dashboard = (props: Props) => {
                                     handleRegionLevelChange={handleRegionLevelChange}
                                 />
                             )}
-                            {hash === 'programs' && (
+                            {hash === 'programmes' && (
                                 <ProgramDetails
                                     className={_cs(
                                         styles.regionDetails,

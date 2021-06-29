@@ -117,7 +117,6 @@ function HistogramConfig<T>(props: Props<T>) {
                 />
                 <SelectInput
                     label="Data"
-                    className={styles.fieldInput}
                     options={options}
                     onChange={setOrderField}
                     value={orderField}

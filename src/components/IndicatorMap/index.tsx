@@ -87,12 +87,7 @@ interface MapRegion {
 const defaultSpacing = 108;
 const defaultPadding = 32;
 
-const leftSpacedPadding = {
-    top: defaultSpacing,
-    bottom: defaultSpacing,
-    right: defaultSpacing,
-    left: defaultSpacing,
-};
+const leftSpacedPadding = defaultSpacing;
 
 const mapOptions: Omit<mapboxgl.MapboxOptions, 'style' | 'container'> = {
     logoPosition: 'bottom-left',
@@ -257,7 +252,7 @@ function IndicatorMap(props: Props) {
                     value: hoveredMapRegion.allocatedBudget,
                 },
                 {
-                    label: 'Programs',
+                    label: 'Programmes',
                     value: hoveredMapRegion.programCount,
                 },
                 {

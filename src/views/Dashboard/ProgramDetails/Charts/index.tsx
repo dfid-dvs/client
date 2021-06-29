@@ -8,6 +8,7 @@ import Button from '#components/Button';
 import PolyChart from '#components/PolyChart';
 import ChartModal from '#components/ChartModal';
 import Modal from '#components/Modal';
+
 import { tableauColors } from '#utils/constants';
 import {
     ChartSettings,
@@ -18,7 +19,6 @@ import useExtendedPrograms, { ExtendedProgram } from '../../useExtendedPrograms'
 
 import styles from './styles.css';
 
-
 const keySelector = (item: ExtendedProgram) => item.name;
 
 const staticOptions: NumericOption<ExtendedProgram>[] = [
@@ -26,25 +26,25 @@ const staticOptions: NumericOption<ExtendedProgram>[] = [
         key: 'totalBudget',
         title: 'Total Budget',
         valueSelector: item => item.totalBudget,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'componentCount',
         title: 'Component Count',
         valueSelector: item => item.componentCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'partnerCount',
         title: 'Partners',
         valueSelector: item => item.partnerCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'sectorCount',
         title: 'Sectors',
         valueSelector: item => item.sectorCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
 ];
 
@@ -53,6 +53,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
         id: '1',
         type: 'bar-chart',
         title: 'Top 10 by budget',
+        acronymSelector: item => item.programAcronym,
         keySelector: item => item.name,
 
         limit: {
@@ -75,6 +76,7 @@ const defaultChartSettings: ChartSettings<ExtendedProgram>[] = [
         type: 'bar-chart',
         title: 'Top 10 by components count',
         keySelector: item => item.name,
+        acronymSelector: item => item.programAcronym,
 
         limit: {
             count: 10,
@@ -131,10 +133,15 @@ function Charts(props: Props) {
 
     const handleChartAdd = useCallback(
         (settings: ChartSettings<ExtendedProgram>) => {
+            const settingsWithAcronym = {
+                ...settings,
+                acronymSelector: (item: ExtendedProgram) => item.programAcronym,
+            };
+
             if (!editableChartId) {
                 setChartSettings(currentChartSettings => [
                     ...currentChartSettings,
-                    settings,
+                    settingsWithAcronym,
                 ]);
             }
             const tmpChartSettings = [...chartSettings];
@@ -142,7 +149,7 @@ function Charts(props: Props) {
             if (chartIndex <= -1) {
                 return;
             }
-            tmpChartSettings.splice(chartIndex, 1, settings);
+            tmpChartSettings.splice(chartIndex, 1, settingsWithAcronym);
             setChartSettings(tmpChartSettings);
         },
         [editableChartId, chartSettings, setChartSettings],

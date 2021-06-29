@@ -34,6 +34,7 @@
     flex-grow: 1;
     flex-wrap: wrap;
     justify-content: space-around;
+    background: var(--color-grey-shade-2);
     padding: var(--spacing-large);
     overflow-y: auto;
 

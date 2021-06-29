@@ -97,7 +97,7 @@ function Summary(props: SummaryProps) {
             />
             <SummaryItem
                 className={styles.summaryItem}
-                label="Programs"
+                label="Programmes"
                 value={summary?.program}
                 total={summary?.totalProgram}
             />

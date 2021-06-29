@@ -73,9 +73,9 @@ const routeSettings: SomeRoute[] = [
         load: lazy(() => import('../../../views/RegionProfile')),
     },
     {
-        path: '/program-profile/',
+        path: '/programme-profile/',
         name: 'programProfile',
-        title: 'Program Profile',
+        title: 'Programme Profile',
         load: lazy(() => import('../../../views/ProgramProfile')),
     },
     {

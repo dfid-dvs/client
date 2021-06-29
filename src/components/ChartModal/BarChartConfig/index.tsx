@@ -162,6 +162,7 @@ interface Props<T> {
     className?: string;
     options: NumericOption<T>[];
     keySelector: (item: T) => string;
+    acronymSelector?: (item: T) => string;
     editableChartData: BarChartSettings<T> | undefined;
 }
 
@@ -173,6 +174,7 @@ function BarChartConfig<T>(props: Props<T>) {
         maxRow = 4,
         options,
         keySelector: primaryKeySelector,
+        acronymSelector,
         editableChartData,
     } = props;
 
@@ -256,7 +258,7 @@ function BarChartConfig<T>(props: Props<T>) {
                     color: bar.color,
                     dependency: option.dependency,
                     stackId: barType === 'stacked' ? editableChartData?.id : undefined,
-                    key: bar.optionName,
+                    key: option.key,
                 };
             }).filter(isDefined);
 
@@ -302,7 +304,7 @@ function BarChartConfig<T>(props: Props<T>) {
                 title,
 
                 keySelector: primaryKeySelector,
-
+                acronymSelector,
                 limit: {
                     count: limit,
                     method: order === 'asc' ? 'min' : 'max',
@@ -313,12 +315,11 @@ function BarChartConfig<T>(props: Props<T>) {
 
                 dependencies,
             };
-
             onSave(settings);
         },
         [
             editableChartData, onSave, bars, title, options, barType, limitValue,
-            order, autoOrderField, primaryKeySelector,
+            order, autoOrderField, primaryKeySelector, acronymSelector,
         ],
     );
 

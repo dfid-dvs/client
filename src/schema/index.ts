@@ -310,6 +310,7 @@ const userDefinedSchemas: Schema[] = [
                         partner: { type: 'array.base-entity', required: true },
                         startDate: { type: 'string' },
                         endDate: { type: 'string' },
+                        programAcronym: { type: 'string', required: true },
                     },
                 },
                 required: true,
@@ -538,7 +539,7 @@ const userDefinedSchemas: Schema[] = [
         },
     },
     {
-        name: 'program-profile',
+        name: 'programme-profile',
         description: 'Get data of program profile',
         fields: {
             programName: { type: 'string', required: true },

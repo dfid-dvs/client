@@ -38,25 +38,25 @@ const staticOptions: NumericOption<ExtendedProgram>[] = [
         key: 'allocatedBudget',
         title: 'Budget Spend',
         valueSelector: item => item.totalBudget,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'componentCount',
         title: 'Components',
         valueSelector: item => item.componentCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'partnerCount',
         title: 'Partners',
         valueSelector: item => item.partnerCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
     {
         key: 'sectorCount',
         title: 'Sectors',
         valueSelector: item => item.sectorCount,
-        category: 'DFID Data',
+        category: 'BEK Data',
     },
 ];
 
@@ -307,7 +307,6 @@ function ProgramProfileCharts(props: Props) {
                     onDelete={handleAddHideableChartIds}
                     onExpand={handleDefaultChartExpand}
                     chartExpanded={expandableDefaultChart}
-                    longTilesShown
                 />
             ))}
             {showableChartSettings?.map(item => (
@@ -322,7 +321,6 @@ function ProgramProfileCharts(props: Props) {
                     onExpand={setExpandableChart}
                     chartExpanded={expandableChart}
                     onSetEditableChartId={onSetEditableChartId}
-                    longTilesShown
                 />
             ))}
             {showAddModal && (
@@ -349,7 +347,6 @@ function ProgramProfileCharts(props: Props) {
                         className={styles.polyChart}
                         onExpand={handleDefaultChartExpand}
                         chartExpanded={expandableDefaultChart}
-                        longTilesShown
                     />
                 </Modal>
             )}
@@ -368,7 +365,6 @@ function ProgramProfileCharts(props: Props) {
                         className={styles.polyChart}
                         onExpand={setExpandableChart}
                         chartExpanded={expandableChart}
-                        longTilesShown
                     />
                 </Modal>
             )}
