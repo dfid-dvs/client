@@ -55,26 +55,27 @@ interface ContactUs {
     }[];
 }
 
+const aboutUsUrl = `${apiEndPoint}/about_us/`;
+const summaryUrl = `${apiEndPoint}/core/summary/`;
+const manualUrl = `${apiEndPoint}/core/manual/`;
+const contactUsUrl = `${apiEndPoint}/about_us/contact_us/`;
+
 export default function AboutPage() {
-    const aboutUsUrl = `${apiEndPoint}/about_us/`;
     const [
         aboutUsPending,
         aboutUsResponse,
     ] = useRequest<AboutUs>(aboutUsUrl, 'about-us');
 
-    const summaryUrl = `${apiEndPoint}/core/summary/`;
     const [
         summaryPending,
         summary,
     ] = useRequest<Summary>(summaryUrl, 'fivew-summary');
 
-    const manualUrl = `${apiEndPoint}/core/manual/`;
     const [
         manualPending,
         manual,
     ] = useRequest<Manual>(manualUrl, 'manual-data');
 
-    const contactUsUrl = `${apiEndPoint}/about_us/contact_us`;
     const [
         contactUsPending,
         contactUsResponse,
