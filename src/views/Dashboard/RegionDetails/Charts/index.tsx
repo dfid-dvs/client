@@ -171,7 +171,9 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
         limit: {
             count: 10,
             method: 'max',
-            valueSelector: item => item.indicators[indicatorsIds.meanInternationalWealthIndex] || null,
+            valueSelector: item => item.indicators[
+                indicatorsIds.meanInternationalWealthIndex
+            ] || null,
         },
 
         bars: [
@@ -179,7 +181,9 @@ const defaultChartSettings: ChartSettings<ExtendedFiveW>[] = [
                 key: 'wealthIndex',
                 title: 'Wealth Index',
                 color: tableauColors[3],
-                valueSelector: item => item.indicators[indicatorsIds.meanInternationalWealthIndex] || null,
+                valueSelector: item => item.indicators[
+                    indicatorsIds.meanInternationalWealthIndex
+                ] || null,
             },
         ],
         dependencies: [indicatorsIds.meanInternationalWealthIndex],
