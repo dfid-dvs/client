@@ -258,7 +258,7 @@ function BarChartConfig<T>(props: Props<T>) {
                     color: bar.color,
                     dependency: option.dependency,
                     stackId: barType === 'stacked' ? editableChartData?.id : undefined,
-                    key: bar.optionName,
+                    key: option.key,
                 };
             }).filter(isDefined);
 
@@ -315,7 +315,6 @@ function BarChartConfig<T>(props: Props<T>) {
 
                 dependencies,
             };
-
             onSave(settings);
         },
         [

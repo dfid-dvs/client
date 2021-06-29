@@ -157,7 +157,7 @@ function ScatterChartConfig<T>(props: Props<T>) {
                 return {
                     title: option.title,
                     valueSelector: option.valueSelector,
-                    key: data.optionName,
+                    key: option.key,
                     dependency: option.dependency,
                 };
             }).filter(isDefined);
