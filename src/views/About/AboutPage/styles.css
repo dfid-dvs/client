@@ -21,7 +21,7 @@
         .sub-title {
             text-align: center;
             font-size: var(--font-size-large);
-        } 
+        }
     }
 
     .stats {
@@ -33,72 +33,29 @@
     }
 
     .details {
+        padding: calc(10 * var(--spacing-medium));
+        font-size: var(--font-size-large);
+    }
+
+    .manual-link {
         display: flex;
-        padding: calc(10 * var(--spacing-medium)) 0;
+        align-items: center;
+        margin-bottom: calc(2 * var(--spacing-extra-large));
+        width: fit-content;
+        border: var(--width-separator-thin) solid var(--color-secondary);
+        background-color: transparent;
+        padding: var(--spacing-medium);
+        text-decoration: none;
+        color: var(--color-secondary);
+        font-weight: var(--font-weight-bold);
+        font-size: var(--font-size-medium);
 
-        .left {
-            flex: 55%;
-            padding: calc(2 * var(--spacing-medium)) calc(6 * var(--spacing-medium)) 0px calc(20 * var(--spacing-medium));
-
-            .title {
-                margin-bottom: var(--spacing-extra-large);
-                font-size: calc(var(--font-size-extra-large) + var(--font-size-large));
-                font-weight: var(--bold);
-            }
-
-            .description {
-                font-size: var(--font-size-large);
-            }
-
-            .list {
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                margin-top: var(--spacing-extra-large);
-        
-                .list-item {
-                    display: flex;
-                    padding: var(--spacing-small) 0px;
-        
-                    .check-box {
-                        margin-right: var(--spacing-large);
-                        color: var(--color-success);
-                        font-size: var(--font-size-super-large);
-                    }
-                }
-            }
-
-            .manual-link {
-                display: flex;
-                align-items: center;
-                margin-top: var(--spacing-extra-large);
-                width: fit-content;
-                border: var(--width-separator-thin) solid var(--color-secondary);
-                background-color: transparent;
-                padding: var(--spacing-medium);
-                text-decoration: none;
-                color: var(--color-secondary);
-                font-weight: var(--font-weight-bold);
-                font-size: var(--font-size-medium);
-
-                &:hover {
-                    filter: brightness(90%)
-                }
-
-                .manual-icon {
-                    margin-right: var(--spacing-medium);
-                }
-            }
+        &:hover {
+            filter: brightness(90%)
         }
-        
-        .right {
-            flex: 45%;
 
-            .image {
-                width: 100%;
-                height: 100%;
-                object-fit: none;
-            }
+        .manual-icon {
+            margin-right: var(--spacing-medium);
         }
     }
 
