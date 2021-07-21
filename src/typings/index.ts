@@ -174,7 +174,7 @@ export interface BarChartSettings<T> {
 
     // layout: 'vertical' | 'horizontal';
     keySelector: (value: T) => string;
-    acronymSelector?: (value: T) => string;
+    acronymSelector?: (value: T) => string | undefined;
     bars: {
         title: string;
         valueSelector: (value: T) => number | null;

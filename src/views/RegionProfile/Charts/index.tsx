@@ -62,6 +62,7 @@ interface ProfileChartData {
     key: string;
     id: number;
     value: number;
+    acronym?: string;
 }
 
 const defaultChartSettings: ChartSettings<ProfileChartData>[] = [
@@ -70,7 +71,7 @@ const defaultChartSettings: ChartSettings<ProfileChartData>[] = [
         type: 'bar-chart',
         title: 'Top Program by Budget',
         keySelector: item => item.name,
-
+        acronymSelector: item => item.acronym,
         limit: {
             count: 10,
             method: 'max',
@@ -121,7 +122,6 @@ const defaultChartSettings: ChartSettings<ProfileChartData>[] = [
         type: 'bar-chart',
         title: 'Top Sectors by number of partners',
         keySelector: item => item.name,
-
         limit: {
             count: 10,
             method: 'max',
