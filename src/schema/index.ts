@@ -598,6 +598,7 @@ const userDefinedSchemas: Schema[] = [
                         name: { type: 'string', required: true },
                         key: { type: 'string', required: true },
                         value: { type: 'number', required: true },
+                        acronym: { type: 'string' },
                     },
                 },
             },
