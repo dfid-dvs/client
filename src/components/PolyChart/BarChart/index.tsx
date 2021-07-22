@@ -155,7 +155,7 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
     const isVertical = layout === 'vertical';
     const isHorizontal = layout === 'horizontal';
 
-    const [allRegionHidden, , , toggleAllRegionHidden] = useBasicToggle();
+    const [allRegionShown, , , toggleAllRegionShown] = useBasicToggle();
 
     const finalData = useMemo(
         () => {
@@ -182,14 +182,14 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
 
     const filteredFinalData = useMemo(
         () => {
-            if (!allRegionHidden) {
-                return finalData;
+            if (!allRegionShown) {
+                return finalData?.filter(
+                    item => !(keySelector(item) === 'All Province' || keySelector(item) === 'All District'),
+                );
             }
-            return finalData?.filter(
-                item => !(keySelector(item) === 'All Province' || keySelector(item) === 'All District'),
-            );
+            return finalData;
         },
-        [allRegionHidden, finalData, keySelector],
+        [allRegionShown, finalData, keySelector],
     );
 
     const hasAllRegion = useMemo(
@@ -268,16 +268,16 @@ export function BarChartUnit<T extends object>(props: BarChartUnitProps<T>) {
                         </Button>
                         {hasAllRegion && (
                             <Button
-                                onClick={toggleAllRegionHidden}
+                                onClick={toggleAllRegionShown}
                                 name={id}
-                                title={allRegionHidden ? 'Show Nation Wide Data' : 'Hide Nation Wide Data'}
+                                title={allRegionShown ? 'Hide Nation Wide Data' : 'Show Nation Wide Data'}
                                 transparent
                                 variant="icon"
                             >
-                                {allRegionHidden ? (
-                                    <IoMdEye className={styles.expandIcon} />
-                                ) : (
+                                {allRegionShown ? (
                                     <IoMdEyeOff className={styles.expandIcon} />
+                                ) : (
+                                    <IoMdEye className={styles.expandIcon} />
                                 )}
                             </Button>
                         )}
