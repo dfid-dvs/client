@@ -256,17 +256,17 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
         [data, valueSelector, keySelector],
     );
 
-    const [allRegionHidden, , , toggleAllRegionHidden] = useBasicToggle();
+    const [allRegionShown, , , toggleAllRegionShown] = useBasicToggle();
     const filteredFinalData = useMemo(
         () => {
-            if (!allRegionHidden) {
-                return finalData;
+            if (!allRegionShown) {
+                return finalData?.filter(
+                    item => !(item.key === 'All Province' || item.key === 'All District'),
+                );
             }
-            return finalData?.filter(
-                item => !(item.key === 'All Province' || item.key === 'All District'),
-            );
+            return finalData;
         },
-        [allRegionHidden, finalData],
+        [allRegionShown, finalData],
     );
 
     const hasAllRegion = useMemo(
@@ -348,13 +348,13 @@ export function PieChartUnit<T extends object>(props: PieChartUnitProps<T>) {
                         </Button>
                         {hasAllRegion && (
                             <Button
-                                onClick={toggleAllRegionHidden}
+                                onClick={toggleAllRegionShown}
                                 name={id}
-                                title={allRegionHidden ? 'Show Nation Wide Data' : 'Hide Nation Wide Data'}
+                                title={allRegionShown ? 'Hide Nation Wide Data' : 'Show Nation Wide Data'}
                                 transparent
                                 variant="icon"
                             >
-                                {allRegionHidden ? (
+                                {allRegionShown ? (
                                     <IoMdEyeOff className={styles.expandIcon} />
                                 ) : (
                                     <IoMdEye className={styles.expandIcon} />
